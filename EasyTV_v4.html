@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>EasyTV</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
+body{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0a0a;font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;overflow:hidden;}
+
+/* PHONE */
+.phone{position:relative;width:393px;height:852px;border-radius:54px;overflow:hidden;flex-shrink:0;transform-origin:center center;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 0 0 9px #111,0 0 0 11px rgba(255,255,255,.07),0 40px 120px rgba(0,0,0,.9);}
+.pill{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:400;pointer-events:none;}
+.bg{position:absolute;inset:0;background:linear-gradient(142deg,rgba(88,28,220,.11) 0%,transparent 40%),linear-gradient(318deg,rgba(8,155,65,.09) 0%,transparent 38%),radial-gradient(ellipse 60% 50% at -5% 95%,rgba(8,55,195,.10) 0%,transparent 100%),radial-gradient(ellipse 45% 35% at 108% 0%,rgba(105,35,230,.09) 0%,transparent 100%),linear-gradient(180deg,#080910 0%,#060608 55%,#090a10 100%);}
+.bg-grain{position:absolute;inset:0;pointer-events:none;opacity:.028;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px;}
+
+/* RENK KÖRÜ MODU */
+body.colorblind .phone{filter:url(#cb-filter);}
+svg#cb-svg{position:absolute;width:0;height:0;}
+
+/* STATUS BAR */
+.statusbar{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 26px 0;height:54px;flex-shrink:0;}
+.sb-time{font-size:15px;font-weight:600;color:#fff;letter-spacing:-.3px}
+.sb-right{display:flex;gap:6px;align-items:center}
+
+/* LOGO */
+.easytv-logo{display:inline-flex;align-items:baseline;user-select:none;line-height:1;}
+.logo-easy{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:400;color:rgba(255,255,255,.82);letter-spacing:.5px;}
+.logo-tv{font-family:'Syne','Inter',-apple-system,sans-serif;font-weight:800;color:#fff;letter-spacing:-2px;margin-left:1px;}
+.lv-home .logo-easy{font-size:25px}.lv-home .logo-tv{font-size:27px}
+.lv-pin .logo-easy{font-size:20px}.lv-pin .logo-tv{font-size:22px}
+.lv-wlc .logo-easy{font-size:40px}.lv-wlc .logo-tv{font-size:44px;letter-spacing:-3px}
+
+/* APP */
+.app{position:absolute;inset:0;display:flex;flex-direction:column;z-index:10;}
+.tab-panel{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.tab-panel.active{display:flex;}
+
+/* HOME */
+.home-header{display:flex;align-items:center;justify-content:center;padding:22px 22px 38px;flex-shrink:0;position:relative;}
+.add-btn-abs{position:absolute;right:20px;top:50%;transform:translateY(-50%);}
+.add-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .16s;}
+.add-btn:active{background:rgba(255,255,255,.22);}
+.grid-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 38px 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.grid-scroll::-webkit-scrollbar{display:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* TILE */
+.tile{aspect-ratio:1;border-radius:18px;position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse 80% 55% at 20% 25%,rgba(255,255,255,.11) 0%,transparent 68%),radial-gradient(ellipse 55% 70% at 80% 75%,rgba(255,255,255,.07) 0%,transparent 62%),rgba(255,255,255,.065);backdrop-filter:blur(28px) saturate(160%) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.08);border:1px solid rgba(255,255,255,.22);border-top-color:rgba(255,255,255,.42);box-shadow:0 6px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.26);transform:scale(1) translateZ(0);transition:transform .26s cubic-bezier(.34,1.4,.64,1),background .26s,border-color .2s,box-shadow .26s;will-change:transform;user-select:none;}
+.tile::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(150deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.03) 28%,transparent 50%);pointer-events:none;z-index:1;transition:opacity .22s;}
+.tile-logo{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));opacity:.92;transition:transform .26s cubic-bezier(.34,1.4,.64,1),opacity .18s;}
+.tile-label{position:relative;z-index:3;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:-.1px;text-shadow:0 1px 4px rgba(0,0,0,.5);transition:color .18s;}
+.tile.active{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transform:scale(1.04) translateZ(0);}
+.tile.active::before{opacity:0;}
+.tile.active .tile-logo{opacity:1;transform:scale(1.07);}
+.tile.active .tile-label{color:#fff;}
+.tile.dark-text .tile-label{color:rgba(0,0,0,.8)!important;text-shadow:none!important;}
+.tile:active{transform:scale(.92) translateZ(0)!important;}
+@keyframes tilein{from{opacity:0;transform:scale(.84) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.tile{animation:tilein .36s cubic-bezier(.34,1.15,.64,1) both}
+
+/* NAV */
+.bottom-nav{position:relative;z-index:50;display:flex;align-items:center;background:rgba(18,19,24,.92);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border-top:1px solid rgba(255,255,255,.09);height:72px;padding-bottom:env(safe-area-inset-bottom,0px);flex-shrink:0;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:10px 0;transition:opacity .16s;opacity:.45;}
+.nav-item.active{opacity:1;}
+.nav-label{font-size:10px;font-weight:600;color:#fff;letter-spacing:.1px;}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:#fff;opacity:0;margin-top:1px;transition:opacity .16s;}
+.nav-item.active .nav-dot{opacity:.8;}
+
+/* TAB HEADER */
+.tab-header{padding:14px 22px 10px;flex-shrink:0;}
+.tab-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.6px;}
+.tab-sub{font-size:13px;color:rgba(255,255,255,.38);margin-top:3px;}
+
+/* SUBS */
+.subs-scroll{flex:1;overflow-y:auto;padding:4px 16px 12px;scrollbar-width:none;}
+.subs-scroll::-webkit-scrollbar{display:none;}
+.subs-summary{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:18px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.subs-total-lbl{font-size:12px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.4px;text-transform:uppercase;}
+.subs-total-val{font-size:28px;font-weight:800;color:#fff;letter-spacing:-1px;margin-top:4px;}
+.subs-next-lbl{font-size:11px;color:rgba(255,255,255,.35);font-weight:500;text-align:right;}
+.subs-next-val{font-size:15px;font-weight:700;color:#fff;text-align:right;margin-top:2px;}
+.sub-card{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.sub-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.sub-info{flex:1;min-width:0;}
+.sub-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.2px;}
+.sub-plan{font-size:12px;color:rgba(255,255,255,.38);margin-top:2px;}
+.sub-right{text-align:right;flex-shrink:0;}
+.sub-price{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.sub-renew{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;}
+.sub-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(255,59,48,.2);color:#ff6b6b;border:1px solid rgba(255,59,48,.2);margin-top:3px;}
+.sub-badge.ok{background:rgba(52,199,89,.15);color:#4cd964;border-color:rgba(52,199,89,.2);}
+.sub-badge.warn{background:rgba(255,149,0,.2);color:#ff9500;border-color:rgba(255,149,0,.2);}
+
+/* PROFILE */
+.profile-scroll{flex:1;overflow-y:auto;padding:4px 16px 12px;scrollbar-width:none;}
+.profile-scroll::-webkit-scrollbar{display:none;}
+.profile-avatar{width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#3a3a4e,#252530);border:2px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:rgba(255,255,255,.7);margin:8px 0 14px;cursor:pointer;transition:opacity .16s;}
+.profile-avatar:active{opacity:.7;}
+.profile-name{font-size:22px;font-weight:700;color:#fff;letter-spacing:-.4px;cursor:pointer;}
+.profile-email{font-size:13px;color:rgba(255,255,255,.38);margin-top:3px;cursor:pointer;}
+.profile-edit-hint{font-size:11px;color:rgba(255,255,255,.2);margin-top:6px;}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:18px 0;}
+.stat-card{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 10px;text-align:center;}
+.stat-val{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+.stat-lbl{font-size:10px;color:rgba(255,255,255,.38);font-weight:600;margin-top:4px;letter-spacing:.3px;text-transform:uppercase;}
+.menu-group{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.09);border-radius:16px;overflow:hidden;margin-bottom:12px;}
+.menu-item{display:flex;align-items:center;gap:14px;padding:15px 16px;cursor:pointer;transition:background .14s;}
+.menu-item:active{background:rgba(255,255,255,.06);}
+.menu-item+.menu-item{border-top:1px solid rgba(255,255,255,.06);}
+.menu-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.menu-text{flex:1;}
+.menu-lbl{font-size:15px;font-weight:600;color:#fff;}
+.menu-desc{font-size:12px;color:rgba(255,255,255,.35);margin-top:1px;}
+.menu-arrow{color:rgba(255,255,255,.25);font-size:14px;}
+
+/* SETTINGS */
+.settings-scroll{flex:1;overflow-y:auto;padding:4px 16px 12px;scrollbar-width:none;}
+.settings-scroll::-webkit-scrollbar{display:none;}
+.settings-section-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.32);letter-spacing:.6px;text-transform:uppercase;padding:14px 4px 8px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;}
+.toggle-row+.toggle-row{border-top:1px solid rgba(255,255,255,.06);}
+.toggle-lbl{font-size:15px;font-weight:600;color:#fff;}
+.toggle-desc{font-size:12px;color:rgba(255,255,255,.35);margin-top:1px;}
+.toggle{width:48px;height:28px;border-radius:14px;background:rgba(255,255,255,.15);position:relative;cursor:pointer;transition:background .24s;flex-shrink:0;}
+.toggle.on{background:#34c759;}
+.toggle-knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .24s cubic-bezier(.34,1.4,.64,1);}
+.toggle.on .toggle-knob{left:23px;}
+
+/* DIMMER */
+.dimmer{position:absolute;inset:0;z-index:60;background:transparent;pointer-events:none;transition:background .28s;border-radius:54px;}
+.dimmer.on{background:rgba(0,0,0,.65);pointer-events:all;}
+
+/* SHEET */
+.sheet{position:absolute;bottom:0;left:0;right:0;z-index:70;border-radius:28px 28px 0 0;overflow:hidden;transform:translateY(102%);transition:transform .44s cubic-bezier(.32,.72,0,1);}
+.sheet.open{transform:translateY(0);}
+.sheet-bg{position:absolute;inset:0;background:rgba(14,15,20,.94);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);}
+.sheet-color{position:absolute;inset:0;opacity:.12;transition:background .28s;}
+.sheet-body{position:relative;z-index:1;padding-bottom:36px;}
+.s-handle{width:36px;height:4px;background:rgba(255,255,255,.25);border-radius:2px;margin:12px auto 0;}
+.s-head{display:flex;align-items:center;padding:18px 20px 16px;gap:15px;}
+.s-logo-wrap{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.s-logo-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;}
+.s-info{flex:1;min-width:0;}
+.s-name{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.4px;}
+.s-sub{font-size:12px;color:rgba(255,255,255,.38);margin-top:2px;}
+.s-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);cursor:pointer;color:rgba(255,255,255,.55);font-size:11px;display:flex;align-items:center;justify-content:center;transition:background .16s;flex-shrink:0;}
+.s-close:active{background:rgba(255,255,255,.22);}
+.s-divider{height:1px;background:rgba(255,255,255,.08);margin:0 20px;}
+.cred-section{margin:14px 14px 0;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);}
+.cred-row{display:flex;align-items:center;gap:13px;padding:14px 16px;transition:background .12s;}
+.cred-row:active{background:rgba(255,255,255,.04);}
+.cred-row+.cred-row{border-top:1px solid rgba(255,255,255,.06);}
+.cred-ico-wrap{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);}
+.cred-info{flex:1;min-width:0;overflow:hidden;}
+.cred-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,.36);letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px;}
+.cred-val{font-size:15px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cred-acts{display:flex;gap:6px;flex-shrink:0;}
+.cred-btn{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.09);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .16s,transform .1s;}
+.cred-btn:active{transform:scale(.84);background:rgba(255,255,255,.18);}
+.cred-btn.ok{background:rgba(52,199,89,.22);border-color:rgba(52,199,89,.35);}
+
+/* SHEET ACTION BUTTONS */
+.sheet-actions{margin:10px 14px 0;display:flex;flex-direction:column;gap:8px;}
+.qr-btn{width:100%;padding:15px 20px;border-radius:16px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;border:none;transition:opacity .18s,transform .2s cubic-bezier(.34,1.3,.64,1);}
+.qr-btn:active{transform:scale(.97);opacity:.85;}
+.app-open-btn{width:100%;padding:14px 20px;border-radius:16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;transition:background .18s,transform .16s;}
+.app-open-btn:active{transform:scale(.97);background:rgba(255,255,255,.18);}
+.share-btn{width:100%;padding:13px 20px;border-radius:16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.6);transition:background .18s,transform .16s;}
+.share-btn:active{transform:scale(.97);}
+
+/* QR OVERLAY */
+.qr-ov{position:absolute;inset:0;z-index:90;background:#000;border-radius:54px;overflow:hidden;display:flex;flex-direction:column;align-items:center;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);}
+.qr-ov.open{transform:translateY(0);}
+.qr-cam{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 48%,#0c1520 0%,#000 70%);}
+.qr-top{position:relative;z-index:5;width:100%;display:flex;justify-content:space-between;align-items:center;padding:60px 22px 0;}
+.qr-close-btn{background:rgba(255,255,255,.12);border:none;border-radius:20px;color:#fff;padding:8px 18px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;}
+.qr-timer-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;color:rgba(255,255,255,.65);padding:6px 14px;font-size:13px;font-weight:600;font-family:inherit;}
+.qr-fw{position:relative;z-index:5;flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;}
+.finder{width:220px;height:220px;position:relative;display:flex;align-items:center;justify-content:center;}
+.fc{position:absolute;width:24px;height:24px;border-color:#fff;border-style:solid;}
+.fc.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
+.fc.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
+.fc.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
+.fc.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
+.qr-code-area{width:188px;height:188px;display:flex;align-items:center;justify-content:center;}
+@keyframes scanline{from{top:10px;opacity:.9}to{top:190px;opacity:.3}}
+.scanline{position:absolute;left:10px;right:10px;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);animation:scanline 2.4s ease-in-out infinite;border-radius:1px;}
+.qr-service-name{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.2px;}
+.qr-hint{font-size:13px;color:rgba(255,255,255,.45);margin-top:-12px;text-align:center;}
+
+/* ADD SERVICE */
+.add-modal{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;}
+.add-modal.open{pointer-events:all;}
+.add-modal-bg{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .3s;}
+.add-modal.open .add-modal-bg{background:rgba(0,0,0,.6);}
+.add-sheet{position:relative;z-index:1;background:rgba(18,19,24,.98);border-radius:28px 28px 0 0;padding:0 0 40px;transform:translateY(100%);transition:transform .44s cubic-bezier(.32,.72,0,1);max-height:90%;}
+.add-modal.open .add-sheet{transform:translateY(0);}
+.add-sheet-scroll{overflow-y:auto;scrollbar-width:none;}
+.add-sheet-scroll::-webkit-scrollbar{display:none}
+.add-handle{width:36px;height:4px;background:rgba(255,255,255,.22);border-radius:2px;margin:12px auto 0;}
+.add-title{font-size:20px;font-weight:700;color:#fff;padding:18px 20px 8px;letter-spacing:-.4px;}
+.add-tabs{display:flex;gap:8px;padding:0 20px 16px;}
+.add-tab{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);transition:all .18s;}
+.add-tab.active{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.22);}
+.popular-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 16px;}
+.popular-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:background .14s,border-color .14s;}
+.popular-item:active{background:rgba(255,255,255,.14);}
+.popular-item.selected{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12);}
+.popular-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.popular-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.7);text-align:center;}
+.add-field{margin:0 16px 12px;}
+.add-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;padding-left:2px;}
+.add-input{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:13px 15px;font-size:15px;font-weight:500;color:#fff;font-family:inherit;outline:none;transition:border-color .18s,background .18s;-webkit-appearance:none;}
+.add-input::placeholder{color:rgba(255,255,255,.22);}
+.add-input:focus{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12);}
+.color-row{display:flex;gap:9px;margin:0 16px 12px;flex-wrap:wrap;}
+.color-chip{width:34px;height:34px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:transform .16s,border-color .16s;flex-shrink:0;}
+.color-chip.sel{border-color:#fff;transform:scale(1.15);}
+.favicon-preview{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;margin-left:8px;overflow:hidden;}
+.favicon-preview img{width:28px;height:28px;object-fit:contain;}
+.add-row{display:flex;align-items:center;}
+.add-save-btn{margin:14px 16px 0;width:calc(100% - 32px);padding:16px;border-radius:14px;background:#fff;color:#000;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;border:none;transition:opacity .16s,transform .16s;}
+.add-save-btn:active{opacity:.8;transform:scale(.98);}
+
+/* WELCOME */
+.welcome-screen{position:absolute;inset:0;z-index:210;display:flex;flex-direction:column;background:linear-gradient(125deg,rgba(90,30,200,.09) 0%,transparent 42%),linear-gradient(305deg,rgba(10,160,70,.07) 0%,transparent 38%),radial-gradient(ellipse 55% 40% at 5% 90%,rgba(10,60,200,.09) 0%,transparent 100%),radial-gradient(ellipse 40% 30% at 95% 5%,rgba(120,40,240,.08) 0%,transparent 100%),linear-gradient(180deg,#0c0d13 0%,#09090e 60%,#0b0c12 100%);transition:opacity .62s cubic-bezier(.4,0,.2,1),transform .62s cubic-bezier(.4,0,.2,1);}
+.welcome-screen.out{opacity:0;transform:scale(.96);pointer-events:none;}
+.wlc-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px;}
+.wlc-tagline{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.7px;line-height:1.22;text-align:center;margin-bottom:12px;}
+.wlc-sub{font-size:14px;color:rgba(255,255,255,.33);text-align:center;line-height:1.7;max-width:248px;}
+.wlc-bottom{width:100%;padding:0 28px 52px;}
+.wlc-btn{width:100%;padding:17px;background:#fff;color:#0a0a0f;font-size:17px;font-weight:800;font-family:inherit;border:none;border-radius:16px;cursor:pointer;letter-spacing:-.3px;box-shadow:0 10px 40px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.3);transition:transform .18s cubic-bezier(.34,1.4,.64,1),opacity .14s;}
+.wlc-btn:active{transform:scale(.97);opacity:.86;}
+
+/* ONBOARDING */
+.onboard-screen{position:absolute;inset:0;z-index:205;display:flex;flex-direction:column;background:#0c0d13;transition:opacity .5s,transform .5s;}
+.onboard-screen.out{opacity:0;transform:scale(.96);pointer-events:none;}
+.onboard-progress{display:flex;gap:6px;padding:70px 28px 0;}
+.onboard-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.15);transition:background .3s;}
+.onboard-dot.done{background:rgba(255,255,255,.7);}
+.onboard-content{flex:1;padding:32px 28px 0;display:flex;flex-direction:column;}
+.onboard-step-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px;}
+.onboard-title{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1.2;margin-bottom:8px;}
+.onboard-sub{font-size:14px;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:28px;}
+.service-pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.sp-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .18s;}
+.sp-item.sel{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.12);}
+.sp-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+.sp-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.65);text-align:center;}
+.sp-item.sel .sp-name{color:#fff;}
+.onboard-pin-grid{display:grid;grid-template-columns:repeat(3,72px);gap:13px;justify-content:center;margin-bottom:20px;}
+.onboard-bottom{padding:0 28px 48px;}
+.onboard-btn{width:100%;padding:17px;background:#fff;color:#0a0a0f;font-size:17px;font-weight:800;font-family:inherit;border:none;border-radius:16px;cursor:pointer;transition:transform .16s,opacity .14s;}
+.onboard-btn:active{transform:scale(.97);opacity:.86;}
+.onboard-skip{text-align:center;margin-top:14px;font-size:13px;color:rgba(255,255,255,.3);cursor:pointer;padding:6px;}
+
+/* PIN */
+.pin-screen{position:absolute;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse 45% 30% at 25% 15%,rgba(35,35,55,.45) 0%,transparent 60%),radial-gradient(ellipse 35% 28% at 75% 80%,rgba(22,22,40,.38) 0%,transparent 58%),linear-gradient(175deg,#1a1b22 0%,#131418 50%,#191a20 100%);transition:opacity .5s ease,transform .5s ease;}
+.pin-screen.out{opacity:0;transform:scale(1.04);pointer-events:none;}
+.pin-logo{margin-bottom:36px;display:flex;justify-content:center;}
+.pin-greeting{font-size:24px;font-weight:700;color:#fff;letter-spacing:-.5px;margin-bottom:6px;text-align:center;}
+.pin-hint{font-size:14px;color:rgba(255,255,255,.38);margin-bottom:38px;text-align:center;}
+.pin-dots{display:flex;gap:16px;margin-bottom:40px;}
+.pin-dot{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:transparent;transition:background .14s,border-color .14s,transform .14s;}
+.pin-dot.f{background:#fff;border-color:#fff;transform:scale(1.1);}
+.pin-dot.err{background:#ff3b30;border-color:#ff3b30;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.pin-dots.shake{animation:shake .36s ease;}
+.keypad{display:grid;grid-template-columns:repeat(3,72px);gap:13px;}
+.key{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.09);border:none;outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:background .1s,transform .08s;-webkit-tap-highlight-color:transparent;}
+.key:active{background:rgba(255,255,255,.24);transform:scale(.9);}
+.key-num{font-size:25px;font-weight:300;line-height:1;}
+.key-abc{font-size:9px;font-weight:600;letter-spacing:.8px;color:rgba(255,255,255,.4);margin-top:2px;}
+.pin-face-btn{margin-top:32px;display:flex;align-items:center;gap:8px;background:none;border:none;outline:none;color:rgba(255,255,255,.38);font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:color .18s;-webkit-tap-highlight-color:transparent;}
+.pin-face-btn:active{color:rgba(255,255,255,.8);}
+
+/* ALERT MODAL */
+.alert-modal{position:absolute;inset:0;z-index:150;display:flex;align-items:flex-end;pointer-events:none;}
+.alert-modal.open{pointer-events:all;}
+.alert-bg{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .3s;}
+.alert-modal.open .alert-bg{background:rgba(0,0,0,.6);}
+.alert-sheet{position:relative;z-index:1;background:rgba(18,19,24,.98);border-radius:28px 28px 0 0;padding:28px 20px 44px;transform:translateY(100%);transition:transform .44s cubic-bezier(.32,.72,0,1);width:100%;}
+.alert-modal.open .alert-sheet{transform:translateY(0);}
+.alert-icon{font-size:32px;text-align:center;margin-bottom:14px;}
+.alert-title{font-size:20px;font-weight:700;color:#fff;text-align:center;letter-spacing:-.4px;margin-bottom:8px;}
+.alert-msg{font-size:14px;color:rgba(255,255,255,.5);text-align:center;line-height:1.6;margin-bottom:24px;}
+.alert-actions{display:flex;flex-direction:column;gap:10px;}
+.alert-btn{width:100%;padding:15px;border-radius:14px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:opacity .16s,transform .14s;}
+.alert-btn:active{transform:scale(.97);}
+.alert-btn.primary{background:#fff;color:#000;}
+.alert-btn.secondary{background:rgba(255,255,255,.1);color:#fff;}
+.alert-btn.danger{background:rgba(255,59,48,.2);color:#ff6b6b;}
+
+/* PROFILE EDIT */
+.edit-modal{position:absolute;inset:0;z-index:150;display:flex;align-items:flex-end;pointer-events:none;}
+.edit-modal.open{pointer-events:all;}
+.edit-bg{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .3s;}
+.edit-modal.open .edit-bg{background:rgba(0,0,0,.6);}
+.edit-sheet{position:relative;z-index:1;background:rgba(18,19,24,.98);border-radius:28px 28px 0 0;padding:0 0 44px;transform:translateY(100%);transition:transform .44s cubic-bezier(.32,.72,0,1);width:100%;}
+.edit-modal.open .edit-sheet{transform:translateY(0);}
+
+/* TOAST */
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(30,32,40,.95);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:14px;font-weight:600;padding:11px 20px;border-radius:24px;z-index:300;opacity:0;white-space:nowrap;transition:opacity .28s,transform .28s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* LOCK OVERLAY */
+.region-item{display:flex;align-items:center;gap:14px;padding:16px 18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:16px;cursor:pointer;transition:background .14s,border-color .14s;}
+.region-item:active{background:rgba(255,255,255,.14);}
+.region-item.region-sel{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35);}
+.lock-overlay{position:absolute;inset:0;z-index:195;display:none;background:rgba(0,0,0,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:54px;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.lock-overlay.visible{display:flex;}
+.lock-icon{display:flex;align-items:center;justify-content:center;}
+.lock-text{font-size:16px;font-weight:600;color:rgba(255,255,255,.6);}
+
+.home-ind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:5px;background:rgba(255,255,255,.22);border-radius:3px;z-index:300;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<!-- Renk körü SVG filtresi -->
+<svg id="cb-svg" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="cb-filter">
+      <feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/>
+    </filter>
+  </defs>
+</svg>
+
+<svg style="display:none"><defs>
+  <symbol id="i-mail" viewBox="0 0 18 14"><rect x="1" y="1" width="16" height="12" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M1 3.5l8 4.5 8-4.5" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 16 18"><rect x="2" y="8" width="12" height="9" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M5 8V6a3 3 0 016 0v2" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="13" r="1.5" fill="rgba(255,255,255,.7)"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 16 18"><rect x="5" y="3" width="10" height="14" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M3 1h8a2 2 0 012 2v13" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 14 11"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 18 13"><path d="M1 6.5C3 2.5 6 .5 9 .5s6 2 8 6c-2 4-5 6-8 6S3 10.5 1 6.5z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><circle cx="9" cy="6.5" r="2.5" fill="rgba(255,255,255,.7)"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 18 15"><path d="M1 1l16 13M7.5 3.5A8 8 0 019 3.5c3 0 6 2 8 6a14 14 0 01-2.5 3.3M4.5 5.3C2.7 6.6 1.5 8.3 1 9.5c2 4 5 6 8 6a8 8 0 003.8-.9" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/></symbol>
+</defs></svg>
+
+<div class="phone" id="phone">
+  <div class="pill"></div>
+  <div class="bg"></div>
+  <div class="bg-grain"></div>
+
+  <!-- WELCOME -->
+  <div class="welcome-screen" id="welcomeScreen">
+    <div class="wlc-hero">
+      <div style="margin-bottom:40px;"><div class="easytv-logo lv-wlc"><span class="logo-easy">Easy</span><span class="logo-tv">TV</span></div></div>
+      <div class="wlc-tagline">Şifreleriniz güvende.<br>Giriş tek dokunuşta.</div>
+      <div class="wlc-sub">TV aboneliklerinizi saklayın. QR ile saniyeler içinde oturum açın.</div>
+    </div>
+    <div class="wlc-bottom"><button class="wlc-btn" onclick="startOnboarding()">Başlayın</button></div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div class="onboard-screen" id="onboardScreen" style="display:none;">
+    <div class="onboard-progress" id="obProgress"></div>
+    <div class="onboard-content" id="obContent"></div>
+    <div class="onboard-bottom">
+      <button class="onboard-btn" id="obNextBtn" onclick="onboardNext()">Devam</button>
+      <div class="onboard-skip" onclick="skipOnboard()">Atla</div>
+    </div>
+  </div>
+
+  <!-- PIN -->
+  <div class="pin-screen" id="pinScreen">
+    <div class="pin-logo"><div class="easytv-logo lv-pin"><span class="logo-easy">Easy</span><span class="logo-tv">TV</span></div></div>
+    <p class="pin-greeting" id="pinGreeting">Hoş geldiniz</p>
+    <p class="pin-hint" id="pinHint">PIN ile giriş yapın</p>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="keypad">
+      <button class="key" onclick="kp(1)"><span class="key-num">1</span></button>
+      <button class="key" onclick="kp(2)"><span class="key-num">2</span><span class="key-abc">ABC</span></button>
+      <button class="key" onclick="kp(3)"><span class="key-num">3</span><span class="key-abc">DEF</span></button>
+      <button class="key" onclick="kp(4)"><span class="key-num">4</span><span class="key-abc">GHI</span></button>
+      <button class="key" onclick="kp(5)"><span class="key-num">5</span><span class="key-abc">JKL</span></button>
+      <button class="key" onclick="kp(6)"><span class="key-num">6</span><span class="key-abc">MNO</span></button>
+      <button class="key" onclick="kp(7)"><span class="key-num">7</span><span class="key-abc">PQRS</span></button>
+      <button class="key" onclick="kp(8)"><span class="key-num">8</span><span class="key-abc">TUV</span></button>
+      <button class="key" onclick="kp(9)"><span class="key-num">9</span><span class="key-abc">WXYZ</span></button>
+      <button class="key" onclick="faceId()" style="background:rgba(255,255,255,.06);">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".65"/><circle cx="9.5" cy="11.5" r="1.2" fill="white"/><circle cx="16.5" cy="11.5" r="1.2" fill="white"/><path d="M9 16.5c1.2 1.8 6.8 1.8 8 0" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button class="key" onclick="kp(0)"><span class="key-num">0</span></button>
+      <button class="key" onclick="pinDel()" style="background:rgba(255,255,255,.06);">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M7 1H18a2 2 0 012 2v8a2 2 0 01-2 2H7L1 7z" stroke="white" stroke-width="1.5" fill="none"/><path d="M11 5l4 4M15 5l-4 4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <button class="pin-face-btn" onclick="faceId()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6.5" r=".9" fill="currentColor"/><circle cx="10.5" cy="6.5" r=".9" fill="currentColor"/><path d="M5.5 10c.7 1.1 4.3 1.1 5 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Face ID ile giriş
+    </button>
+    <button class="pin-face-btn" id="pinSkipBtn" onclick="skipPin()" style="margin-top:8px;font-size:13px;opacity:.5;">Atla</button>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app" id="mainApp" style="display:none;">
+    <div class="statusbar">
+      <span class="sb-time" id="clk">9:41</span>
+      <div class="sb-right">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="white"><rect x="0" y="5" width="3" height="7" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+        <svg width="15" height="12" viewBox="0 0 20 16" fill="white"><path d="M10 13c.8 0 1.5.7 1.5 1.5S10.8 16 10 16s-1.5-.7-1.5-1.5S9.2 13 10 13z"/><path d="M10 9.5a5.5 5.5 0 013.9 1.6l1.4-1.4A7.5 7.5 0 0010 7.5a7.5 7.5 0 00-5.3 2.2l1.4 1.4A5.5 5.5 0 0110 9.5z" opacity=".7"/><path d="M10 6A9.5 9.5 0 0117 9l1.4-1.4A11.5 11.5 0 0010 4a11.5 11.5 0 00-8.4 3.6L3 9A9.5 9.5 0 0110 6z" opacity=".4"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1.2"/><rect x="2" y="2.5" width="16" height="7" rx="1.5" fill="white"/><path d="M23.5 4.5v3a1.5 1.5 0 000-3z" fill="white" opacity=".4"/></svg>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div class="tab-panel active" id="tab-home">
+      <div class="home-header">
+        <div class="easytv-logo lv-home"><span class="logo-easy">Easy</span><span class="logo-tv">TV</span></div>
+        <div class="add-btn-abs"><div class="add-btn" onclick="openAddModal()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></div>
+      </div>
+      <div class="grid-scroll"><div class="grid" id="grid"></div></div>
+    </div>
+
+    <!-- SUBS -->
+    <div class="tab-panel" id="tab-subs">
+      <div class="tab-header"><div class="tab-title">Üyelikler</div><div class="tab-sub" id="subsSubtitle">Aylık harcama özeti</div></div>
+      <div class="subs-scroll">
+        <div class="subs-summary">
+          <div><div class="subs-total-lbl">Aylık Toplam</div><div class="subs-total-val" id="totalMonthly">₺0</div></div>
+          <div><div class="subs-next-lbl">Yaklaşan</div><div class="subs-next-val" id="nextRenew">—</div></div>
+        </div>
+        <div id="subsList"></div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="tab-panel" id="tab-profile">
+      <div class="tab-header"><div class="tab-title">Profil</div></div>
+      <div class="profile-scroll">
+        <div class="profile-avatar" id="profileAvatar" onclick="openEditProfile()">K</div>
+        <div class="profile-name" id="profileName" onclick="openEditProfile()">Kullanıcı</div>
+        <div class="profile-email" id="profileEmail" onclick="openEditProfile()">kullanici@icloud.com</div>
+        <div class="profile-edit-hint">Düzenlemek için dokun</div>
+        <div class="profile-stats">
+          <div class="stat-card"><div class="stat-val" id="statApps">0</div><div class="stat-lbl">Uygulama</div></div>
+          <div class="stat-card"><div class="stat-val" id="statSubs">0</div><div class="stat-lbl">Üyelik</div></div>
+          <div class="stat-card"><div class="stat-val" id="statSaved">₺0</div><div class="stat-lbl">Aylık</div></div>
+        </div>
+        <div class="menu-group">
+          <div class="menu-item" onclick="exportData()">
+            <div class="menu-ico" style="background:rgba(10,132,255,.18);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v10M4 7l4 4 4-4" stroke="#0a84ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 12v1a2 2 0 002 2h10a2 2 0 002-2v-1" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            <div class="menu-text"><div class="menu-lbl">Verilerimi Kaydet</div><div class="menu-desc">Bilgilerini telefona indir</div></div>
+            <div class="menu-arrow">›</div>
+          </div>
+          <div class="menu-item" onclick="triggerImport()">
+            <div class="menu-ico" style="background:rgba(52,199,89,.18);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 11V1M4 5l4-4 4 4" stroke="#34c759" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 12v1a2 2 0 002 2h10a2 2 0 002-2v-1" stroke="#34c759" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            <div class="menu-text"><div class="menu-lbl">Verileri Geri Yükle</div><div class="menu-desc">Kaydedilen bilgileri aç</div></div>
+            <div class="menu-arrow">›</div>
+          </div>
+          <div class="menu-item" onclick="openPinChange()">
+            <div class="menu-ico" style="background:rgba(255,149,0,.18);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#ff9500" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#ff9500" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="menu-text"><div class="menu-lbl">PIN Değiştir</div><div class="menu-desc">Giriş şifreni güncelle</div></div>
+            <div class="menu-arrow">›</div>
+          </div>
+        </div>
+        <div class="menu-group">
+          <div class="menu-item" onclick="confirmDeleteAll()">
+            <div class="menu-ico" style="background:rgba(255,59,48,.18);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3v1H2v1h12V4h-4V3H6zM3 6l1 8h8l1-8H3z" stroke="#ff3b30" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="menu-text"><div class="menu-lbl">Tüm Verileri Sil</div><div class="menu-desc">Bu işlem geri alınamaz</div></div>
+            <div class="menu-arrow" style="color:#ff3b30;">›</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab-panel" id="tab-settings">
+      <div class="tab-header"><div class="tab-title">Ayarlar</div></div>
+      <div class="settings-scroll">
+        <div class="settings-section-lbl">Güvenlik</div>
+        <div class="menu-group">
+          <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">Face ID / Touch ID</div><div class="toggle-desc">Uygulama girişi için</div></div><div class="toggle on" id="tog-faceid" onclick="toggleSetting('faceid',this)"><div class="toggle-knob"></div></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">Otomatik Kilit</div><div class="toggle-desc" id="lockDesc">2 dakika sonra kilitle</div></div><div class="toggle on" id="tog-autolock" onclick="toggleSetting('autolock',this)"><div class="toggle-knob"></div></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">QR Otomatik Döndür</div><div class="toggle-desc">Her 30 sn yeni kod</div></div><div class="toggle on" id="tog-qrrotate" onclick="toggleSetting('qrrotate',this)"><div class="toggle-knob"></div></div></div>
+        </div>
+        <div class="settings-section-lbl">Görünüm</div>
+        <div class="menu-group">
+          <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">Renk Körü Modu</div><div class="toggle-desc">Kırmızı-yeşil körlüğü desteği</div></div><div class="toggle" id="tog-colorblind" onclick="toggleSetting('colorblind',this)"><div class="toggle-knob"></div></div></div>
+        </div>
+        <div class="settings-section-lbl">Bildirimler</div>
+        <div class="menu-group">
+          <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">Yenileme Hatırlatıcısı</div><div class="toggle-desc">3 gün önce bildir</div></div><div class="toggle on" id="tog-reminder" onclick="toggleSetting('reminder',this)"><div class="toggle-knob"></div></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">Fiyat Değişikliği</div><div class="toggle-desc">Abonelik ücret artışı</div></div><div class="toggle" id="tog-pricechange" onclick="toggleSetting('pricechange',this)"><div class="toggle-knob"></div></div></div>
+        </div>
+        <div class="settings-section-lbl">Bölge</div>
+        <div class="menu-group" id="regionMenuGroup">
+          <div class="menu-item" onclick="openRegionPicker()">
+            <div class="menu-ico" style="background:rgba(255,255,255,.08);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="rgba(255,255,255,.6)" stroke-width="1.4"/><ellipse cx="8" cy="8" rx="3" ry="6.5" stroke="rgba(255,255,255,.6)" stroke-width="1.4"/><line x1="1.5" y1="8" x2="14.5" y2="8" stroke="rgba(255,255,255,.6)" stroke-width="1.4"/><line x1="2.5" y1="5" x2="13.5" y2="5" stroke="rgba(255,255,255,.6)" stroke-width="1.2"/><line x1="2.5" y1="11" x2="13.5" y2="11" stroke="rgba(255,255,255,.6)" stroke-width="1.2"/></svg></div>
+            <div class="menu-text"><div class="menu-lbl">App Store Bölgesi</div><div class="menu-desc" id="regionDesc">Türkiye</div></div>
+            <div class="menu-arrow">›</div>
+          </div>
+        </div>
+        <div class="settings-section-lbl">Uygulama</div>
+        <div class="menu-group">
+          <div class="menu-item"><div class="menu-ico" style="background:rgba(255,255,255,.08);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><path d="M8 7v5M8 5v.5" stroke="rgba(255,255,255,.5)" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="menu-text"><div class="menu-lbl">Hakkında</div><div class="menu-desc">EasyTV v4.0</div></div><div class="menu-arrow">›</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active" id="nav-home" onclick="switchTab('home')"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M2 9.5L11 2l9 7.5V20a1 1 0 01-1 1H14v-5h-4v5H3a1 1 0 01-1-1V9.5z" stroke="white" stroke-width="1.7" stroke-linejoin="round" fill="none"/></svg><span class="nav-label">Ana Sayfa</span><div class="nav-dot"></div></div>
+      <div class="nav-item" id="nav-subs" onclick="switchTab('subs')"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="1" y="4" width="20" height="14" rx="3" stroke="white" stroke-width="1.7" fill="none"/><path d="M1 9h20" stroke="white" stroke-width="1.7"/><path d="M5 14h4M14 14h3" stroke="white" stroke-width="1.7" stroke-linecap="round"/></svg><span class="nav-label">Üyelikler</span><div class="nav-dot"></div></div>
+      <div class="nav-item" id="nav-profile" onclick="switchTab('profile')"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="7.5" r="4" stroke="white" stroke-width="1.7" fill="none"/><path d="M2 20c0-4 4-7 9-7s9 3 9 7" stroke="white" stroke-width="1.7" stroke-linecap="round" fill="none"/></svg><span class="nav-label">Profil</span><div class="nav-dot"></div></div>
+      <div class="nav-item" id="nav-settings" onclick="switchTab('settings')"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="3" stroke="white" stroke-width="1.7" fill="none"/><path d="M11 1v3M11 18v3M1 11h3M18 11h3M4.2 4.2l2.1 2.1M15.7 15.7l2.1 2.1M4.2 17.8l2.1-2.1M15.7 6.3l2.1-2.1" stroke="white" stroke-width="1.7" stroke-linecap="round"/></svg><span class="nav-label">Ayarlar</span><div class="nav-dot"></div></div>
+    </div>
+  </div>
+
+  <div class="dimmer" id="dimmer" onclick="closeSheet()"></div>
+
+  <!-- SHEET -->
+  <div class="sheet" id="sheet">
+    <div class="sheet-bg"></div>
+    <div class="sheet-color" id="sColor"></div>
+    <div class="sheet-body">
+      <div class="s-handle"></div>
+      <div class="s-head">
+        <div class="s-logo-wrap" id="sLogoWrap"><div class="s-logo-inner" id="sIco"></div></div>
+        <div class="s-info"><div class="s-name" id="sName"></div><div class="s-sub">Hesap Bilgileri</div></div>
+        <button class="s-close" onclick="closeSheet()">✕</button>
+      </div>
+      <div class="s-divider"></div>
+      <div class="cred-section">
+        <div class="cred-row">
+          <div class="cred-ico-wrap"><svg width="15" height="12"><use href="#i-mail"/></svg></div>
+          <div class="cred-info"><div class="cred-lbl">E-Posta / Kullanıcı</div><div class="cred-val" id="emailV"></div></div>
+          <div class="cred-acts"><button class="cred-btn" id="btnE" onclick="doCopy(this,'E')"><svg width="13" height="15"><use id="uE" href="#i-copy"/></svg></button></div>
+        </div>
+        <div class="cred-row">
+          <div class="cred-ico-wrap"><svg width="13" height="15"><use href="#i-lock"/></svg></div>
+          <div class="cred-info"><div class="cred-lbl">Şifre</div><div class="cred-val" id="pwdV">••••••••••</div></div>
+          <div class="cred-acts">
+            <button class="cred-btn" onclick="togglePwd()"><svg width="15" height="12"><use id="eyeU" href="#i-eye"/></svg></button>
+            <button class="cred-btn" id="btnP" onclick="doCopy(this,'P')"><svg width="13" height="15"><use id="uP" href="#i-copy"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-actions">
+        <button class="qr-btn" id="qrBtn" onclick="openQR()">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3.5" y="3.5" width="2" height="2" rx=".5"/><rect x="12" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="14.5" y="3.5" width="2" height="2" rx=".5"/><rect x="1" y="12" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3.5" y="14.5" width="2" height="2" rx=".5"/><rect x="12" y="12" width="2.5" height="2.5" rx=".5"/><rect x="15.5" y="12" width="3.5" height="2.5" rx=".5"/><rect x="12" y="15.5" width="3.5" height="3.5" rx=".5"/><rect x="16.5" y="16.5" width="2.5" height="2.5" rx=".5"/></svg>
+          TV'den QR ile Aç
+        </button>
+        <button class="app-open-btn" id="appOpenBtn" onclick="openDeepLink()">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M13 3h4v4M17 3l-7 7M8 5H5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Uygulamayı Aç
+        </button>
+        <button class="share-btn" onclick="shareCredentials()">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="15" cy="5" r="2.5" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><circle cx="5" cy="10" r="2.5" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><circle cx="15" cy="15" r="2.5" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><path d="M7.5 8.5l5-3M7.5 11.5l5 3" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Paylaş
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR -->
+  <div class="qr-ov" id="qrOv">
+    <div class="qr-cam"></div>
+    <div class="qr-top">
+      <button class="qr-close-btn" onclick="closeQR()">Kapat</button>
+      <div class="qr-timer-badge" id="qrTimerBadge">⟳ 30s</div>
+    </div>
+    <div class="qr-fw">
+      <div style="text-align:center;"><div class="qr-service-name" id="qrSvcName"></div><div class="qr-hint">TV'de QR okutun, otomatik giriş yapılır</div></div>
+      <div class="finder">
+        <div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+        <div class="qr-code-area" id="qrCodeArea"></div>
+        <div class="scanline"></div>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.25);">Kod otomatik yenileniyor</div>
+    </div>
+  </div>
+
+  <!-- ADD MODAL -->
+  <div class="add-modal" id="addModal">
+    <div class="add-modal-bg" onclick="closeAddModal()"></div>
+    <div class="add-sheet">
+      <div class="add-handle"></div>
+      <div class="add-title">Servis Ekle</div>
+      <div class="add-tabs">
+        <div class="add-tab active" id="tab-popular" onclick="switchAddTab('popular')">Popüler</div>
+        <div class="add-tab" id="tab-custom" onclick="switchAddTab('custom')">Özel</div>
+      </div>
+      <div class="add-sheet-scroll" id="addSheetScroll">
+        <!-- Popular tab -->
+        <div id="popularTab">
+          <div class="popular-grid" id="popularGrid"></div>
+          <div id="popularForm" style="display:none;">
+            <div class="add-field"><div class="add-label">E-Posta / Kullanıcı Adı</div><input class="add-input" id="popEmail" placeholder="ornek@email.com" type="email" autocomplete="off"></div>
+            <div class="add-field"><div class="add-label">Şifre</div><input class="add-input" id="popPwd" placeholder="••••••••" type="password" autocomplete="new-password"></div>
+            <div class="add-field"><div class="add-label">Aylık Ücret</div><input class="add-input" id="popPrice" placeholder="₺97,90" type="text"></div>
+            <div class="add-field"><div class="add-label">Yenileme Tarihi</div><input class="add-input" id="popRenew" type="date"></div>
+            <button class="add-save-btn" onclick="savePopularService()">Kaydet</button>
+          </div>
+        </div>
+        <!-- Custom tab -->
+        <div id="customTab" style="display:none;">
+          <div class="add-field"><div class="add-label">Servis Adı</div><input class="add-input" id="addName" placeholder="Netflix, Spotify..." type="text" autocomplete="off"></div>
+          <div class="add-field">
+            <div class="add-label">Web Sitesi (logo için)</div>
+            <div class="add-row">
+              <input class="add-input" id="addUrl" placeholder="netflix.com" type="text" autocomplete="off" oninput="fetchFavicon()">
+              <div class="favicon-preview" id="faviconPreview"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/><path d="M9 5v5l3 2" stroke="rgba(255,255,255,.2)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            </div>
+          </div>
+          <div class="add-field"><div class="add-label">E-Posta / Kullanıcı Adı</div><input class="add-input" id="addEmail" placeholder="ornek@email.com" type="email" autocomplete="off"></div>
+          <div class="add-field"><div class="add-label">Şifre</div><input class="add-input" id="addPwd" placeholder="••••••••" type="password" autocomplete="new-password"></div>
+          <div class="add-field"><div class="add-label">Aylık Ücret (opsiyonel)</div><input class="add-input" id="addPrice" placeholder="₺79,90" type="text"></div>
+          <div class="add-field"><div class="add-label">Yenileme Tarihi</div><input class="add-input" id="addRenew" type="date"></div>
+          <div class="add-field"><div class="add-label">Renk</div><div class="color-row" id="colorRow"></div></div>
+          <button class="add-save-btn" onclick="saveCustomService()">Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERT MODAL -->
+  <div class="alert-modal" id="alertModal">
+    <div class="alert-bg" onclick="closeAlert()"></div>
+    <div class="alert-sheet">
+      <div class="alert-icon" id="alertIcon">⚠️</div>
+      <div class="alert-title" id="alertTitle">Başlık</div>
+      <div class="alert-msg" id="alertMsg">Mesaj</div>
+      <div class="alert-actions" id="alertActions"></div>
+    </div>
+  </div>
+
+  <!-- PROFILE EDIT MODAL -->
+  <div class="edit-modal" id="editModal">
+    <div class="edit-bg" onclick="closeEditProfile()"></div>
+    <div class="edit-sheet">
+      <div class="add-handle"></div>
+      <div class="add-title">Profili Düzenle</div>
+      <div class="add-field"><div class="add-label">Ad Soyad</div><input class="add-input" id="editName" placeholder="Adınız" type="text"></div>
+      <div class="add-field"><div class="add-label">E-Posta</div><input class="add-input" id="editEmail" placeholder="email@ornek.com" type="email"></div>
+      <button class="add-save-btn" onclick="saveProfile()" style="margin-bottom:0;">Kaydet</button>
+    </div>
+  </div>
+
+  <!-- RENEWAL ALERT -->
+  <div class="alert-modal" id="renewalModal">
+    <div class="alert-bg"></div>
+    <div class="alert-sheet">
+      <div class="alert-icon">🔄</div>
+      <div class="alert-title" id="renewalTitle">Abonelik Yenilendi mi?</div>
+      <div class="alert-msg" id="renewalMsg">Mesaj</div>
+      <div class="alert-actions" id="renewalActions"></div>
+    </div>
+  </div>
+
+  <div class="lock-overlay" id="lockOverlay">
+    <div class="lock-icon">
+      <svg width="48" height="56" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="24" width="36" height="28" rx="6" stroke="white" stroke-width="2.5" fill="none"/>
+        <path d="M14 24V16C14 10.477 18.477 6 24 6C29.523 6 34 10.477 34 16V24" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <circle cx="24" cy="38" r="3.5" fill="white"/>
+        <line x1="24" y1="41.5" x2="24" y2="46" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="lock-text">Uygulama kilitlendi</div>
+    <button class="add-save-btn" style="width:auto;padding:12px 32px;margin:0;" onclick="unlockFromLock()">PIN ile Aç</button>
+  </div>
+
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  <div class="toast" id="toast"></div>
+  <div class="home-ind"></div>
+</div>
+
+<script>
+// ═══ VERİ MODELİ ═══════════════════════════════════════
+// ─── BÖLGE BAZLI LİNKLER ────────────────────────────────
+const REGION_DATA = {
+  tr: {
+    label:'🇹🇷 Türkiye',
+    deep:{netflix:'netflix://',youtube:'youtube://',disney:'disneyplus://',prime:'aiv://',hbo:'hbomax://',apple:'videos://',twitch:'twitch://',kick:'kick://',exxen:'exxen://',bein:'bein://',spotify:'spotify://',blutv:'blutv://'},
+    store:{
+      netflix:'https://apps.apple.com/tr/app/netflix/id363590051',
+      youtube:'https://apps.apple.com/tr/app/youtube/id544007664',
+      disney:'https://apps.apple.com/tr/app/disney/id1446075923',
+      prime:'https://apps.apple.com/tr/app/amazon-prime-video/id545519333',
+      hbo:'https://apps.apple.com/tr/app/max-stream-hbo-movies-tv/id1666653815',
+      apple:'https://apps.apple.com/tr/app/apple-tv/id1174078549',
+      twitch:'https://apps.apple.com/tr/app/twitch/id460177396',
+      kick:'https://apps.apple.com/tr/app/kick-com/id6444875080',
+      exxen:'https://apps.apple.com/tr/app/exxen/id1547602158',
+      bein:'https://apps.apple.com/tr/app/bein-connect/id881909944',
+      spotify:'https://apps.apple.com/tr/app/spotify/id324684580',
+      blutv:'https://apps.apple.com/tr/app/blutv/id985018771',
+    }
+  },
+  us: {
+    label:'🇺🇸 Amerika',
+    deep:{netflix:'netflix://',youtube:'youtube://',disney:'disneyplus://',prime:'aiv://',hbo:'hbomax://',apple:'videos://',twitch:'twitch://',kick:'kick://',spotify:'spotify://'},
+    store:{
+      netflix:'https://apps.apple.com/us/app/netflix/id363590051',
+      youtube:'https://apps.apple.com/us/app/youtube/id544007664',
+      disney:'https://apps.apple.com/us/app/disney/id1446075923',
+      prime:'https://apps.apple.com/us/app/amazon-prime-video/id545519333',
+      hbo:'https://apps.apple.com/us/app/max-stream-hbo-movies-tv/id1666653815',
+      apple:'https://apps.apple.com/us/app/apple-tv/id1174078549',
+      twitch:'https://apps.apple.com/us/app/twitch/id460177396',
+      kick:'https://apps.apple.com/us/app/kick-com/id6444875080',
+      spotify:'https://apps.apple.com/us/app/spotify/id324684580',
+    }
+  },
+  eu: {
+    label:'🌍 Avrupa',
+    deep:{netflix:'netflix://',youtube:'youtube://',disney:'disneyplus://',prime:'aiv://',hbo:'hbomax://',apple:'videos://',twitch:'twitch://',spotify:'spotify://'},
+    store:{
+      netflix:'https://apps.apple.com/gb/app/netflix/id363590051',
+      youtube:'https://apps.apple.com/gb/app/youtube/id544007664',
+      disney:'https://apps.apple.com/gb/app/disney/id1446075923',
+      prime:'https://apps.apple.com/gb/app/amazon-prime-video/id545519333',
+      hbo:'https://apps.apple.com/gb/app/max-stream-hbo-movies-tv/id1666653815',
+      apple:'https://apps.apple.com/gb/app/apple-tv/id1174078549',
+      twitch:'https://apps.apple.com/gb/app/twitch/id460177396',
+      spotify:'https://apps.apple.com/gb/app/spotify/id324684580',
+    }
+  },
+  as: {
+    label:'🌏 Asya',
+    deep:{netflix:'netflix://',youtube:'youtube://',disney:'disneyplus://',prime:'aiv://',apple:'videos://',twitch:'twitch://',spotify:'spotify://'},
+    store:{
+      netflix:'https://apps.apple.com/jp/app/netflix/id363590051',
+      youtube:'https://apps.apple.com/jp/app/youtube/id544007664',
+      disney:'https://apps.apple.com/jp/app/disney/id1446075923',
+      prime:'https://apps.apple.com/jp/app/amazon-prime-video/id545519333',
+      apple:'https://apps.apple.com/jp/app/apple-tv/id1174078549',
+      twitch:'https://apps.apple.com/jp/app/twitch/id460177396',
+      spotify:'https://apps.apple.com/jp/app/spotify/id324684580',
+    }
+  },
+};
+const TILE_GRADIENTS = {
+  disney: 'linear-gradient(145deg, #0DD3C5 0%, #0880A0 100%)',
+  hbo: 'linear-gradient(145deg, #1C2B5E 0%, #0D1530 100%)',
+  prime: 'linear-gradient(145deg, #1A98FF 0%, #0066CC 100%)',
+};
+function getRegion(){return REGION_DATA[SETTINGS.region||'tr']||REGION_DATA.tr;}
+function updateRegionUI(){
+  const code=SETTINGS.country||'tr';
+  const country=COUNTRIES?COUNTRIES.find(c=>c.code===code):null;
+  const reg=getRegion();
+  const desc=document.getElementById('regionDesc');
+  if(desc) desc.textContent=country?country.name:reg.label.split(' ').slice(1).join(' ');
+}
+
+
+const POPULAR_SVCS = [
+  {id:'netflix',name:'Netflix',color:'#E50914',rgb:'229,9,20',
+    prices:{tr:{amount:219.99,plan:'Standart'},us:{amount:15.49,plan:'Standard'},eu:{amount:13.99,plan:'Standard'},as:{amount:13.99,plan:'Standard'}}},
+  {id:'youtube',name:'YouTube',color:'#FF0000',rgb:'255,0,0',
+    prices:{tr:{amount:109.99,plan:'Premium'},us:{amount:13.99,plan:'Premium'},eu:{amount:11.99,plan:'Premium'},as:{amount:11.99,plan:'Premium'}}},
+  {id:'disney',name:'Disney+',color:'#0ABFBC',rgb:'10,191,188',
+    prices:{tr:{amount:149.99,plan:'Standart'},us:{amount:7.99,plan:'Basic'},eu:{amount:8.99,plan:'Standard'},as:{amount:8.99,plan:'Standard'}}},
+  {id:'prime',name:'Prime Video',color:'#1A98FF',rgb:'26,152,255',
+    prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}}},
+  {id:'hbo',name:'HBO Max',color:'#1C2340',rgb:'28,35,64',
+    prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}}},
+  {id:'apple',name:'Apple TV+',color:'#e8e8e8',rgb:'220,220,235',textDark:true,
+    prices:{tr:{amount:99.99,plan:'Aile'},us:{amount:9.99,plan:'Monthly'},eu:{amount:8.99,plan:'Monthly'},as:{amount:8.99,plan:'Monthly'}}},
+  {id:'twitch',name:'Twitch',color:'#9146FF',rgb:'145,70,255',
+    prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}}},
+  {id:'kick',name:'Kick',color:'#53FC18',rgb:'83,252,24',textDark:true,
+    prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}}},
+  {id:'exxen',name:'EXXEN',color:'#F9D100',rgb:'249,209,0',textDark:true,
+    prices:{tr:{amount:179.99,plan:'Reklamlı HD'},us:{amount:0,plan:'N/A'},eu:{amount:0,plan:'N/A'},as:{amount:0,plan:'N/A'}}},
+  {id:'bein',name:'beIN Connect',color:'#6F2DA8',rgb:'111,45,168',
+    prices:{tr:{amount:249.99,plan:'Spor Paketi'},us:{amount:0,plan:'N/A'},eu:{amount:19.99,plan:'Sports'},as:{amount:0,plan:'N/A'}}},
+  {id:'blutv',name:'BluTV',color:'#00B9E8',rgb:'0,185,232',
+    prices:{tr:{amount:139.99,plan:'Standart'},us:{amount:0,plan:'N/A'},eu:{amount:0,plan:'N/A'},as:{amount:0,plan:'N/A'}}},
+  {id:'spotify',name:'Spotify',color:'#1DB954',rgb:'29,185,84',
+    prices:{tr:{amount:79.99,plan:'Bireysel'},us:{amount:10.99,plan:'Individual'},eu:{amount:10.99,plan:'Individual'},as:{amount:10.99,plan:'Individual'}}},
+];
+
+const LOGO = {
+  netflix:{w:40,h:50,html:`<svg viewBox="0 0 40 50" width="40" height="50"><rect x="0" y="0" width="10" height="50" fill="white"/><rect x="30" y="0" width="10" height="50" fill="white"/><polygon points="10,0 30,0 30,22 10,28" fill="white"/></svg>`},
+  youtube:{w:44,h:32,html:`<svg viewBox="0 0 44 32" width="44" height="32"><polygon points="10,4 10,28 38,16" fill="white"/></svg>`},
+  disney:{w:62,h:38,html:`<svg viewBox="0 0 200 100" width="62" height="38"><text x="2" y="60" font-family="'Georgia','Times New Roman',serif" font-size="52" font-weight="700" font-style="italic" fill="white" letter-spacing="-1">Disney</text><text x="168" y="38" font-family="-apple-system,sans-serif" font-size="34" font-weight="900" fill="white">+</text></svg>`},
+  prime:{w:58,h:42,html:`<svg viewBox="0 0 140 90" width="58" height="42"><text x="0" y="30" font-family="-apple-system,'Helvetica Neue',sans-serif" font-size="22" font-weight="300" fill="white" letter-spacing="4">prime</text><text x="0" y="60" font-family="-apple-system,'Helvetica Neue',sans-serif" font-size="30" font-weight="800" fill="white" letter-spacing="-.5">video</text><path d="M4 75 Q35 90 70 83 Q100 76 132 79" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M124 74 l9 5 l-6 5" fill="white"/></svg>`},
+  hbo:{w:58,h:40,html:`<svg viewBox="0 0 140 80" width="58" height="40"><text x="0" y="38" font-family="-apple-system,'Helvetica Neue',sans-serif" font-size="44" font-weight="900" fill="white" letter-spacing="-1">HBO</text><text x="1" y="68" font-family="-apple-system,'Helvetica Neue',sans-serif" font-size="32" font-weight="400" fill="rgba(255,255,255,.85)" letter-spacing="1">max</text></svg>`},
+  apple:{w:58,h:34,
+    html:`<svg viewBox="0 0 814 1000" width="20" height="26" style="margin-right:5px;display:inline-block;vertical-align:middle"><path fill="white" d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.9-155.5-127.4C46 790.8 0 663.6 0 541.8c0-207.9 135.5-317.9 269.1-317.9 70.5 0 129.3 46.5 173.4 46.5 42.8 0 109.8-49.1 188.5-49.1 30.4 0 109.8 2.6 163.4 99.5zm-234.9-181.6c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg><svg viewBox="0 0 64 34" width="30" height="26" style="display:inline-block;vertical-align:middle"><text x="0" y="27" font-family="-apple-system,sans-serif" font-size="28" font-weight="600" fill="white" letter-spacing="-.5">TV+</text></svg>`,
+    htmlDark:`<svg viewBox="0 0 814 1000" width="20" height="26" style="margin-right:5px;display:inline-block;vertical-align:middle"><path fill="black" d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.9-155.5-127.4C46 790.8 0 663.6 0 541.8c0-207.9 135.5-317.9 269.1-317.9 70.5 0 129.3 46.5 173.4 46.5 42.8 0 109.8-49.1 188.5-49.1 30.4 0 109.8 2.6 163.4 99.5zm-234.9-181.6c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg><svg viewBox="0 0 64 34" width="30" height="26" style="display:inline-block;vertical-align:middle"><text x="0" y="27" font-family="-apple-system,sans-serif" font-size="28" font-weight="600" fill="black" letter-spacing="-.5">TV+</text></svg>`,
+    textDark:true},
+  twitch:{w:40,h:46,html:`<svg viewBox="0 0 512 597" width="40" height="46" fill="white"><path d="M71.4 0L0 100v397h142.9V597l100-100h71.4L512 298.5V0H71.4zm384.3 275.6L384.3 347h-71.4l-62.8 62.8V347H178.6V57.2h277.1v218.4zM384.3 142.9H327v157.1h57.3V142.9zm-157.1 0h-57.2v157.1h57.2V142.9z"/></svg>`},
+  kick:{w:36,h:36,html:`<svg viewBox="0 0 100 100" width="36" height="36" fill="white"><rect x="8" y="8" width="22" height="84" rx="3"/><polygon points="30,50 66,8 90,8 54,50 90,92 66,92"/></svg>`,htmlDark:`<svg viewBox="0 0 100 100" width="36" height="36" fill="black"><rect x="8" y="8" width="22" height="84" rx="3"/><polygon points="30,50 66,8 90,8 54,50 90,92 66,92"/></svg>`,textDark:true},
+  exxen:{w:70,h:25,html:`<svg viewBox="0 0 144 50" width="70" height="25"><text x="0" y="44" font-family="-apple-system,sans-serif" font-size="48" font-weight="900" fill="white" letter-spacing="-2">EXXEN</text></svg>`,htmlDark:`<svg viewBox="0 0 144 50" width="70" height="25"><text x="0" y="44" font-family="-apple-system,sans-serif" font-size="48" font-weight="900" fill="black" letter-spacing="-2">EXXEN</text></svg>`,textDark:true},
+  bein:{w:64,h:36,html:`<svg viewBox="0 0 136 76" width="64" height="36"><text x="0" y="40" font-family="-apple-system,sans-serif" font-size="40" font-weight="900" fill="white" letter-spacing="-1">beIN</text><text x="1" y="64" font-family="-apple-system,sans-serif" font-size="22" font-weight="600" fill="white" opacity=".85">Connect</text></svg>`},
+  blutv:{w:52,h:26,html:`<svg viewBox="0 0 120 50" width="52" height="26"><text x="0" y="40" font-family="-apple-system,sans-serif" font-size="44" font-weight="900" fill="white" letter-spacing="-1">blu</text><text x="60" y="40" font-family="-apple-system,sans-serif" font-size="44" font-weight="900" fill="white" letter-spacing="-1">TV</text></svg>`},
+  spotify:{w:36,h:36,html:`<svg viewBox="0 0 168 168" width="36" height="36"><path fill="white" d="M84 0C37.6 0 0 37.6 0 84s37.6 84 84 84 84-37.6 84-84S130.4 0 84 0zm38.6 121.2c-1.5 2.5-4.8 3.3-7.3 1.7-20-12.2-45.2-15-74.9-8.2-2.9.7-5.7-1.1-6.4-3.9-.7-2.9 1.1-5.7 3.9-6.4 32.5-7.4 60.4-4.2 82.9 9.5 2.5 1.5 3.3 4.8 1.8 7.3zm10.3-22.9c-1.9 3.1-5.9 4.1-9 2.2-22.9-14.1-57.8-18.2-84.9-9.9-3.5 1-7.2-.9-8.2-4.4-1-3.5.9-7.2 4.4-8.2 31-9.4 69.5-4.8 95.8 11.3 3.1 1.9 4.1 5.9 1.9 9zm.9-23.8c-27.5-16.3-72.9-17.8-99.2-9.9-4.2 1.3-8.7-1.1-9.9-5.3-1.3-4.2 1.1-8.7 5.3-9.9 30.2-9.2 80.4-7.4 112.1 11.5 3.8 2.3 5 7.1 2.8 10.9-2.2 3.7-7.1 4.9-10.9 2.7h-.2z"/></svg>`},
+  _custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`},
+};
+
+// ═══ STATE ══════════════════════════════════════════════
+let SVC = [], SETTINGS = {}, PROFILE = {name:'Kullanıcı',email:'kullanici@icloud.com'};
+let active = -1, pwdShow = false;
+let qrRotateInterval = null, qrCountdown = null, qrSec = 30, _qrSeed = Date.now();
+let lockTimer = null, isLocked = false;
+let pinVal = '', pinMode = 'unlock', pinStep = 0, tempPin = '';
+let selectedPopular = null;
+
+// ═══ LOCALSTORAGE ════════════════════════════════════════
+function saveData(){
+  try{
+    localStorage.setItem('easytv_svc', JSON.stringify(SVC));
+    localStorage.setItem('easytv_settings', JSON.stringify(SETTINGS));
+    localStorage.setItem('easytv_profile', JSON.stringify(PROFILE));
+    localStorage.setItem('easytv_pin', SETTINGS.pin||'1111');
+  }catch(e){}
+}
+function loadData(){
+  try{
+    const s=localStorage.getItem('easytv_svc');
+    const st=localStorage.getItem('easytv_settings');
+    const pr=localStorage.getItem('easytv_profile');
+    if(s) SVC=JSON.parse(s);
+    if(st) SETTINGS=JSON.parse(st);
+    if(pr) PROFILE=JSON.parse(pr);
+    if(!SETTINGS.pin) SETTINGS.pin='1111';
+    if(!SETTINGS.autolock) SETTINGS.autolock=true;
+    if(!SETTINGS.faceid) SETTINGS.faceid=true;
+    if(!SETTINGS.qrrotate) SETTINGS.qrrotate=true;
+  }catch(e){
+    SETTINGS={pin:'1111',autolock:true,faceid:true,qrrotate:true};
+  }
+}
+
+// ═══ INIT ════════════════════════════════════════════════
+loadData();
+const isFirstTime = true; // Her açılışta sıfırdan başlar
+
+function startOnboarding(){
+  if(isFirstTime){
+    document.getElementById('welcomeScreen').classList.add('out');
+    setTimeout(()=>{
+      document.getElementById('welcomeScreen').style.display='none';
+      document.getElementById('onboardScreen').style.display='flex';
+      renderOnboardStep();
+    },560);
+  } else {
+    document.getElementById('welcomeScreen').classList.add('out');
+    setTimeout(()=>{
+      document.getElementById('welcomeScreen').style.display='none';
+      if(SETTINGS.usePin===false){
+        unlockApp();
+      }
+    },560);
+  }
+}
+
+// ═══ ONBOARDING ══════════════════════════════════════════
+let obStep = 0;
+const obSteps = ['region','services','pinChoice','pin','done'];
+let obSelectedServices = [];
+let obNewPin = '';
+
+function renderOnboardStep(){
+  const prog = document.getElementById('obProgress');
+  prog.innerHTML = obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');
+
+  const content = document.getElementById('obContent');
+  const btn = document.getElementById('obNextBtn');
+  const skip = document.querySelector('.onboard-skip');
+  const setSkip = (v) => { if(skip) skip.style.display=v; };
+
+  if(obStep===0){
+    btn.textContent='Devam';
+    setSkip('none');
+    content.innerHTML=`
+      <div class="onboard-step-lbl">Adım 1 / 4</div>
+      <div class="onboard-title">Bölgeni seç</div>
+      <div class="onboard-sub">App Store linkleri ve mevcut servisler bölgene göre ayarlanır.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="regionPicker"></div>`;
+    buildRegionPicker();
+  } else if(obStep===1){
+    btn.textContent='Devam';
+    setSkip('block');
+    content.innerHTML=`
+      <div class="onboard-step-lbl">Adım 2 / 4</div>
+      <div class="onboard-title">Hangi servisleri kullanıyorsun?</div>
+      <div class="onboard-sub">Hepsini sonra ekleyebilirsin.</div>
+      <div class="service-pick-grid" id="spGrid"></div>`;
+    buildServicePicker();
+  } else if(obStep===2){
+    btn.textContent='Devam';
+    setSkip('none');
+    content.innerHTML=`
+      <div class="onboard-step-lbl">Adım 3 / 5</div>
+      <div class="onboard-title">PIN koruması</div>
+      <div class="onboard-sub">Uygulamaya PIN ile giriş yapmak ister misin? Dilediğin zaman ayarlardan değiştirebilirsin.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+        <div class="region-item${SETTINGS.usePin!==false?' region-sel':''}" id="pin-yes" onclick="setPinChoice(true)">
+          <span style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;"><svg width="20" height="24" viewBox="0 0 20 24" fill="none"><rect x="2" y="10" width="16" height="13" rx="3" stroke="white" stroke-width="1.8" fill="none"/><path d="M6 10V7C6 4.79 7.79 3 10 3C12.21 3 14 4.79 14 7V10" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="10" cy="16.5" r="1.5" fill="white"/></svg></span>
+          <div><div style="font-size:15px;font-weight:700;color:#fff;">Evet, PIN ile koru</div><div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;">Güvenli, tavsiye edilir</div></div>
+          ${SETTINGS.usePin!==false?'<span style="margin-left:auto;color:#4cd964;font-size:16px;">✓</span>':''}
+        </div>
+        <div class="region-item${SETTINGS.usePin===false?' region-sel':''}" id="pin-no" onclick="setPinChoice(false)">
+          <span style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;"><svg width="20" height="24" viewBox="0 0 20 24" fill="none"><rect x="2" y="10" width="16" height="13" rx="3" stroke="rgba(255,255,255,.5)" stroke-width="1.8" fill="none"/><path d="M6 10V7C6 4.79 7.79 3 10 3C12.21 3 14 4.79 14 7" stroke="rgba(255,255,255,.5)" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></span>
+          <div><div style="font-size:15px;font-weight:700;color:#fff;">Hayır, PINsiz devam et</div><div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;">Dilediğinde ayarlardan açabilirsin</div></div>
+          ${SETTINGS.usePin===false?'<span style="margin-left:auto;color:#4cd964;font-size:16px;">✓</span>':''}
+        </div>
+      </div>`;
+  } else if(obStep===3){
+    btn.textContent='Devam';
+    setSkip('none');
+    if(SETTINGS.usePin===false){onboardNext();return;}
+    content.innerHTML=`
+      <div class="onboard-step-lbl">Adım 4 / 5</div>
+      <div class="onboard-title">PIN oluştur</div>
+      <div class="onboard-sub">Uygulamana 4 haneli bir giriş şifresi belirle.</div>
+      <div class="pin-dots" id="pinDots2" style="justify-content:center;margin-bottom:28px;">
+        <div class="pin-dot" id="op0"></div><div class="pin-dot" id="op1"></div><div class="pin-dot" id="op2"></div><div class="pin-dot" id="op3"></div>
+      </div>
+      <div class="onboard-pin-grid">
+        ${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`
+          <button class="key" onclick="obKp(${JSON.stringify(k)})" style="${k==='face'||k==='del'?'background:rgba(255,255,255,.06);':''}">
+            ${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:
+             k==='del'?`<svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M7 1H18a2 2 0 012 2v8a2 2 0 01-2 2H7L1 7z" stroke="white" stroke-width="1.5" fill="none"/><path d="M11 5l4 4M15 5l-4 4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>`:
+             `<span class="key-num">${k}</span>`}
+          </button>`).join('')}
+      </div>`;
+    obNewPin = ''; obPinStep = 0; pinStep = 0;
+  } else if(obStep===4){
+    setSkip('none');
+    btn.textContent='Başla →';
+    content.innerHTML=`
+      <div class="onboard-step-lbl">Adım 5 / 5</div>
+      <div class="onboard-title">Hazırsın! 🎉</div>
+      <div class="onboard-sub">EasyTV kurulumu tamamlandı. Her şey ayarlandı, güvende.</div>`;
+  }
+}
+
+let obPinStep = 0;
+function obKp(k){
+  if(k==='face'||obNewPin.length>=4) return;
+  if(k==='del'){obNewPin=obNewPin.slice(0,-1);}
+  else{obNewPin+=k;}
+  for(let i=0;i<4;i++) document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);
+  if(obNewPin.length===4){
+    if(obPinStep===0){
+      obPinStep=1;
+      tempPin=obNewPin;
+      obNewPin='';
+      for(let i=0;i<4;i++) document.getElementById('op'+i).classList.remove('f');
+      document.querySelector('#obContent .onboard-sub').textContent='PIN\'ini bir kez daha gir.';
+    } else {
+      if(obNewPin===tempPin){SETTINGS.pin=obNewPin;saveData();setTimeout(()=>onboardNext(),200);}
+      else{
+        obNewPin='';obPinStep=0;tempPin='';
+        for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}
+        setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);
+        document.querySelector('#obContent .onboard-sub').textContent='Eşleşmedi. Tekrar dene.';
+      }
+    }
+  }
+}
+
+// Ülke listesi - TR önce, sonra en çok kullanılanlar
+const COUNTRIES = [
+  {code:'tr',flag:'🇹🇷',name:'Türkiye',region:'tr'},
+  {code:'us',flag:'🇺🇸',name:'Amerika Birleşik Devletleri',region:'us'},
+  {code:'gb',flag:'🇬🇧',name:'Birleşik Krallık',region:'eu'},
+  {code:'de',flag:'🇩🇪',name:'Almanya',region:'eu'},
+  {code:'fr',flag:'🇫🇷',name:'Fransa',region:'eu'},
+  {code:'nl',flag:'🇳🇱',name:'Hollanda',region:'eu'},
+  {code:'jp',flag:'🇯🇵',name:'Japonya',region:'as'},
+  {code:'kr',flag:'🇰🇷',name:'Güney Kore',region:'as'},
+  {code:'au',flag:'🇦🇺',name:'Avustralya',region:'as'},
+  {code:'ca',flag:'🇨🇦',name:'Kanada',region:'us'},
+  {code:'it',flag:'🇮🇹',name:'İtalya',region:'eu'},
+  {code:'es',flag:'🇪🇸',name:'İspanya',region:'eu'},
+  {code:'se',flag:'🇸🇪',name:'İsveç',region:'eu'},
+  {code:'no',flag:'🇳🇴',name:'Norveç',region:'eu'},
+  {code:'ch',flag:'🇨🇭',name:'İsviçre',region:'eu'},
+  {code:'ae',flag:'🇦🇪',name:'Birleşik Arap Emirlikleri',region:'as'},
+  {code:'sg',flag:'🇸🇬',name:'Singapur',region:'as'},
+  {code:'br',flag:'🇧🇷',name:'Brezilya',region:'us'},
+  {code:'mx',flag:'🇲🇽',name:'Meksika',region:'us'},
+  {code:'in',flag:'🇮🇳',name:'Hindistan',region:'as'},
+];
+let countryFilter='';
+function buildRegionPicker(){
+  const cur=SETTINGS.country||'tr';
+  const picker=document.getElementById('regionPicker');
+  if(!picker)return;
+  picker.innerHTML=`
+    <input id="countrySearch" class="add-input" placeholder="🔍 Ülke ara..." type="text" 
+      style="margin-bottom:4px;" oninput="filterCountries(this.value)" value="${countryFilter}" autocomplete="off">
+    <div id="countryList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;scrollbar-width:none;"></div>`;
+  renderCountryList(countryFilter, cur);
+  setTimeout(()=>{const el=document.getElementById('countrySearch');if(el)el.focus();},100);
+}
+function filterCountries(q){
+  countryFilter=q;
+  renderCountryList(q, SETTINGS.country||'tr');
+}
+function renderCountryList(q,cur){
+  const list=document.getElementById('countryList');
+  if(!list)return;
+  const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.includes(q.toLowerCase())):COUNTRIES;
+  list.innerHTML=filtered.map(c=>`
+    <div class="region-item${c.code===cur?' region-sel':''}" onclick="selectCountry('${c.code}','${c.region}')" style="padding:13px 16px;">
+      <span style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.7)'};">${c.name}</span>
+      ${c.code===cur?'<span style="margin-left:auto;"><svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>':''}
+    </div>`).join('');
+}
+function selectCountry(code,region){
+  SETTINGS.country=code;
+  SETTINGS.region=region;
+  saveData();
+  countryFilter='';
+  buildRegionPicker();
+  updateRegionUI();
+}
+function setPinChoice(val){
+  SETTINGS.usePin=val;saveData();
+  // UI güncelle
+  const yes=document.getElementById('pin-yes');
+  const no=document.getElementById('pin-no');
+  if(yes) yes.className='region-item'+(val?' region-sel':'');
+  if(no) no.className='region-item'+(!val?' region-sel':'');
+}
+function selectRegion(k){
+  SETTINGS.region=k;saveData();
+  document.querySelectorAll('.region-item').forEach(el=>{
+    el.classList.toggle('region-sel',el.dataset.region===k);
+  });
+  Object.keys(REGION_DATA).forEach(r=>{
+    const el=document.getElementById('rc-'+r);
+    if(el)el.style.opacity=r===k?'1':'0';
+  });
+}
+function buildServicePicker(){
+  const g=document.getElementById('spGrid');
+  POPULAR_SVCS.forEach(s=>{
+    const el=document.createElement('div');
+    el.className='sp-item'+(obSelectedServices.includes(s.id)?' sel':'');
+    const L=LOGO[s.id]||LOGO._custom;
+    el.innerHTML=`<div class="sp-ico" style="background:${s.color}"><div style="width:${Math.min(L.w,28)}px;height:${Math.min(L.h,28)}px;display:flex;align-items:center;justify-content:center;transform:scale(${Math.min(28/L.w,28/L.h)*.9})">${s.textDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html}</div></div><div class="sp-name">${s.name}</div>`;
+    el.onclick=()=>{
+      const idx=obSelectedServices.indexOf(s.id);
+      if(idx>=0)obSelectedServices.splice(idx,1); else obSelectedServices.push(s.id);
+      el.classList.toggle('sel',obSelectedServices.includes(s.id));
+    };
+    g.appendChild(el);
+  });
+}
+
+function onboardNext(){
+  if(obStep===1){
+    // Servis seçimi tamamlandı, SVC'ye ekle
+    obSelectedServices.forEach(id=>{
+      const svc=POPULAR_SVCS.find(s=>s.id===id);
+      if(svc&&!SVC.find(s=>s.id===id)){
+        const reg=SETTINGS.region||'tr';
+        const pr=svc.prices?.[reg]||{amount:0,plan:''};
+        const renewDate=new Date();renewDate.setMonth(renewDate.getMonth()+1);
+        SVC.push({...svc,email:'',pwd:'',price:pr.amount,plan:pr.plan,renew:renewDate.toISOString().split('T')[0]});
+      }
+    });
+    saveData();
+  }
+  if(obStep===3){
+    document.getElementById('onboardScreen').classList.add('out');
+    setTimeout(()=>{
+      document.getElementById('onboardScreen').style.display='none';
+      // PIN ekranını göster
+      document.getElementById('pinScreen').style.display='flex';
+      document.getElementById('pinGreeting').textContent='Hoş geldiniz';
+      document.getElementById('pinHint').textContent='PIN ile giriş yapın';
+    },500);
+    return;
+  }
+  obStep++;
+  renderOnboardStep();
+}
+function skipOnboard(){
+  document.getElementById('onboardScreen').classList.add('out');
+  setTimeout(()=>document.getElementById('onboardScreen').style.display='none',500);
+}
+
+// ═══ PIN ════════════════════════════════════════════════
+function kp(n){if(pinVal.length>=4)return;pinVal+=n;updatePinDots();if(pinVal.length===4)setTimeout(()=>checkPin(),160);}
+function pinDel(){pinVal=pinVal.slice(0,-1);updatePinDots();}
+function updatePinDots(){for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.toggle('f',i<pinVal.length);}
+function checkPin(){
+  if(pinVal===SETTINGS.pin){
+    if(pinMode==='change1'){tempPin=pinVal;pinVal='';pinMode='change2';document.getElementById('pinGreeting').textContent='Yeni PIN';document.getElementById('pinHint').textContent='Yeni PIN\'ini gir';updatePinDots();}
+    else if(pinMode==='change2'){
+      if(pinVal===tempPin){SETTINGS.pin=pinVal;saveData();pinMode='unlock';showToast('✓ PIN güncellendi');hidePinScreen();pinVal='';}
+      else{shakePin();pinVal='';document.getElementById('pinHint').textContent='Eşleşmedi, tekrar dene';}
+    }
+    else{unlockApp();}
+  } else {shakePin();pinVal='';}
+}
+function shakePin(){
+  const d=document.getElementById('pinDots');
+  for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.add('err');
+  d.classList.add('shake');
+  setTimeout(()=>{d.classList.remove('shake');for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.remove('err','f');},600);
+}
+function faceId(){if(SETTINGS.faceid)setTimeout(unlockApp,700);}
+function skipPin(){unlockApp();}
+function unlockApp(){
+  isLocked=false;
+  document.getElementById('lockOverlay').classList.remove('visible');
+  document.getElementById('pinScreen').classList.add('out');
+  document.getElementById('mainApp').style.display='flex';
+  document.getElementById('pinScreen').style.display='none';
+  setTimeout(()=>{
+    document.getElementById('pinScreen').classList.remove('out');
+    document.getElementById('pinGreeting').textContent='Hoş geldiniz';
+    document.getElementById('pinHint').textContent='PIN ile giriş yapın';
+    pinVal='';updatePinDots();
+  },520);
+  buildGrid();renderSubs();renderProfile();
+  applySettings();
+  checkRenewals();
+  resetLockTimer();
+}
+function hidePinScreen(){
+  document.getElementById('pinScreen').classList.add('out');
+  setTimeout(()=>{
+    document.getElementById('pinScreen').style.display='none';
+    document.getElementById('pinScreen').classList.remove('out');
+    pinMode='unlock';
+    document.getElementById('pinGreeting').textContent='Hoş geldiniz';
+    document.getElementById('pinHint').textContent='PIN ile giriş yapın';
+    pinVal='';updatePinDots();
+  },520);
+}
+function openPinChange(){
+  pinMode='change1';pinVal='';
+  document.getElementById('pinGreeting').textContent='Mevcut PIN';
+  document.getElementById('pinHint').textContent='Önce mevcut PIN\'ini gir';
+  updatePinDots();
+  document.getElementById('pinScreen').style.display='flex';
+  document.getElementById('pinScreen').classList.remove('out');
+}
+function unlockFromLock(){
+  document.getElementById('lockOverlay').classList.remove('visible');
+  document.getElementById('pinScreen').style.display='flex';
+  document.getElementById('pinScreen').classList.remove('out');
+}
+
+// ═══ AUTO LOCK ═══════════════════════════════════════════
+function resetLockTimer(){
+  if(!SETTINGS.autolock)return;
+  clearTimeout(lockTimer);
+  lockTimer=setTimeout(lockApp, 2*60*1000);
+}
+function lockApp(){
+  if(!SETTINGS.autolock)return;
+  isLocked=true;
+  closeSheet();
+  document.getElementById('lockOverlay').classList.add('visible');
+}
+document.addEventListener('touchstart',()=>{if(!isLocked)resetLockTimer();},{passive:true});
+document.addEventListener('click',()=>{if(!isLocked)resetLockTimer();});
+
+// ═══ TAB ════════════════════════════════════════════════
+let curTab='home';
+function switchTab(t){
+  curTab=t;
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+t).classList.add('active');
+  if(t==='subs')renderSubs();
+  if(t==='profile')renderProfile();
+}
+
+// ═══ GRID ════════════════════════════════════════════════
+const gridEl=document.getElementById('grid');
+function buildGrid(){
+  gridEl.innerHTML='';
+  SVC.forEach((s,i)=>{
+    const tile=document.createElement('div');
+    tile.className='tile';
+    tile.style.animationDelay=`${i*.05}s`;
+    const L=LOGO[s.id]||LOGO._custom;
+    const lw=document.createElement('div');
+    lw.className='tile-logo';
+    lw.style.cssText=`width:${L.w}px;height:${L.h}px;display:flex;align-items:center;justify-content:center;`;
+    if(s.faviconUrl){
+      lw.innerHTML=`<img src="${s.faviconUrl}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;" onerror="this.parentElement.innerHTML='${LOGO._custom.html}'">`;
+    } else {
+      lw.innerHTML=L.html;
+    }
+    const lb=document.createElement('div');
+    lb.className='tile-label';
+    lb.textContent=s.name;
+    tile.append(lw,lb);
+    tile.addEventListener('click',()=>tap(i));
+    gridEl.appendChild(tile);
+  });
+}
+
+function tap(i){if(active===i){openSheet(i);return;}if(active>=0)deactivate(active);active=i;activate(i);}
+function activate(i){
+  const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;
+  el.classList.add('active');
+  el.style.background=TILE_GRADIENTS[s.id]||s.color;
+  el.style.backdropFilter='none';el.style.webkitBackdropFilter='none';
+  el.style.transform='scale(1.04) translateZ(0)';
+  if(s.textDark||L.textDark){
+    el.classList.add('dark-text');
+    el.querySelector('.tile-logo').innerHTML=L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"');
+    el.style.borderColor='rgba(0,0,0,.12)';
+    el.style.boxShadow=`0 8px 28px rgba(${s.rgb},.3)`;
+  } else {
+    el.style.borderColor='rgba(255,255,255,.25)';
+    el.style.boxShadow=`0 0 0 2px rgba(255,255,255,.12),0 8px 30px rgba(${s.rgb},.45)`;
+  }
+}
+function deactivate(i){
+  const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;
+  el.classList.remove('active','dark-text');
+  el.style.background=el.style.backdropFilter=el.style.webkitBackdropFilter=el.style.borderColor=el.style.boxShadow=el.style.transform='';
+  if(s.textDark||L.textDark){
+    el.querySelector('.tile-logo').innerHTML=L.html;
+  }
+  active=-1;
+}
+
+// ═══ SHEET ═══════════════════════════════════════════════
+function openSheet(i){
+  const s=SVC[i],L=LOGO[s.id]||LOGO._custom;
+  const tileGrad=TILE_GRADIENTS[s.id]||s.color;
+  document.getElementById('sColor').style.background=tileGrad;
+  document.getElementById('sLogoWrap').style.background=tileGrad;
+  const sc=28/Math.max(L.w,L.h);
+  if(s.faviconUrl){
+    document.getElementById('sIco').innerHTML=`<img src="${s.faviconUrl}" style="width:32px;height:32px;object-fit:contain;border-radius:6px;">`;
+  } else {
+    document.getElementById('sIco').innerHTML=`<div style="width:${Math.round(L.w*sc)}px;height:${Math.round(L.h*sc)}px;display:flex;align-items:center;justify-content:center">${(s.textDark||L.textDark)?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html}</div>`;
+  }
+  document.getElementById('sName').textContent=s.name;
+  document.getElementById('emailV').textContent=s.email?s.email.replace(/^(.{3}).*(@.*)$/,'$1•••$2'):'—';
+  pwdShow=false;
+  document.getElementById('pwdV').textContent='••••••••••';
+  document.getElementById('eyeU').setAttribute('href','#i-eye');
+  ['uE','uP'].forEach(id=>document.getElementById(id).setAttribute('href','#i-copy'));
+  ['btnE','btnP'].forEach(id=>document.getElementById(id).classList.remove('ok'));
+  const qb=document.getElementById('qrBtn');
+  qb.style.background=TILE_GRADIENTS[s.id]||s.color;
+  qb.style.color=(s.textDark||L.textDark)?'#000':'#fff';
+  document.getElementById('appOpenBtn').textContent=`${s.name} Uygulamasını Aç`;
+  document.getElementById('dimmer').classList.add('on');
+  requestAnimationFrame(()=>document.getElementById('sheet').classList.add('open'));
+}
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('open');
+  document.getElementById('dimmer').classList.remove('on');
+  if(active>=0)deactivate(active);
+}
+function togglePwd(){
+  pwdShow=!pwdShow;
+  document.getElementById('pwdV').textContent=pwdShow&&active>=0?SVC[active].pwd:'••••••••••';
+  document.getElementById('eyeU').setAttribute('href',pwdShow?'#i-eyeoff':'#i-eye');
+}
+function doCopy(btn,f){
+  const uid=f==='E'?'uE':'uP';
+  document.getElementById(uid).setAttribute('href','#i-check');
+  btn.classList.add('ok');
+  showToast('✓ Kopyalandı');
+  setTimeout(()=>{document.getElementById(uid).setAttribute('href','#i-copy');btn.classList.remove('ok');},1600);
+}
+
+// ═══ DEEP LINK ══════════════════════════════════════════
+function openDeepLink(){
+  if(active<0)return;
+  const s=SVC[active];
+  const reg=getRegion();
+  const deepLink=reg.deep[s.id];
+  const storeLink=reg.store[s.id];
+  if(deepLink){
+    showToast(`${s.name} açılıyor...`);
+    const iframe=document.createElement('iframe');
+    iframe.style.display='none';
+    document.body.appendChild(iframe);
+    iframe.src=deepLink;
+    setTimeout(()=>{
+      document.body.removeChild(iframe);
+      if(storeLink) window.open(storeLink,'_blank');
+    },1500);
+  } else if(storeLink){
+    showToast(`App Store'a yönlendiriliyor...`);
+    window.open(storeLink,'_blank');
+  } else {
+    showToast('Bu bölgede mevcut değil');
+  }
+}
+
+// ═══ SHARE ═══════════════════════════════════════════════
+function shareCredentials(){
+  if(active<0)return;
+  const s=SVC[active];
+  const txt=`${s.name}\nKullanıcı: ${s.email}\nŞifre: ${s.pwd}`;
+  if(navigator.share){navigator.share({title:`${s.name} Hesap Bilgileri`,text:txt});}
+  else{navigator.clipboard.writeText(txt).then(()=>showToast('✓ Panoya kopyalandı'));}
+}
+
+// ═══ QR ══════════════════════════════════════════════════
+function genQRSvg(seed){
+  const s=Math.sin(seed*7.3+1.1);let cells='';
+  for(let r=0;r<21;r++){for(let c=0;c<21;c++){
+    const inCorner=(r<7&&c<7)||(r<7&&c>13)||(r>13&&c<7);
+    let fill=0;
+    if(inCorner){if(r===0||r===6||c===0||c===6)fill=1;else if(r>=2&&r<=4&&c>=2&&c<=4)fill=1;}
+    else{fill=Math.sin((r+seed)*(c+1)*2.7+s*10)>0.1?1:0;}
+    if(fill)cells+=`<rect x="${c*8+1}" y="${r*8+1}" width="7" height="7" rx="1"/>`;
+  }}
+  return `<svg width="168" height="168" viewBox="0 0 169 169" fill="white">${cells}</svg>`;
+}
+function openQR(){
+  if(active<0)return;
+  const s=SVC[active];
+  document.getElementById('qrSvcName').textContent=s.name+' — Otomatik Giriş';
+  clearInterval(qrRotateInterval);clearInterval(qrCountdown);
+  qrSec=30;document.getElementById('qrCodeArea').innerHTML=genQRSvg(_qrSeed%1000);updateQRTimer();
+  if(SETTINGS.qrrotate){
+    qrRotateInterval=setInterval(()=>{_qrSeed=Date.now();document.getElementById('qrCodeArea').innerHTML=genQRSvg(_qrSeed%1000);},30000);
+    qrCountdown=setInterval(()=>{qrSec--;if(qrSec<=0)qrSec=30;updateQRTimer();},1000);
+  }
+  document.getElementById('qrOv').classList.add('open');
+}
+function closeQR(){document.getElementById('qrOv').classList.remove('open');clearInterval(qrRotateInterval);clearInterval(qrCountdown);closeSheet();}
+function updateQRTimer(){document.getElementById('qrTimerBadge').textContent=`⟳ ${qrSec}s`;}
+
+// ═══ ADD SERVICE ════════════════════════════════════════
+let currentAddTab='popular';
+function switchAddTab(t){
+  currentAddTab=t;
+  document.getElementById('tab-popular').classList.toggle('active',t==='popular');
+  document.getElementById('tab-custom').classList.toggle('active',t==='custom');
+  document.getElementById('popularTab').style.display=t==='popular'?'block':'none';
+  document.getElementById('customTab').style.display=t==='custom'?'block':'none';
+}
+function openAddModal(){
+  buildPopularGrid();buildColorPicker();
+  selectedPopular=null;
+  document.getElementById('popularForm').style.display='none';
+  document.getElementById('addModal').classList.add('open');
+}
+function closeAddModal(){document.getElementById('addModal').classList.remove('open');selectedPopular=null;}
+
+function buildPopularGrid(){
+  const g=document.getElementById('popularGrid');g.innerHTML='';
+  POPULAR_SVCS.forEach(s=>{
+    const L=LOGO[s.id]||LOGO._custom;
+    const el=document.createElement('div');
+    el.className='popular-item';
+    el.innerHTML=`<div class="popular-ico" style="background:${s.color}"><div style="width:${Math.min(L.w,24)}px;height:${Math.min(L.h,24)}px;display:flex;align-items:center;justify-content:center;transform:scale(${Math.min(24/L.w,24/L.h)*.85})">${(s.textDark||L.textDark)?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html}</div></div><div class="popular-name">${s.name}</div>`;
+    el.onclick=()=>{
+      document.querySelectorAll('.popular-item').forEach(i=>i.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedPopular=s;
+      document.getElementById('popularForm').style.display='block';
+      const today=new Date();today.setMonth(today.getMonth()+1);
+      document.getElementById('popRenew').value=today.toISOString().split('T')[0];
+    };
+    g.appendChild(el);
+  });
+}
+
+function savePopularService(){
+  if(!selectedPopular)return;
+  const email=document.getElementById('popEmail').value.trim();
+  const pwd=document.getElementById('popPwd').value;
+  const price=parseFloat(document.getElementById('popPrice').value.replace(/[₺,]/g,'.'))||0;
+  const renew=document.getElementById('popRenew').value||null;
+  if(!email){document.getElementById('popEmail').focus();return;}
+  const existing=SVC.findIndex(s=>s.id===selectedPopular.id);
+  const svc={...selectedPopular,email,pwd,price,plan:'Standart',renew};
+  if(existing>=0)SVC[existing]=svc; else SVC.push(svc);
+  saveData();buildGrid();closeAddModal();showToast('✓ '+selectedPopular.name+' eklendi');
+}
+
+let faviconTimeout=null;
+function fetchFavicon(){
+  clearTimeout(faviconTimeout);
+  const url=document.getElementById('addUrl').value.trim();
+  if(!url){document.getElementById('faviconPreview').innerHTML=`<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/></svg>`;return;}
+  faviconTimeout=setTimeout(()=>{
+    const domain=url.replace(/^https?:\/\//,'').split('/')[0];
+    const img=`https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    document.getElementById('faviconPreview').innerHTML=`<img src="${img}" style="width:28px;height:28px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none'">`;
+  },600);
+}
+
+const PRESET_COLORS=['#E50914','#FF6D00','#FFCA28','#00C853','#00B0FF','#7B2FBE','#EC407A','#546E7A','#ffffff'];
+function buildColorPicker(){
+  const row=document.getElementById('colorRow');row.innerHTML='';
+  let sel=PRESET_COLORS[4];
+  PRESET_COLORS.forEach(c=>{
+    const chip=document.createElement('div');
+    chip.className='color-chip'+(c===sel?' sel':'');
+    chip.style.background=c==='#ffffff'?'rgba(255,255,255,.9)':c;
+    chip._color=c;
+    chip.onclick=()=>{sel=c;document.querySelectorAll('.color-chip').forEach(ch=>ch.classList.remove('sel'));chip.classList.add('sel');};
+    row.appendChild(chip);
+  });
+}
+
+function saveCustomService(){
+  const name=document.getElementById('addName').value.trim();
+  if(!name){document.getElementById('addName').focus();return;}
+  const email=document.getElementById('addEmail').value.trim()||'';
+  const pwd=document.getElementById('addPwd').value||'';
+  const price=parseFloat(document.getElementById('addPrice').value.replace(/[₺,]/g,'.'))||0;
+  const renew=document.getElementById('addRenew').value||null;
+  const selChip=document.querySelector('.color-chip.sel');
+  const color=selChip?selChip._color:'#00B0FF';
+  const rgb=hexToRgb(color)||'0,176,255';
+  const textDark=color==='#ffffff'||color==='#FFCA28';
+  const urlVal=document.getElementById('addUrl').value.trim();
+  const domain=urlVal?urlVal.replace(/^https?:\/\//,'').split('/')[0]:'';
+  const faviconUrl=domain?`https://www.google.com/s2/favicons?domain=${domain}&sz=64`:'';
+  SVC.push({id:'c_'+Date.now(),name,color,rgb,email,pwd,price,plan:'Özel',renew,textDark,faviconUrl});
+  saveData();buildGrid();closeAddModal();showToast('✓ '+name+' eklendi');
+}
+function hexToRgb(h){if(!h||!h.startsWith('#'))return null;const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return isNaN(r)?null:`${r},${g},${b}`;}
+
+// ═══ RENEWALS ════════════════════════════════════════════
+function checkRenewals(){
+  const today=new Date();today.setHours(0,0,0,0);
+  SVC.forEach((s,i)=>{
+    if(!s.renew)return;
+    const d=new Date(s.renew);d.setHours(0,0,0,0);
+    const diff=Math.ceil((d-today)/864e5);
+    if(diff<=0&&diff>-3){
+      setTimeout(()=>showRenewalAlert(i),800+(i*200));
+    }
+  });
+}
+
+function showRenewalAlert(i){
+  const s=SVC[i];
+  document.getElementById('renewalTitle').textContent=`${s.name} Yenilendi mi?`;
+  document.getElementById('renewalMsg').textContent=`${s.name} aboneliğinizin yenileme tarihi geçti. Yenilediniz mi?`;
+  document.getElementById('renewalActions').innerHTML=`
+    <button class="alert-btn primary" onclick="confirmRenewal(${i},true)">Evet, Yenilendi</button>
+    <button class="alert-btn secondary" onclick="confirmRenewal(${i},false)">Hayır, İptal Ettim</button>`;
+  document.getElementById('renewalModal').classList.add('open');
+}
+
+function confirmRenewal(i,renewed){
+  document.getElementById('renewalModal').classList.remove('open');
+  if(renewed){
+    const d=new Date(SVC[i].renew||new Date());
+    d.setMonth(d.getMonth()+1);
+    SVC[i].renew=d.toISOString().split('T')[0];
+    // Fiyat güncel mi diye sor
+    showAlert('💰','Fiyatı Güncelle',`${SVC[i].name} için güncel aylık fiyatı girmek ister misiniz?`,[
+      {label:'Güncelle',style:'primary',action:()=>{
+        closeAlert();
+        showPriceUpdate(i);
+      }},
+      {label:'Mevcut Fiyat Tamam',style:'secondary',action:()=>{
+        closeAlert();
+        saveData();renderSubs();showToast('✓ Yenileme tarihi güncellendi');
+      }},
+    ]);
+  } else {
+    SVC[i].renew=null;
+    saveData();renderSubs();showToast(`${SVC[i].name} listeden çıkarıldı`);
+  }
+}
+
+function showPriceUpdate(i){
+  showAlert('💰','Yeni Fiyat',`${SVC[i].name} için güncel aylık ücreti girin:`,[
+    {label:'Kaydet',style:'primary',action:()=>{
+      const inp=document.getElementById('priceUpdateInput');
+      if(inp){const v=parseFloat(inp.value.replace(/[₺,]/g,'.'));if(v>0){SVC[i].price=v;saveData();renderSubs();showToast('✓ Fiyat güncellendi');}}
+      closeAlert();
+    }},
+    {label:'İptal',style:'secondary',action:()=>closeAlert()},
+  ]);
+  setTimeout(()=>{
+    const actions=document.getElementById('alertActions');
+    const inp=document.createElement('input');
+    inp.id='priceUpdateInput';
+    inp.className='add-input';
+    inp.type='text';
+    inp.placeholder=`₺${SVC[i].price.toFixed(2)}`;
+    inp.style.marginBottom='12px';
+    actions.insertBefore(inp,actions.firstChild);
+  },50);
+}
+
+// ═══ SUBS ════════════════════════════════════════════════
+function renderSubs(){
+  const paid=SVC.filter(s=>s.price>0);
+  const total=paid.reduce((a,s)=>a+s.price,0);
+  document.getElementById('totalMonthly').textContent=`₺${total.toFixed(2)}`;
+  const dates=paid.filter(s=>s.renew).map(s=>({d:new Date(s.renew)})).sort((a,b)=>a.d-b.d);
+  document.getElementById('nextRenew').textContent=dates.length?formatDate(dates[0].d):'—';
+  document.getElementById('subsSubtitle').textContent=`${paid.length} aktif üyelik`;
+  const list=document.getElementById('subsList');list.innerHTML='';
+  const today=new Date();today.setHours(0,0,0,0);
+  [...SVC].sort((a,b)=>{if(!a.renew&&!b.renew)return 0;if(!a.renew)return 1;if(!b.renew)return -1;return new Date(a.renew)-new Date(b.renew);}).forEach(s=>{
+    const card=document.createElement('div');card.className='sub-card';
+    const daysLeft=s.renew?Math.ceil((new Date(s.renew)-today)/864e5):null;
+    const urgent=daysLeft!==null&&daysLeft<=3;
+    const warn=daysLeft!==null&&daysLeft<=7&&!urgent;
+    let badge='';
+    if(daysLeft===null)badge=`<div class="sub-badge ok">Ücretsiz</div>`;
+    else if(urgent)badge=`<div class="sub-badge">${daysLeft<=0?'Bugün!':daysLeft+' gün kaldı'}</div>`;
+    else if(warn)badge=`<div class="sub-badge warn">${daysLeft} gün kaldı</div>`;
+    else badge=`<div class="sub-badge ok">${formatDate(new Date(s.renew))}</div>`;
+    card.innerHTML=`<div class="sub-dot" style="background:${s.color}"></div>
+      <div class="sub-info"><div class="sub-name">${s.name}</div><div class="sub-plan">${s.plan||'Standart'}</div>${badge}</div>
+      <div class="sub-right"><div class="sub-price">${s.price>0?`₺${s.price.toFixed(2)}`:'—'}</div><div class="sub-renew">${s.price>0?'/ay':''}</div></div>`;
+    list.appendChild(card);
+  });
+}
+function formatDate(d){return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});}
+
+// ═══ PROFILE ════════════════════════════════════════════
+function renderProfile(){
+  const paid=SVC.filter(s=>s.price>0);
+  const total=paid.reduce((a,s)=>a+s.price,0);
+  document.getElementById('statApps').textContent=SVC.length;
+  document.getElementById('statSubs').textContent=paid.length;
+  document.getElementById('statSaved').textContent='₺'+total.toFixed(0);
+  const nameEl=document.getElementById('profileName');
+  const emailEl=document.getElementById('profileEmail');
+  const avatarEl=document.getElementById('profileAvatar');
+  nameEl.textContent=PROFILE.name||'Kullanıcı';
+  emailEl.textContent=PROFILE.email||'';
+  avatarEl.textContent=(PROFILE.name||'K')[0].toUpperCase();
+}
+function openEditProfile(){
+  document.getElementById('editName').value=PROFILE.name||'';
+  document.getElementById('editEmail').value=PROFILE.email||'';
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditProfile(){document.getElementById('editModal').classList.remove('open');}
+function saveProfile(){
+  PROFILE.name=document.getElementById('editName').value.trim()||'Kullanıcı';
+  PROFILE.email=document.getElementById('editEmail').value.trim();
+  saveData();renderProfile();closeEditProfile();showToast('✓ Profil güncellendi');
+}
+
+// ═══ SETTINGS ════════════════════════════════════════════
+function applySettings(){
+  ['faceid','autolock','qrrotate','colorblind','reminder','pricechange'].forEach(k=>{
+    const tog=document.getElementById('tog-'+k);
+    if(tog) tog.classList.toggle('on',!!SETTINGS[k]);
+  });
+  document.body.classList.toggle('colorblind',!!SETTINGS.colorblind);
+  updateRegionUI();
+}
+function toggleSetting(key,el){
+  el.classList.toggle('on');
+  SETTINGS[key]=el.classList.contains('on');
+  saveData();
+  if(key==='colorblind') document.body.classList.toggle('colorblind',SETTINGS.colorblind);
+  if(key==='autolock'){
+    if(SETTINGS.autolock)resetLockTimer();
+    else{clearTimeout(lockTimer);}
+  }
+  showToast(SETTINGS[key]?'✓ Açık':'✓ Kapalı');
+}
+
+// ═══ EXPORT / IMPORT ════════════════════════════════════
+function exportData(){
+  const data={svc:SVC,profile:PROFILE,version:'3.0',exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`EasyTV_${new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}.json`;
+  a.click();URL.revokeObjectURL(url);
+  showToast('✓ Bilgiler kaydedildi');
+}
+function triggerImport(){document.getElementById('importFile').click();}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(data.svc){SVC=data.svc;if(data.profile)PROFILE=data.profile;saveData();buildGrid();renderSubs();renderProfile();showToast('✓ Bilgiler geri yüklendi');}
+      else{showToast('Bu dosya açılamadı');}
+    }catch{showToast('Dosya açılamadı');}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ═══ ALERT ═══════════════════════════════════════════════
+function openRegionPicker(){
+  showAlert('🌍','App Store Bölgesi','Uygulamaların App Store linkleri seçtiğin bölgeye göre ayarlanır.',
+    Object.entries(REGION_DATA).map(([k,v])=>({
+      label: v.label + ((SETTINGS.region||'tr')===k?' ✓':''),
+      style:'secondary',
+      action:()=>{SETTINGS.region=k;saveData();updateRegionUI();closeAlert();showToast('✓ Bölge güncellendi');}
+    })).concat([{label:'İptal',style:'secondary',action:closeAlert}])
+  );
+}
+function showAlert(icon,title,msg,actions){
+  document.getElementById('alertIcon').textContent=icon;
+  document.getElementById('alertTitle').textContent=title;
+  document.getElementById('alertMsg').textContent=msg;
+  const actEl=document.getElementById('alertActions');actEl.innerHTML='';
+  actions.forEach(a=>{
+    const btn=document.createElement('button');
+    btn.className=`alert-btn ${a.style||'secondary'}`;
+    btn.textContent=a.label;
+    btn.onclick=a.action;
+    actEl.appendChild(btn);
+  });
+  document.getElementById('alertModal').classList.add('open');
+}
+function closeAlert(){document.getElementById('alertModal').classList.remove('open');}
+function confirmDeleteAll(){
+  showAlert('⚠️','Tüm Verileri Sil','Tüm servisler ve şifreler kalıcı olarak silinecek. Bu işlem geri alınamaz.',[
+    {label:'Evet, Sil',style:'danger',action:()=>{
+      SVC=[];localStorage.clear();saveData();buildGrid();renderSubs();renderProfile();closeAlert();showToast('Tüm veriler silindi');
+    }},
+    {label:'İptal',style:'secondary',action:closeAlert},
+  ]);
+}
+
+// ═══ TOAST ═══════════════════════════════════════════════
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+// ═══ UTILS ═══════════════════════════════════════════════
+function fitPhone(){const s=Math.min(window.innerWidth/393,window.innerHeight/852,1);document.getElementById('phone').style.transform=`scale(${s})`;}
+fitPhone();window.addEventListener('resize',fitPhone);
+function tick(){const d=new Date();document.getElementById('clk').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+tick();setInterval(tick,30000);
+
+// ═══ BAŞLAT ══════════════════════════════════════════════
+if(isFirstTime){
+  // Welcome ekranı görünür, bekle
+} else {
+  // Daha önce kullanılmış, PIN ekranı
+}
+applySettings();
+</script>
+</body>
+</html>
