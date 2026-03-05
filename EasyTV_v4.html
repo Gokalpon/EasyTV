@@ -244,11 +244,12 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .onboard-step-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px;}
 .onboard-title{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1.2;margin-bottom:8px;}
 .onboard-sub{font-size:14px;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:28px;}
-.service-pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
-.sp-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .18s;}
-.sp-item.sel{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.12);}
-.sp-ico{width:96px;height:96px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
-.sp-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.65);text-align:center;}
+.service-pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.sp-item{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.09);border-radius:14px;padding:0;display:flex;flex-direction:column;align-items:center;overflow:hidden;cursor:pointer;transition:all .18s;}
+.sp-item.sel{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.13);}
+.sp-ico{width:100%;aspect-ratio:1;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.sp-ico img{width:55%!important;height:55%!important;object-fit:contain;}
+.sp-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.65);text-align:center;padding:6px 4px;width:100%;}
 .sp-item.sel .sp-name{color:#fff;}
 .onboard-pin-grid{display:grid;grid-template-columns:repeat(3,72px);gap:13px;justify-content:center;margin-bottom:20px;}
 .onboard-bottom{padding:0 28px 48px;}
@@ -1036,7 +1037,7 @@ function buildServicePicker(){
     const el=document.createElement('div');
     el.className='sp-item'+(obSelectedServices.includes(s.id)?' sel':'');
     const L=LOGO[s.id]||LOGO._custom;
-    el.innerHTML=`<div class="sp-ico" style="background:${s.color}"><div style="width:${Math.min(L.w,56)}px;height:${Math.min(L.h,56)}px;display:flex;align-items:center;justify-content:center;transform:scale(${Math.min(56/L.w,56/L.h)*.9})">${s.textDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html}</div></div><div class="sp-name">${s.name}</div>`;
+    el.innerHTML=`<div class="sp-ico" style="background:${s.color}">${s.textDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html}</div><div class="sp-name">${s.name}</div>`;
     el.onclick=()=>{
       const idx=obSelectedServices.indexOf(s.id);
       if(idx>=0)obSelectedServices.splice(idx,1); else obSelectedServices.push(s.id);
