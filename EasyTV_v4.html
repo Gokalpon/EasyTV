@@ -245,12 +245,13 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .onboard-title{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1.2;margin-bottom:8px;}
 .onboard-sub{font-size:14px;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:28px;}
 .service-pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
-.sp-item{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.09);border-radius:14px;padding:0;display:flex;flex-direction:column;align-items:center;overflow:hidden;cursor:pointer;transition:all .18s;}
-.sp-item.sel{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.13);}
-.sp-ico{width:100%;aspect-ratio:1;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.sp-item{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.07);border-radius:14px;padding:0;display:flex;flex-direction:column;align-items:center;overflow:hidden;cursor:pointer;transition:all .22s cubic-bezier(.34,1.4,.64,1);opacity:.5;transform:scale(.97);}
+.sp-item.sel{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.13);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);opacity:1;transform:scale(1);box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.15);}
+.sp-ico{width:100%;aspect-ratio:1;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
 .sp-ico img{width:55%!important;height:55%!important;object-fit:contain;}
-.sp-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.65);text-align:center;padding:6px 4px;width:100%;}
-.sp-item.sel .sp-name{color:#fff;}
+.sp-item.sel .sp-ico::after{content:'✓';position:absolute;top:6px;right:6px;width:18px;height:18px;background:rgba(255,255,255,.9);border-radius:50%;font-size:11px;font-weight:800;color:#000;display:flex;align-items:center;justify-content:center;line-height:18px;text-align:center;}
+.sp-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-align:center;padding:6px 4px;width:100%;}
+.sp-item.sel .sp-name{color:#fff;font-weight:700;}
 .onboard-pin-grid{display:grid;grid-template-columns:repeat(3,72px);gap:13px;justify-content:center;margin-bottom:20px;}
 .onboard-bottom{padding:0 28px 48px;}
 .onboard-btn{width:100%;padding:17px;background:#fff;color:#0a0a0f;font-size:17px;font-weight:800;font-family:inherit;border:none;border-radius:16px;cursor:pointer;transition:transform .16s,opacity .14s;}
@@ -410,7 +411,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
     <!-- HOME -->
     <div class="tab-panel active" id="tab-home">
       <div class="home-header">
-        <div style="height:38px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
+        <div style="height:80px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
         <div class="add-btn-abs"><div class="add-btn" onclick="openAddModal()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></div>
       </div>
       <div class="grid-scroll"><div class="grid" id="grid"></div></div>
@@ -782,7 +783,7 @@ const LOGO = {
   disney:{w:96,h:96,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/Disney+.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
   prime:{w:96,h:96,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/prime video.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
   hbo:{w:96,h:96,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/hbo.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
-  apple:{w:140,h:140,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/apple.png" style="width:140px;height:140px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/appleb.png" style="width:140px;height:140px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
+  apple:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/apple.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/appleb.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
   twitch:{w:96,h:96,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/twitch.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
   kick:{w:96,h:96,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/kick.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/kickb.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
   exxen:{w:96,h:96,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/exxen.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/exxenb.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
