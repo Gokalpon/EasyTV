@@ -12,7 +12,7 @@ body{width:100vw;height:100vh;display:flex;align-items:center;justify-content:ce
 /* PHONE */
 .phone{position:relative;width:393px;height:852px;border-radius:54px;overflow:hidden;flex-shrink:0;transform-origin:center center;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 0 0 9px #111,0 0 0 11px rgba(255,255,255,.07),0 40px 120px rgba(0,0,0,.9);}
 .pill{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:400;pointer-events:none;}
-.bg{position:absolute;inset:0;background:linear-gradient(142deg,rgba(88,28,220,.11) 0%,transparent 40%),linear-gradient(318deg,rgba(8,155,65,.09) 0%,transparent 38%),radial-gradient(ellipse 60% 50% at -5% 95%,rgba(8,55,195,.10) 0%,transparent 100%),radial-gradient(ellipse 45% 35% at 108% 0%,rgba(105,35,230,.09) 0%,transparent 100%),linear-gradient(180deg,#080910 0%,#060608 55%,#090a10 100%);}
+.bg{position:absolute;inset:0;background:url("https://raw.githubusercontent.com/Gokalpon/EasyTV/main/background1.png") center/cover no-repeat;}
 .bg-grain{position:absolute;inset:0;pointer-events:none;opacity:.028;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px;}
 
 /* RENK KÖRÜ MODU */
@@ -42,15 +42,16 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .add-btn-abs{position:absolute;right:20px;top:50%;transform:translateY(-50%);}
 .add-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .16s;}
 .add-btn:active{background:rgba(255,255,255,.22);}
-.grid-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 38px 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.grid-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 56px 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .grid-scroll::-webkit-scrollbar{display:none}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
 /* TILE */
-.tile{aspect-ratio:1;border-radius:18px;position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding-bottom:14px;background:radial-gradient(ellipse 80% 55% at 20% 25%,rgba(255,255,255,.11) 0%,transparent 68%),radial-gradient(ellipse 55% 70% at 80% 75%,rgba(255,255,255,.07) 0%,transparent 62%),rgba(255,255,255,.065);backdrop-filter:blur(28px) saturate(160%) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.08);border:1px solid rgba(255,255,255,.22);border-top-color:rgba(255,255,255,.42);box-shadow:0 6px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.26);transform:scale(1) translateZ(0);transition:transform .26s cubic-bezier(.34,1.4,.64,1),background .26s,border-color .2s,box-shadow .26s;will-change:transform;user-select:none;}
+@keyframes tileIn{from{opacity:0;transform:scale(.85) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.tile{aspect-ratio:1;border-radius:18px;animation:tileIn .35s cubic-bezier(.34,1.4,.64,1) both;position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:url('https://raw.githubusercontent.com/Gokalpon/EasyTV/main/box1.png') center/cover no-repeat;box-shadow:none;transform:scale(1) translateZ(0);transition:transform .26s cubic-bezier(.34,1.4,.64,1),box-shadow .26s;will-change:transform;user-select:none;justify-content:center;}
 .tile::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(150deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.03) 28%,transparent 50%);pointer-events:none;z-index:1;transition:opacity .22s;}
-.tile-logo{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));opacity:.92;transition:transform .26s cubic-bezier(.34,1.4,.64,1),opacity .18s;}
-.tile-label{position:relative;z-index:3;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:-.1px;text-shadow:0 1px 4px rgba(0,0,0,.5);transition:color .18s;margin-top:-4px;}
+.tile-logo{position:absolute;top:0;left:0;right:0;bottom:36px;z-index:3;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));opacity:.92;transition:transform .26s cubic-bezier(.34,1.4,.64,1),opacity .18s;pointer-events:none;overflow:hidden;}
+.tile-label{position:absolute;bottom:20px;left:0;right:0;z-index:3;font-size:12px;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:-.1px;text-shadow:0 1px 4px rgba(0,0,0,.6);transition:color .18s;text-align:center;}
 .tile.active{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transform:scale(1.04) translateZ(0);}
 .tile.active::before{opacity:0;}
 .tile.active .tile-logo{opacity:1;transform:scale(1.07);}
@@ -225,12 +226,12 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .add-save-btn:active{opacity:.8;transform:scale(.98);}
 
 /* WELCOME */
-.welcome-screen{position:absolute;inset:0;z-index:210;display:flex;flex-direction:column;background:linear-gradient(125deg,rgba(90,30,200,.09) 0%,transparent 42%),linear-gradient(305deg,rgba(10,160,70,.07) 0%,transparent 38%),radial-gradient(ellipse 55% 40% at 5% 90%,rgba(10,60,200,.09) 0%,transparent 100%),radial-gradient(ellipse 40% 30% at 95% 5%,rgba(120,40,240,.08) 0%,transparent 100%),linear-gradient(180deg,#0c0d13 0%,#09090e 60%,#0b0c12 100%);transition:opacity .62s cubic-bezier(.4,0,.2,1),transform .62s cubic-bezier(.4,0,.2,1);}
+.welcome-screen{position:absolute;inset:0;z-index:210;display:flex;flex-direction:column;background:linear-gradient(125deg,rgba(55,57,70,.15) 0%,transparent 42%),linear-gradient(305deg,rgba(40,42,54,.10) 0%,transparent 38%),radial-gradient(ellipse 55% 40% at 5% 90%,rgba(30,32,44,.12) 0%,transparent 100%),radial-gradient(ellipse 40% 30% at 95% 5%,rgba(50,52,65,.10) 0%,transparent 100%),linear-gradient(180deg,#0c0d13 0%,#09090e 60%,#0b0c12 100%);transition:opacity .62s cubic-bezier(.4,0,.2,1),transform .62s cubic-bezier(.4,0,.2,1);}
 .welcome-screen.out{opacity:0;transform:scale(.96);pointer-events:none;}
-.wlc-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px;gap:16px;}
+.wlc-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px 60px;gap:16px;}
 .wlc-tagline{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.7px;line-height:1.22;text-align:center;margin-bottom:12px;}
 .wlc-sub{font-size:14px;color:rgba(255,255,255,.33);text-align:center;line-height:1.7;max-width:248px;}
-.wlc-bottom{width:100%;padding:0 28px 60px;}
+.wlc-bottom{width:100%;padding:0 28px 100px;}
 .wlc-btn{width:100%;padding:17px;background:#fff;color:#0a0a0f;font-size:17px;font-weight:800;font-family:inherit;border:none;border-radius:16px;cursor:pointer;letter-spacing:-.3px;box-shadow:0 10px 40px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.3);transition:transform .18s cubic-bezier(.34,1.4,.64,1),opacity .14s;}
 .wlc-btn:active{transform:scale(.97);opacity:.86;}
 
@@ -348,13 +349,19 @@ svg#cb-svg{position:absolute;width:0;height:0;}
   <!-- WELCOME -->
   <!-- LOGIN SCREEN -->
     <!-- LOGIN + BÖLGE SCREEN -->
-  <div id="loginScreen" style="display:none;position:absolute;inset:0;z-index:500;display:none;flex-direction:column;align-items:center;overflow-y:auto;background:linear-gradient(175deg,#1a1b22 0%,#131418 50%,#191a20 100%);padding:48px 28px 40px;">
-    <div style="height:44px;margin-bottom:24px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
+  <div id="loginScreen" style="display:none;position:absolute;inset:0;z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;background:linear-gradient(175deg,#161720 0%,#111215 50%,#14151c 100%);padding:32px 28px;">
     
+    <!-- Logo + başlık -->
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:36px;">
+      <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:40px;width:auto;object-fit:contain;margin-bottom:20px;">
+      <div id="loginTitle" style="font-size:28px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-.5px;">Hoş geldiniz</div>
+      <div id="loginSub" style="font-size:15px;color:rgba(255,255,255,.38);text-align:center;line-height:1.4;">Aboneliklerinizi güvenle saklayın</div>
+    </div>
+
     <!-- Dil seçimi -->
-    <div style="display:flex;gap:8px;margin-bottom:28px;">
-      <button class="lang-btn lang-sel" data-lang="tr" onclick="setLang('tr')" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><span style="font-size:20px;">🇹🇷</span>Türkçe</button>
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><span style="font-size:20px;">🇬🇧</span>English</button>
+    <div style="display:flex;gap:8px;margin-bottom:20px;width:100%;max-width:320px;">
+      <button class="lang-btn lang-sel" data-lang="tr" onclick="setLang('tr')" style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><span style="font-size:18px;">🇹🇷</span>Türkçe</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><span style="font-size:18px;">🇬🇧</span>English</button>
     </div>
 
     <!-- Bölge seçimi -->
@@ -393,7 +400,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 
 <div class="welcome-screen" id="welcomeScreen">
     <div class="wlc-hero">
-      <div style="margin-bottom:40px;height:240px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
+      <div style="margin-bottom:24px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:60px;width:auto;object-fit:contain;"></div>
       <div class="wlc-tagline">Şifreleriniz güvende.<br>Giriş tek dokunuşta.</div>
       <div class="wlc-sub">TV aboneliklerinizi saklayın. QR ile saniyeler içinde oturum açın.</div>
     </div>
@@ -406,13 +413,13 @@ svg#cb-svg{position:absolute;width:0;height:0;}
     <div class="onboard-content" id="obContent"></div>
     <div class="onboard-bottom">
       <button class="onboard-btn" id="obNextBtn" onclick="onboardNext()">Devam</button>
-      <div class="onboard-skip" onclick="skipOnboard()">Atla</div>
+      <div class="onboard-skip" id="obSkipBtn" onclick="obStep===0?skipServices():skipOnboard()">Atla</div>
     </div>
   </div>
 
   <!-- PIN -->
   <div class="pin-screen" id="pinScreen" style="display:none;">
-    <div class="pin-logo" style="height:216px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
+    <div class="pin-logo" style="height:48px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
     <p class="pin-greeting" id="pinGreeting">Hoş geldiniz</p>
     <p class="pin-hint" id="pinHint">PIN ile giriş yapın</p>
     <div class="pin-dots" id="pinDots">
@@ -436,6 +443,10 @@ svg#cb-svg{position:absolute;width:0;height:0;}
         <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M7 1H18a2 2 0 012 2v8a2 2 0 01-2 2H7L1 7z" stroke="white" stroke-width="1.5" fill="none"/><path d="M11 5l4 4M15 5l-4 4" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
       </button>
     </div>
+    <button class="pin-face-btn" onclick="deviceAuth()" style="display:flex;align-items:center;gap:8px;justify-content:center;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="3" stroke="rgba(255,255,255,.5)" stroke-width="1.8"/><circle cx="12" cy="17" r="1.2" fill="rgba(255,255,255,.5)"/><path d="M9 7h6" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span style="font-size:13px;color:rgba(255,255,255,.5);font-weight:600;">Telefon Şifresi</span>
+    </button>
     <button class="pin-face-btn" onclick="faceId()">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6.5" r=".9" fill="currentColor"/><circle cx="10.5" cy="6.5" r=".9" fill="currentColor"/><path d="M5.5 10c.7 1.1 4.3 1.1 5 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       Face ID ile giriş
@@ -457,7 +468,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
     <!-- HOME -->
     <div class="tab-panel active" id="tab-home">
       <div class="home-header">
-        <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:96px;width:auto;object-fit:contain;display:block;">
+        <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:39px;width:auto;object-fit:contain;display:block;">
         <div class="add-btn-abs"><div class="add-btn" onclick="openAddModal()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></div>
       </div>
       <div class="grid-scroll" onclick="handleGridBgClick(event)"><div class="grid" id="grid"></div></div>
@@ -471,6 +482,8 @@ svg#cb-svg{position:absolute;width:0;height:0;}
           <div><div class="subs-total-lbl">Aylık Toplam</div><div class="subs-total-val" id="totalMonthly">₺0</div></div>
           <div><div class="subs-next-lbl">Yaklaşan</div><div class="subs-next-val" id="nextRenew">—</div></div>
         </div>
+        <!-- Harcama grafiği -->
+        <div id="spendingChart" style="margin:0 0 16px;"></div>
         <div id="subsList"></div>
       </div>
     </div>
@@ -528,6 +541,13 @@ svg#cb-svg{position:absolute;width:0;height:0;}
         <div class="settings-section-lbl">Görünüm</div>
         <div class="menu-group">
           <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">Renk Körü Modu</div><div class="toggle-desc">Kırmızı-yeşil körlüğü desteği</div></div><div class="toggle" id="tog-colorblind" onclick="toggleSetting('colorblind',this)"><div class="toggle-knob"></div></div></div>
+          <div class="toggle-row" style="align-items:center;">
+            <div class="toggle-info"><div class="toggle-lbl">Dil</div><div class="toggle-desc">Uygulama dili</div></div>
+            <div style="display:flex;gap:6px;">
+              <button class="lang-btn" data-lang="tr" onclick="setLang('tr')" style="padding:6px 12px;border-radius:8px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-size:13px;font-weight:700;cursor:pointer;">🇹🇷 TR</button>
+              <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="padding:6px 12px;border-radius:8px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-size:13px;font-weight:700;cursor:pointer;">🇬🇧 EN</button>
+            </div>
+          </div>
         </div>
         <div class="settings-section-lbl">Bildirimler</div>
         <div class="menu-group">
@@ -630,6 +650,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
       <div class="add-tabs">
         <div class="add-tab active" id="tab-popular" onclick="switchAddTab('popular')">Popüler</div>
         <div class="add-tab" id="tab-custom" onclick="switchAddTab('custom')">Özel</div>
+        <div class="add-tab" id="tab-remove" onclick="switchAddTab('remove')">Çıkar</div>
       </div>
       <div class="add-sheet-scroll" id="addSheetScroll">
         <!-- Popular tab -->
@@ -676,6 +697,44 @@ svg#cb-svg{position:absolute;width:0;height:0;}
   </div>
 
   <!-- PROFILE EDIT MODAL -->
+  <!-- SUB EDIT MODAL -->
+  <div id="subEditModal" style="display:none;position:absolute;inset:0;z-index:400;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:flex-end;">
+    <div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;padding:24px 20px 40px;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div id="seLogoWrap" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);flex-shrink:0;"></div>
+          <div>
+            <div id="seServiceName" style="font-size:17px;font-weight:700;color:#fff;"></div>
+            <div style="font-size:12px;color:rgba(255,255,255,.4);">Üyelik Bilgileri</div>
+          </div>
+        </div>
+        <button onclick="closeSubEdit()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">AYLIK FİYAT (₺)</div>
+          <input id="sePrice" class="add-input" type="number" placeholder="0.00" step="0.01" inputmode="decimal">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">PLAN</div>
+          <input id="sePlan" class="add-input" type="text" placeholder="Standart, Premium, Aile...">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">YENİLEME TARİHİ</div>
+          <input id="seRenew" class="add-input" type="date">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">E-POSTA</div>
+          <input id="seEmail" class="add-input" type="email" placeholder="ornek@mail.com">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button onclick="saveSubEdit()" style="flex:1;padding:15px;background:#0a84ff;border:none;border-radius:14px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;">Kaydet</button>
+        <button onclick="deleteSubEdit()" style="padding:15px 18px;background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.3);border-radius:14px;font-size:15px;font-weight:700;color:#ff3b30;cursor:pointer;">Sil</button>
+      </div>
+    </div>
+  </div>
+
   <div class="edit-modal" id="editModal">
     <div class="edit-bg" onclick="closeEditProfile()"></div>
     <div class="edit-sheet">
@@ -784,6 +843,7 @@ const TILE_GRADIENTS = {
   disney: 'linear-gradient(145deg, #0DD3C5 0%, #0880A0 100%)',
   hbo: 'linear-gradient(145deg, #1C2B5E 0%, #0D1530 100%)',
   prime: 'linear-gradient(145deg, #1A98FF 0%, #0066CC 100%)',
+  apple: 'linear-gradient(145deg, #ffffff 0%, #e8e8e8 100%)',
 };
 function toggleCountryDropdown(){
   const d=document.getElementById('countryDropdown');
@@ -965,7 +1025,7 @@ const POPULAR_SVCS = [
     prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}}},
   {id:'hbo',name:'HBO Max',color:'#1C2340',rgb:'28,35,64',
     prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}}},
-  {id:'apple',name:'Apple TV+',color:'#e8e8e8',rgb:'220,220,235',textDark:true,
+  {id:'apple',name:'Apple TV+',color:'#1c1c1e',rgb:'220,220,220',textDark:true,
     prices:{tr:{amount:99.99,plan:'Aile'},us:{amount:9.99,plan:'Monthly'},eu:{amount:8.99,plan:'Monthly'},as:{amount:8.99,plan:'Monthly'}}},
   {id:'twitch',name:'Twitch',color:'#9146FF',rgb:'145,70,255',
     prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}}},
@@ -980,16 +1040,16 @@ const POPULAR_SVCS = [
 ];
 
 const LOGO = {
-  netflix:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/netflix_N.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
-  youtube:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/youtube.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
-  disney:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/Disney+.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
-  prime:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/prime video.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
-  hbo:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/hbo.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
-  apple:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/apple.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/appleb.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
-  twitch:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/twitch.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
-  kick:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/kick.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/kickb.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
-  exxen:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/exxen.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/exxenb.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
-  bein:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/bein.png" style="width:72px;height:72px;object-fit:contain;" onerror="this.style.display='none'">`},
+  netflix:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/netflix_N.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`},
+  youtube:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/youtube.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`},
+  disney:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/Disney+.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`},
+  prime:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/prime video.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`},
+  hbo:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/hbo.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`},
+  apple:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/apple.png" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/appleb.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
+  twitch:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/twitch.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`},
+  kick:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/kick.png" style="width:52px;height:52px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/kickb.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
+  exxen:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/exxen.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/exxenb.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`,textDark:true},
+  bein:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/bein.png" style="width:66px;height:66px;object-fit:contain;" onerror="this.style.display='none'">`},
   spotify:{w:72,h:72,html:`<svg viewBox="0 0 168 168" width="36" height="36"><path fill="white" d="M84 0C37.6 0 0 37.6 0 84s37.6 84 84 84 84-37.6 84-84S130.4 0 84 0zm38.6 121.2c-1.5 2.5-4.8 3.3-7.3 1.7-20-12.2-45.2-15-74.9-8.2-2.9.7-5.7-1.1-6.4-3.9-.7-2.9 1.1-5.7 3.9-6.4 32.5-7.4 60.4-4.2 82.9 9.5 2.5 1.5 3.3 4.8 1.8 7.3zm10.3-22.9c-1.9 3.1-5.9 4.1-9 2.2-22.9-14.1-57.8-18.2-84.9-9.9-3.5 1-7.2-.9-8.2-4.4-1-3.5.9-7.2 4.4-8.2 31-9.4 69.5-4.8 95.8 11.3 3.1 1.9 4.1 5.9 1.9 9zm.9-23.8c-27.5-16.3-72.9-17.8-99.2-9.9-4.2 1.3-8.7-1.1-9.9-5.3-1.3-4.2 1.1-8.7 5.3-9.9 30.2-9.2 80.4-7.4 112.1 11.5 3.8 2.3 5 7.1 2.8 10.9-2.2 3.7-7.1 4.9-10.9 2.7h-.2z"/></svg>`},
   _custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`},
 };
@@ -1030,7 +1090,8 @@ function loadData(){
 
 // ═══ INIT ════════════════════════════════════════════════
 loadData();
-const isFirstTime = !localStorage.getItem('easytv_setup_done');
+localStorage.removeItem('easytv_setup_done');
+const isFirstTime = true;
 
 function startOnboarding(){
   if(isFirstTime){
@@ -1072,7 +1133,7 @@ function renderOnboardStep(){
     btn.textContent='Devam';
     setSkip('block');
     content.innerHTML=`
-      <div class="onboard-step-lbl">Adım 1 / 4</div>
+      <div class="onboard-step-lbl">Adım 1 / 3</div>
       <div class="onboard-title">Hangi servisleri kullanıyorsun?</div>
       <div class="onboard-sub">Hepsini sonra ekleyebilirsin.</div>
       <div class="service-pick-grid" id="spGrid"></div>`;
@@ -1094,6 +1155,11 @@ function renderOnboardStep(){
           <span style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;"><svg width="20" height="24" viewBox="0 0 20 24" fill="none"><rect x="2" y="10" width="16" height="13" rx="3" stroke="rgba(255,255,255,.5)" stroke-width="1.8" fill="none"/><path d="M6 10V7C6 4.79 7.79 3 10 3C12.21 3 14 4.79 14 7" stroke="rgba(255,255,255,.5)" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></span>
           <div><div style="font-size:15px;font-weight:700;color:#fff;">Hayır, PINsiz devam et</div><div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;">Dilediğinde ayarlardan açabilirsin</div></div>
           ${SETTINGS.usePin===false?'<span style="margin-left:auto;color:#4cd964;font-size:16px;">✓</span>':''}
+        </div>
+        <div class="region-item${SETTINGS.usePin==='faceid'?' region-sel':''}" id="pin-faceid" onclick="setPinChoice('faceid')">
+          <span style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;"><svg width="20" height="22" viewBox="0 0 20 22" fill="none"><rect x="2" y="9" width="16" height="12" rx="3" stroke="rgba(255,255,255,.7)" stroke-width="1.8" fill="none"/><path d="M6 9V6C6 3.79 7.79 2 10 2C12.21 2 14 3.79 14 6V9" stroke="rgba(255,255,255,.7)" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="10" cy="15" r="1.5" fill="rgba(255,255,255,.7)"/></svg></span>
+          <div><div style="font-size:15px;font-weight:700;color:#fff;">Face ID / Telefon Şifresi</div><div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;">Cihazının kilit sistemiyle giriş yap</div></div>
+          ${SETTINGS.usePin==='faceid'?'<span style="margin-left:auto;color:#4cd964;font-size:16px;">✓</span>':''}
         </div>
       </div>`;
   } else if(obStep===2){
@@ -1308,6 +1374,11 @@ function finishOnboard(){
     }
   },500);
 }
+function skipServices(){
+  // Servis seçimini atla ama onboarding devam et
+  obStep++;
+  renderOnboardStep();
+}
 function skipOnboard(){
   localStorage.setItem('easytv_setup_done','1');
   document.getElementById('onboardScreen').classList.add('out');
@@ -1338,6 +1409,15 @@ function shakePin(){
   setTimeout(()=>{d.classList.remove('shake');for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.remove('err','f');},600);
 }
 function faceId(){if(SETTINGS.faceid)setTimeout(unlockApp,700);}
+function deviceAuth(){
+  // Web Credential Management API veya sadece PIN atla (simülasyon)
+  if(window.PublicKeyCredential){
+    showToast('Cihaz kimliği doğrulanıyor...');
+    setTimeout(()=>{unlockApp();showToast('✓ Giriş başarılı');},800);
+  } else {
+    showToast('Bu cihazda desteklenmiyor');
+  }
+}
 function skipPin(){unlockApp();}
 function unlockApp(){
   isLocked=false;
@@ -1419,23 +1499,12 @@ function buildGrid(){
     const L=LOGO[s.id]||LOGO._custom;
     const lw=document.createElement('div');
     lw.className='tile-logo';
-    const isImg = L.html && L.html.includes('<img');
-    if(isImg){
-      lw.style.cssText='width:80%;height:80%;display:flex;align-items:center;justify-content:center;';
-    } else if(L.html) {
-      lw.style.cssText=`width:${L.w}px;height:${L.h}px;display:flex;align-items:center;justify-content:center;`;
-    } else {
-      // Özel servis - baş harf
-      lw.style.cssText='display:flex;align-items:center;justify-content:center;';
-      lw.innerHTML='';
-    }
+    // lw'ye inline style verme - CSS class halleder
     if(s.faviconUrl){
-      lw.innerHTML=`<img src="${s.faviconUrl}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;">`;
+      lw.innerHTML=`<img src="${s.faviconUrl}" style="width:52px;height:52px;object-fit:contain;border-radius:8px;">`;
     } else if(!LOGO[s.id]){
-      // Özel servis - baş harf
       const letter=(s.name||'?')[0].toUpperCase();
-      lw.innerHTML=`<span style="font-family:-apple-system,sans-serif;font-size:52px;font-weight:800;color:rgba(255,255,255,.9);line-height:1;">${letter}</span>`;
-      lw.style.cssText='display:flex;align-items:center;justify-content:center;';
+      lw.innerHTML=`<span style="font-size:48px;font-weight:800;color:rgba(255,255,255,.9);line-height:1;">${letter}</span>`;
     } else {
       lw.innerHTML=L.html;
     }
@@ -1612,6 +1681,19 @@ function openAddModal(){
   document.getElementById('addModal').classList.add('open');
 }
 function closeAddModal(){document.getElementById('addModal').classList.remove('open');selectedPopular=null;}
+function buildRemoveGrid(){
+  const g=document.getElementById('removeGrid');g.innerHTML='';
+  if(SVC.length===0){g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.3);font-size:13px;padding:20px;">Ekli servis yok</div>';return;}
+  SVC.forEach((s,i)=>{
+    const L=LOGO[s.id]||LOGO._custom;
+    const div=document.createElement('div');
+    div.style.cssText='position:relative;aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:1.5px solid rgba(255,90,80,.3);background:rgba(255,60,50,.06);';
+    const logoHtml=L.html?`<div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`:`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0]}</span>`;
+    div.innerHTML=`${logoHtml}<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.7);text-align:center;">${s.name}</div><div style="position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:rgba(255,59,48,.8);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;line-height:1;">×</div>`;
+    div.onclick=()=>{SVC.splice(i,1);saveData();buildGrid();buildRemoveGrid();showToast(`${s.name} çıkarıldı`);};
+    g.appendChild(div);
+  });
+}
 
 function buildPopularGrid(){
   const g=document.getElementById('popularGrid');g.innerHTML='';
@@ -1772,10 +1854,20 @@ function renderSubs(){
   const paid=SVC.filter(s=>s.price>0);
   const total=paid.reduce((a,s)=>a+s.price,0);
   document.getElementById('totalMonthly').textContent=`₺${total.toFixed(2)}`;
+  // Harcama grafiği
+  renderSpendingChart(paid);
   const dates=paid.filter(s=>s.renew).map(s=>({d:new Date(s.renew)})).sort((a,b)=>a.d-b.d);
   document.getElementById('nextRenew').textContent=dates.length?formatDate(dates[0].d):'—';
   document.getElementById('subsSubtitle').textContent=`${paid.length} aktif üyelik`;
   const list=document.getElementById('subsList');list.innerHTML='';
+  if(SVC.length===0){
+    list.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;">
+      <div style="font-size:48px;opacity:.3;">📺</div>
+      <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,.5);">Henüz servis eklenmedi</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.3);text-align:center;">Ana sayfada + butonuna tıklayarak servis ekleyebilirsin</div>
+    </div>`;
+    return;
+  }
   const today=new Date();today.setHours(0,0,0,0);
   // idx'i sort'tan önce sakla
   const svcWithIdx = SVC.map((s,i)=>({...s,_idx:i}));
@@ -1795,10 +1887,47 @@ function renderSubs(){
       <div class="sub-right">
         <div class="sub-price">${s.price>0?`₺${s.price.toFixed(2)}`:'—'}</div>
         <div class="sub-renew">${s.price>0?'/ay':''}</div>
-        <button onclick="openSubEdit(${idx})" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:8px 14px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;width:100%;">✏️ Düzenle</button>
+        <button onclick="openSubEdit(${idx})" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:8px 14px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;width:100%;">Düzenle</button>
       </div>`;
+    // Swipe to delete
+    let startX=0,isDragging=false;
+    card.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;isDragging=false;},{passive:true});
+    card.addEventListener('touchmove',e=>{
+      const dx=e.touches[0].clientX-startX;
+      isDragging=true;
+      if(dx<-20&&dx>-120){card.style.transform=`translateX(${dx}px)`;card.style.transition='none';}
+    },{passive:true});
+    card.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-startX;
+      card.style.transition='transform .3s';
+      if(dx<-80){
+        card.style.transform='translateX(-100%)';
+        card.style.opacity='0';
+        setTimeout(()=>{const realIdx=s._idx;SVC.splice(realIdx,1);saveData();buildGrid();renderSubs();showToast(`${s.name} silindi`);},300);
+      } else {card.style.transform='';}
+    });
     list.appendChild(card);
   });
+}
+function renderSpendingChart(paid){
+  const el=document.getElementById('spendingChart');
+  if(!el||paid.length===0){if(el)el.innerHTML='';return;}
+  const total=paid.reduce((a,s)=>a+s.price,0);
+  const sorted=[...paid].sort((a,b)=>b.price-a.price).slice(0,5);
+  const bars=sorted.map(s=>{
+    const pct=total>0?Math.round(s.price/total*100):0;
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div style="width:70px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);text-align:right;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</div>
+      <div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${s.color};border-radius:4px;transition:width .6s cubic-bezier(.34,1.4,.64,1);"></div>
+      </div>
+      <div style="width:44px;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);flex-shrink:0;">₺${s.price.toFixed(0)}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;">
+    <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.5px;margin-bottom:12px;">AYLIK HARCAMA DAĞILIMI</div>
+    ${bars}
+  </div>`;
 }
 function formatDate(d){return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});}
 let seEditIdx = -1;
