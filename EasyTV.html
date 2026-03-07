@@ -230,10 +230,21 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 /* WELCOME */
 .welcome-screen{position:absolute;inset:0;z-index:210;display:flex;flex-direction:column;background:linear-gradient(125deg,rgba(55,57,70,.15) 0%,transparent 42%),linear-gradient(305deg,rgba(40,42,54,.10) 0%,transparent 38%),radial-gradient(ellipse 55% 40% at 5% 90%,rgba(30,32,44,.12) 0%,transparent 100%),radial-gradient(ellipse 40% 30% at 95% 5%,rgba(50,52,65,.10) 0%,transparent 100%),linear-gradient(180deg,#0c0d13 0%,#09090e 60%,#0b0c12 100%);transition:opacity .62s cubic-bezier(.4,0,.2,1),transform .62s cubic-bezier(.4,0,.2,1);}
 .welcome-screen.out{opacity:0;transform:scale(.96);pointer-events:none;}
-.wlc-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px 60px;gap:16px;}
-.wlc-tagline{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.7px;line-height:1.22;text-align:center;margin-bottom:12px;}
-.wlc-sub{font-size:14px;color:rgba(255,255,255,.33);text-align:center;line-height:1.7;max-width:248px;}
-.wlc-bottom{width:100%;padding:0 28px 100px;}
+.wlc-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px 32px;gap:12px;}
+.wlc-tagline{font-size:27px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1.3;text-align:center;margin-bottom:6px;hyphens:none;overflow-wrap:normal;word-break:normal;}
+.wlc-sub{font-size:14px;color:rgba(255,255,255,.45);text-align:center;line-height:1.65;max-width:240px;}
+.wlc-bottom{width:100%;padding:0 28px 88px;display:flex;flex-direction:column;align-items:center;gap:20px;}
+.wlc-lang-wrap{position:relative;}
+.wlc-lang-trigger{display:flex;align-items:center;gap:7px;padding:8px 16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;font-size:13px;font-weight:600;font-family:inherit;color:rgba(255,255,255,.7);cursor:pointer;transition:background .15s;}
+.wlc-lang-trigger:active{background:rgba(255,255,255,.12);}
+.wlc-lang-trigger svg{transition:transform .2s;}
+.wlc-lang-trigger.open svg{transform:rotate(180deg);}
+.wlc-lang-dropdown{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(6px) scale(.97);background:#1e1f26;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:150px;opacity:0;pointer-events:none;transition:all .18s cubic-bezier(.34,1.4,.64,1);}
+.wlc-lang-dropdown.open{opacity:1;transform:translateX(-50%) translateY(0) scale(1);pointer-events:auto;}
+.wlc-lang-option{display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:14px;font-weight:600;font-family:inherit;color:rgba(255,255,255,.7);background:none;border:none;width:100%;cursor:pointer;transition:background .12s;}
+.wlc-lang-option:hover{background:rgba(255,255,255,.07);}
+.wlc-lang-option.selected{color:#fff;}
+.wlc-lang-option.selected::after{content:'✓';margin-left:auto;font-size:12px;color:rgba(255,255,255,.5);}.wlc-lang-btn.active{background:#fff;color:#0a0a0f;box-shadow:0 4px 16px rgba(0,0,0,.35);}
 .wlc-btn{width:100%;padding:17px;background:#fff;color:#0a0a0f;font-size:17px;font-weight:800;font-family:inherit;border:none;border-radius:16px;cursor:pointer;letter-spacing:-.3px;box-shadow:0 10px 40px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.3);transition:transform .18s cubic-bezier(.34,1.4,.64,1),opacity .14s;}
 .wlc-btn:active{transform:scale(.97);opacity:.86;}
 
@@ -248,7 +259,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .onboard-title{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1.2;margin-bottom:8px;}
 .onboard-sub{font-size:14px;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:28px;}
 .service-pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:80px;}
-.sp-item{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.07);border-radius:14px;padding:0;display:flex;flex-direction:column;align-items:stretch;overflow:hidden;cursor:pointer;transition:all .22s cubic-bezier(.34,1.4,.64,1);opacity:.5;transform:scale(.97);}
+.sp-item{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:0;display:flex;flex-direction:column;align-items:stretch;overflow:hidden;cursor:pointer;transition:all .22s cubic-bezier(.34,1.4,.64,1);opacity:1;transform:scale(1);}
 .sp-item.sel{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.13);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);opacity:1;transform:scale(1);box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.15);}
 .sp-ico{width:100%;aspect-ratio:1;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
 .sp-ico img{width:55%!important;height:55%!important;object-fit:contain;}
@@ -256,10 +267,10 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .sp-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-align:center;padding:3px 4px 6px;width:100%;margin-top:-2px;}
 .sp-item.sel .sp-name{color:#fff;font-weight:700;}
 .onboard-pin-grid{display:grid;grid-template-columns:repeat(3,72px);gap:13px;justify-content:center;margin-bottom:20px;}
-.onboard-bottom{padding:0 28px 48px;}
+.onboard-bottom{padding:0 28px 56px;display:flex;flex-direction:column;gap:0;}
 .onboard-btn{width:100%;padding:17px;background:#fff;color:#0a0a0f;font-size:17px;font-weight:800;font-family:inherit;border:none;border-radius:16px;cursor:pointer;transition:transform .16s,opacity .14s;}
 .onboard-btn:active{transform:scale(.97);opacity:.86;}
-.onboard-skip{text-align:center;margin-top:14px;font-size:13px;color:rgba(255,255,255,.3);cursor:pointer;padding:6px;}
+.onboard-skip{text-align:center;margin-top:18px;font-size:14px;color:rgba(255,255,255,.35);cursor:pointer;padding:10px;}
 
 /* PIN */
 .pin-screen{position:absolute;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse 45% 30% at 25% 15%,rgba(35,35,55,.45) 0%,transparent 60%),radial-gradient(ellipse 35% 28% at 75% 80%,rgba(22,22,40,.38) 0%,transparent 58%),linear-gradient(175deg,#1a1b22 0%,#131418 50%,#191a20 100%);transition:opacity .5s ease,transform .5s ease;}
@@ -359,62 +370,88 @@ svg#cb-svg{position:absolute;width:0;height:0;}
   <!-- WELCOME -->
   <!-- LOGIN SCREEN -->
     <!-- LOGIN + BÖLGE SCREEN -->
-  <div id="loginScreen" style="display:none;position:absolute;inset:0;z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;background:linear-gradient(175deg,#161720 0%,#111215 50%,#14151c 100%);padding:32px 28px;">
-    
-    <!-- Logo + başlık -->
-    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:36px;">
-      <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:40px;width:auto;object-fit:contain;margin-bottom:20px;">
-      <div id="loginTitle" style="font-size:28px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-.5px;">Hoş geldiniz</div>
-      <div id="loginSub" style="font-size:15px;color:rgba(255,255,255,.38);text-align:center;line-height:1.4;">Aboneliklerinizi güvenle saklayın</div>
+  <div id="loginScreen" style="display:none;position:absolute;inset:0;z-index:500;flex-direction:column;background:#0c0d13;">
+
+    <!-- Üst alan — logo ortalanmış -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px;">
+      <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:46px;width:auto;object-fit:contain;margin-bottom:36px;opacity:.95;">
+      <div id="loginTitle" style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-.6px;text-align:center;margin-bottom:10px;line-height:1.2;">Hoş geldiniz</div>
+      <div id="loginSub" style="font-size:14px;color:rgba(255,255,255,.38);text-align:center;line-height:1.6;">Aboneliklerinizi güvenle saklayın</div>
     </div>
 
-    <!-- Dil seçimi -->
-    <div style="display:flex;gap:8px;margin-bottom:20px;width:100%;max-width:320px;">
-      <button class="lang-btn lang-sel" data-lang="tr" onclick="setLang('tr')" style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><span style="font-size:18px;">🇹🇷</span>Türkçe</button>
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><span style="font-size:18px;">🇬🇧</span>English</button>
-    </div>
+    <!-- Alt alan — butonlar -->
+    <div style="padding:0 28px 96px;display:flex;flex-direction:column;gap:14px;">
 
-    <!-- Bölge seçimi -->
-    <div style="width:100%;max-width:320px;margin-bottom:28px;">
-      <div id="loginCountryLbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;margin-bottom:10px;">ÜLKE</div>
-      <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCountryDropdown()">
-        <span id="selectedCountryLabel" style="font-size:15px;font-weight:600;color:#fff;">Türkiye</span>
-        <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </div>
-      <div id="countryDropdown" style="display:none;background:rgba(30,31,38,.98);border:1px solid rgba(255,255,255,.12);border-radius:14px;margin-top:6px;overflow:hidden;max-height:220px;overflow-y:auto;">
-        <input id="loginCountrySearch" class="add-input" placeholder="Ülke ara..." style="margin:8px;width:calc(100% - 16px);box-sizing:border-box;" oninput="filterLoginCountries(this.value)">
-        <div id="loginCountryList"></div>
-      </div>
-    </div>
+      <!-- Apple -->
+      <button id="appleLoginBtn" onclick="loginWith('apple')" style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:18px;background:#fff;border:none;border-radius:18px;font-size:16px;font-weight:700;font-family:inherit;color:#000;cursor:pointer;letter-spacing:-.2px;transition:opacity .15s;box-shadow:0 4px 20px rgba(255,255,255,.08);">
+        <svg width="18" height="18" viewBox="0 0 814 1000"><path fill="#000" d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663 0 541.8c0-207.5 135.4-317.5 269-317.5 70.1 0 128.4 46.4 172.5 46.4 42.8 0 109.6-49 192.5-49 30.8 0 111.4 2.6 168.3 97.5zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg>
+        <span id="appleLoginLbl">Apple ile Giriş Yap</span>
+      </button>
 
-    <!-- Giriş butonları -->
-    <div style="width:100%;max-width:320px;">
-      <div id="loginSigninLbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;margin-bottom:10px;">GİRİŞ YAP</div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <button id="appleLoginBtn" onclick="loginWith('apple')" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:#fff;border:none;border-radius:14px;font-size:15px;font-weight:600;color:#000;cursor:pointer;">
-          <svg width="18" height="18" viewBox="0 0 814 1000"><path fill="#000" d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663 0 541.8c0-207.5 135.4-317.5 269-317.5 70.1 0 128.4 46.4 172.5 46.4 42.8 0 109.6-49 192.5-49 30.8 0 111.4 2.6 168.3 97.5zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg>
-          Apple ile Giriş Yap
-        </button>
-        <button id="googleLoginBtn" onclick="loginWith('google')" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;">
-          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-          Google ile Giriş Yap
-        </button>
-        <button id="emailLoginBtn" onclick="loginWith('email')" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="12" rx="2" stroke="white" stroke-width="1.5" fill="none"/><path d="M1 5l8 6 8-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-          E-posta ile Giriş Yap
-        </button>
-        <button id="loginSkipBtn" onclick="loginWith('skip')" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:14px;cursor:pointer;padding:12px;margin-top:4px;">Şimdilik atla →</button>
+      <!-- Google -->
+      <button id="googleLoginBtn" onclick="loginWith('google')" style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:18px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:18px;font-size:16px;font-weight:700;font-family:inherit;color:#fff;cursor:pointer;letter-spacing:-.2px;transition:opacity .15s;">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+        <span id="googleLoginLbl">Google ile Giriş Yap</span>
+      </button>
+
+      <!-- Ayırıcı -->
+      <div style="display:flex;align-items:center;gap:14px;padding:4px 0;">
+        <div style="flex:1;height:1px;background:rgba(255,255,255,.07);"></div>
+        <span style="font-size:11px;color:rgba(255,255,255,.18);font-weight:700;letter-spacing:.8px;">VEYA</span>
+        <div style="flex:1;height:1px;background:rgba(255,255,255,.07);"></div>
       </div>
+
+      <!-- Atla -->
+      <button id="loginSkipBtn" onclick="loginWith('skip')" style="width:100%;padding:18px;background:transparent;border:1.5px solid rgba(255,255,255,.1);border-radius:18px;font-size:15px;font-weight:600;font-family:inherit;color:rgba(255,255,255,.45);cursor:pointer;letter-spacing:-.1px;transition:all .15s;">
+        <span id="loginSkipLbl">Şimdilik atla</span>
+      </button>
+
+      <!-- Gizli fonksiyonel elementler -->
+      <div id="countryDropdown" style="display:none;"><input id="loginCountrySearch" class="add-input" placeholder="Ülke ara..." oninput="filterLoginCountries(this.value)"><div id="loginCountryList"></div></div>
+      <span id="selectedCountryLabel" style="display:none;">Türkiye</span>
+      <span id="loginCountryLbl" style="display:none;">ÜLKE</span>
+      <span id="loginSigninLbl" style="display:none;">GİRİŞ YAP</span>
     </div>
   </div>
 
 <div class="welcome-screen" id="welcomeScreen">
     <div class="wlc-hero">
       <div style="margin-bottom:24px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:60px;width:auto;object-fit:contain;"></div>
-      <div class="wlc-tagline">Şifreleriniz güvende.<br>Giriş tek dokunuşta.</div>
-      <div class="wlc-sub">TV aboneliklerinizi saklayın. QR ile saniyeler içinde oturum açın.</div>
+      <div class="wlc-tagline" id="wlcTagline">Şifreleriniz güvende,<br>giriş tek dokunuşta.</div>
+      <div class="wlc-sub" id="wlcSub">TV aboneliklerinizi saklayın.<br>QR ile saniyeler içinde oturum açın.</div>
     </div>
-    <div class="wlc-bottom"><button class="wlc-btn" onclick="goToLogin()">Başlayın</button></div>
+    <div class="wlc-bottom">
+      <!-- Bölge ve Dil seçiciler -->
+      <div style="display:flex;gap:8px;width:100%;justify-content:center;margin-bottom:16px;">
+        <!-- Ülke seçici -->
+        <div class="wlc-lang-wrap" id="wlcRegionWrap">
+          <button class="wlc-lang-trigger" id="wlcRegionTrigger" onclick="toggleWlcRegion()">
+            <span id="wlcRegionFlag">🇹🇷</span>
+            <span id="wlcRegionLabel">Türkiye</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="wlc-lang-dropdown" id="wlcRegionDropdown" style="min-width:230px;bottom:calc(100% + 8px);">
+            <div style="padding:10px 10px 6px;">
+              <input class="add-input" id="wlcRegionSearch" placeholder="🔍 Ülke ara..." oninput="buildWlcRegionList(this.value)" style="margin:0;font-size:13px;" autocomplete="off">
+            </div>
+            <div id="wlcRegionList" style="max-height:220px;overflow-y:auto;scrollbar-width:none;"></div>
+          </div>
+        </div>
+        <!-- Dil seçici -->
+        <div class="wlc-lang-wrap" id="wlcLangWrap">
+          <button class="wlc-lang-trigger" id="wlcLangTrigger" onclick="toggleWlcLang()">
+            <span id="wlcLangFlag">🇹🇷</span>
+            <span id="wlcLangLabel">Türkçe</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="wlc-lang-dropdown" id="wlcLangDropdown" style="bottom:calc(100% + 8px);">
+            <button class="wlc-lang-option selected" id="wlcOptTR" onclick="wlcSetLang('tr')">🇹🇷 &nbsp;Türkçe</button>
+            <button class="wlc-lang-option" id="wlcOptEN" onclick="wlcSetLang('en')">🇬🇧 &nbsp;English</button>
+          </div>
+        </div>
+      </div>
+      <button class="wlc-btn" id="wlcStartBtn" onclick="goToLogin()">Başlayın</button>
+    </div>
   </div>
 
   <!-- ONBOARDING -->
@@ -564,11 +601,21 @@ svg#cb-svg{position:absolute;width:0;height:0;}
           <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">Yenileme Hatırlatıcısı</div><div class="toggle-desc">3 gün önce bildir</div></div><div class="toggle on" id="tog-reminder" onclick="toggleSetting('reminder',this)"><div class="toggle-knob"></div></div></div>
           <div class="toggle-row"><div class="toggle-info"><div class="toggle-lbl">Fiyat Değişikliği</div><div class="toggle-desc">Abonelik ücret artışı</div></div><div class="toggle" id="tog-pricechange" onclick="toggleSetting('pricechange',this)"><div class="toggle-knob"></div></div></div>
         </div>
-        <div class="settings-section-lbl">Bölge</div>
+        <div class="settings-section-lbl">Bölge & Para Birimi</div>
         <div class="menu-group" id="regionMenuGroup">
           <div class="menu-item" onclick="openRegionPicker()">
             <div class="menu-ico" style="background:rgba(255,255,255,.08);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="rgba(255,255,255,.6)" stroke-width="1.4"/><ellipse cx="8" cy="8" rx="3" ry="6.5" stroke="rgba(255,255,255,.6)" stroke-width="1.4"/><line x1="1.5" y1="8" x2="14.5" y2="8" stroke="rgba(255,255,255,.6)" stroke-width="1.4"/><line x1="2.5" y1="5" x2="13.5" y2="5" stroke="rgba(255,255,255,.6)" stroke-width="1.2"/><line x1="2.5" y1="11" x2="13.5" y2="11" stroke="rgba(255,255,255,.6)" stroke-width="1.2"/></svg></div>
-            <div class="menu-text"><div class="menu-lbl">App Store Bölgesi</div><div class="menu-desc" id="regionDesc">Türkiye</div></div>
+            <div class="menu-text"><div class="menu-lbl">Ülke / Bölge</div><div class="menu-desc" id="regionDesc">Türkiye</div></div>
+            <div class="menu-arrow">›</div>
+          </div>
+          <div class="menu-item" onclick="openCurrencyPicker()">
+            <div class="menu-ico" style="background:rgba(255,255,255,.08);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="rgba(255,255,255,.6)" stroke-width="1.4"/><path d="M8 4v8M6 5.5h2.5a1.5 1.5 0 010 3H6m0 0h3a1.5 1.5 0 010 3H6" stroke="rgba(255,255,255,.6)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <div class="menu-text"><div class="menu-lbl">Gösterim Para Birimi</div><div class="menu-desc" id="currencyDesc">Türk Lirası (₺)</div></div>
+            <div class="menu-arrow">›</div>
+          </div>
+          <div class="menu-item" id="rateRefreshRow" onclick="fetchExchangeRates(true)">
+            <div class="menu-ico" style="background:rgba(255,255,255,.08);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.5 8A5.5 5.5 0 112.5 5.5" stroke="rgba(255,255,255,.6)" stroke-width="1.4" stroke-linecap="round"/><path d="M2.5 2.5v3h3" stroke="rgba(255,255,255,.6)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="menu-text"><div class="menu-lbl">Kurları Güncelle</div><div class="menu-desc" id="rateLastUpdate">Henüz güncellenmedi</div></div>
             <div class="menu-arrow">›</div>
           </div>
         </div>
@@ -624,6 +671,10 @@ svg#cb-svg{position:absolute;width:0;height:0;}
         <button class="app-open-btn" id="appOpenBtn" onclick="openDeepLink()">
           <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M13 3h4v4M17 3l-7 7M8 5H5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Uygulamayı Aç
+        </button>
+        <button class="share-btn" id="editCredBtn" onclick="openSubEditFromSheet()">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5l3 3L6 17H3v-3L14.5 2.5z" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Düzenle
         </button>
         <button class="share-btn" onclick="shareCredentials()">
           <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="15" cy="5" r="2.5" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><circle cx="5" cy="10" r="2.5" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><circle cx="15" cy="15" r="2.5" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><path d="M7.5 8.5l5-3M7.5 11.5l5 3" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -738,43 +789,52 @@ svg#cb-svg{position:absolute;width:0;height:0;}
           <div id="seLogoWrap" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);flex-shrink:0;"></div>
           <div>
             <div id="seServiceName" style="font-size:17px;font-weight:700;color:#fff;"></div>
-            <div style="font-size:12px;color:rgba(255,255,255,.4);">Üyelik Bilgileri</div>
+            <div id="seSubDetailLbl" style="font-size:12px;color:rgba(255,255,255,.4);">Üyelik Bilgileri</div>
           </div>
         </div>
-        <button onclick="closeSubEdit()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
+        <button onclick="closeSubEdit()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:rgba(255,255,255,.7);font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div>
-          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">AYLIK FİYAT (₺)</div>
+          <div id="sePriceLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">AYLIK FİYAT</div>
           <input id="sePrice" class="add-input" type="number" placeholder="0.00" step="0.01" inputmode="decimal" min="0" oninput="if(this.value<0)this.value=0;">
         </div>
         <div id="sePlanRow">
-          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">PLAN</div>
+          <div id="sePlanLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">PLAN</div>
           <div id="sePlanChips" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
           <input id="sePlan" type="hidden">
         </div>
         <div id="seShareRow" style="display:none;">
-          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:8px;letter-spacing:.5px;">PAYLAŞIM</div>
+          <div id="seShareLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:8px;letter-spacing:.5px;">PAYLAŞIM</div>
           <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;">
-            <div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:10px;">Kaç kişi kullanıyor?</div>
+            <div id="seShareWhoLbl" style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:10px;">Kaç kişi kullanıyor?</div>
             <div id="seUserChips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
-            <div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:8px;">Ödeme şekli?</div>
+            <div id="seShareHowLbl" style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:8px;">Ödeme şekli?</div>
             <div id="sePayChips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;"></div>
             <div id="seShareResult" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.85);text-align:center;padding:8px;background:rgba(255,255,255,.06);border-radius:10px;display:none;"></div>
           </div>
         </div>
         <div>
-          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">YENİLEME TARİHİ</div>
+          <div id="seRenewLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">YENİLEME TARİHİ</div>
           <input id="seRenew" class="add-input" type="date" style="color-scheme:dark;">
         </div>
         <div>
-          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">E-POSTA</div>
-          <input id="seEmail" class="add-input" type="email" placeholder="ornek@mail.com">
+          <div id="seEmailLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">E-POSTA</div>
+          <input id="seEmail" class="add-input" type="email" placeholder="example@mail.com">
+        </div>
+        <div>
+          <div id="sePwdLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">ŞİFRE</div>
+          <div style="position:relative;display:flex;align-items:center;">
+            <input id="sePwd" class="add-input" type="password" placeholder="••••••••" style="padding-right:44px;width:100%;box-sizing:border-box;">
+            <button onclick="toggleSePwd()" style="position:absolute;right:12px;background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">
+              <svg id="sePwdEye" width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 8C1 8 4 2 10 2s9 6 9 6-3 6-9 6S1 8 1 8z" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/><circle cx="10" cy="8" r="2.5" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/></svg>
+            </button>
+          </div>
         </div>
       </div>
       <div style="display:flex;gap:10px;margin-top:20px;">
         <button id="sesSaveBtn" onclick="saveSubEdit()" style="flex:1;padding:15px;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;">Kaydet</button>
-        <button onclick="deleteSubEdit()" style="padding:15px 18px;background:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;color:#d00000;cursor:pointer;">Sil</button>
+        <button id="sesDeleteBtn" onclick="deleteSubEdit()" style="padding:15px 18px;background:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;color:#d00000;cursor:pointer;">Sil</button>
       </div>
     </div>
   </div>
@@ -885,7 +945,7 @@ const REGION_DATA = {
 };
 const TILE_GRADIENTS = {
   disney: 'linear-gradient(145deg, #0DD3C5 0%, #0880A0 100%)',
-  hbo: 'linear-gradient(145deg, #1C2B5E 0%, #0D1530 100%)',
+  hbo: 'linear-gradient(145deg, #6B2D8B 0%, #3B1260 55%, #1E0A3C 100%)',
   prime: 'linear-gradient(145deg, #1A98FF 0%, #0066CC 100%)',
   apple: 'linear-gradient(145deg, #ffffff 0%, #e8e8e8 100%)',
   tvplus: 'linear-gradient(145deg, #FFD100 0%, #FFA500 100%)',
@@ -918,447 +978,50 @@ function selectLoginCountry(code,region){
   document.getElementById('countryDropdown').style.display='none';
   updateRegionUI();
 }
-function goToLogin(){
-  const ws=document.getElementById('welcomeScreen');
-  ws.classList.add('out');
-  setTimeout(()=>{
-    ws.style.display='none';
-    const ls=document.getElementById('loginScreen');
-    ls.style.display='flex';
-    ls.style.opacity='0';
-    ls.style.transition='opacity .4s ease';
-    setTimeout(()=>ls.style.opacity='1',50);
-  },500);
-}
-function loginWith(method){
-  const screen=document.getElementById('loginScreen');
-  screen.style.opacity='0';
-  screen.style.transition='opacity .5s ease';
-  setTimeout(()=>{
-    screen.style.display='none';
-    startOnboarding();
-  },500);
-}
 
-// ═══ DİL SİSTEMİ ════════════════════════════════════════
-const STRINGS = {
-  tr: {
-    welcome_btn: 'Başlayın',
-    login_title: 'Hoş geldiniz',
-    login_sub: 'Devam etmek için giriş yapın',
-    country_label: 'ÜLKE',
-    login_label: 'GİRİŞ YAP',
-    apple_login: 'Apple ile Giriş Yap',
-    google_login: 'Google ile Giriş Yap',
-    email_login: 'E-posta ile Giriş Yap',
-    skip_login: 'Şimdilik atla →',
-    privacy: 'Giriş yaparak Gizlilik Politikası\'nı kabul edersiniz.',
-    ob_services_title: 'Hangi servisleri kullanıyorsun?',
-    ob_services_sub: 'Hepsini sonra ekleyebilirsin.',
-    ob_pin_title: 'PIN koruması',
-    ob_pin_sub: 'Uygulamaya PIN ile giriş yapmak ister misin? Dilediğin zaman ayarlardan değiştirebilirsin.',
-    ob_pin_yes: 'Evet, PIN ile koru',
-    ob_pin_yes_sub: 'Güvenli, tavsiye edilir',
-    ob_pin_no: 'Hayır, PINsiz devam et',
-    ob_pin_no_sub: 'Dilediğinde ayarlardan açabilirsin',
-    ob_create_pin: 'PIN oluştur',
-    ob_create_pin_sub: 'Uygulamana 4 haneli bir giriş şifresi belirle.',
-    ob_done_title: 'Hazırsın! 🎉',
-    ob_done_sub: 'EasyTV kurulumu tamamlandı. Her şey ayarlandı, güvende.',
-    pin_greeting: 'Hoş geldiniz',
-    pin_hint: 'PIN ile giriş yapın',
-    pin_skip: 'Atla',
-    nav_home: 'Ana Sayfa',
-    nav_subs: 'Üyelikler',
-    nav_profile: 'Profil',
-    nav_settings: 'Ayarlar',
-    step: (n,t) => `Adım ${n} / ${t}`,
-    ob_pin_faceid: 'Face ID / Telefon Şifresi',
-    ob_pin_faceid_sub: 'Cihazının kilit sistemiyle giriş yap',
-    // Nav (zaten var ama ekstra)
-    add_service: 'Servis Ekle',
-    add_popular: 'Popüler',
-    add_custom: 'Özel',
-    add_remove: 'Çıkar',
-    // Tab başlıkları
-    tab_subs_title: 'Üyelikler',
-    tab_subs_sub: 'Aylık harcama özeti',
-    tab_profile_title: 'Profil',
-    tab_settings_title: 'Ayarlar',
-    // Üyelik kartı
-    monthly_total: 'Aylık Toplam',
-    next_renewal: 'Sonraki Yenileme',
-    active_subs: (n) => `${n} aktif üyelik`,
-    spending_chart: 'AYLIK HARCAMA DAĞILIMI',
-    no_subs: 'Henüz servis eklenmedi',
-    no_subs_sub: '+ butonuna tıklayarak servis ekleyebilirsin',
-    today_badge: 'Bugün!',
-    days_left: (n) => `${n} gün kaldı`,
-    free_badge: 'Ücretsiz',
-    per_month: '/ay',
-    edit_btn: 'Düzenle',
-    // Profil
-    monthly_stat: 'Aylık',
-    yearly_stat: 'Yıllık',
-    active_stat: 'Aktif',
-    edit_profile: 'Profili Düzenle',
-    name_placeholder: 'Adınız',
-    save_btn: 'Kaydet',
-    // Ayarlar bölümleri
-    settings_security: 'Güvenlik',
-    settings_appearance: 'Görünüm',
-    settings_notifications: 'Bildirimler',
-    settings_data: 'Veri',
-    settings_lang: 'Dil',
-    toggle_faceid: 'Face ID / Touch ID',
-    toggle_faceid_sub: 'Uygulama girişi için',
-    toggle_autolock: 'Otomatik Kilit',
-    toggle_autolock_sub: '2 dakika sonra kilitle',
-    toggle_qr: 'QR Otomatik Döndür',
-    toggle_qr_sub: 'Her 30 sn yeni kod',
-    toggle_colorblind: 'Renk Körü Modu',
-    toggle_colorblind_sub: 'Kırmızı-yeşil körlüğü',
-    toggle_reminder: 'Yenileme Hatırlatıcısı',
-    toggle_reminder_sub: '3 gün önce bildir',
-    toggle_price: 'Fiyat Değişikliği',
-    toggle_price_sub: 'Abonelik artışlarını bildir',
-    export_data: 'Verileri Dışa Aktar',
-    export_data_sub: 'JSON formatında kaydet',
-    import_data: 'Verileri Geri Yükle',
-    import_data_sub: 'Kaydedilen bilgileri aç',
-    change_pin: 'PIN Değiştir',
-    change_pin_sub: 'Giriş şifreni güncelle',
-    delete_all: 'Tüm Verileri Sil',
-    delete_all_sub: 'Bu işlem geri alınamaz',
-    // Sheet
-    account_info: 'Hesap Bilgileri',
-    email_label: 'E-POSTA / KULLANICI',
-    password_label: 'ŞİFRE',
-    qr_open: "TV'den QR ile Aç",
-    open_app: (name) => `${name} Uygulamasını Aç`,
-    share_btn: 'Paylaş',
-    // Servis ekle modal
-    add_modal_title: 'Servis Ekle',
-    service_name: 'Servis Adı',
-    service_url: 'Web Sitesi (favicon için)',
-    email_field: 'E-POSTA / KULLANICI ADI',
-    password_field: 'ŞİFRE',
-    price_field: 'AYLIK ÜCRET (₺)',
-    plan_field: 'PLAN',
-    renew_field: 'YENİLEME TARİHİ',
-    add_btn: 'Ekle',
-    remove_hint: 'Çıkarmak istediğin servise dokun',
-    // Edit modal
-    edit_modal_title: 'Üyelik Bilgileri',
-    renew_date_field: 'YENİLEME TARİHİ',
-    delete_sub: 'Sil',
-    updated_toast: '✓ Güncellendi',
-  },
-  en: {
-    welcome_btn: 'Get Started',
-    login_title: 'Welcome',
-    login_sub: 'Sign in to continue',
-    country_label: 'COUNTRY',
-    login_label: 'SIGN IN',
-    apple_login: 'Sign in with Apple',
-    google_login: 'Sign in with Google',
-    email_login: 'Sign in with Email',
-    skip_login: 'Skip for now →',
-    privacy: 'By signing in, you agree to our Privacy Policy.',
-    ob_services_title: 'Which services do you use?',
-    ob_services_sub: 'You can add more later.',
-    ob_pin_title: 'PIN protection',
-    ob_pin_sub: 'Would you like to protect the app with a PIN? You can change this in settings anytime.',
-    ob_pin_yes: 'Yes, protect with PIN',
-    ob_pin_yes_sub: 'Secure, recommended',
-    ob_pin_no: 'No, continue without PIN',
-    ob_pin_no_sub: 'You can enable it later in settings',
-    ob_create_pin: 'Create PIN',
-    ob_create_pin_sub: 'Set a 4-digit entry code for your app.',
-    ob_done_title: "You're all set! 🎉",
-    ob_done_sub: 'EasyTV setup is complete. Everything is configured and secure.',
-    pin_greeting: 'Welcome back',
-    pin_hint: 'Enter your PIN',
-    pin_skip: 'Skip',
-    nav_home: 'Home',
-    nav_subs: 'Subscriptions',
-    nav_profile: 'Profile',
-    nav_settings: 'Settings',
-    step: (n,t) => `Step ${n} of ${t}`,
-    ob_pin_faceid: 'Face ID / Phone Password',
-    ob_pin_faceid_sub: 'Use your device lock system',
-    add_service: 'Add Service',
-    add_popular: 'Popular',
-    add_custom: 'Custom',
-    add_remove: 'Remove',
-    tab_subs_title: 'Subscriptions',
-    tab_subs_sub: 'Monthly spending summary',
-    tab_profile_title: 'Profile',
-    tab_settings_title: 'Settings',
-    monthly_total: 'Monthly Total',
-    next_renewal: 'Next Renewal',
-    active_subs: (n) => `${n} active subscriptions`,
-    spending_chart: 'MONTHLY SPENDING',
-    no_subs: 'No services added yet',
-    no_subs_sub: 'Tap + to add a service',
-    today_badge: 'Today!',
-    days_left: (n) => `${n} days left`,
-    free_badge: 'Free',
-    per_month: '/mo',
-    edit_btn: 'Edit',
-    monthly_stat: 'Monthly',
-    yearly_stat: 'Yearly',
-    active_stat: 'Active',
-    edit_profile: 'Edit Profile',
-    name_placeholder: 'Your name',
-    save_btn: 'Save',
-    settings_security: 'Security',
-    settings_appearance: 'Appearance',
-    settings_notifications: 'Notifications',
-    settings_data: 'Data',
-    settings_lang: 'Language',
-    toggle_faceid: 'Face ID / Touch ID',
-    toggle_faceid_sub: 'For app sign in',
-    toggle_autolock: 'Auto Lock',
-    toggle_autolock_sub: 'Lock after 2 minutes',
-    toggle_qr: 'Auto Rotate QR',
-    toggle_qr_sub: 'New code every 30s',
-    toggle_colorblind: 'Color Blind Mode',
-    toggle_colorblind_sub: 'Red-green blindness support',
-    toggle_reminder: 'Renewal Reminder',
-    toggle_reminder_sub: 'Notify 3 days before',
-    toggle_price: 'Price Change Alert',
-    toggle_price_sub: 'Notify on subscription increases',
-    export_data: 'Export Data',
-    export_data_sub: 'Save as JSON',
-    import_data: 'Import Data',
-    import_data_sub: 'Restore saved data',
-    change_pin: 'Change PIN',
-    change_pin_sub: 'Update your login PIN',
-    delete_all: 'Delete All Data',
-    delete_all_sub: 'This cannot be undone',
-    account_info: 'Account Details',
-    email_label: 'EMAIL / USERNAME',
-    password_label: 'PASSWORD',
-    qr_open: 'Open on TV via QR',
-    open_app: (name) => `Open ${name} App`,
-    share_btn: 'Share',
-    add_modal_title: 'Add Service',
-    service_name: 'Service Name',
-    service_url: 'Website (for favicon)',
-    email_field: 'EMAIL / USERNAME',
-    password_field: 'PASSWORD',
-    price_field: 'MONTHLY PRICE (₺)',
-    plan_field: 'PLAN',
-    renew_field: 'RENEWAL DATE',
-    add_btn: 'Add',
-    remove_hint: 'Tap a service to remove it',
-    edit_modal_title: 'Subscription Details',
-    renew_date_field: 'RENEWAL DATE',
-    delete_sub: 'Delete',
-    updated_toast: '✓ Updated',
-  }
-};
-let LANG = localStorage.getItem('easytv_lang') || 'tr';
-function t(key, ...args) {
-  const s = STRINGS[LANG] || STRINGS.tr;
-  const val = s[key];
-  return typeof val === 'function' ? val(...args) : (val || key);
-}
-function setLang(lang) {
-  LANG = lang;
-  localStorage.setItem('easytv_lang', lang);
-  applyLang();
-  // Aktif tab'ı yeniden render et
-  buildGrid();
-  if(curTab==='subs') renderSubs();
-  if(curTab==='profile') renderProfile();
-  // Settings statik HTML'i yeniden oluştur
-  renderSettingsLang();
-}
-function applyLang() {
-  // ── Nav ──
-  const navLabels = {home:'nav_home',subs:'nav_subs',profile:'nav_profile',settings:'nav_settings'};
-  Object.entries(navLabels).forEach(([id,key])=>{
-    const el=document.querySelector(`#nav-${id} .nav-label`);
-    if(el) el.textContent=t(key);
-  });
-
-  // ── Login ──
-  const $ = id => document.getElementById(id);
-  if($('title-subs')) $('title-subs').textContent=t('tab_subs_title');
-  if($('title-profile')) $('title-profile').textContent=t('tab_profile_title');
-  if($('title-settings')) $('title-settings').textContent=t('tab_settings_title');
-  if($('loginTitle')) $('loginTitle').textContent=t('login_title');
-  if($('loginSub')) $('loginSub').textContent=t('login_sub');
-  if($('loginCountryLbl')) $('loginCountryLbl').textContent=t('country_label');
-  if($('loginSigninLbl')) $('loginSigninLbl').textContent=t('login_label');
-  if($('appleLoginBtn')) $('appleLoginBtn').lastChild.textContent=' '+t('apple_login');
-  if($('googleLoginBtn')) $('googleLoginBtn').lastChild.textContent=' '+t('google_login');
-  if($('emailLoginBtn')) $('emailLoginBtn').lastChild.textContent=' '+t('email_login');
-  if($('loginSkipBtn')) $('loginSkipBtn').textContent=t('skip_login');
-  if($('loginPrivacy')) $('loginPrivacy').textContent=t('privacy');
-
-  // ── Tab başlıkları ──
-  if($('subsSubtitle')) $('subsSubtitle').textContent=t('tab_subs_sub');
-
-  // ── Üyelikler ──
-  const totalLbl=document.querySelector('.subs-total-lbl');
-  if(totalLbl) totalLbl.textContent=t('monthly_total');
-  const chartTitle=document.querySelector('.chart-title-lbl');
-  if(chartTitle) chartTitle.textContent=t('spending_chart');
-
-  // ── Ayarlar bölüm başlıkları ──
-  const secLbl=document.getElementById('lbl-security');
-  const appLbl=document.getElementById('lbl-appearance');
-  const notLbl=document.getElementById('lbl-notifications');
-  const datLbl=document.getElementById('lbl-data');
-  if(secLbl) secLbl.textContent=t('settings_security');
-  if(appLbl) appLbl.textContent=t('settings_appearance');
-  if(notLbl) notLbl.textContent=t('settings_notifications');
-  if(datLbl) datLbl.textContent=t('settings_data');
-
-  // ── Toggle satırları ──
-  const toggleMap={
-    'tog-faceid':    ['toggle_faceid','toggle_faceid_sub'],
-    'tog-autolock':  ['toggle_autolock','toggle_autolock_sub'],
-    'tog-qrrotate':  ['toggle_qr','toggle_qr_sub'],
-    'tog-colorblind':['toggle_colorblind','toggle_colorblind_sub'],
-    'tog-reminder':  ['toggle_reminder','toggle_reminder_sub'],
-    'tog-pricechange':['toggle_price','toggle_price_sub'],
-  };
-  Object.entries(toggleMap).forEach(([togId,[lbl,sub]])=>{
-    const row=document.getElementById(togId)?.closest('.toggle-row');
-    if(!row) return;
-    const lblEl=row.querySelector('.toggle-lbl');
-    const subEl=row.querySelector('.toggle-desc');
-    if(lblEl) lblEl.textContent=t(lbl);
-    if(subEl) subEl.textContent=t(sub);
-  });
-
-  // ── Ayarlar menü öğeleri ──
-  const menuMap={
-    'menu-export':   ['export_data','export_data_sub'],
-    'menu-import':   ['import_data','import_data_sub'],
-    'menu-pin':      ['change_pin','change_pin_sub'],
-    'menu-deleteall':['delete_all','delete_all_sub'],
-  };
-  Object.entries(menuMap).forEach(([id,[lbl,sub]])=>{
-    const el=document.getElementById(id);
-    if(!el) return;
-    const lblEl=el.querySelector('.menu-lbl');
-    const subEl=el.querySelector('.menu-sub');
-    if(lblEl) lblEl.textContent=t(lbl);
-    if(subEl) subEl.textContent=t(sub);
-  });
-
-  // ── Dil etiketi ──
-  const langLbl=document.getElementById('lbl-lang');
-  if(langLbl) langLbl.textContent=t('settings_lang');
-
-  // ── PIN ekranı ──
-  if($('pinGreeting')) $('pinGreeting').textContent=t('pin_greeting');
-  if($('pinHint')) $('pinHint').textContent=t('pin_hint');
-  if($('pinSkipBtn')) $('pinSkipBtn').textContent=t('pin_skip');
-
-  // ── Sheet ──
-  const sDesc=document.getElementById('sDesc');
-  if(sDesc) sDesc.textContent=t('account_info');
-  const sEmailLbl=document.getElementById('sEmailLbl');
-  if(sEmailLbl) sEmailLbl.textContent=t('email_label');
-  const sPwdLbl=document.getElementById('sPwdLbl');
-  if(sPwdLbl) sPwdLbl.textContent=t('password_label');
-  const qrOpenBtn=document.getElementById('qrOpenBtn');
-  if(qrOpenBtn) qrOpenBtn.textContent='📺 '+t('qr_open');
-  const shareBtn=document.getElementById('shareBtn');
-  if(shareBtn) shareBtn.textContent=t('share_btn');
-
-  // ── Servis Ekle Modal ──
-  const addModalTitle=document.getElementById('addModalTitle');
-  if(addModalTitle) addModalTitle.textContent=t('add_modal_title');
-  const tabPop=document.getElementById('tab-popular');
-  const tabCus=document.getElementById('tab-custom');
-  const tabRem=document.getElementById('tab-remove');
-  if(tabPop) tabPop.textContent=t('add_popular');
-  if(tabCus) tabCus.textContent=t('add_custom');
-  if(tabRem) tabRem.textContent=t('add_remove');
-
-  // ── Onboarding dil seçeneği güncelle ──
-  if(typeof renderOnboardStep==='function' && document.getElementById('onboardContent')?.children.length>0){
-    renderOnboardStep();
-  }
-
-  // ── Lang butonları aktif/pasif ──
-  document.querySelectorAll('.lang-btn').forEach(b=>{
-    b.classList.toggle('lang-sel', b.dataset.lang===LANG);
-  });
-
-  // ── Üyelikler tab statik başlıklar ──
-  const subsStatCards = document.querySelectorAll('.stat-card-label');
-  if(subsStatCards.length>=2){
-    subsStatCards[0].textContent = t('monthly_total');
-    subsStatCards[1].textContent = t('next_renewal');
-  }
-  // ── Profil stat etiketleri ──
-  const profStatLabels = document.querySelectorAll('.profile-stat-lbl');
-  if(profStatLabels.length>=3){
-    profStatLabels[0].textContent = t('monthly_stat');
-    profStatLabels[1].textContent = t('yearly_stat');
-    profStatLabels[2].textContent = t('active_stat');
-  }
-  // edit profile btn
-  const editProfBtn = document.getElementById('editProfBtn');
-  if(editProfBtn) editProfBtn.textContent = t('edit_profile');
-}
-
-function renderSettingsLang(){
-  // Ayarlar tab'ındaki tüm metinleri yeniden uygula
-  const $ = id => document.getElementById(id);
-  if($('lbl-security')) $('lbl-security').textContent=t('settings_security');
-  if($('lbl-appearance')) $('lbl-appearance').textContent=t('settings_appearance');
-  if($('lbl-notifications')) $('lbl-notifications').textContent=t('settings_notifications');
-  if($('lbl-data')) $('lbl-data').textContent=t('settings_data');
-  if($('lbl-lang')) $('lbl-lang').textContent=t('settings_lang');
-  const toggleMap={
-    'tog-faceid':    ['toggle_faceid','toggle_faceid_sub'],
-    'tog-autolock':  ['toggle_autolock','toggle_autolock_sub'],
-    'tog-qrrotate':  ['toggle_qr','toggle_qr_sub'],
-    'tog-colorblind':['toggle_colorblind','toggle_colorblind_sub'],
-    'tog-reminder':  ['toggle_reminder','toggle_reminder_sub'],
-    'tog-pricechange':['toggle_price','toggle_price_sub'],
-  };
-  Object.entries(toggleMap).forEach(([togId,[lbl,sub]])=>{
-    const row=document.getElementById(togId)?.closest('.toggle-row');
-    if(!row) return;
-    const lblEl=row.querySelector('.toggle-lbl');
-    const subEl=row.querySelector('.toggle-desc');
-    if(lblEl) lblEl.textContent=t(lbl);
-    if(subEl) subEl.textContent=t(sub);
-  });
-  const menuMap={
-    'menu-export':   ['export_data','export_data_sub'],
-    'menu-import':   ['import_data','import_data_sub'],
-    'menu-pin':      ['change_pin','change_pin_sub'],
-    'menu-deleteall':['delete_all','delete_all_sub'],
-  };
-  Object.entries(menuMap).forEach(([id,[lbl,sub]])=>{
-    const el=document.getElementById(id);
-    if(!el) return;
-    const lblEl=el.querySelector('.menu-lbl');
-    const subEl=el.querySelector('.menu-sub');
-    if(lblEl) lblEl.textContent=t(lbl);
-    if(subEl) subEl.textContent=t(sub);
-  });
-}
-function getRegion(){return REGION_DATA[SETTINGS.region||'tr']||REGION_DATA.tr;}
-function updateRegionUI(){
-  const code=SETTINGS.country||'tr';
-  const country=COUNTRIES?COUNTRIES.find(c=>c.code===code):null;
-  const reg=getRegion();
-  const desc=document.getElementById('regionDesc');
-  if(desc) desc.textContent=country?country.name:reg.label.split(' ').slice(1).join(' ');
-}
-
+// ══ PARA BİRİMLERİ ══════════════════════════════════
+const CURRENCIES = [
+  {code:'TRY',symbol:'₺',name:'Türk Lirası'},
+  {code:'USD',symbol:'$',name:'Amerikan Doları'},
+  {code:'EUR',symbol:'€',name:'Euro'},
+  {code:'GBP',symbol:'£',name:'Sterlin'},
+  {code:'JPY',symbol:'¥',name:'Japon Yeni'},
+  {code:'CAD',symbol:'CA$',name:'Kanada Doları'},
+  {code:'AUD',symbol:'A$',name:'Avustralya Doları'},
+  {code:'CHF',symbol:'Fr',name:'İsviçre Frangı'},
+  {code:'SEK',symbol:'kr',name:'İsveç Kronu'},
+  {code:'NOK',symbol:'kr',name:'Norveç Kronu'},
+  {code:'DKK',symbol:'kr',name:'Danimarka Kronu'},
+  {code:'KRW',symbol:'₩',name:'Güney Kore Wonu'},
+  {code:'INR',symbol:'₹',name:'Hindistan Rupisi'},
+  {code:'BRL',symbol:'R$',name:'Brezilya Reali'},
+  {code:'MXN',symbol:'MX$',name:'Meksika Pesosu'},
+  {code:'SGD',symbol:'S$',name:'Singapur Doları'},
+  {code:'AED',symbol:'AED',name:'BAE Dirhemi'},
+  {code:'SAR',symbol:'SAR',name:'Suudi Riyali'},
+  {code:'PLN',symbol:'zł',name:'Polonya Zlotisi'},
+  {code:'CNY',symbol:'¥',name:'Çin Yuanı'},
+  {code:'HKD',symbol:'HK$',name:'Hong Kong Doları'},
+  {code:'NZD',symbol:'NZ$',name:'Yeni Zelanda Doları'},
+  {code:'IDR',symbol:'Rp',name:'Endonezya Rupisi'},
+  {code:'MYR',symbol:'RM',name:'Malezya Ringgiti'},
+  {code:'PHP',symbol:'₱',name:'Filipin Pesosu'},
+  {code:'THB',symbol:'฿',name:'Tayland Bahtı'},
+  {code:'TWD',symbol:'NT$',name:'Tayvan Doları'},
+  {code:'VND',symbol:'₫',name:'Vietnam Dongu'},
+  {code:'ZAR',symbol:'R',name:'Güney Afrika Randı'},
+  {code:'ILS',symbol:'₪',name:'İsrail Şekeli'},
+  {code:'EGP',symbol:'E£',name:'Mısır Poundu'},
+  {code:'NGN',symbol:'₦',name:'Nijerya Nairası'},
+  {code:'RUB',symbol:'₽',name:'Rus Rublesi'},
+  {code:'UAH',symbol:'₴',name:'Ukrayna Grivnası'},
+  {code:'RON',symbol:'lei',name:'Romen Leyi'},
+  {code:'CZK',symbol:'Kč',name:'Çek Korunası'},
+  {code:'CLP',symbol:'$',name:'Şili Pesosu'},
+  {code:'COP',symbol:'$',name:'Kolombiya Pesosu'},
+  {code:'PEN',symbol:'S/',name:'Peru Solu'},
+  {code:'ARS',symbol:'$',name:'Arjantin Pesosu'},
+];
 
 const POPULAR_SVCS = [
   {id:'netflix',name:'Netflix',color:'#E50914',rgb:'229,9,20',
@@ -1373,7 +1036,7 @@ const POPULAR_SVCS = [
   {id:'prime',name:'Prime Video',color:'#1A98FF',rgb:'26,152,255',
     prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}},
     plans:{tr:[{name:'Prime Üyelik',price:129.99},{name:'Prime Video Kanal',price:49.99}]}},
-  {id:'hbo',name:'HBO Max',color:'#1C2340',rgb:'28,35,64',
+  {id:'hbo',name:'HBO Max',color:'#3B1F6B',rgb:'59,31,107',
     prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}},
     plans:{tr:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate (4K)',price:249.99}]}},
   {id:'apple',name:'Apple TV+',color:'#1c1c1e',rgb:'220,220,220',textDark:true,
@@ -1448,6 +1111,16 @@ function loadData(){
     SETTINGS={pin:'1111',autolock:true,faceid:true,qrrotate:true};
   }
 }
+
+// Kurları cache'den yükle
+try{
+  const rc = localStorage.getItem('easytv_rates');
+  const rt = localStorage.getItem('easytv_rates_ts');
+  if(rc) EXCHANGE_RATES = JSON.parse(rc);
+  if(rt) RATES_TIMESTAMP = parseInt(rt);
+}catch(e){}
+// Sayfa yüklenince kurları güncelle (cache varsa sessiz, 6 saatten eskiyse güncelle)
+setTimeout(()=>{ fetchExchangeRates(false); }, 2500);
 
 // ═══ INIT ════════════════════════════════════════════════
 loadData();
@@ -1580,27 +1253,859 @@ function obKp(k){
 
 // Ülke listesi - TR önce, sonra en çok kullanılanlar
 const COUNTRIES = [
-  {code:'tr',flag:'🇹🇷',name:'Türkiye',region:'tr'},
-  {code:'us',flag:'🇺🇸',name:'Amerika Birleşik Devletleri',region:'us'},
-  {code:'gb',flag:'🇬🇧',name:'Birleşik Krallık',region:'eu'},
-  {code:'de',flag:'🇩🇪',name:'Almanya',region:'eu'},
-  {code:'fr',flag:'🇫🇷',name:'Fransa',region:'eu'},
-  {code:'nl',flag:'🇳🇱',name:'Hollanda',region:'eu'},
-  {code:'jp',flag:'🇯🇵',name:'Japonya',region:'as'},
-  {code:'kr',flag:'🇰🇷',name:'Güney Kore',region:'as'},
-  {code:'au',flag:'🇦🇺',name:'Avustralya',region:'as'},
-  {code:'ca',flag:'🇨🇦',name:'Kanada',region:'us'},
-  {code:'it',flag:'🇮🇹',name:'İtalya',region:'eu'},
-  {code:'es',flag:'🇪🇸',name:'İspanya',region:'eu'},
-  {code:'se',flag:'🇸🇪',name:'İsveç',region:'eu'},
-  {code:'no',flag:'🇳🇴',name:'Norveç',region:'eu'},
-  {code:'ch',flag:'🇨🇭',name:'İsviçre',region:'eu'},
-  {code:'ae',flag:'🇦🇪',name:'Birleşik Arap Emirlikleri',region:'as'},
-  {code:'sg',flag:'🇸🇬',name:'Singapur',region:'as'},
-  {code:'br',flag:'🇧🇷',name:'Brezilya',region:'us'},
-  {code:'mx',flag:'🇲🇽',name:'Meksika',region:'us'},
-  {code:'in',flag:'🇮🇳',name:'Hindistan',region:'as'},
+  // Türkiye
+  {code:'tr',flag:'🇹🇷',name:'Türkiye',region:'tr',currency:'TRY',symbol:'₺'},
+  // Avrupa
+  {code:'de',flag:'🇩🇪',name:'Almanya',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'at',flag:'🇦🇹',name:'Avusturya',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'be',flag:'🇧🇪',name:'Belçika',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'cz',flag:'🇨🇿',name:'Çekya',region:'eu',currency:'CZK',symbol:'Kč'},
+  {code:'dk',flag:'🇩🇰',name:'Danimarka',region:'eu',currency:'DKK',symbol:'kr'},
+  {code:'fi',flag:'🇫🇮',name:'Finlandiya',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'fr',flag:'🇫🇷',name:'Fransa',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'nl',flag:'🇳🇱',name:'Hollanda',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'ie',flag:'🇮🇪',name:'İrlanda',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'es',flag:'🇪🇸',name:'İspanya',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'se',flag:'🇸🇪',name:'İsveç',region:'eu',currency:'SEK',symbol:'kr'},
+  {code:'ch',flag:'🇨🇭',name:'İsviçre',region:'eu',currency:'CHF',symbol:'Fr'},
+  {code:'it',flag:'🇮🇹',name:'İtalya',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'no',flag:'🇳🇴',name:'Norveç',region:'eu',currency:'NOK',symbol:'kr'},
+  {code:'pt',flag:'🇵🇹',name:'Portekiz',region:'eu',currency:'EUR',symbol:'€'},
+  {code:'pl',flag:'🇵🇱',name:'Polonya',region:'eu',currency:'PLN',symbol:'zł'},
+  {code:'ro',flag:'🇷🇴',name:'Romanya',region:'eu',currency:'RON',symbol:'lei'},
+  {code:'ru',flag:'🇷🇺',name:'Rusya',region:'eu',currency:'RUB',symbol:'₽'},
+  {code:'gb',flag:'🇬🇧',name:'Birleşik Krallık',region:'eu',currency:'GBP',symbol:'£'},
+  {code:'ua',flag:'🇺🇦',name:'Ukrayna',region:'eu',currency:'UAH',symbol:'₴'},
+  // Kuzey Amerika
+  {code:'us',flag:'🇺🇸',name:'Amerika Birleşik Devletleri',region:'us',currency:'USD',symbol:'$'},
+  {code:'ca',flag:'🇨🇦',name:'Kanada',region:'us',currency:'CAD',symbol:'CA$'},
+  {code:'mx',flag:'🇲🇽',name:'Meksika',region:'us',currency:'MXN',symbol:'MX$'},
+  // Güney Amerika
+  {code:'ar',flag:'🇦🇷',name:'Arjantin',region:'us',currency:'ARS',symbol:'$'},
+  {code:'br',flag:'🇧🇷',name:'Brezilya',region:'us',currency:'BRL',symbol:'R$'},
+  {code:'cl',flag:'🇨🇱',name:'Şili',region:'us',currency:'CLP',symbol:'$'},
+  {code:'co',flag:'🇨🇴',name:'Kolombiya',region:'us',currency:'COP',symbol:'$'},
+  {code:'pe',flag:'🇵🇪',name:'Peru',region:'us',currency:'PEN',symbol:'S/'},
+  // Asya
+  {code:'cn',flag:'🇨🇳',name:'Çin',region:'as',currency:'CNY',symbol:'¥'},
+  {code:'hk',flag:'🇭🇰',name:'Hong Kong',region:'as',currency:'HKD',symbol:'HK$'},
+  {code:'in',flag:'🇮🇳',name:'Hindistan',region:'as',currency:'INR',symbol:'₹'},
+  {code:'id',flag:'🇮🇩',name:'Endonezya',region:'as',currency:'IDR',symbol:'Rp'},
+  {code:'jp',flag:'🇯🇵',name:'Japonya',region:'as',currency:'JPY',symbol:'¥'},
+  {code:'kr',flag:'🇰🇷',name:'Güney Kore',region:'as',currency:'KRW',symbol:'₩'},
+  {code:'my',flag:'🇲🇾',name:'Malezya',region:'as',currency:'MYR',symbol:'RM'},
+  {code:'ph',flag:'🇵🇭',name:'Filipinler',region:'as',currency:'PHP',symbol:'₱'},
+  {code:'sg',flag:'🇸🇬',name:'Singapur',region:'as',currency:'SGD',symbol:'S$'},
+  {code:'th',flag:'🇹🇭',name:'Tayland',region:'as',currency:'THB',symbol:'฿'},
+  {code:'tw',flag:'🇹🇼',name:'Tayvan',region:'as',currency:'TWD',symbol:'NT$'},
+  {code:'vn',flag:'🇻🇳',name:'Vietnam',region:'as',currency:'VND',symbol:'₫'},
+  // Orta Doğu & Afrika
+  {code:'ae',flag:'🇦🇪',name:'Birleşik Arap Emirlikleri',region:'as',currency:'AED',symbol:'AED'},
+  {code:'eg',flag:'🇪🇬',name:'Mısır',region:'as',currency:'EGP',symbol:'E£'},
+  {code:'il',flag:'🇮🇱',name:'İsrail',region:'as',currency:'ILS',symbol:'₪'},
+  {code:'ng',flag:'🇳🇬',name:'Nijerya',region:'as',currency:'NGN',symbol:'₦'},
+  {code:'sa',flag:'🇸🇦',name:'Suudi Arabistan',region:'as',currency:'SAR',symbol:'SAR'},
+  {code:'za',flag:'🇿🇦',name:'Güney Afrika',region:'as',currency:'ZAR',symbol:'R'},
+  // Okyanusya
+  {code:'au',flag:'🇦🇺',name:'Avustralya',region:'as',currency:'AUD',symbol:'A$'},
+  {code:'nz',flag:'🇳🇿',name:'Yeni Zelanda',region:'as',currency:'NZD',symbol:'NZ$'},
 ];
+
+// Ülke kodu → para birimi kodu hızlı lookup
+const COUNTRY_CURRENCY = {};
+COUNTRIES.forEach(c=>{ COUNTRY_CURRENCY[c.code]=c.currency; });
+
+// Ülke kodu → servis fiyatları (yerel para birimiyle)
+// Yoksa TRY bazlı dönüşüm kullanılır
+const COUNTRY_PRICES = {
+  tr:{
+    netflix:{plans:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile',price:269.99}]},
+    youtube:{plans:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99},{name:'Öğrenci',price:69.99}]},
+    spotify:{plans:[{name:'Bireysel',price:79.99},{name:'Duo',price:129.99},{name:'Aile',price:159.99},{name:'Öğrenci',price:49.99}]},
+    disney:{plans:[{name:'Reklamlı',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]},
+    hbo:{plans:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate',price:249.99}]},
+    apple:{plans:[{name:'Bireysel',price:49.99},{name:'Aile',price:99.99}]},
+  },
+  us:{
+    netflix:{plans:[{name:'Standard w/ Ads',price:6.99},{name:'Standard',price:15.49},{name:'Premium',price:22.99}]},
+    youtube:{plans:[{name:'Individual',price:13.99},{name:'Family',price:22.99},{name:'Student',price:7.99}]},
+    spotify:{plans:[{name:'Individual',price:11.99},{name:'Duo',price:16.99},{name:'Family',price:19.99},{name:'Student',price:5.99}]},
+    disney:{plans:[{name:'Basic w/ Ads',price:7.99},{name:'Standard',price:13.99},{name:'Premium',price:13.99}]},
+    hbo:{plans:[{name:'With Ads',price:9.99},{name:'Ad-Free',price:15.99},{name:'Ultimate',price:19.99}]},
+    apple:{plans:[{name:'Individual',price:9.99},{name:'Family',price:16.99}]},
+    prime:{plans:[{name:'Monthly',price:8.99},{name:'Annual',price:139}]},
+  },
+  gb:{
+    netflix:{plans:[{name:'Standard w/ Ads',price:4.99},{name:'Standard',price:10.99},{name:'Premium',price:17.99}]},
+    youtube:{plans:[{name:'Individual',price:12.99},{name:'Family',price:22.99},{name:'Student',price:6.99}]},
+    spotify:{plans:[{name:'Individual',price:11.99},{name:'Duo',price:16.49},{name:'Family',price:19.99},{name:'Student',price:5.99}]},
+    disney:{plans:[{name:'Standard w/ Ads',price:4.99},{name:'Standard',price:7.99},{name:'Premium',price:11.99}]},
+    apple:{plans:[{name:'Individual',price:8.99},{name:'Family',price:14.99}]},
+  },
+  de:{
+    netflix:{plans:[{name:'Standard w/ Ads',price:4.99},{name:'Standard',price:12.99},{name:'Premium',price:19.99}]},
+    spotify:{plans:[{name:'Individual',price:11.99},{name:'Duo',price:16.49},{name:'Family',price:19.99},{name:'Student',price:5.99}]},
+    disney:{plans:[{name:'Standard w/ Ads',price:5.99},{name:'Standard',price:8.99},{name:'Premium',price:11.99}]},
+    apple:{plans:[{name:'Individual',price:9.99},{name:'Family',price:16.99}]},
+  },
+  fr:{
+    netflix:{plans:[{name:'Standard w/ Ads',price:5.99},{name:'Standard',price:13.49},{name:'Premium',price:19.99}]},
+    spotify:{plans:[{name:'Individual',price:10.99},{name:'Duo',price:14.99},{name:'Family',price:17.99}]},
+    apple:{plans:[{name:'Individual',price:9.99},{name:'Family',price:16.99}]},
+  },
+  jp:{
+    netflix:{plans:[{name:'広告つきスタンダード',price:790},{name:'スタンダード',price:1590},{name:'プレミアム',price:1980}]},
+    spotify:{plans:[{name:'個人',price:980},{name:'ファミリー',price:1580},{name:'学生',price:480}]},
+    apple:{plans:[{name:'個人',price:1200},{name:'ファミリー',price:1980}]},
+  },
+  kr:{
+    netflix:{plans:[{name:'광고형 스탠다드',price:5500},{name:'스탠다드',price:13500},{name:'프리미엄',price:17000}]},
+    spotify:{plans:[{name:'개인',price:10900},{name:'듀오',price:14900},{name:'가족',price:16900}]},
+  },
+  au:{
+    netflix:{plans:[{name:'Standard w/ Ads',price:7},{name:'Standard',price:18},{name:'Premium',price:22.99}]},
+    spotify:{plans:[{name:'Individual',price:12.99},{name:'Duo',price:17.99},{name:'Family',price:22.99}]},
+    apple:{plans:[{name:'Individual',price:12.99},{name:'Family',price:19.99}]},
+  },
+  in:{
+    netflix:{plans:[{name:'Mobile',price:149},{name:'Basic',price:199},{name:'Standard',price:499},{name:'Premium',price:649}]},
+    spotify:{plans:[{name:'Individual',price:119},{name:'Duo',price:179},{name:'Family',price:179},{name:'Student',price:59}]},
+    apple:{plans:[{name:'Individual',price:99},{name:'Family',price:179}]},
+  },
+  br:{
+    netflix:{plans:[{name:'Essential c/ Anúncios',price:20.90},{name:'Padrão',price:39.90},{name:'Premium',price:59.90}]},
+    spotify:{plans:[{name:'Individual',price:21.90},{name:'Duo',price:28.90},{name:'Família',price:36.90}]},
+  },
+  ca:{
+    netflix:{plans:[{name:'Standard w/ Ads',price:5.99},{name:'Standard',price:16.99},{name:'Premium',price:20.99}]},
+    spotify:{plans:[{name:'Individual',price:11.99},{name:'Duo',price:15.99},{name:'Family',price:19.99}]},
+  },
+  mx:{
+    netflix:{plans:[{name:'Estándar con anuncios',price:99},{name:'Estándar',price:189},{name:'Premium',price:299}]},
+    spotify:{plans:[{name:'Individual',price:115},{name:'Dúo',price:149},{name:'Familiar',price:179}]},
+  },
+};
+
+// Kur cache: TRY base
+let EXCHANGE_RATES = JSON.parse(localStorage.getItem('easytv_rates')||'{}');
+let RATES_TIMESTAMP = parseInt(localStorage.getItem('easytv_rates_ts')||'0');
+
+async function fetchExchangeRates(force=false){
+  const now = Date.now();
+  // 6 saatte bir güncelle (ya da force=true)
+  if(!force && EXCHANGE_RATES.USD && (now - RATES_TIMESTAMP) < 6*3600*1000){
+    updateRateUI(); return;
+  }
+  const descEl = document.getElementById('rateLastUpdate');
+  if(descEl) descEl.textContent = 'Güncelleniyor...';
+  try {
+    // Ücretsiz API: exchangerate-api (no key needed for base)
+    const res = await fetch('https://open.er-api.com/v6/latest/TRY');
+    const data = await res.json();
+    if(data.rates){
+      EXCHANGE_RATES = data.rates;
+      RATES_TIMESTAMP = now;
+      localStorage.setItem('easytv_rates', JSON.stringify(EXCHANGE_RATES));
+      localStorage.setItem('easytv_rates_ts', String(now));
+      updateRateUI();
+      showToast('✓ Kurlar güncellendi');
+    }
+  } catch(e){
+    if(descEl) descEl.textContent = 'Güncelleme başarısız';
+    showToast('Kur verisi alınamadı');
+  }
+}
+
+function updateRateUI(){
+  const descEl = document.getElementById('rateLastUpdate');
+  const curDescEl = document.getElementById('currencyDesc');
+  if(RATES_TIMESTAMP > 0 && descEl){
+    const d = new Date(RATES_TIMESTAMP);
+    descEl.textContent = `Son güncelleme: ${d.toLocaleDateString('tr-TR')} ${d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}`;
+  }
+  const curCode = SETTINGS.displayCurrency || 'TRY';
+  const cur = CURRENCIES.find(c=>c.code===curCode) || CURRENCIES[0];
+  if(curDescEl) curDescEl.textContent = `${cur.name} (${cur.symbol})`;
+}
+
+// TRY fiyatını gösterim para birimine çevir
+function convertPrice(priceTRY){
+  const curCode = SETTINGS.displayCurrency || 'TRY';
+  if(curCode === 'TRY') return {value: priceTRY, symbol: '₺'};
+  const cur = CURRENCIES.find(c=>c.code===curCode);
+  if(!cur) return {value: priceTRY, symbol: '₺'};
+  const rate = EXCHANGE_RATES[curCode];
+  if(!rate) return {value: priceTRY, symbol: '₺'};
+  // EXCHANGE_RATES is TRY base, so 1 TRY = rate[curCode]
+  const converted = priceTRY * rate;
+  return {value: converted, symbol: cur.symbol};
+}
+
+function formatPrice(priceTRY){
+  const {value, symbol} = convertPrice(priceTRY);
+  return symbol + value.toFixed(2);
+}
+
+function renderCurrencyList(q){
+  const curCode = SETTINGS.displayCurrency || 'TRY';
+  const filtered = q ? CURRENCIES.filter(c=>
+    c.name.toLowerCase().includes(q.toLowerCase()) ||
+    c.code.toLowerCase().includes(q.toLowerCase()) ||
+    c.symbol.toLowerCase().includes(q.toLowerCase())
+  ) : CURRENCIES;
+  const list = document.getElementById('currencyPickerList');
+  if(!list) return;
+  list.innerHTML = filtered.map(c=>`
+    <div onclick="selectCurrency('${c.code}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 18px;font-size:14px;font-weight:600;color:${c.code===curCode?'#fff':'rgba(255,255,255,.65)'};cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);">
+      <span><span style="font-weight:800;color:rgba(255,255,255,.9);min-width:36px;display:inline-block;">${c.symbol}</span>&nbsp;${c.name} <span style="font-size:12px;color:rgba(255,255,255,.3);">${c.code}</span></span>
+      ${c.code===curCode?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+    </div>`).join('');
+}
+function openCurrencyPicker(){
+  // Currency picker: dedicated bottom sheet modal
+  let pickerEl = document.getElementById('currencyPickerModal');
+  if(!pickerEl){
+    pickerEl = document.createElement('div');
+    pickerEl.id = 'currencyPickerModal';
+    pickerEl.style.cssText = 'display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';
+    pickerEl.innerHTML = `
+      <div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:80%;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;">
+          <div style="font-size:17px;font-weight:800;color:#fff;">Para Birimi Seç</div>
+          <button onclick="closeCurrencyPicker()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+        </div>
+        <div style="padding:0 16px 10px;">
+          <input class="add-input" id="currencySearchInput" placeholder="🔍 Para birimi ara..." oninput="renderCurrencyList(this.value)" style="margin:0;" autocomplete="off">
+        </div>
+        <div id="currencyPickerList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div>
+      </div>`;
+    pickerEl.addEventListener('click', function(e){ if(e.target===pickerEl) closeCurrencyPicker(); });
+    document.getElementById('phone').appendChild(pickerEl);
+  }
+  pickerEl.style.display = 'flex';
+  requestAnimationFrame(()=>{ pickerEl.style.opacity='1'; });
+  setTimeout(()=>renderCurrencyList(''), 30);
+}
+function closeCurrencyPicker(){
+  const el = document.getElementById('currencyPickerModal');
+  if(el) el.style.display='none';
+}
+
+function selectCurrency(code){
+  SETTINGS.displayCurrency = code;
+  saveData();
+  closeCurrencyPicker();
+  updateRateUI();
+  renderSubs();
+  showToast('✓ Para birimi değiştirildi');
+  if(code !== 'TRY' && !EXCHANGE_RATES[code]) fetchExchangeRates(true);
+}
+
+// Welcome screen bölge seçici
+function toggleWlcRegion(){
+  const trigger = document.getElementById('wlcRegionTrigger');
+  const dropdown = document.getElementById('wlcRegionDropdown');
+  const isOpen = dropdown.classList.contains('open');
+  trigger.classList.toggle('open', !isOpen);
+  dropdown.classList.toggle('open', !isOpen);
+  if(!isOpen){
+    buildWlcRegionList('');
+    setTimeout(()=>{
+      const s = document.getElementById('wlcRegionSearch');
+      if(s){ s.value=''; s.focus(); }
+      document.addEventListener('click', function close(e){
+        if(!document.getElementById('wlcRegionWrap')?.contains(e.target)){
+          document.getElementById('wlcRegionTrigger')?.classList.remove('open');
+          document.getElementById('wlcRegionDropdown')?.classList.remove('open');
+          document.removeEventListener('click', close);
+        }
+      });
+    }, 50);
+  }
+}
+
+function buildWlcRegionList(q){
+  const list = document.getElementById('wlcRegionList');
+  if(!list) return;
+  const cur = SETTINGS.country || 'tr';
+  const filtered = q ? COUNTRIES.filter(c=>
+    c.name.toLowerCase().includes(q.toLowerCase()) ||
+    c.code.toLowerCase().includes(q.toLowerCase())
+  ) : COUNTRIES;
+  list.innerHTML = '';
+  filtered.forEach(c=>{
+    const btn = document.createElement('button');
+    btn.className = 'wlc-lang-option' + (c.code===cur?' selected':'');
+    btn.innerHTML = `<span style="font-size:16px;margin-right:6px;">${c.flag}</span><span style="flex:1;text-align:left;">${c.name}</span><span style="font-size:11px;color:rgba(255,255,255,.3);margin-left:4px;">${c.symbol}</span>${c.code===cur?'<span style="margin-left:6px;color:#4cd964;font-size:14px;">✓</span>':''}`;
+    btn.onclick = ()=> wlcSetRegion(c.code, c.region, c.flag, c.name);
+    list.appendChild(btn);
+  });
+}
+
+function wlcSetRegion(code, region, flag, name){
+  SETTINGS.country = code;
+  SETTINGS.region = region;
+  saveData();
+  document.getElementById('wlcRegionTrigger')?.classList.remove('open');
+  document.getElementById('wlcRegionDropdown')?.classList.remove('open');
+  document.getElementById('wlcRegionFlag').textContent = flag;
+  document.getElementById('wlcRegionLabel').textContent = name.split(' ')[0]; // kısa isim
+}
+
+function toggleWlcLang(){
+  const trigger = document.getElementById('wlcLangTrigger');
+  const dropdown = document.getElementById('wlcLangDropdown');
+  const isOpen = dropdown.classList.contains('open');
+  trigger.classList.toggle('open', !isOpen);
+  dropdown.classList.toggle('open', !isOpen);
+  if(!isOpen){
+    // Dışarı tıklayınca kapat
+    setTimeout(()=>{
+      document.addEventListener('click', function close(e){
+        if(!document.getElementById('wlcLangWrap').contains(e.target)){
+          document.getElementById('wlcLangTrigger').classList.remove('open');
+          document.getElementById('wlcLangDropdown').classList.remove('open');
+          document.removeEventListener('click', close);
+        }
+      });
+    }, 10);
+  }
+}
+
+function wlcSetLang(lang){
+  LANG = lang;
+  // Dropdown kapat
+  document.getElementById('wlcLangTrigger').classList.remove('open');
+  document.getElementById('wlcLangDropdown').classList.remove('open');
+  // Trigger güncelle
+  document.getElementById('wlcLangFlag').textContent = lang==='tr' ? '🇹🇷' : '🇬🇧';
+  document.getElementById('wlcLangLabel').textContent = lang==='tr' ? 'Türkçe' : 'English';
+  // Seçili durum
+  document.getElementById('wlcOptTR').classList.toggle('selected', lang==='tr');
+  document.getElementById('wlcOptEN').classList.toggle('selected', lang==='en');
+  // Metinleri güncelle
+  const tagline = lang==='tr'
+    ? 'Şifreleriniz güvende,<br>giriş tek dokunuşta.'
+    : 'Passwords safe,<br>sign in with one tap.';
+  document.getElementById('wlcTagline').innerHTML = tagline;
+  document.getElementById('wlcSub').textContent = lang==='tr'
+    ? 'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.'
+    : 'Store your TV subscriptions.\nSign in with QR in seconds.';
+  document.getElementById('wlcStartBtn').textContent = lang==='tr' ? 'Başlayın' : 'Get Started';
+}
+
+function goToLogin(){
+  const ws = document.getElementById('welcomeScreen');
+  ws.classList.add('out');
+  setTimeout(()=>{
+    ws.style.display = 'none';
+    const ls = document.getElementById('loginScreen');
+    ls.style.display = 'flex';
+    ls.style.opacity = '0';
+    ls.style.transition = 'opacity .4s cubic-bezier(.4,0,.2,1)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ ls.style.opacity = '1'; }));
+  }, 420);
+}
+function loginWith(method){
+  const screen = document.getElementById('loginScreen');
+  screen.style.opacity = '0';
+  screen.style.transition = 'opacity .4s ease';
+  setTimeout(()=>{
+    screen.style.display = 'none';
+    // Onboarding başlat (welcomeScreen zaten gizli)
+    document.getElementById('onboardScreen').style.display = 'flex';
+    renderOnboardStep();
+  }, 420);
+}
+
+// ═══ DİL SİSTEMİ ════════════════════════════════════════
+const STRINGS = {
+  tr: {
+    welcome_tagline: 'Şifreleriniz güvende.\nGiriş tek dokunuşta.',
+    welcome_sub: 'TV aboneliklerinizi saklayın. QR ile saniyeler içinde oturum açın.',
+    welcome_btn: 'Başlayın',
+    login_title: 'Hoş geldiniz',
+    login_sub: 'Devam etmek için giriş yapın',
+    country_label: 'ÜLKE',
+    login_label: 'GİRİŞ YAP',
+    apple_login: 'Apple ile Giriş Yap',
+    google_login: 'Google ile Giriş Yap',
+    email_login: 'E-posta ile Giriş Yap',
+    skip_login: 'Şimdilik atla →',
+    privacy: 'Giriş yaparak Gizlilik Politikası\'nı kabul edersiniz.',
+    ob_services_title: 'Hangi servisleri kullanıyorsun?',
+    ob_services_sub: 'Hepsini sonra ekleyebilirsin.',
+    ob_pin_title: 'PIN koruması',
+    ob_pin_sub: 'Uygulamaya PIN ile giriş yapmak ister misin? Dilediğin zaman ayarlardan değiştirebilirsin.',
+    ob_pin_yes: 'Evet, PIN ile koru',
+    ob_pin_yes_sub: 'Güvenli, tavsiye edilir',
+    ob_pin_no: 'Hayır, PINsiz devam et',
+    ob_pin_no_sub: 'Dilediğinde ayarlardan açabilirsin',
+    ob_create_pin: 'PIN oluştur',
+    ob_create_pin_sub: 'Uygulamana 4 haneli bir giriş şifresi belirle.',
+    ob_done_title: 'Hazırsın! 🎉',
+    ob_done_sub: 'EasyTV kurulumu tamamlandı. Her şey ayarlandı, güvende.',
+    pin_greeting: 'Hoş geldiniz',
+    pin_hint: 'PIN ile giriş yapın',
+    pin_skip: 'Atla',
+    nav_home: 'Ana Sayfa',
+    nav_subs: 'Üyelikler',
+    nav_profile: 'Profil',
+    nav_settings: 'Ayarlar',
+    step: (n,t) => `Adım ${n} / ${t}`,
+    ob_pin_faceid: 'Face ID / Telefon Şifresi',
+    ob_pin_faceid_sub: 'Cihazının kilit sistemiyle giriş yap',
+    // Nav (zaten var ama ekstra)
+    add_service: 'Servis Ekle',
+    add_popular: 'Popüler',
+    add_custom: 'Özel',
+    add_remove: 'Çıkar',
+    // Tab başlıkları
+    tab_subs_title: 'Üyelikler',
+    tab_subs_sub: 'Aylık harcama özeti',
+    tab_profile_title: 'Profil',
+    tab_settings_title: 'Ayarlar',
+    // Üyelik kartı
+    monthly_total: 'Aylık Toplam',
+    next_renewal: 'Sonraki Yenileme',
+    active_subs: (n) => `${n} aktif üyelik`,
+    spending_chart: 'AYLIK HARCAMA DAĞILIMI',
+    no_subs: 'Henüz servis eklenmedi',
+    no_subs_sub: '+ butonuna tıklayarak servis ekleyebilirsin',
+    today_badge: 'Bugün!',
+    days_left: (n) => `${n} gün kaldı`,
+    free_badge: 'Ücretsiz',
+    per_month: '/ay',
+    edit_btn: 'Düzenle',
+    // Profil
+    monthly_stat: 'Aylık',
+    yearly_stat: 'Yıllık',
+    active_stat: 'Aktif',
+    edit_profile: 'Profili Düzenle',
+    name_placeholder: 'Adınız',
+    save_btn: 'Kaydet',
+    // Ayarlar bölümleri
+    settings_security: 'Güvenlik',
+    settings_appearance: 'Görünüm',
+    settings_notifications: 'Bildirimler',
+    settings_data: 'Veri',
+    settings_lang: 'Dil',
+    toggle_faceid: 'Face ID / Touch ID',
+    toggle_faceid_sub: 'Uygulama girişi için',
+    toggle_autolock: 'Otomatik Kilit',
+    toggle_autolock_sub: '2 dakika sonra kilitle',
+    toggle_qr: 'QR Otomatik Döndür',
+    toggle_qr_sub: 'Her 30 sn yeni kod',
+    toggle_colorblind: 'Renk Körü Modu',
+    toggle_colorblind_sub: 'Kırmızı-yeşil körlüğü',
+    toggle_reminder: 'Yenileme Hatırlatıcısı',
+    toggle_reminder_sub: '3 gün önce bildir',
+    toggle_price: 'Fiyat Değişikliği',
+    toggle_price_sub: 'Abonelik artışlarını bildir',
+    export_data: 'Verileri Dışa Aktar',
+    export_data_sub: 'JSON formatında kaydet',
+    import_data: 'Verileri Geri Yükle',
+    import_data_sub: 'Kaydedilen bilgileri aç',
+    change_pin: 'PIN Değiştir',
+    change_pin_sub: 'Giriş şifreni güncelle',
+    delete_all: 'Tüm Verileri Sil',
+    delete_all_sub: 'Bu işlem geri alınamaz',
+    // Sheet
+    account_info: 'Hesap Bilgileri',
+    email_label: 'E-POSTA / KULLANICI',
+    password_label: 'ŞİFRE',
+    qr_open: "TV'den QR ile Aç",
+    open_app: (name) => `${name} Uygulamasını Aç`,
+    share_btn: 'Paylaş',
+    // Servis ekle modal
+    add_modal_title: 'Servis Ekle',
+    service_name: 'Servis Adı',
+    service_url: 'Web Sitesi (favicon için)',
+    email_field: 'E-POSTA / KULLANICI ADI',
+    password_field: 'ŞİFRE',
+    price_field: 'AYLIK ÜCRET (₺)',
+    plan_field: 'PLAN',
+    renew_field: 'YENİLEME TARİHİ',
+    add_btn: 'Ekle',
+    remove_hint: 'Çıkarmak istediğin servise dokun',
+    // Edit modal
+    edit_modal_title: 'Üyelik Bilgileri',
+    renew_date_field: 'YENİLEME TARİHİ',
+    delete_sub: 'Sil',
+    updated_toast: '✓ Güncellendi',
+    // subEditModal labels
+    sub_detail: 'Üyelik Bilgileri',
+    price_label: 'AYLIK FİYAT',
+    share_label: 'PAYLAŞIM',
+    share_who: 'Kaç kişi kullanıyor?',
+    share_how: 'Ödeme şekli?',
+    share_full: 'Ben ödüyorum 💳',
+    share_equal: 'Eşit bölüşüyoruz 🤝',
+    share_free: 'Başkası ödüyor 🎁',
+    share_solo: (price, sym) => `Tüm ücreti sen ödüyorsun: ${sym}${price}/ay`,
+    share_split: (per, sym, total, n) => `Sana düşen: ${sym}${per}/ay  (toplam ${sym}${total} ÷ ${n} kişi)`,
+    share_person_me: 'Ben',
+    save_btn: 'Kaydet',
+  },
+  en: {
+    welcome_tagline: 'Your passwords are safe.\nOne tap to sign in.',
+    welcome_sub: 'Store your TV subscriptions. Sign in with QR in seconds.',
+    welcome_btn: 'Get Started',
+    login_title: 'Welcome',
+    login_sub: 'Sign in to continue',
+    country_label: 'COUNTRY',
+    login_label: 'SIGN IN',
+    apple_login: 'Sign in with Apple',
+    google_login: 'Sign in with Google',
+    email_login: 'Sign in with Email',
+    skip_login: 'Skip for now →',
+    privacy: 'By signing in, you agree to our Privacy Policy.',
+    ob_services_title: 'Which services do you use?',
+    ob_services_sub: 'You can add more later.',
+    ob_pin_title: 'PIN protection',
+    ob_pin_sub: 'Would you like to protect the app with a PIN? You can change this in settings anytime.',
+    ob_pin_yes: 'Yes, protect with PIN',
+    ob_pin_yes_sub: 'Secure, recommended',
+    ob_pin_no: 'No, continue without PIN',
+    ob_pin_no_sub: 'You can enable it later in settings',
+    ob_create_pin: 'Create PIN',
+    ob_create_pin_sub: 'Set a 4-digit entry code for your app.',
+    ob_done_title: "You're all set! 🎉",
+    ob_done_sub: 'EasyTV setup is complete. Everything is configured and secure.',
+    pin_greeting: 'Welcome back',
+    pin_hint: 'Enter your PIN',
+    pin_skip: 'Skip',
+    nav_home: 'Home',
+    nav_subs: 'Subscriptions',
+    nav_profile: 'Profile',
+    nav_settings: 'Settings',
+    step: (n,t) => `Step ${n} of ${t}`,
+    ob_pin_faceid: 'Face ID / Phone Password',
+    ob_pin_faceid_sub: 'Use your device lock system',
+    add_service: 'Add Service',
+    add_popular: 'Popular',
+    add_custom: 'Custom',
+    add_remove: 'Remove',
+    tab_subs_title: 'Subscriptions',
+    tab_subs_sub: 'Monthly spending summary',
+    tab_profile_title: 'Profile',
+    tab_settings_title: 'Settings',
+    monthly_total: 'Monthly Total',
+    next_renewal: 'Next Renewal',
+    active_subs: (n) => `${n} active subscriptions`,
+    spending_chart: 'MONTHLY SPENDING',
+    no_subs: 'No services added yet',
+    no_subs_sub: 'Tap + to add a service',
+    today_badge: 'Today!',
+    days_left: (n) => `${n} days left`,
+    free_badge: 'Free',
+    per_month: '/mo',
+    edit_btn: 'Edit',
+    monthly_stat: 'Monthly',
+    yearly_stat: 'Yearly',
+    active_stat: 'Active',
+    edit_profile: 'Edit Profile',
+    name_placeholder: 'Your name',
+    save_btn: 'Save',
+    settings_security: 'Security',
+    settings_appearance: 'Appearance',
+    settings_notifications: 'Notifications',
+    settings_data: 'Data',
+    settings_lang: 'Language',
+    toggle_faceid: 'Face ID / Touch ID',
+    toggle_faceid_sub: 'For app sign in',
+    toggle_autolock: 'Auto Lock',
+    toggle_autolock_sub: 'Lock after 2 minutes',
+    toggle_qr: 'Auto Rotate QR',
+    toggle_qr_sub: 'New code every 30s',
+    toggle_colorblind: 'Color Blind Mode',
+    toggle_colorblind_sub: 'Red-green blindness support',
+    toggle_reminder: 'Renewal Reminder',
+    toggle_reminder_sub: 'Notify 3 days before',
+    toggle_price: 'Price Change Alert',
+    toggle_price_sub: 'Notify on subscription increases',
+    export_data: 'Export Data',
+    export_data_sub: 'Save as JSON',
+    import_data: 'Import Data',
+    import_data_sub: 'Restore saved data',
+    change_pin: 'Change PIN',
+    change_pin_sub: 'Update your login PIN',
+    delete_all: 'Delete All Data',
+    delete_all_sub: 'This cannot be undone',
+    account_info: 'Account Details',
+    email_label: 'EMAIL / USERNAME',
+    password_label: 'PASSWORD',
+    qr_open: 'Open on TV via QR',
+    open_app: (name) => `Open ${name} App`,
+    share_btn: 'Share',
+    add_modal_title: 'Add Service',
+    service_name: 'Service Name',
+    service_url: 'Website (for favicon)',
+    email_field: 'EMAIL / USERNAME',
+    password_field: 'PASSWORD',
+    price_field: 'MONTHLY PRICE (₺)',
+    plan_field: 'PLAN',
+    renew_field: 'RENEWAL DATE',
+    add_btn: 'Add',
+    remove_hint: 'Tap a service to remove it',
+    edit_modal_title: 'Subscription Details',
+    renew_date_field: 'RENEWAL DATE',
+    delete_sub: 'Delete',
+    updated_toast: '✓ Updated',
+    // subEditModal labels
+    sub_detail: 'Subscription Details',
+    price_label: 'MONTHLY PRICE',
+    share_label: 'SHARING',
+    share_who: 'How many people use this?',
+    share_how: 'Payment method?',
+    share_full: 'I pay 💳',
+    share_equal: 'Split equally 🤝',
+    share_free: 'Someone else pays 🎁',
+    share_solo: (price, sym) => `You pay the full amount: ${sym}${price}/mo`,
+    share_split: (per, sym, total, n) => `Your share: ${sym}${per}/mo  (total ${sym}${total} ÷ ${n} people)`,
+    share_person_me: 'Me',
+    save_btn: 'Save',
+  }
+};
+let LANG = localStorage.getItem('easytv_lang') || 'tr';
+function t(key, ...args) {
+  const s = STRINGS[LANG] || STRINGS.tr;
+  const val = s[key];
+  return typeof val === 'function' ? val(...args) : (val || key);
+}
+function setLang(lang) {
+  LANG = lang;
+  localStorage.setItem('easytv_lang', lang);
+  applyLang();
+  // Aktif tab'ı yeniden render et
+  buildGrid();
+  if(curTab==='subs') renderSubs();
+  if(curTab==='profile') renderProfile();
+  // Settings statik HTML'i yeniden oluştur
+  renderSettingsLang();
+}
+function applyLang() {
+  // ── Nav ──
+  const navLabels = {home:'nav_home',subs:'nav_subs',profile:'nav_profile',settings:'nav_settings'};
+  Object.entries(navLabels).forEach(([id,key])=>{
+    const el=document.querySelector(`#nav-${id} .nav-label`);
+    if(el) el.textContent=t(key);
+  });
+
+  // ── Login ──
+  const $ = id => document.getElementById(id);
+  if($('title-subs')) $('title-subs').textContent=t('tab_subs_title');
+  if($('title-profile')) $('title-profile').textContent=t('tab_profile_title');
+  if($('title-settings')) $('title-settings').textContent=t('tab_settings_title');
+  if($('loginTitle')) $('loginTitle').textContent=t('login_title');
+  if($('loginSub')) $('loginSub').textContent=t('login_sub');
+  if($('loginCountryLbl')) $('loginCountryLbl').textContent=t('country_label');
+  if($('loginSigninLbl')) $('loginSigninLbl').textContent=t('login_label');
+  if($('appleLoginLbl')) $('appleLoginLbl').textContent=t('apple_login');
+  if($('googleLoginLbl')) $('googleLoginLbl').textContent=t('google_login');
+  if($('loginSkipLbl')) $('loginSkipLbl').textContent=t('skip_login');
+  if($('loginPrivacy')) $('loginPrivacy').textContent=t('privacy');
+
+  // ── Tab başlıkları ──
+  if($('subsSubtitle')) $('subsSubtitle').textContent=t('tab_subs_sub');
+
+  // ── Üyelikler ──
+  const totalLbl=document.querySelector('.subs-total-lbl');
+  if(totalLbl) totalLbl.textContent=t('monthly_total');
+  const chartTitle=document.querySelector('.chart-title-lbl');
+  if(chartTitle) chartTitle.textContent=t('spending_chart');
+
+  // ── Ayarlar bölüm başlıkları ──
+  const secLbl=document.getElementById('lbl-security');
+  const appLbl=document.getElementById('lbl-appearance');
+  const notLbl=document.getElementById('lbl-notifications');
+  const datLbl=document.getElementById('lbl-data');
+  if(secLbl) secLbl.textContent=t('settings_security');
+  if(appLbl) appLbl.textContent=t('settings_appearance');
+  if(notLbl) notLbl.textContent=t('settings_notifications');
+  if(datLbl) datLbl.textContent=t('settings_data');
+
+  // ── Toggle satırları ──
+  const toggleMap={
+    'tog-faceid':    ['toggle_faceid','toggle_faceid_sub'],
+    'tog-autolock':  ['toggle_autolock','toggle_autolock_sub'],
+    'tog-qrrotate':  ['toggle_qr','toggle_qr_sub'],
+    'tog-colorblind':['toggle_colorblind','toggle_colorblind_sub'],
+    'tog-reminder':  ['toggle_reminder','toggle_reminder_sub'],
+    'tog-pricechange':['toggle_price','toggle_price_sub'],
+  };
+  Object.entries(toggleMap).forEach(([togId,[lbl,sub]])=>{
+    const row=document.getElementById(togId)?.closest('.toggle-row');
+    if(!row) return;
+    const lblEl=row.querySelector('.toggle-lbl');
+    const subEl=row.querySelector('.toggle-desc');
+    if(lblEl) lblEl.textContent=t(lbl);
+    if(subEl) subEl.textContent=t(sub);
+  });
+
+  // ── Ayarlar menü öğeleri ──
+  const menuMap={
+    'menu-export':   ['export_data','export_data_sub'],
+    'menu-import':   ['import_data','import_data_sub'],
+    'menu-pin':      ['change_pin','change_pin_sub'],
+    'menu-deleteall':['delete_all','delete_all_sub'],
+  };
+  Object.entries(menuMap).forEach(([id,[lbl,sub]])=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    const lblEl=el.querySelector('.menu-lbl');
+    const subEl=el.querySelector('.menu-sub');
+    if(lblEl) lblEl.textContent=t(lbl);
+    if(subEl) subEl.textContent=t(sub);
+  });
+
+  // ── Dil etiketi ──
+  const langLbl=document.getElementById('lbl-lang');
+  if(langLbl) langLbl.textContent=t('settings_lang');
+
+  // ── PIN ekranı ──
+  if($('pinGreeting')) $('pinGreeting').textContent=t('pin_greeting');
+  if($('pinHint')) $('pinHint').textContent=t('pin_hint');
+  if($('pinSkipBtn')) $('pinSkipBtn').textContent=t('pin_skip');
+
+  // ── Sheet ──
+  const sDesc=document.getElementById('sDesc');
+  if(sDesc) sDesc.textContent=t('account_info');
+  const sEmailLbl=document.getElementById('sEmailLbl');
+  if(sEmailLbl) sEmailLbl.textContent=t('email_label');
+  const sPwdLbl=document.getElementById('sPwdLbl');
+  if(sPwdLbl) sPwdLbl.textContent=t('password_label');
+  const qrOpenBtn=document.getElementById('qrOpenBtn');
+  if(qrOpenBtn) qrOpenBtn.textContent='📺 '+t('qr_open');
+  const shareBtn=document.getElementById('shareBtn');
+  if(shareBtn) shareBtn.textContent=t('share_btn');
+
+  // ── Servis Ekle Modal ──
+  const addModalTitle=document.getElementById('addModalTitle');
+  if(addModalTitle) addModalTitle.textContent=t('add_modal_title');
+  const tabPop=document.getElementById('tab-popular');
+  const tabCus=document.getElementById('tab-custom');
+  const tabRem=document.getElementById('tab-remove');
+  if(tabPop) tabPop.textContent=t('add_popular');
+  if(tabCus) tabCus.textContent=t('add_custom');
+  if(tabRem) tabRem.textContent=t('add_remove');
+
+  // ── Onboarding dil seçeneği güncelle ──
+  if(typeof renderOnboardStep==='function' && document.getElementById('onboardContent')?.children.length>0){
+    renderOnboardStep();
+  }
+
+  // ── Lang butonları aktif/pasif ──
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('lang-sel', b.dataset.lang===LANG);
+  });
+
+  // ── Üyelikler tab statik başlıklar ──
+  const subsStatCards = document.querySelectorAll('.stat-card-label');
+  if(subsStatCards.length>=2){
+    subsStatCards[0].textContent = t('monthly_total');
+    subsStatCards[1].textContent = t('next_renewal');
+  }
+  // ── Profil stat etiketleri ──
+  const profStatLabels = document.querySelectorAll('.profile-stat-lbl');
+  if(profStatLabels.length>=3){
+    profStatLabels[0].textContent = t('monthly_stat');
+    profStatLabels[1].textContent = t('yearly_stat');
+    profStatLabels[2].textContent = t('active_stat');
+  }
+  // edit profile btn
+  const editProfBtn = document.getElementById('editProfBtn');
+  if(editProfBtn) editProfBtn.textContent = t('edit_profile');
+
+  // ── subEditModal labels ──
+  const sym = getCountrySymbol();
+  const elById = id => document.getElementById(id);
+  if(elById('seSubDetailLbl')) elById('seSubDetailLbl').textContent = t('sub_detail');
+  if(elById('sePriceLbl')) elById('sePriceLbl').textContent = t('price_label') + ' (' + sym + ')';
+  if(elById('sePlanLbl')) elById('sePlanLbl').textContent = t('plan_field');
+  if(elById('seShareLbl')) elById('seShareLbl').textContent = t('share_label');
+  if(elById('seShareWhoLbl')) elById('seShareWhoLbl').textContent = t('share_who');
+  if(elById('seShareHowLbl')) elById('seShareHowLbl').textContent = t('share_how');
+  if(elById('seRenewLbl')) elById('seRenewLbl').textContent = t('renew_date_field');
+  if(elById('seEmailLbl')) elById('seEmailLbl').textContent = t('email_field');
+  if(elById('sePwdLbl')) elById('sePwdLbl').textContent = t('password_field');
+  if(elById('sesSaveBtn')) elById('sesSaveBtn').textContent = t('save_btn');
+  if(elById('sesDeleteBtn')) elById('sesDeleteBtn').textContent = t('delete_sub');
+}
+
+function renderSettingsLang(){
+  // Ayarlar tab'ındaki tüm metinleri yeniden uygula
+  const $ = id => document.getElementById(id);
+  if($('lbl-security')) $('lbl-security').textContent=t('settings_security');
+  if($('lbl-appearance')) $('lbl-appearance').textContent=t('settings_appearance');
+  if($('lbl-notifications')) $('lbl-notifications').textContent=t('settings_notifications');
+  if($('lbl-data')) $('lbl-data').textContent=t('settings_data');
+  if($('lbl-lang')) $('lbl-lang').textContent=t('settings_lang');
+  const toggleMap={
+    'tog-faceid':    ['toggle_faceid','toggle_faceid_sub'],
+    'tog-autolock':  ['toggle_autolock','toggle_autolock_sub'],
+    'tog-qrrotate':  ['toggle_qr','toggle_qr_sub'],
+    'tog-colorblind':['toggle_colorblind','toggle_colorblind_sub'],
+    'tog-reminder':  ['toggle_reminder','toggle_reminder_sub'],
+    'tog-pricechange':['toggle_price','toggle_price_sub'],
+  };
+  Object.entries(toggleMap).forEach(([togId,[lbl,sub]])=>{
+    const row=document.getElementById(togId)?.closest('.toggle-row');
+    if(!row) return;
+    const lblEl=row.querySelector('.toggle-lbl');
+    const subEl=row.querySelector('.toggle-desc');
+    if(lblEl) lblEl.textContent=t(lbl);
+    if(subEl) subEl.textContent=t(sub);
+  });
+  const menuMap={
+    'menu-export':   ['export_data','export_data_sub'],
+    'menu-import':   ['import_data','import_data_sub'],
+    'menu-pin':      ['change_pin','change_pin_sub'],
+    'menu-deleteall':['delete_all','delete_all_sub'],
+  };
+  Object.entries(menuMap).forEach(([id,[lbl,sub]])=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    const lblEl=el.querySelector('.menu-lbl');
+    const subEl=el.querySelector('.menu-sub');
+    if(lblEl) lblEl.textContent=t(lbl);
+    if(subEl) subEl.textContent=t(sub);
+  });
+}
+function getRegion(){return REGION_DATA[SETTINGS.region||'tr']||REGION_DATA.tr;}
+
+// Seçili ülke + servis için plan listesini döner
+function getCountryPlans(svcId){
+  const countryCode = SETTINGS.country || 'tr';
+  const region = SETTINGS.region || 'tr';
+  // 1. Önce COUNTRY_PRICES'tan ülkeye özel bak
+  const countryData = COUNTRY_PRICES[countryCode];
+  if(countryData && countryData[svcId] && countryData[svcId].plans){
+    return countryData[svcId].plans;
+  }
+  // 2. Yoksa POPULAR_SVCS'ten region'a göre bak
+  const svcDef = POPULAR_SVCS.find(p=>p.id===svcId);
+  if(svcDef && svcDef.plans){
+    return svcDef.plans[region] || svcDef.plans.tr || [];
+  }
+  return [];
+}
+
+// Seçili ülkenin para birimi sembolü
+function getCountrySymbol(){
+  const countryCode = SETTINGS.country || 'tr';
+  const c = COUNTRIES.find(x=>x.code===countryCode);
+  return c ? c.symbol : '₺';
+}
+function updateRegionUI(){
+  const code=SETTINGS.country||'tr';
+  const country=COUNTRIES?COUNTRIES.find(c=>c.code===code):null;
+  const reg=getRegion();
+  const desc=document.getElementById('regionDesc');
+  if(desc) desc.textContent=country?country.name:reg.label.split(' ').slice(1).join(' ');
+}
+
+
 let countryFilter='';
 function buildRegionPicker(){
   const cur=SETTINGS.country||'tr';
@@ -1622,9 +2127,15 @@ function renderCountryList(q,cur){
   if(!list)return;
   const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.includes(q.toLowerCase())):COUNTRIES;
   list.innerHTML=filtered.map(c=>`
-    <div class="region-item${c.code===cur?' region-sel':''}" onclick="selectCountry('${c.code}','${c.region}')" style="padding:13px 16px;">
-      <span style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.7)'};">${c.name}</span>
-      ${c.code===cur?'<span style="margin-left:auto;"><svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>':''}
+    <div class="region-item${c.code===cur?' region-sel':''}" onclick="selectCountry('${c.code}','${c.region}')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;line-height:1;">${c.flag}</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.75)'};">${c.name}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div>
+        </div>
+      </div>
+      ${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
     </div>`).join('');
 }
 function selectCountry(code,region){
@@ -2073,8 +2584,8 @@ function openPlanModal(s) {
   document.getElementById('planRenewInput').value = d.toISOString().split('T')[0];
 
   // Plan listesi
-  const reg = SETTINGS.region||'tr';
-  const plans = s.plans?.[reg] || s.plans?.tr || [{name: s.prices?.[reg]?.plan||'Standart', price: s.prices?.[reg]?.amount||0}];
+  const plans = getCountryPlans(s.id);
+  const sym = getCountrySymbol();
   const list = document.getElementById('planList');
   list.innerHTML = '';
   
@@ -2085,7 +2596,7 @@ function openPlanModal(s) {
     el.innerHTML = `
       <div class="plan-option-left">
         <div class="plan-option-name">${p.name}</div>
-        <div style="font-size:13px;color:rgba(255,255,255,.45);">${p.price>0?'₺'+p.price.toFixed(2)+'/ay':'Ücretsiz'}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.45);">${p.price>0?sym+p.price.toFixed(2)+'/ay':'Ücretsiz'}</div>
       </div>
       <div class="plan-option-check">${i===0?'<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}</div>
     `;
@@ -2304,7 +2815,7 @@ function showPriceUpdate(i){
 function renderSubs(){
   const paid=SVC.filter(s=>s.price>0);
   const total=paid.reduce((a,s)=>a+s.price,0);
-  document.getElementById('totalMonthly').textContent=`₺${total.toFixed(2)}`;
+  document.getElementById('totalMonthly').textContent=formatPrice(total);
   // Harcama grafiği
   renderSpendingChart(paid);
   const dates=paid.filter(s=>s.renew).map(s=>({d:new Date(s.renew)})).sort((a,b)=>a.d-b.d);
@@ -2361,7 +2872,7 @@ function renderSubs(){
         ${badge}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;">
-        <div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.5px;white-space:nowrap;">${s.price>0?('₺'+s.price.toFixed(2)):'—'}</div>
+        <div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.5px;white-space:nowrap;">${s.price>0?formatPrice(s.price):'—'}</div>
         <div style="font-size:11px;color:rgba(255,255,255,.33);margin-top:-2px;">${s.price>0?t('per_month'):''}</div>
         <button onclick="openSubEdit(${idx})" style="margin-top:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 13px;color:rgba(255,255,255,.75);font-size:12px;font-weight:600;cursor:pointer;letter-spacing:-.1px;">${t('edit_btn')}</button>
       </div>`;
@@ -2437,8 +2948,8 @@ function openSubEdit(i){
   if(oldWrap) oldWrap.remove();
   const planRow = document.getElementById('sePlanRow');
   const svcDef = POPULAR_SVCS.find(p=>p.id===s.id);
-  const reg = SETTINGS.region||'tr';
-  const planOpts = svcDef?.plans?.[reg] || svcDef?.plans?.tr || [];
+  const planOpts = getCountryPlans(s.id);
+  const sym = getCountrySymbol();
   if(planOpts.length > 0){
     planRow.style.display = 'block';
     const isOther = !planOpts.find(p=>p.name===(s.plan||''));
@@ -2447,7 +2958,7 @@ function openSubEdit(i){
       const chip = document.createElement('button');
       const isSel = (s.plan||'') === p.name;
       chip.style.cssText = `padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isSel?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isSel?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isSel?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;
-      chip.textContent = p.name + ' · ₺' + p.price.toFixed(0);
+      chip.textContent = p.name + ' · ' + sym + p.price.toFixed(0);
       chip.onclick = ()=>{
         chips.querySelectorAll('button').forEach(c=>{c.style.borderColor='rgba(255,255,255,.15)';c.style.background='rgba(255,255,255,.04)';c.style.color='rgba(255,255,255,.5)';});
         chip.style.borderColor='rgba(255,255,255,.6)';chip.style.background='rgba(255,255,255,.15)';chip.style.color='#fff';
@@ -2488,7 +2999,14 @@ function openSubEdit(i){
   document.getElementById('sePlan').value = s.plan || '';
   document.getElementById('seRenew').value = s.renew || '';
   document.getElementById('seEmail').value = s.email || '';
-  // Modalı aç
+  document.getElementById('sePwd').value = s.pwd || '';
+  document.getElementById('sePwd').type = 'password';
+  // Fiyat etiketi para birimiyle güncelle
+  const curCountry = (window.COUNTRIES||[]).find(c=>c.code===(SETTINGS.country||'tr'));
+  const seSymbol = curCountry ? curCountry.symbol : '₺';
+  const priceLabel = document.querySelector('#subEditModal [style*="AYLIK FİYAT"]');
+  // Modalı aç — dil etiketlerini güncelle
+  applyLang();
   const m = document.getElementById('subEditModal');
   m.style.display = 'flex';
   requestAnimationFrame(()=>m.style.opacity='1');
@@ -2514,7 +3032,7 @@ function buildShareUI(s){
     const c = document.createElement('button');
     const sel = seSharePeople === n;
     c.style.cssText = `width:40px;height:40px;border-radius:50%;font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid ${sel?'rgba(255,255,255,.6)':'rgba(255,255,255,.12)'};background:${sel?'rgba(255,255,255,.18)':'rgba(255,255,255,.04)'};color:${sel?'#fff':'rgba(255,255,255,.4)'};transition:all .15s;flex-shrink:0;`;
-    c.textContent = n === 1 ? 'Ben' : n;
+    c.textContent = n === 1 ? t('share_person_me') : n;
     c.onclick = ()=>{
       seSharePeople = n;
       buildShareUI({...s, sharePeople:n, sharePayMode:seSharePayMode, fullPrice: parseFloat(document.getElementById('sePrice').value)||s.fullPrice||s.price||0});
@@ -2534,9 +3052,9 @@ function buildShareUI(s){
   // Ödeme şekli chips
   payRow.innerHTML = '';
   const payOpts = [
-    {id:'full', label:'Ben ödüyorum 💳'},
-    {id:'equal', label:'Eşit bölüşüyoruz 🤝'},
-    {id:'free', label:'Başkası ödüyor 🎁'},
+    {id:'full', label: t('share_full')},
+    {id:'equal', label: t('share_equal')},
+    {id:'free', label: t('share_free')},
   ];
   payOpts.forEach(o=>{
     const c = document.createElement('button');
@@ -2552,15 +3070,26 @@ function buildShareUI(s){
 
   // Sonuç hesapla
   const fullPrice = parseFloat(document.getElementById('sePrice').value) || s.fullPrice || s.price || 0;
+  const sym = getCountrySymbol();
   result.style.display = 'block';
   if(seSharePayMode === 'equal'){
     const perPerson = fullPrice / seSharePeople;
-    result.textContent = `Sana düşen: ₺${perPerson.toFixed(2)}/ay  (toplam ₺${fullPrice.toFixed(2)} ÷ ${seSharePeople} kişi)`;
+    result.textContent = t('share_split')(perPerson.toFixed(2), sym, fullPrice.toFixed(2), seSharePeople);
   } else if(seSharePayMode === 'free'){
-    result.textContent = `🎁 Bedava kullanıyorsun! Toplam fatura: ₺${fullPrice.toFixed(2)}/ay`;
+    result.textContent = `🎁 ${LANG==='tr'?'Bedava kullanıyorsun! Toplam fatura:':'Free! Total bill:'} ${sym}${fullPrice.toFixed(2)}/${LANG==='tr'?'ay':'mo'}`;
   } else {
-    result.textContent = `Tüm ücreti sen ödüyorsun: ₺${fullPrice.toFixed(2)}/ay`;
+    result.textContent = t('share_solo')(fullPrice.toFixed(2), sym);
   }
+}
+function toggleSePwd(){
+  const inp = document.getElementById('sePwd');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function openSubEditFromSheet(){
+  const idx = active;
+  if(idx < 0) return;
+  closeSheet();
+  setTimeout(()=>openSubEdit(idx), 280);
 }
 function closeSubEdit(){
   document.getElementById('subEditModal').style.display='none';
@@ -2571,6 +3100,7 @@ function saveSubEdit(){
   const plan = document.getElementById('sePlan').value.trim();
   const renew = document.getElementById('seRenew').value||null;
   const email = document.getElementById('seEmail').value.trim();
+  const pwd = document.getElementById('sePwd').value;
   // Paylaşım
   const sharePeople = seSharePeople || 1;
   const sharePayMode = seSharePayMode || 'full';
@@ -2580,7 +3110,7 @@ function saveSubEdit(){
     else if(sharePayMode === 'free') effectivePrice = 0;
     else effectivePrice = price;
   }
-  SVC[seEditIdx] = {...SVC[seEditIdx], price:effectivePrice, fullPrice:price, plan, renew, email, sharePeople, sharePayMode};
+  SVC[seEditIdx] = {...SVC[seEditIdx], price:effectivePrice, fullPrice:price, plan, renew, email, pwd, sharePeople, sharePayMode};
   saveData(); renderSubs(); closeSubEdit(); showToast('✓ Güncellendi');
 }
 function deleteSubEdit(){
@@ -2596,7 +3126,7 @@ function renderProfile(){
   const total=paid.reduce((a,s)=>a+s.price,0);
   document.getElementById('statApps').textContent=SVC.length;
   document.getElementById('statSubs').textContent=paid.length;
-  document.getElementById('statSaved').textContent='₺'+total.toFixed(0);
+  document.getElementById('statSaved').textContent=formatPrice(total);
   const nameEl=document.getElementById('profileName');
   const emailEl=document.getElementById('profileEmail');
   const avatarEl=document.getElementById('profileAvatar');
@@ -2663,13 +3193,63 @@ function importData(e){
 
 // ═══ ALERT ═══════════════════════════════════════════════
 function openRegionPicker(){
-  showAlert('🌍','App Store Bölgesi','Uygulamaların App Store linkleri seçtiğin bölgeye göre ayarlanır.',
-    Object.entries(REGION_DATA).map(([k,v])=>({
-      label: v.label + ((SETTINGS.region||'tr')===k?' ✓':''),
-      style:'secondary',
-      action:()=>{SETTINGS.region=k;saveData();updateRegionUI();closeAlert();showToast('✓ Bölge güncellendi');}
-    })).concat([{label:'İptal',style:'secondary',action:closeAlert}])
-  );
+  // Ülke seçimi: dedicated bottom sheet (currency picker ile aynı yapı)
+  let pickerEl = document.getElementById('regionPickerModal');
+  if(!pickerEl){
+    pickerEl = document.createElement('div');
+    pickerEl.id = 'regionPickerModal';
+    pickerEl.style.cssText = 'display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';
+    pickerEl.innerHTML = `
+      <div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:82%;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;">
+          <div style="font-size:17px;font-weight:800;color:#fff;">Ülke / Bölge Seç</div>
+          <button onclick="closeRegionPickerModal()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+        </div>
+        <div style="padding:0 16px 10px;">
+          <input class="add-input" id="regionSearchInput" placeholder="🔍 Ülke ara..." oninput="renderRegionModalList(this.value)" style="margin:0;" autocomplete="off">
+        </div>
+        <div id="regionPickerModalList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div>
+      </div>`;
+    pickerEl.addEventListener('click', function(e){ if(e.target===pickerEl) closeRegionPickerModal(); });
+    document.getElementById('phone').appendChild(pickerEl);
+  }
+  pickerEl.style.display = 'flex';
+  setTimeout(()=>renderRegionModalList(''), 30);
+}
+function closeRegionPickerModal(){
+  const el = document.getElementById('regionPickerModal');
+  if(el) el.style.display='none';
+}
+function renderRegionModalList(q){
+  const list = document.getElementById('regionPickerModalList');
+  if(!list) return;
+  const cur = SETTINGS.country || 'tr';
+  const filtered = q ? COUNTRIES.filter(c=>
+    c.name.toLowerCase().includes(q.toLowerCase()) || c.code.includes(q.toLowerCase())
+  ) : COUNTRIES;
+  list.innerHTML = '';
+  filtered.forEach(c=>{
+    const el = document.createElement('div');
+    el.style.cssText = `display:flex;align-items:center;justify-content:space-between;padding:13px 20px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);`;
+    el.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:22px;">${c.flag}</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.8)'};">${c.name}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div>
+        </div>
+      </div>
+      ${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}`;
+    el.onclick = ()=>{
+      SETTINGS.country = c.code;
+      SETTINGS.region = c.region;
+      saveData();
+      updateRegionUI();
+      closeRegionPickerModal();
+      showToast('✓ Ülke güncellendi: ' + c.name);
+    };
+    list.appendChild(el);
+  });
 }
 function showAlert(icon,title,msg,actions){
   document.getElementById('alertIcon').textContent=icon;
@@ -2705,12 +3285,20 @@ function tick(){const d=new Date();document.getElementById('clk').textContent=St
 tick();setInterval(tick,30000);
 
 // ═══ BAŞLAT ══════════════════════════════════════════════
+applySettings(); applyLang();
 if(isFirstTime){
-  // Welcome ekranı görünür, bekle
+  // Welcome ekranı zaten görünür, bir şey yapma
 } else {
-  // Daha önce kullanılmış, PIN ekranı
+  // Daha önce kurulmuş — welcome gizle, PIN/ana ekrana git
+  const ws = document.getElementById('welcomeScreen');
+  if(ws) ws.style.display = 'none';
+  if(SETTINGS.usePin === false){
+    unlockApp();
+  } else {
+    const ps = document.getElementById('pinScreen');
+    if(ps) ps.style.display = 'flex';
+  }
 }
-applySettings();applyLang();
 </script>
 </body>
 </html>
