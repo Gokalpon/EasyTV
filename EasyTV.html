@@ -878,6 +878,10 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 // ══════════════════════════════════════════════════
 // SUPABASE KURULUMU
 // ══════════════════════════════════════════════════
+// ⚠️ ÖNEMLİ: Supabase RLS politikalarını aktif edin!
+// SQL komutları CRITICAL_FIXES_SUMMARY.md dosyasında
+let CLOUD_SYNC_AVAILABLE = false;
+let currentUser = null;
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
 const { createClient } = supabase;
@@ -1950,7 +1954,8 @@ let _cryptoKey = null;
 
 async function getCryptoKey() {
   if (_cryptoKey) return _cryptoKey;
-  const raw = navigator.userAgent + '::easytv::salt2025';
+  const userId = currentUser?.id || 'guest';
+  const raw = userId + '::easytv_crypto_salt_v2';
   const enc = new TextEncoder().encode(raw);
   const hash = await crypto.subtle.digest('SHA-256', enc);
   _cryptoKey = await crypto.subtle.importKey('raw', hash, {name:'AES-GCM'}, false, ['encrypt','decrypt']);
