@@ -83,6 +83,8 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 @keyframes tileRipple{to{transform:scale(4);opacity:0;}}
 .tile::before{content:'';position:absolute;inset:0;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.03) 0%,transparent 50%);pointer-events:none;z-index:1;transition:opacity .22s;}
 .tile-logo{position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;display:flex;align-items:center;justify-content:center;padding-bottom:24px;filter:drop-shadow(0 2px 10px rgba(0,0,0,.45));opacity:.95;transition:transform .3s cubic-bezier(.34,1.4,.64,1),opacity .2s;pointer-events:none;overflow:hidden;}
+.tile-logo img{width:66px!important;height:66px!important;object-fit:contain!important;aspect-ratio:1/1;}
+.tile-logo svg{width:52px!important;height:52px!important;}
 .tile-label{position:absolute;bottom:14px;left:0;right:0;z-index:3;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:-.1px;text-shadow:0 1px 6px rgba(0,0,0,.7);transition:color .2s,text-shadow .2s;text-align:center;}
 .tile.active{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transform:scale(1.05) translateZ(0);border-color:rgba(255,255,255,.12);}
 .tile.active::before{opacity:0;}
@@ -335,7 +337,8 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .sp-item.sel{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.13);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);opacity:1;transform:scale(1.06);box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.15);animation:spBounce .4s cubic-bezier(.34,1.56,.64,1);}
 @keyframes spBounce{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1.06)}}
 .sp-ico{width:100%;aspect-ratio:1;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
-.sp-ico img{width:65%!important;height:65%!important;object-fit:contain;}
+.sp-ico img{width:60%!important;height:60%!important;object-fit:contain;aspect-ratio:1/1;}
+.sp-ico svg{width:50%!important;height:50%!important;}
 .sp-item.sel .sp-ico::after{content:'✓';position:absolute;top:6px;right:6px;width:18px;height:18px;background:rgba(255,255,255,.9);border-radius:50%;font-size:11px;font-weight:800;color:#000;display:flex;align-items:center;justify-content:center;line-height:18px;text-align:center;}
 .sp-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-align:center;padding:3px 4px 6px;width:100%;margin-top:-2px;}
 .sp-item.sel .sp-name{color:#fff;font-weight:700;}
