@@ -560,42 +560,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
     <div class="intro-hint" id="introHint" onclick="showWelcomeFromIntro()">Zaten hesabınız var mı? Giriş yapın</div>
   </div>
 </div>
-<div class="welcome-screen" id="welcomeScreen" style="display:none;">
-    <div class="wlc-hero">
-      <div style="margin-bottom:24px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:60px;width:auto;object-fit:contain;"></div>
-      <div class="wlc-tagline" id="wlcTagline">Şifreleriniz güvende,<br>giriş tek dokunuşta.</div>
-      <div class="wlc-sub" id="wlcSub">TV aboneliklerinizi saklayın.<br>QR ile saniyeler içinde oturum açın.</div>
-    </div>
-    <div class="wlc-bottom">
-      <div style="display:flex;gap:8px;width:100%;justify-content:center;margin-bottom:16px;">
-        <div class="wlc-lang-wrap" id="wlcRegionWrap">
-          <button class="wlc-lang-trigger" id="wlcRegionTrigger" onclick="toggleWlcRegion()">
-            <span id="wlcRegionFlag">🇹🇷</span>
-            <span id="wlcRegionLabel">Türkiye</span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="wlc-lang-dropdown" id="wlcRegionDropdown" style="min-width:230px;bottom:calc(100% + 8px);">
-            <div style="padding:10px 10px 6px;">
-              <input class="add-input" id="wlcRegionSearch" placeholder="🔍 Ülke ara..." oninput="buildWlcRegionList(this.value)" style="margin:0;font-size:13px;" autocomplete="off">
-            </div>
-            <div id="wlcRegionList" style="max-height:220px;overflow-y:auto;scrollbar-width:none;"></div>
-          </div>
-        </div>
-        <div class="wlc-lang-wrap" id="wlcLangWrap">
-          <button class="wlc-lang-trigger" id="wlcLangTrigger" onclick="toggleWlcLang()">
-            <span id="wlcLangFlag">🇹🇷</span>
-            <span id="wlcLangLabel">Türkçe</span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="wlc-lang-dropdown" id="wlcLangDropdown" style="bottom:calc(100% + 8px);">
-            <button class="wlc-lang-option selected" id="wlcOptTR" onclick="wlcSetLang('tr')">🇹🇷 &nbsp;Türkçe</button>
-            <button class="wlc-lang-option" id="wlcOptEN" onclick="wlcSetLang('en')">🇬🇧 &nbsp;English</button>
-          </div>
-        </div>
-      </div>
-      <button class="wlc-btn" id="wlcStartBtn" onclick="goToLogin()">Başlayın</button>
-    </div>
-  </div>
+<div class="welcome-screen" id="welcomeScreen" style="display:none;"></div>
 
   <!-- ONBOARDING, PIN, MAIN APP — orijinal kodun geri kalanı buraya devam eder -->
   <!-- (Yer tasarrufu için kısaltıldı — aşağıdaki script tüm mantığı içerir) -->
