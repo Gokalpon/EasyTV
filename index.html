@@ -1541,7 +1541,7 @@ function buildServicePicker(){const g=document.getElementById('spGrid');g.innerH
     } else if (s.id === 'exxen') {
       pickerLogoHtml = LOGO.exxen.htmlDark;
     } else if (s.id === 'spotify') {
-      pickerLogoHtml = `<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/Spotify.png" style="width:85%;height:85%;object-fit:contain;">`;
+      pickerLogoHtml = `<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/Spotify.png" style="width:100%;height:100%;object-fit:contain;">`;
     }
     el.innerHTML=`<div class="sp-ico" style="background:${pickerBgFinal};outline:${s.id==='apple'?'none':'1.5px solid rgba(255,255,255,.15)'};">${pickerLogoHtml}</div><div class="sp-name">${s.name}</div>`;el.onclick=()=>{const idx=obSelectedServices.indexOf(s.id);if(idx>=0)obSelectedServices.splice(idx,1);else obSelectedServices.push(s.id);el.classList.toggle('sel',obSelectedServices.includes(s.id));};g.appendChild(el);});}
 function kp(n){
