@@ -2593,15 +2593,7 @@ initAuth().catch(function(e) { console.error('initAuth hatası:', e); _showFallb
 <!-- Otomatik ilk açılış tetikleyici -->
 <script>
 if (!localStorage.getItem('easytv_setup_done')) {
-  setTimeout(() => {
-    if (typeof showWelcomeFromIntro === 'function') {
-      showWelcomeFromIntro();
-    } else {
-      // Fallback: onboarding ekranını göster
-      const obScreen = document.getElementById('onboardScreen');
-      if (obScreen) obScreen.style.display = 'flex';
-    }
-  }, 300);
+  localStorage.setItem('easytv_setup_done', '1');
 }
 </script>
 </body>
