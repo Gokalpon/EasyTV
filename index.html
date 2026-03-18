@@ -1254,21 +1254,7 @@ function setIntroLang(lang){
 
 // intro → welcome geçişi
 function showWelcomeFromIntro() {
-  const intro = document.getElementById('introScreen');
-  intro.classList.add('out');
-  setTimeout(() => {
-    intro.style.display = 'none';
-    // Girişten sonra servis seçme ekranı göster
-    const ws = document.getElementById('welcomeScreen');
-    ws.style.display = 'flex';
-    ws.style.opacity = '0';
-    ws.style.transform = 'scale(1.03)';
-    ws.style.transition = 'opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1)';
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      ws.style.opacity = '1';
-      ws.style.transform = 'scale(1)';
-    }));
-  }, 480);
+  goToLogin();
 }
 
 // goToLogin override
