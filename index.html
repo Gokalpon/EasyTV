@@ -494,7 +494,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
   </div>
 
   <!-- LOGIN SCREEN -->
-  <div id="loginScreen" style="display:none;position:absolute;inset:0;z-index:500;flex-direction:column;background:linear-gradient(170deg,#0a0b18 0%,#020205 45%,#000 60%,#04040f 100%);overflow:hidden;">
+  <div id="loginScreen" style="display:none;position:absolute;inset:0;z-index:500;flex-direction:column;background:linear-gradient(170deg,#0a0b18 0%,#020205 45%,#000 60%,#04040f 100%);overflow:hidden;" class="login-flex">
     <div style="position:absolute;width:300px;height:300px;top:-30px;left:-30px;background:radial-gradient(circle,rgba(120,50,255,.22) 0%,transparent 55%);animation:wlcOrb1 14s ease-in-out infinite alternate;filter:blur(35px);pointer-events:none;"></div>
     <div style="position:absolute;width:250px;height:250px;bottom:80px;right:-20px;background:radial-gradient(circle,rgba(255,40,150,.14) 0%,transparent 55%);animation:wlcOrb2 18s ease-in-out infinite alternate;filter:blur(35px);pointer-events:none;"></div>
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px;position:relative;z-index:1;">
@@ -1262,9 +1262,7 @@ function goToLogin() {
   document.getElementById('introScreen').style.display = 'none';
   document.getElementById('welcomeScreen').style.display = 'none';
   const ls = document.getElementById('loginScreen');
-  ls.style.display = 'flex';
-  ls.style.opacity = '0';
-  ls.style.transition = 'opacity .4s cubic-bezier(.4,0,.2,1)';
+  ls.style.cssText = 'display:flex !important;opacity:0;transition:opacity .4s cubic-bezier(.4,0,.2,1);';
   requestAnimationFrame(() => requestAnimationFrame(() => { ls.style.opacity = '1'; }));
 }
 </script>
