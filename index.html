@@ -1259,16 +1259,13 @@ function showWelcomeFromIntro() {
 
 // goToLogin override
 function goToLogin() {
-  const ws = document.getElementById('welcomeScreen');
-  ws.classList.add('out');
-  setTimeout(() => {
-    ws.style.display = 'none';
-    const ls = document.getElementById('loginScreen');
-    ls.style.display = 'flex';
-    ls.style.opacity = '0';
-    ls.style.transition = 'opacity .4s cubic-bezier(.4,0,.2,1)';
-    requestAnimationFrame(() => requestAnimationFrame(() => { ls.style.opacity = '1'; }));
-  }, 420);
+  document.getElementById('introScreen').style.display = 'none';
+  document.getElementById('welcomeScreen').style.display = 'none';
+  const ls = document.getElementById('loginScreen');
+  ls.style.display = 'flex';
+  ls.style.opacity = '0';
+  ls.style.transition = 'opacity .4s cubic-bezier(.4,0,.2,1)';
+  requestAnimationFrame(() => requestAnimationFrame(() => { ls.style.opacity = '1'; }));
 }
 </script>
 
