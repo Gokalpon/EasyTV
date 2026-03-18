@@ -1,6 +1,6 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
-<head>
+<head><script src="error_logger.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -83,6 +83,8 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 @keyframes tileRipple{to{transform:scale(4);opacity:0;}}
 .tile::before{content:'';position:absolute;inset:0;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.03) 0%,transparent 50%);pointer-events:none;z-index:1;transition:opacity .22s;}
 .tile-logo{position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;display:flex;align-items:center;justify-content:center;padding-bottom:24px;filter:drop-shadow(0 2px 10px rgba(0,0,0,.45));opacity:.95;transition:transform .3s cubic-bezier(.34,1.4,.64,1),opacity .2s;pointer-events:none;overflow:hidden;}
+.tile-logo img{width:66px!important;height:66px!important;object-fit:contain!important;aspect-ratio:1/1;}
+.tile-logo svg{width:52px!important;height:52px!important;}
 .tile-label{position:absolute;bottom:14px;left:0;right:0;z-index:3;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:-.1px;text-shadow:0 1px 6px rgba(0,0,0,.7);transition:color .2s,text-shadow .2s;text-align:center;}
 .tile.active{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transform:scale(1.05) translateZ(0);border-color:rgba(255,255,255,.12);}
 .tile.active::before{opacity:0;}
@@ -335,7 +337,8 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .sp-item.sel{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.13);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);opacity:1;transform:scale(1.06);box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.15);animation:spBounce .4s cubic-bezier(.34,1.56,.64,1);}
 @keyframes spBounce{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1.06)}}
 .sp-ico{width:100%;aspect-ratio:1;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
-.sp-ico img{width:65%!important;height:65%!important;object-fit:contain;}
+.sp-ico img{width:60%!important;height:60%!important;object-fit:contain;aspect-ratio:1/1;}
+.sp-ico svg{width:50%!important;height:50%!important;}
 .sp-item.sel .sp-ico::after{content:'✓';position:absolute;top:6px;right:6px;width:18px;height:18px;background:rgba(255,255,255,.9);border-radius:50%;font-size:11px;font-weight:800;color:#000;display:flex;align-items:center;justify-content:center;line-height:18px;text-align:center;}
 .sp-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-align:center;padding:3px 4px 6px;width:100%;margin-top:-2px;}
 .sp-item.sel .sp-name{color:#fff;font-weight:700;}
@@ -486,7 +489,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 
   <!-- AUTH LOADING -->
   <div class="auth-loading" id="authLoading">
-    <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
+    <img src="./assets/EasyTVLogo.png" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
     <div class="auth-spinner"></div>
   </div>
 
@@ -495,7 +498,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
     <div style="position:absolute;width:300px;height:300px;top:-30px;left:-30px;background:radial-gradient(circle,rgba(120,50,255,.22) 0%,transparent 55%);animation:wlcOrb1 14s ease-in-out infinite alternate;filter:blur(35px);pointer-events:none;"></div>
     <div style="position:absolute;width:250px;height:250px;bottom:80px;right:-20px;background:radial-gradient(circle,rgba(255,40,150,.14) 0%,transparent 55%);animation:wlcOrb2 18s ease-in-out infinite alternate;filter:blur(35px);pointer-events:none;"></div>
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px;position:relative;z-index:1;">
-      <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:46px;width:auto;object-fit:contain;margin-bottom:36px;opacity:.95;animation:introLogoPulse 4s ease-in-out infinite;">
+      <img src="./assets/EasyTVLogo.png" style="height:46px;width:auto;object-fit:contain;margin-bottom:36px;opacity:.95;animation:introLogoPulse 4s ease-in-out infinite;">
       <div id="loginTitle" style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-.6px;text-align:center;margin-bottom:10px;line-height:1.2;animation:wlcFadeUp .7s cubic-bezier(.34,1.2,.64,1) .1s both;">Hoş geldiniz</div>
       <div id="loginSub" style="font-size:14px;color:rgba(255,255,255,.38);text-align:center;line-height:1.6;animation:wlcFadeUp .7s cubic-bezier(.34,1.2,.64,1) .25s both;">Aboneliklerinizi güvenle saklayın</div>
     </div>
@@ -533,7 +536,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
     </div>
   </div>
 
-<div class="intro-screen" id="introScreen">
+<div class="intro-screen" id="introScreen" style="display:none;">
   <div class="intro-glow"></div>
   <div class="intro-glow2"></div>
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px;position:relative;z-index:1;">
@@ -542,7 +545,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
       <button class="intro-lang-btn" id="introLangEN" onclick="setIntroLang('en')">🇬🇧 English</button>
     </div>
     <div class="intro-logo">
-      <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:64px;width:auto;object-fit:contain;filter:drop-shadow(0 4px 24px rgba(255,255,255,.08));">
+      <img src="./assets/EasyTVLogo.png" style="height:64px;width:auto;object-fit:contain;filter:drop-shadow(0 4px 24px rgba(255,255,255,.08));">
     </div>
     <div class="intro-tagline" id="introTagline">Tüm abonelikleriniz,<br>tek bir yerde.</div>
     <div class="intro-sub" id="introSub">Şifrelerinizi güvende saklayın.<br>QR ile saniyeler içinde oturum açın.</div>
@@ -557,42 +560,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
     <div class="intro-hint" id="introHint" onclick="showWelcomeFromIntro()">Zaten hesabınız var mı? Giriş yapın</div>
   </div>
 </div>
-<div class="welcome-screen" id="welcomeScreen" style="display:none;">
-    <div class="wlc-hero">
-      <div style="margin-bottom:24px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:60px;width:auto;object-fit:contain;"></div>
-      <div class="wlc-tagline" id="wlcTagline">Şifreleriniz güvende,<br>giriş tek dokunuşta.</div>
-      <div class="wlc-sub" id="wlcSub">TV aboneliklerinizi saklayın.<br>QR ile saniyeler içinde oturum açın.</div>
-    </div>
-    <div class="wlc-bottom">
-      <div style="display:flex;gap:8px;width:100%;justify-content:center;margin-bottom:16px;">
-        <div class="wlc-lang-wrap" id="wlcRegionWrap">
-          <button class="wlc-lang-trigger" id="wlcRegionTrigger" onclick="toggleWlcRegion()">
-            <span id="wlcRegionFlag">🇹🇷</span>
-            <span id="wlcRegionLabel">Türkiye</span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="wlc-lang-dropdown" id="wlcRegionDropdown" style="min-width:230px;bottom:calc(100% + 8px);">
-            <div style="padding:10px 10px 6px;">
-              <input class="add-input" id="wlcRegionSearch" placeholder="🔍 Ülke ara..." oninput="buildWlcRegionList(this.value)" style="margin:0;font-size:13px;" autocomplete="off">
-            </div>
-            <div id="wlcRegionList" style="max-height:220px;overflow-y:auto;scrollbar-width:none;"></div>
-          </div>
-        </div>
-        <div class="wlc-lang-wrap" id="wlcLangWrap">
-          <button class="wlc-lang-trigger" id="wlcLangTrigger" onclick="toggleWlcLang()">
-            <span id="wlcLangFlag">🇹🇷</span>
-            <span id="wlcLangLabel">Türkçe</span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="wlc-lang-dropdown" id="wlcLangDropdown" style="bottom:calc(100% + 8px);">
-            <button class="wlc-lang-option selected" id="wlcOptTR" onclick="wlcSetLang('tr')">🇹🇷 &nbsp;Türkçe</button>
-            <button class="wlc-lang-option" id="wlcOptEN" onclick="wlcSetLang('en')">🇬🇧 &nbsp;English</button>
-          </div>
-        </div>
-      </div>
-      <button class="wlc-btn" id="wlcStartBtn" onclick="goToLogin()">Başlayın</button>
-    </div>
-  </div>
+<div class="welcome-screen" id="welcomeScreen" style="display:none;"></div>
 
   <!-- ONBOARDING, PIN, MAIN APP — orijinal kodun geri kalanı buraya devam eder -->
   <!-- (Yer tasarrufu için kısaltıldı — aşağıdaki script tüm mantığı içerir) -->
@@ -607,7 +575,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
   </div>
 
   <div class="pin-screen" id="pinScreen" style="display:none;">
-    <div class="pin-logo" style="height:48px;"><img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
+    <div class="pin-logo" style="height:48px;"><img src="./assets/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
     <p class="pin-greeting" id="pinGreeting">Hoş geldiniz</p>
     <p class="pin-hint" id="pinHint">PIN ile giriş yapın</p>
     <div class="pin-dots" id="pinDots">
@@ -654,7 +622,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 
     <div class="tab-panel active" id="tab-home">
       <div class="home-header">
-        <img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png" style="height:39px;width:auto;object-fit:contain;display:block;">
+        <img src="./assets/EasyTVLogo.png" style="height:39px;width:auto;object-fit:contain;display:block;">
         <div class="add-btn-abs"><div class="add-btn" onclick="openAddModal()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></div>
       </div>
       <div class="home-quick-stat" id="homeQuickStat"></div>
@@ -1343,7 +1311,7 @@ function filterLoginCountries(q){renderLoginCountries(q);}
 function selectLoginCountry(code,region){SETTINGS.country=code;SETTINGS.region=region;saveData();const c=COUNTRIES.find(x=>x.code===code);if(c)document.getElementById('selectedCountryLabel').textContent=c.name;document.getElementById('countryDropdown').style.display='none';updateRegionUI();}
 const CURRENCIES=[{code:'TRY',symbol:'₺',name:'Türk Lirası'},{code:'USD',symbol:'$',name:'Amerikan Doları'},{code:'EUR',symbol:'€',name:'Euro'},{code:'GBP',symbol:'£',name:'Sterlin'},{code:'JPY',symbol:'¥',name:'Japon Yeni'},{code:'CAD',symbol:'CA$',name:'Kanada Doları'},{code:'AUD',symbol:'A$',name:'Avustralya Doları'},{code:'CHF',symbol:'Fr',name:'İsviçre Frangı'},{code:'SEK',symbol:'kr',name:'İsveç Kronu'},{code:'NOK',symbol:'kr',name:'Norveç Kronu'},{code:'KRW',symbol:'₩',name:'Güney Kore Wonu'},{code:'INR',symbol:'₹',name:'Hindistan Rupisi'},{code:'BRL',symbol:'R$',name:'Brezilya Reali'},{code:'SGD',symbol:'S$',name:'Singapur Doları'},{code:'AED',symbol:'AED',name:'BAE Dirhemi'},{code:'SAR',symbol:'SAR',name:'Suudi Riyali'}];
 const POPULAR_SVCS=[{id:'netflix',name:'Netflix',color:'#E50914',rgb:'229,9,20',prices:{tr:{amount:219.99,plan:'Standart'},us:{amount:15.49,plan:'Standard'},eu:{amount:13.99,plan:'Standard'},as:{amount:13.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile Paylaşımı',price:269.99}]}},{id:'youtube',name:'YouTube',color:'#FF0000',rgb:'255,0,0',prices:{tr:{amount:109.99,plan:'Premium'},us:{amount:13.99,plan:'Premium'},eu:{amount:11.99,plan:'Premium'},as:{amount:11.99,plan:'Premium'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile (6 kişi)',price:179.99},{name:'Öğrenci',price:69.99}]}},{id:'disney',name:'Disney+',color:'#0ABFBC',rgb:'10,191,188',prices:{tr:{amount:149.99,plan:'Standart'},us:{amount:7.99,plan:'Basic'},eu:{amount:8.99,plan:'Standard'},as:{amount:8.99,plan:'Standard'}},plans:{tr:[{name:'Standart (Reklamlı)',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]}},{id:'prime',name:'Prime Video',color:'#1A98FF',rgb:'26,152,255',prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}},plans:{tr:[{name:'Prime Üyelik',price:129.99},{name:'Prime Video Kanal',price:49.99}]}},{id:'hbo',name:'HBO Max',color:'#3B1F6B',rgb:'59,31,107',prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate (4K)',price:249.99}]}},{id:'apple',name:'Apple TV+',color:'#1c1c1e',rgb:'220,220,220',textDark:true,prices:{tr:{amount:99.99,plan:'Aile'},us:{amount:9.99,plan:'Monthly'},eu:{amount:8.99,plan:'Monthly'},as:{amount:8.99,plan:'Monthly'}},plans:{tr:[{name:'Bireysel',price:49.99},{name:'Aile (6 kişi)',price:99.99}]}},{id:'twitch',name:'Twitch',color:'#9146FF',rgb:'145,70,255',prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Turbo',price:89.99},{name:'Kanal Aboneliği',price:49.99}]}},{id:'kick',name:'Kick',color:'#53FC18',rgb:'83,252,24',textDark:true,prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Kanal Aboneliği',price:49.99}]}},{id:'exxen',name:'EXXEN',color:'#F9D100',rgb:'249,209,0',textDark:true,prices:{tr:{amount:179.99,plan:'Reklamlı HD'},us:{amount:0,plan:'N/A'},eu:{amount:0,plan:'N/A'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Reklamlı HD',price:119.99},{name:'Reklamsız HD',price:179.99},{name:'Reklamsız 4K',price:239.99},{name:'Spor Paketi',price:349.99}]}},{id:'bein',name:'beIN Connect',color:'#6F2DA8',rgb:'111,45,168',prices:{tr:{amount:249.99,plan:'Spor Paketi'},us:{amount:0,plan:'N/A'},eu:{amount:19.99,plan:'Sports'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Eğlence Paketi',price:149.99},{name:'Spor Paketi',price:249.99},{name:'Süper Paket',price:349.99}]}},{id:'spotify',name:'Spotify',color:'#1DB954',rgb:'29,185,84',prices:{tr:{amount:79.99,plan:'Bireysel'},us:{amount:10.99,plan:'Individual'},eu:{amount:10.99,plan:'Individual'},as:{amount:10.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:79.99},{name:'Öğrenci',price:49.99},{name:'Duo (2 kişi)',price:129.99},{name:'Aile (6 kişi)',price:159.99}]}},{id:'tvplus',name:'Turkcell TV+',color:'#FFD100',rgb:'255,209,0',textDark:true,prices:{tr:{amount:109.99,plan:'Bireysel'},us:{amount:9.99,plan:'Individual'},eu:{amount:9.99,plan:'Individual'},as:{amount:9.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99}]}}];
-const LOGO={netflix:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/netflix_N.png" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/youtube.png" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/Disney+.png" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/prime video.png" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/hbo.png" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/apple.png" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/appleb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/twitch.png" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/kick.png" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/kickb.png" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/exxen.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/exxenb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/bein.png" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<svg viewBox="0 0 168 168" width="36" height="36"><path fill="white" d="M84 0C37.6 0 0 37.6 0 84s37.6 84 84 84 84-37.6 84-84S130.4 0 84 0zm38.6 121.2c-1.5 2.5-4.8 3.3-7.3 1.7-20-12.2-45.2-15-74.9-8.2-2.9.7-5.7-1.1-6.4-3.9-.7-2.9 1.1-5.7 3.9-6.4 32.5-7.4 60.4-4.2 82.9 9.5 2.5 1.5 3.3 4.8 1.8 7.3zm10.3-22.9c-1.9 3.1-5.9 4.1-9 2.2-22.9-14.1-57.8-18.2-84.9-9.9-3.5 1-7.2-.9-8.2-4.4-1-3.5.9-7.2 4.4-8.2 31-9.4 69.5-4.8 95.8 11.3 3.1 1.9 4.1 5.9 1.9 9zm.9-23.8c-27.5-16.3-72.9-17.8-99.2-9.9-4.2 1.3-8.7-1.1-9.9-5.3-1.3-4.2 1.1-8.7 5.3-9.9 30.2-9.2 80.4-7.4 112.1 11.5 3.8 2.3 5 7.1 2.8 10.9-2.2 3.7-7.1 4.9-10.9 2.7h-.2z"/></svg>`},tvplus:{w:66,h:66,html:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/tvplus.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="https://raw.githubusercontent.com/Gokalpon/EasyTV/main/tvplus2.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
+const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/netflix_N.png" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/youtube.png" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/Disney+.png" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/prime video.png" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/hbo.png" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/apple.png" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/appleb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/twitch.png" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/kick.png" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/kickb.png" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/exxen.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/exxenb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/bein.png" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/Spotify.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/Spotifyb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},tvplus:{w:66,h:66,html:`<img src="./assets/tvplus.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/tvplus2.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
 let SVC=[],SETTINGS={},PROFILE={name:'Kullanıcı',email:'kullanici@icloud.com'};
 let active=-1,pwdShow=false;
 let qrRotateInterval=null,qrCountdown=null,qrSec=30,_qrSeed=Date.now();
@@ -1537,6 +1505,8 @@ function buildServicePicker(){const g=document.getElementById('spGrid');g.innerH
       pickerLogoHtml = LOGO.kick.htmlDark;
     } else if (s.id === 'exxen') {
       pickerLogoHtml = LOGO.exxen.htmlDark;
+    } else if (s.id === 'spotify') {
+      pickerLogoHtml = `<img src="./assets/Spotify.png" style="width:100%;height:100%;object-fit:contain;">`;
     }
     el.innerHTML=`<div class="sp-ico" style="background:${pickerBgFinal};outline:${s.id==='apple'?'none':'1.5px solid rgba(255,255,255,.15)'};">${pickerLogoHtml}</div><div class="sp-name">${s.name}</div>`;el.onclick=()=>{const idx=obSelectedServices.indexOf(s.id);if(idx>=0)obSelectedServices.splice(idx,1);else obSelectedServices.push(s.id);el.classList.toggle('sel',obSelectedServices.includes(s.id));};g.appendChild(el);});}
 function kp(n){
@@ -1640,7 +1610,7 @@ function buildGrid() {
     return;
   }
   gridEl.style.display = '';
-  const BOX_IMG = 'https://raw.githubusercontent.com/Gokalpon/EasyTV/main/box2.png';
+  const BOX_IMG = './assets/box2.png';
   SVC.forEach((s, i) => {
     const tile = document.createElement('div');
     tile.className = 'tile';
@@ -1942,7 +1912,7 @@ function hidePinScreen() {
 
 function tap(i){if(active===i){openSheet(i);return;}if(active>=0)deactivate(active);active=i;activate(i);}
 function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.add('active');el.style.backgroundImage='none';el.style.backgroundColor=TILE_GRADIENTS[s.id]?'':s.color;if(TILE_GRADIENTS[s.id])el.style.background=TILE_GRADIENTS[s.id];el.style.backdropFilter='none';el.style.webkitBackdropFilter='none';el.style.transform='scale(1.04) translateZ(0)';if(s.textDark||L.textDark){el.classList.add('dark-text');el.querySelector('.tile-logo').innerHTML=L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"');el.style.boxShadow=`0 8px 28px rgba(${s.rgb},.3)`;}else{el.style.boxShadow=`0 0 0 2px rgba(255,255,255,.12),0 8px 30px rgba(${s.rgb},.45)`;}}
-function deactivate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.remove('active','dark-text');const boxUrl='https://raw.githubusercontent.com/Gokalpon/EasyTV/main/box2.png';el.style.background='';el.style.backgroundImage=`url('${boxUrl}')`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backdropFilter='';el.style.webkitBackdropFilter='';el.style.borderColor='';el.style.boxShadow='';el.style.transform='';if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}active=-1;}
+function deactivate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.remove('active','dark-text');const boxUrl='./assets/box2.png';el.style.background='';el.style.backgroundImage=`url('${boxUrl}')`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backdropFilter='';el.style.webkitBackdropFilter='';el.style.borderColor='';el.style.boxShadow='';el.style.transform='';if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}active=-1;}
 function openSheet(i){const s=SVC[i],L=LOGO[s.id]||{w:28,h:28,html:null};const tileGrad=TILE_GRADIENTS[s.id]||s.color;document.getElementById('sColor').style.background=tileGrad;document.getElementById('sLogoWrap').style.background=tileGrad;const isImgLogo=L.html&&L.html.includes('<img');const useDark=s.textDark||L.textDark;const activeHtml=(useDark&&L.htmlDark)?L.htmlDark:L.html;if(s.faviconUrl){document.getElementById('sIco').innerHTML=`<img src="${s.faviconUrl}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;">`;}else if(isImgLogo&&activeHtml){const imgSrc=(activeHtml.match(/src="([^"]+)"/)??[])[1]||'';document.getElementById('sIco').innerHTML=imgSrc?`<img src="${imgSrc}" style="width:38px;height:38px;object-fit:contain;">`:`<span style="font-size:24px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0]}</span>`;}else if(L.html){const sc2=22/Math.max(L.w||22,L.h||22);const svgHtml=useDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html;document.getElementById('sIco').innerHTML=`<div style="width:${Math.round((L.w||22)*sc2)}px;height:${Math.round((L.h||22)*sc2)}px;display:flex;align-items:center;justify-content:center;">${svgHtml}</div>`;}else{document.getElementById('sIco').innerHTML=`<span style="font-size:30px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0].toUpperCase()}</span>`;}document.getElementById('sName').textContent=s.name;document.getElementById('emailV').textContent=s.email?s.email.replace(/^(.{3}).*(@.*)$/,'$1•••$2'):'—';pwdShow=false;document.getElementById('pwdV').textContent='••••••••••';document.getElementById('eyeU').setAttribute('href','#i-eye');['uE','uP'].forEach(id=>document.getElementById(id).setAttribute('href','#i-copy'));['btnE','btnP'].forEach(id=>document.getElementById(id).classList.remove('ok'));const qb=document.getElementById('qrBtn');qb.style.background=TILE_GRADIENTS[s.id]||s.color;qb.style.color=(s.textDark||L.textDark)?'#000':'#fff';document.getElementById('appOpenBtn').textContent=`${s.name} Uygulamasını Aç`;document.getElementById('dimmer').classList.add('on');requestAnimationFrame(()=>document.getElementById('sheet').classList.add('open'));}
 function closeSheet(){document.getElementById('sheet').classList.remove('open');document.getElementById('dimmer').classList.remove('on');if(active>=0)deactivate(active);}
 function togglePwd(){pwdShow=!pwdShow;document.getElementById('pwdV').textContent=pwdShow&&active>=0?SVC[active].pwd:'••••••••••';document.getElementById('eyeU').setAttribute('href',pwdShow?'#i-eyeoff':'#i-eye');}
@@ -2537,7 +2507,7 @@ function scheduleRenewalNotifs() {
       if (document.visibilityState === 'visible') {
         showInAppNotif(msg, s.color || '#fff');
       } else if (Notification.permission === 'granted') {
-        new Notification('EasyTV', { body: msg, icon: 'https://raw.githubusercontent.com/Gokalpon/EasyTV/main/EasyTVLogo.png' });
+        new Notification('EasyTV', { body: msg, icon: './assets/EasyTVLogo.png' });
       }
     }
   });
