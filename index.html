@@ -1,6 +1,4 @@
-function skipAuth() {
-  loginWith('skip');
-}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -12,7 +10,6 @@ function skipAuth() {
 <meta name="mobile-web-app-capable" content="yes">
 <title>EasyTV</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
-<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
@@ -820,7 +817,7 @@ d="cb-svg" xmlns="http://www.w3.org/2000/svg">
 
   <!-- AUTH LOADING -->
   <div class="auth-loading" id="authLoading">
-    <img src="./assets/img_1.png" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
+    <img src="./assets/EasyTVLogo.png" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
     <div class="auth-spinner"></div>
   </div>
 
@@ -833,7 +830,7 @@ d="cb-svg" xmlns="http://www.w3.org/2000/svg">
 
   <!-- Üst: Logo -->
   <div style="display:flex;align-items:center;justify-content:center;padding-top:56px;flex-shrink:0;">
-    <img src="./assets/img_1.png" style="height:38px;width:auto;object-fit:contain;opacity:.92;">
+    <img src="./assets/EasyTVLogo.png" style="height:38px;width:auto;object-fit:contain;opacity:.92;">
   </div>
 
   <!-- Orta: Başlık -->
@@ -881,7 +878,7 @@ d="cb-svg" xmlns="http://www.w3.org/2000/svg">
 
   <!-- LOGO: üstten 150px -->
   <div style="position:absolute;top:150px;left:0;right:0;display:flex;justify-content:center;z-index:1;">
-    <img src="./assets/img_1.png" style="height:64px;width:auto;object-fit:contain;opacity:0;animation:logoEntrance .9s cubic-bezier(.34,1.2,.64,1) .1s forwards;">
+    <img src="./assets/EasyTVLogo.png" style="height:64px;width:auto;object-fit:contain;opacity:0;animation:logoEntrance .9s cubic-bezier(.34,1.2,.64,1) .1s forwards;">
   </div>
 
   <!-- BAŞLIK: üstten 254px -->
@@ -930,7 +927,7 @@ d="cb-svg" xmlns="http://www.w3.org/2000/svg">
   </div>
 
   <div class="pin-screen" id="pinScreen" style="display:none;overflow:hidden;">
-    <div class="pin-logo" style="height:48px;"><img src="./assets/img_1.png" style="height:100%;width:auto;object-fit:contain;"></div>
+    <div class="pin-logo" style="height:48px;"><img src="./assets/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
     <p class="pin-greeting" id="pinGreeting">Hoş geldiniz</p>
     <p class="pin-hint" id="pinHint">PIN ile giriş yapın</p>
     <div class="pin-dots" id="pinDots">
@@ -977,7 +974,7 @@ d="cb-svg" xmlns="http://www.w3.org/2000/svg">
 
     <div class="tab-panel active" id="tab-home">
       <div class="home-header">
-        <img src="./assets/img_1.png" style="height:36px;width:auto;object-fit:contain;display:block;opacity:.95;">
+        <img src="./assets/EasyTVLogo.png" style="height:36px;width:auto;object-fit:contain;display:block;opacity:.95;">
         <div class="add-btn" id="mainAddBtn" onclick="openAddModal()">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1v13M1 7.5h13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
@@ -1934,7 +1931,7 @@ function filterLoginCountries(q){renderLoginCountries(q);}
 function selectLoginCountry(code,region){SETTINGS.country=code;SETTINGS.region=region;saveData();const c=COUNTRIES.find(x=>x.code===code);if(c)document.getElementById('selectedCountryLabel').textContent=c.name;document.getElementById('countryDropdown').style.display='none';updateRegionUI();}
 const CURRENCIES=[{code:'TRY',symbol:'₺',name:'Türk Lirası'},{code:'USD',symbol:'$',name:'Amerikan Doları'},{code:'EUR',symbol:'€',name:'Euro'},{code:'GBP',symbol:'£',name:'Sterlin'},{code:'JPY',symbol:'¥',name:'Japon Yeni'},{code:'CAD',symbol:'CA$',name:'Kanada Doları'},{code:'AUD',symbol:'A$',name:'Avustralya Doları'},{code:'CHF',symbol:'Fr',name:'İsviçre Frangı'},{code:'SEK',symbol:'kr',name:'İsveç Kronu'},{code:'NOK',symbol:'kr',name:'Norveç Kronu'},{code:'KRW',symbol:'₩',name:'Güney Kore Wonu'},{code:'INR',symbol:'₹',name:'Hindistan Rupisi'},{code:'BRL',symbol:'R$',name:'Brezilya Reali'},{code:'SGD',symbol:'S$',name:'Singapur Doları'},{code:'AED',symbol:'AED',name:'BAE Dirhemi'},{code:'SAR',symbol:'SAR',name:'Suudi Riyali'}];
 const POPULAR_SVCS=[{id:'netflix',name:'Netflix',color:'#E50914',rgb:'229,9,20',prices:{tr:{amount:219.99,plan:'Standart'},us:{amount:15.49,plan:'Standard'},eu:{amount:13.99,plan:'Standard'},as:{amount:13.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile Paylaşımı',price:269.99}]}},{id:'youtube',name:'YouTube',color:'#FF0000',rgb:'255,0,0',prices:{tr:{amount:109.99,plan:'Premium'},us:{amount:13.99,plan:'Premium'},eu:{amount:11.99,plan:'Premium'},as:{amount:11.99,plan:'Premium'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile (6 kişi)',price:179.99},{name:'Öğrenci',price:69.99}]}},{id:'disney',name:'Disney+',color:'#0ABFBC',rgb:'10,191,188',prices:{tr:{amount:149.99,plan:'Standart'},us:{amount:7.99,plan:'Basic'},eu:{amount:8.99,plan:'Standard'},as:{amount:8.99,plan:'Standard'}},plans:{tr:[{name:'Standart (Reklamlı)',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]}},{id:'prime',name:'Prime Video',color:'#1A98FF',rgb:'26,152,255',prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}},plans:{tr:[{name:'Prime Üyelik',price:129.99},{name:'Prime Video Kanal',price:49.99}]}},{id:'hbo',name:'HBO Max',color:'#3B1F6B',rgb:'59,31,107',prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate (4K)',price:249.99}]}},{id:'apple',name:'Apple TV+',color:'#ffffff',rgb:'255,255,255',textDark:true,prices:{tr:{amount:99.99,plan:'Aile'},us:{amount:9.99,plan:'Monthly'},eu:{amount:8.99,plan:'Monthly'},as:{amount:8.99,plan:'Monthly'}},plans:{tr:[{name:'Bireysel',price:49.99},{name:'Aile (6 kişi)',price:99.99}]}},{id:'twitch',name:'Twitch',color:'#9146FF',rgb:'145,70,255',prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Turbo',price:89.99},{name:'Kanal Aboneliği',price:49.99}]}},{id:'kick',name:'Kick',color:'#53FC18',rgb:'83,252,24',textDark:true,prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Kanal Aboneliği',price:49.99}]}},{id:'exxen',name:'EXXEN',color:'#F9D100',rgb:'249,209,0',textDark:true,prices:{tr:{amount:179.99,plan:'Reklamlı HD'},us:{amount:0,plan:'N/A'},eu:{amount:0,plan:'N/A'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Reklamlı HD',price:119.99},{name:'Reklamsız HD',price:179.99},{name:'Reklamsız 4K',price:239.99},{name:'Spor Paketi',price:349.99}]}},{id:'bein',name:'beIN Connect',color:'#6F2DA8',rgb:'111,45,168',prices:{tr:{amount:249.99,plan:'Spor Paketi'},us:{amount:0,plan:'N/A'},eu:{amount:19.99,plan:'Sports'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Eğlence Paketi',price:149.99},{name:'Spor Paketi',price:249.99},{name:'Süper Paket',price:349.99}]}},{id:'spotify',name:'Spotify',color:'#1DB954',rgb:'29,185,84',prices:{tr:{amount:79.99,plan:'Bireysel'},us:{amount:10.99,plan:'Individual'},eu:{amount:10.99,plan:'Individual'},as:{amount:10.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:79.99},{name:'Öğrenci',price:49.99},{name:'Duo (2 kişi)',price:129.99},{name:'Aile (6 kişi)',price:159.99}]}},{id:'tvplus',name:'Turkcell TV+',color:'#FFD100',rgb:'255,209,0',textDark:true,prices:{tr:{amount:109.99,plan:'Bireysel'},us:{amount:9.99,plan:'Individual'},eu:{amount:9.99,plan:'Individual'},as:{amount:9.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99}]}}];
-const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/img_2.png" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/img_3.png" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/img_4.png" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/img_5.png" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/img_6.png" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/img_7.png" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/img_8.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/img_9.png" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/img_10.png" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/img_11.png" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/img_12.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/img_13.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/img_14.png" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/img_15.png" style="width:66px;height:66px;object-fit:contain;">`},tvplus:{w:66,h:66,html:`<img src="./assets/img_16.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/img_17.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
+const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/netflix_N.png" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/youtube.png" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/Disney+.png" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/prime video.png" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/hbo.png" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/apple.png" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/appleb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/twitch.png" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/kick.png" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/kickb.png" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/exxen.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/exxenb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/bein.png" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/Spotify.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/Spotifyb.png" style="width:66px;height:66px;object-fit:contain;">`},tvplus:{w:66,h:66,html:`<img src="./assets/tvplus2.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="800" fill="white" text-anchor="middle">?</text></svg>`}};
 let SVC=[],SETTINGS={},PROFILE={name:'Kullanıcı',email:'kullanici@icloud.com'};
 let active=-1,pwdShow=false;
 let qrRotateInterval=null,qrCountdown=null,qrSec=30,_qrSeed=Date.now();
@@ -2297,7 +2294,7 @@ function buildGrid() {
     return;
   }
   gridEl.style.display = '';
-  const BOX_IMG = './assets/img_18.png';
+  const BOX_IMG = './assets/box2.png';
   SVC.forEach((s, i) => {
     const tile = document.createElement('div');
     tile.className = 'tile';
@@ -2662,7 +2659,7 @@ function deactivate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._
   if(navGlow) navGlow.style.background='radial-gradient(circle,rgba(120,60,255,.35) 0%,transparent 70%)';
   // Fiyat overlay temizle
   const priceEl=el.querySelector('.tile-price');
-  if(priceEl) priceEl.remove();const boxUrl='./assets/img_18.png';el.style.background='';el.style.backgroundImage=`url('${boxUrl}')`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backdropFilter='';el.style.webkitBackdropFilter='';el.style.borderColor='';el.style.boxShadow='';el.style.transform='';if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}active=-1;}
+  if(priceEl) priceEl.remove();const boxUrl='./assets/box2.png';el.style.background='';el.style.backgroundImage=`url('${boxUrl}')`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backdropFilter='';el.style.webkitBackdropFilter='';el.style.borderColor='';el.style.boxShadow='';el.style.transform='';if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}active=-1;}
 function openSheet(i){const s=SVC[i],L=LOGO[s.id]||{w:28,h:28,html:null};const tileGrad=TILE_GRADIENTS[s.id]||s.color;document.getElementById('sColor').style.background=tileGrad;document.getElementById('sLogoWrap').style.background=tileGrad;const isImgLogo=L.html&&L.html.includes('<img');const useDark=s.textDark||L.textDark;const activeHtml=(useDark&&L.htmlDark)?L.htmlDark:L.html;if(s.faviconUrl){document.getElementById('sIco').innerHTML=`<img src="${s.faviconUrl}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;">`;}else if(isImgLogo&&activeHtml){const imgSrc=(activeHtml.match(/src="([^"]+)"/)??[])[1]||'';document.getElementById('sIco').innerHTML=imgSrc?`<img src="${imgSrc}" style="width:38px;height:38px;object-fit:contain;">`:`<span style="font-size:24px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0]}</span>`;}else if(L.html){const sc2=22/Math.max(L.w||22,L.h||22);const svgHtml=useDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html;document.getElementById('sIco').innerHTML=`<div style="width:${Math.round((L.w||22)*sc2)}px;height:${Math.round((L.h||22)*sc2)}px;display:flex;align-items:center;justify-content:center;">${svgHtml}</div>`;}else{document.getElementById('sIco').innerHTML=`<span style="font-size:30px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0].toUpperCase()}</span>`;}document.getElementById('sName').textContent=s.name;document.getElementById('emailV').textContent=s.email?s.email.replace(/^(.{3}).*(@.*)$/,'$1•••$2'):'—';pwdShow=false;document.getElementById('pwdV').textContent='••••••••••';document.getElementById('eyeU').setAttribute('href','#i-eye');['uE','uP'].forEach(id=>document.getElementById(id).setAttribute('href','#i-copy'));['btnE','btnP'].forEach(id=>document.getElementById(id).classList.remove('ok'));const qb=document.getElementById('qrBtn');qb.style.background=TILE_GRADIENTS[s.id]||s.color;qb.style.color=(s.textDark||L.textDark)?'#000':'#fff';document.getElementById('appOpenBtn').textContent=`${s.name} Uygulamasını Aç`;document.getElementById('dimmer').classList.add('on');
   // Sheet scroll parallax
   const sheetBody = document.querySelector('.sheet-body');
