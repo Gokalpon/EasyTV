@@ -1,132 +1,31 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MarketPulse">
+<meta name="apple-mobile-web-app-title" content="EasyTV">
 <meta name="theme-color" content="#0a0a0a">
-<title>MarketPulse</title>
+<title>EasyTV</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
 <style>
-/* Genel Temizlik ve CSS */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0a0a;font-family:-apple-system,system-ui,sans-serif;overflow:hidden;}
-
-.phone{position:relative;width:393px;height:852px;border-radius:54px;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 9px #0a0a0f, 0 40px 120px rgba(0,0,0,.92);display:flex;flex-direction:column;background:#000;}
-.bg-ambient{position:absolute;inset:0;background:linear-gradient(170deg,#0d0e1c 0%,#000 100%);z-index:0;}
-
-.app{position:absolute;inset:0;display:flex;flex-direction:column;z-index:10;}
-.home-header{display:flex;align-items:center;justify-content:space-between;padding:40px 20px 10px;}
-.logo{font-family:'Playfair Display', serif; font-style:italic; color:#fff; font-size:24px;}
-
-/* Market Kartları */
-#market-data-container {
-    padding: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    overflow-y: auto;
-}
-.asset-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    padding: 16px;
-    transition: transform 0.3s;
-}
-.price-up { color: #4ade80; }
-.price-down { color: #f87171; }
+body{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0a0a;font-family:system-ui,sans-serif;overflow:hidden;}
+.phone{position:relative;width:393px;height:852px;border-radius:54px;overflow:hidden;background:#000;box-shadow:0 0 0 9px #0a0a0f, 0 40px 120px rgba(0,0,0,.92);}
+.app{padding:40px 20px;}
+.logo-easy{font-family:'Playfair Display',serif;font-style:italic;color:#fff;font-size:28px;}
 </style>
 </head>
 <body>
-
-<div class="phone">
-    <div class="bg-ambient"></div>
-    <div class="app">
-        <header class="home-header">
-            <div class="logo">Market<i>Pulse</i></div>
-            <div id="connection-status" style="width:10px;height:10px;border-radius:50%;background:red;"></div>
-        </header>
-
-        <div id="market-data-container">
-            </div>
+    <div class="phone">
+        <div class="app">
+            <div class="logo-easy">Easy<i>TV</i></div>
+            <p style="color:gray;margin-top:20px;">Sistem Güncellendi.</p>
+        </div>
     </div>
-</div>
-
-<script>
-// 1. Supabase Yapılandırması
-const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Burayı değiştir
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Burayı değiştir
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// 2. Uygulama Başlatma
-async function init() {
-    console.log("Uygulama başlatılıyor...");
-    fetchMarketData();
-    subscribeToChanges();
-}
-
-// 3. Verileri Çekme
-async function fetchMarketData() {
-    const { data, error } = await _supabase
-        .from('market_assets')
-        .select('*')
-        .order('name', { ascending: true });
-
-    if (error) console.error("Veri çekilemedi:", error);
-    else renderMarketCards(data);
-}
-
-// 4. Arayüzü Oluşturma (GSAP Animasyonlu)
-function renderMarketCards(assets) {
-    const container = document.getElementById('market-data-container');
-    container.innerHTML = '';
-
-    assets.forEach((asset, i) => {
-        const card = document.createElement('div');
-        card.className = 'asset-card';
-        card.id = `asset-${asset.symbol}`;
-        card.innerHTML = `
-            <div style="color:rgba(255,255,255,0.5);font-size:12px;">${asset.name}</div>
-            <div style="color:#fff;font-weight:bold;margin-bottom:8px;">${asset.symbol}</div>
-            <div class="price ${asset.change_24h >= 0 ? 'price-up' : 'price-down'}" style="font-size:20px;font-weight:900;">
-                $${asset.price.toLocaleString()}
-            </div>
-        `;
-        container.appendChild(card);
-
-        // Giriş animasyonu
-        gsap.from(card, { opacity: 0, y: 20, delay: i * 0.1, duration: 0.5 });
-    });
-}
-
-// 5. Canlı Takip (Realtime)
-function subscribeToChanges() {
-    _supabase
-        .channel('market-updates')
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'market_assets' }, payload => {
-            const updatedAsset = payload.new;
-            const priceEl = document.querySelector(`#asset-${updatedAsset.symbol} .price`);
-            
-            if (priceEl) {
-                // Fiyat değişince parlama efekti
-                gsap.to(priceEl, { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1 });
-                priceEl.innerText = `$${updatedAsset.price.toLocaleString()}`;
-                priceEl.className = `price ${updatedAsset.change_24h >= 0 ? 'price-up' : 'price-down'}`;
-            }
-        })
-        .subscribe((status) => {
-            document.getElementById('connection-status').style.background = status === 'SUBSCRIBED' ? '#4ade80' : 'red';
-        });
-}
-
-document.addEventListener('DOMContentLoaded', init);
-</script>
 </body>
 </html>
