@@ -898,7 +898,6 @@ function buildGrid() {
   SVC.forEach((s, i) => {
     const tile = document.createElement('div');
     tile.className = 'tile';
-    tile.style.animationDelay = `${i * .07}s`;
     tile.style.backgroundImage = `url('${BOX_IMG}')`;
     tile.dataset.idx = i;
     const L = LOGO[s.id] || LOGO._custom;
