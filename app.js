@@ -1255,7 +1255,7 @@ function deactivate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._
   // Fiyat overlay temizle
   const priceEl=el.querySelector('.tile-price');
   if(priceEl) priceEl.remove();const boxUrl='./assets/box2.png';el.style.background='';el.style.backgroundImage=`url('${boxUrl}')`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backdropFilter='';el.style.webkitBackdropFilter='';el.style.borderColor='';el.style.boxShadow='';el.style.transform='';if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}active=-1;}
-function openSheet(i){const s=SVC[i],L=LOGO[s.id]||{w:28,h:28,html:null};const tileGrad=TILE_GRADIENTS[s.id]||s.color;document.getElementById('sColor').style.background=tileGrad;document.getElementById('sLogoWrap').style.background=tileGrad;const isImgLogo=L.html&&L.html.includes('<img');const useDark=s.textDark||L.textDark;const activeHtml=(useDark&&L.htmlDark)?L.htmlDark:L.html;if(s.faviconUrl){document.getElementById('sIco').innerHTML=`<img src="${s.faviconUrl}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;">`;}else if(isImgLogo&&activeHtml){const imgSrc=(activeHtml.match(/src="([^"]+)"/)||[])[1]||'';document.getElementById('sIco').innerHTML=imgSrc?`<img src="${imgSrc}" style="width:38px;height:38px;object-fit:contain;">`:`<span style="font-size:24px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0]}</span>`;}else if(L.html){const sc2=22/Math.max(L.w||22,L.h||22);const svgHtml=useDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html;document.getElementById('sIco').innerHTML=`<div style="width:${Math.round((L.w||22)*sc2)}px;height:${Math.round((L.h||22)*sc2)}px;display:flex;align-items:center;justify-content:center;">${svgHtml}</div>`;}else{document.getElementById('sIco').innerHTML=`<span style="font-size:30px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0].toUpperCase()}</span>`;}document.getElementById('sName').textContent=s.name;document.getElementById('emailV').textContent=s.email?s.email.replace(/^(.{3}).*(@.*)$/,'$1•••$2'):'—';pwdShow=false;document.getElementById('pwdV').textContent='••••••••••';document.getElementById('eyeU').setAttribute('href','#i-eye');['uE','uP'].forEach(id=>document.getElementById(id).setAttribute('href','#i-copy'));['btnE','btnP'].forEach(id=>document.getElementById(id).classList.remove('ok'));const qb=document.getElementById('qrBtn');qb.style.background=TILE_GRADIENTS[s.id]||s.color;qb.style.color=(s.textDark||L.textDark)?'#000':'#fff';document.getElementById('appOpenBtn').textContent=`${s.name} Uygulamasını Aç`;document.getElementById('dimmer').classList.add('on');
+function openSheet(i){active=i;const s=SVC[i],L=LOGO[s.id]||{w:28,h:28,html:null};const tileGrad=TILE_GRADIENTS[s.id]||s.color;document.getElementById('sColor').style.background=tileGrad;document.getElementById('sLogoWrap').style.background=tileGrad;const isImgLogo=L.html&&L.html.includes('<img');const useDark=s.textDark||L.textDark;const activeHtml=(useDark&&L.htmlDark)?L.htmlDark:L.html;if(s.faviconUrl){document.getElementById('sIco').innerHTML=`<img src="${s.faviconUrl}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;">`;}else if(isImgLogo&&activeHtml){const imgSrc=(activeHtml.match(/src="([^"]+)"/)||[])[1]||'';document.getElementById('sIco').innerHTML=imgSrc?`<img src="${imgSrc}" style="width:38px;height:38px;object-fit:contain;">`:`<span style="font-size:24px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0]}</span>`;}else if(L.html){const sc2=22/Math.max(L.w||22,L.h||22);const svgHtml=useDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html;document.getElementById('sIco').innerHTML=`<div style="width:${Math.round((L.w||22)*sc2)}px;height:${Math.round((L.h||22)*sc2)}px;display:flex;align-items:center;justify-content:center;">${svgHtml}</div>`;}else{document.getElementById('sIco').innerHTML=`<span style="font-size:30px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0].toUpperCase()}</span>`;}document.getElementById('sName').textContent=s.name;document.getElementById('emailV').textContent=s.email?s.email.replace(/^(.{3}).*(@.*)$/,'$1•••$2'):'—';pwdShow=false;document.getElementById('pwdV').textContent='••••••••••';document.getElementById('eyeU').setAttribute('href','#i-eye');['uE','uP'].forEach(id=>document.getElementById(id).setAttribute('href','#i-copy'));['btnE','btnP'].forEach(id=>document.getElementById(id).classList.remove('ok'));const qb=document.getElementById('qrBtn');qb.style.background=TILE_GRADIENTS[s.id]||s.color;qb.style.color=(s.textDark||L.textDark)?'#000':'#fff';document.getElementById('appOpenBtn').textContent=`${s.name} Uygulamasını Aç`;document.getElementById('dimmer').classList.add('on');
   // Sheet scroll parallax
   const sheetBody = document.querySelector('.sheet-body');
   if(sheetBody){
@@ -1336,6 +1336,34 @@ function openSubEdit(i){seEditIdx=i;const s=SVC[i];const L=LOGO[s.id]||{w:28,h:2
 function toggleSePwd(){const inp=document.getElementById('sePwd');inp.type=inp.type==='password'?'text':'password';}
 function openSubEditFromSheet(){const idx=active;if(idx<0)return;closeSheet();setTimeout(()=>openSubEdit(idx),280);}
 function closeSubEdit(){document.getElementById('subEditModal').style.display='none';}
+function renderSeUserPaySection(i,s){
+  const shareRow=document.getElementById('seShareRow');
+  if(!shareRow)return;
+  shareRow.style.display='block';
+  const userChips=document.getElementById('seUserChips');
+  const payChips=document.getElementById('sePayChips');
+  if(!userChips||!payChips)return;
+  const curCount=s._userCount||1;
+  const curPay=s._payMethod||'me';
+  userChips.innerHTML='';
+  [1,2,3,4,5,6].forEach(n=>{
+    const btn=document.createElement('button');
+    btn.className='plan-user-pill'+(n===curCount?' active':'');
+    btn.textContent=n;
+    btn.onclick=()=>{userChips.querySelectorAll('.plan-user-pill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
+    userChips.appendChild(btn);
+  });
+  payChips.innerHTML='';
+  [{method:'me',label:'Ben ödüyorum 💳'},{method:'split',label:'Eşit bölüşüyoruz 🤝'},{method:'other',label:'Başkası ödüyor 🎁'}].forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='plan-pay-opt'+(opt.method===curPay?' active':'');
+    btn.dataset.method=opt.method;
+    btn.textContent=opt.label;
+    btn.style.cssText='padding:9px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;';
+    btn.onclick=()=>{payChips.querySelectorAll('.plan-pay-opt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
+    payChips.appendChild(btn);
+  });
+}
 function saveSubEdit(){if(seEditIdx<0)return;
   const fullPrice=parseFloat(document.getElementById('sePrice').value)||0;
   const plan=document.getElementById('sePlan').value.trim();
@@ -1343,9 +1371,9 @@ function saveSubEdit(){if(seEditIdx<0)return;
   const email=document.getElementById('seEmail').value.trim();
   const pwd=document.getElementById('sePwd').value;
   // user/payment
-  const userCountEl=document.querySelector('#seUserSection .plan-user-pill.active');
+  const userCountEl=document.querySelector('#seUserChips .plan-user-pill.active');
   const userCount=userCountEl?parseInt(userCountEl.textContent):SVC[seEditIdx]._userCount||1;
-  const payEl=document.querySelector('#sePaySection .plan-pay-opt.active');
+  const payEl=document.querySelector('#sePayChips .plan-pay-opt.active');
   const payMethod=payEl?payEl.dataset.method:(SVC[seEditIdx]._payMethod||'me');
   let myPrice=fullPrice;
   if(payMethod==='split')myPrice=fullPrice/userCount;
@@ -2090,7 +2118,7 @@ function selectPieSlice(idx) {
   // Alt bilgi güncelle - sadece isim
   var lblEl=document.getElementById('pieSelLbl');
   if(window._pieSelected>=0 && lblEl){
-    var s=sorted[idx];
+    var s=data[idx];
     lblEl.textContent=s.name;
     lblEl.style.color='#ffffff';
   } else if(lblEl){
