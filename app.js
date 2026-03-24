@@ -531,7 +531,7 @@ function filterLoginCountries(q){renderLoginCountries(q);}
 function selectLoginCountry(code,region){SETTINGS.country=code;SETTINGS.region=region;saveData();const c=COUNTRIES.find(x=>x.code===code);if(c)document.getElementById('selectedCountryLabel').textContent=c.name;document.getElementById('countryDropdown').style.display='none';updateRegionUI();}
 const CURRENCIES=[{code:'TRY',symbol:'₺',name:'Türk Lirası'},{code:'USD',symbol:'$',name:'Amerikan Doları'},{code:'EUR',symbol:'€',name:'Euro'},{code:'GBP',symbol:'£',name:'Sterlin'},{code:'JPY',symbol:'¥',name:'Japon Yeni'},{code:'CAD',symbol:'CA$',name:'Kanada Doları'},{code:'AUD',symbol:'A$',name:'Avustralya Doları'},{code:'CHF',symbol:'Fr',name:'İsviçre Frangı'},{code:'SEK',symbol:'kr',name:'İsveç Kronu'},{code:'NOK',symbol:'kr',name:'Norveç Kronu'},{code:'KRW',symbol:'₩',name:'Güney Kore Wonu'},{code:'INR',symbol:'₹',name:'Hindistan Rupisi'},{code:'BRL',symbol:'R$',name:'Brezilya Reali'},{code:'SGD',symbol:'S$',name:'Singapur Doları'},{code:'AED',symbol:'AED',name:'BAE Dirhemi'},{code:'SAR',symbol:'SAR',name:'Suudi Riyali'}];
 const POPULAR_SVCS=[{id:'netflix',name:'Netflix',color:'#E50914',rgb:'229,9,20',prices:{tr:{amount:219.99,plan:'Standart'},us:{amount:15.49,plan:'Standard'},eu:{amount:13.99,plan:'Standard'},as:{amount:13.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile Paylaşımı',price:269.99}]}},{id:'youtube',name:'YouTube',color:'#FF0000',rgb:'255,0,0',prices:{tr:{amount:109.99,plan:'Premium'},us:{amount:13.99,plan:'Premium'},eu:{amount:11.99,plan:'Premium'},as:{amount:11.99,plan:'Premium'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile (6 kişi)',price:179.99},{name:'Öğrenci',price:69.99}]}},{id:'disney',name:'Disney+',color:'#0ABFBC',rgb:'10,191,188',prices:{tr:{amount:149.99,plan:'Standart'},us:{amount:7.99,plan:'Basic'},eu:{amount:8.99,plan:'Standard'},as:{amount:8.99,plan:'Standard'}},plans:{tr:[{name:'Standart (Reklamlı)',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]}},{id:'prime',name:'Prime Video',color:'#1A98FF',rgb:'26,152,255',prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}},plans:{tr:[{name:'Prime Üyelik',price:129.99},{name:'Prime Video Kanal',price:49.99}]}},{id:'hbo',name:'HBO Max',color:'#3B1F6B',rgb:'59,31,107',prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate (4K)',price:249.99}]}},{id:'apple',name:'Apple TV+',color:'#ffffff',rgb:'255,255,255',textDark:true,prices:{tr:{amount:99.99,plan:'Aile'},us:{amount:9.99,plan:'Monthly'},eu:{amount:8.99,plan:'Monthly'},as:{amount:8.99,plan:'Monthly'}},plans:{tr:[{name:'Bireysel',price:49.99},{name:'Aile (6 kişi)',price:99.99}]}},{id:'twitch',name:'Twitch',color:'#9146FF',rgb:'145,70,255',prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Turbo',price:89.99},{name:'Kanal Aboneliği',price:49.99}]}},{id:'kick',name:'Kick',color:'#53FC18',rgb:'83,252,24',textDark:true,prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Kanal Aboneliği',price:49.99}]}},{id:'exxen',name:'EXXEN',color:'#F9D100',rgb:'249,209,0',textDark:true,prices:{tr:{amount:179.99,plan:'Reklamlı HD'},us:{amount:0,plan:'N/A'},eu:{amount:0,plan:'N/A'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Reklamlı HD',price:119.99},{name:'Reklamsız HD',price:179.99},{name:'Reklamsız 4K',price:239.99},{name:'Spor Paketi',price:349.99}]}},{id:'bein',name:'beIN Connect',color:'#6F2DA8',rgb:'111,45,168',prices:{tr:{amount:249.99,plan:'Spor Paketi'},us:{amount:0,plan:'N/A'},eu:{amount:19.99,plan:'Sports'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Eğlence Paketi',price:149.99},{name:'Spor Paketi',price:249.99},{name:'Süper Paket',price:349.99}]}},{id:'spotify',name:'Spotify',color:'#1DB954',rgb:'29,185,84',prices:{tr:{amount:79.99,plan:'Bireysel'},us:{amount:10.99,plan:'Individual'},eu:{amount:10.99,plan:'Individual'},as:{amount:10.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:79.99},{name:'Öğrenci',price:49.99},{name:'Duo (2 kişi)',price:129.99},{name:'Aile (6 kişi)',price:159.99}]}},{id:'tvplus',name:'Turkcell TV+',color:'#FFD100',rgb:'255,209,0',textDark:true,prices:{tr:{amount:109.99,plan:'Bireysel'},us:{amount:9.99,plan:'Individual'},eu:{amount:9.99,plan:'Individual'},as:{amount:9.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99}]}}];
-const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/netflix_N.png" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/youtube.png" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/Disney+.png" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/prime video.png" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/hbo.png" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/apple.png" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/appleb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/twitch.png" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/kick.png" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/kickb.png" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/exxen.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/exxenb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/bein.png" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/Spotify.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/Spotifyb.png" style="width:66px;height:66px;object-fit:contain;">`},tvplus:{w:66,h:66,html:`<img src="./assets/tvplus2.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/tvplus2.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
+const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/netflix_N.png" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/youtube.png" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/Disney+.png" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/prime video.png" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/hbo.png" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/apple.png" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/appleb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/twitch.png" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/kick.png" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/kickb.png" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/exxen.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/exxenb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/bein.png" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/Spotify.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/Spotifyb.png" style="width:66px;height:66px;object-fit:contain;">`},tvplus:{w:66,h:66,html:`<img src="./assets/tvplus.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/tvplus.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
 let SVC=[],SETTINGS={},PROFILE={name:'Kullanıcı',email:'kullanici@icloud.com'};
 let active=-1,pwdShow=false;
 let qrRotateInterval=null,qrCountdown=null,qrSec=30,_qrSeed=Date.now();
@@ -695,7 +695,7 @@ function setPinChoice(val){
   setTimeout(function(){ tapped.style.transform='scale(1.01)'; setTimeout(function(){ tapped.style.transform=''; },200); },100);
 }
 let obStep=0;const obSteps=['services','pinChoice','pin','done'];let obSelectedServices=['netflix','youtube','disney','prime','hbo','apple'];let obNewPin='';
-function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const skip=document.querySelector('.onboard-skip');const setSkip=(v)=>{if(skip)skip.style.display=v;};content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){btn.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">Adım 1 / 3</div><div class="onboard-title">Hangi servisleri<br>kullanıyorsun?</div><div class="onboard-sub">Hepsini sonra değiştirebilirsin.</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){btn.textContent='Devam';setSkip('none');content.innerHTML=`<div style="padding:0 4px;">
+function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const skip=document.querySelector('.onboard-skip');const setSkip=(v)=>{if(skip)skip.style.display=v;};content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){btn.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">Adım 1 / 3</div><div class="onboard-title">Hangi servisleri<br>kullanıyorsun?</div><div class="onboard-sub">Hepsini sonra değiştirebilirsin.</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){btn.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 4px;">
 <div class="onboard-step-lbl">Adım 2 / 3</div>
 <div class="onboard-title" style="margin-bottom:8px;">Güvenlik</div>
 <div class="onboard-sub" style="margin-bottom:28px;">Uygulamana PIN ile giriş yapmak ister misin?</div>
@@ -898,7 +898,6 @@ function buildGrid() {
   SVC.forEach((s, i) => {
     const tile = document.createElement('div');
     tile.className = 'tile';
-    tile.style.animationDelay = `${i * .07}s`;
     tile.style.backgroundImage = `url('${BOX_IMG}')`;
     tile.dataset.idx = i;
     const L = LOGO[s.id] || LOGO._custom;
@@ -1256,7 +1255,7 @@ function deactivate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._
   // Fiyat overlay temizle
   const priceEl=el.querySelector('.tile-price');
   if(priceEl) priceEl.remove();const boxUrl='./assets/box2.png';el.style.background='';el.style.backgroundImage=`url('${boxUrl}')`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backdropFilter='';el.style.webkitBackdropFilter='';el.style.borderColor='';el.style.boxShadow='';el.style.transform='';if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}active=-1;}
-function openSheet(i){const s=SVC[i],L=LOGO[s.id]||{w:28,h:28,html:null};const tileGrad=TILE_GRADIENTS[s.id]||s.color;document.getElementById('sColor').style.background=tileGrad;document.getElementById('sLogoWrap').style.background=tileGrad;const isImgLogo=L.html&&L.html.includes('<img');const useDark=s.textDark||L.textDark;const activeHtml=(useDark&&L.htmlDark)?L.htmlDark:L.html;if(s.faviconUrl){document.getElementById('sIco').innerHTML=`<img src="${s.faviconUrl}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;">`;}else if(isImgLogo&&activeHtml){const imgSrc=(activeHtml.match(/src="([^"]+)"/)||[])[1]||'';document.getElementById('sIco').innerHTML=imgSrc?`<img src="${imgSrc}" style="width:38px;height:38px;object-fit:contain;">`:`<span style="font-size:24px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0]}</span>`;}else if(L.html){const sc2=22/Math.max(L.w||22,L.h||22);const svgHtml=useDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html;document.getElementById('sIco').innerHTML=`<div style="width:${Math.round((L.w||22)*sc2)}px;height:${Math.round((L.h||22)*sc2)}px;display:flex;align-items:center;justify-content:center;">${svgHtml}</div>`;}else{document.getElementById('sIco').innerHTML=`<span style="font-size:30px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0].toUpperCase()}</span>`;}document.getElementById('sName').textContent=s.name;document.getElementById('emailV').textContent=s.email?s.email.replace(/^(.{3}).*(@.*)$/,'$1•••$2'):'—';pwdShow=false;document.getElementById('pwdV').textContent='••••••••••';document.getElementById('eyeU').setAttribute('href','#i-eye');['uE','uP'].forEach(id=>document.getElementById(id).setAttribute('href','#i-copy'));['btnE','btnP'].forEach(id=>document.getElementById(id).classList.remove('ok'));const qb=document.getElementById('qrBtn');qb.style.background=TILE_GRADIENTS[s.id]||s.color;qb.style.color=(s.textDark||L.textDark)?'#000':'#fff';document.getElementById('appOpenBtn').textContent=`${s.name} Uygulamasını Aç`;document.getElementById('dimmer').classList.add('on');
+function openSheet(i){active=i;const s=SVC[i],L=LOGO[s.id]||{w:28,h:28,html:null};const tileGrad=TILE_GRADIENTS[s.id]||s.color;document.getElementById('sColor').style.background=tileGrad;document.getElementById('sLogoWrap').style.background=tileGrad;const isImgLogo=L.html&&L.html.includes('<img');const useDark=s.textDark||L.textDark;const activeHtml=(useDark&&L.htmlDark)?L.htmlDark:L.html;if(s.faviconUrl){document.getElementById('sIco').innerHTML=`<img src="${s.faviconUrl}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;">`;}else if(isImgLogo&&activeHtml){const imgSrc=(activeHtml.match(/src="([^"]+)"/)||[])[1]||'';document.getElementById('sIco').innerHTML=imgSrc?`<img src="${imgSrc}" style="width:38px;height:38px;object-fit:contain;">`:`<span style="font-size:24px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0]}</span>`;}else if(L.html){const sc2=22/Math.max(L.w||22,L.h||22);const svgHtml=useDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html;document.getElementById('sIco').innerHTML=`<div style="width:${Math.round((L.w||22)*sc2)}px;height:${Math.round((L.h||22)*sc2)}px;display:flex;align-items:center;justify-content:center;">${svgHtml}</div>`;}else{document.getElementById('sIco').innerHTML=`<span style="font-size:30px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0].toUpperCase()}</span>`;}document.getElementById('sName').textContent=s.name;document.getElementById('emailV').textContent=s.email?s.email.replace(/^(.{3}).*(@.*)$/,'$1•••$2'):'—';pwdShow=false;document.getElementById('pwdV').textContent='••••••••••';document.getElementById('eyeU').setAttribute('href','#i-eye');['uE','uP'].forEach(id=>document.getElementById(id).setAttribute('href','#i-copy'));['btnE','btnP'].forEach(id=>document.getElementById(id).classList.remove('ok'));const qb=document.getElementById('qrBtn');qb.style.background=TILE_GRADIENTS[s.id]||s.color;qb.style.color=(s.textDark||L.textDark)?'#000':'#fff';document.getElementById('appOpenBtn').textContent=`${s.name} Uygulamasını Aç`;document.getElementById('dimmer').classList.add('on');
   // Sheet scroll parallax
   const sheetBody = document.querySelector('.sheet-body');
   if(sheetBody){
@@ -1333,10 +1332,41 @@ function openSubEdit(i){seEditIdx=i;const s=SVC[i];const L=LOGO[s.id]||{w:28,h:2
   void chip.offsetWidth;
   chip.style.transition='all .18s';
   chips.querySelectorAll('button').forEach(cc=>{cc.style.borderColor='rgba(255,255,255,.15)';cc.style.background='rgba(255,255,255,.04)';cc.style.color='rgba(255,255,255,.5)';cc.style.transform='';});
-  chip.style.borderColor='rgba(255,255,255,.6)';chip.style.background='rgba(255,255,255,.15)';chip.style.color='#fff';chip.style.transform='';document.getElementById('sePlan').value=p.name;document.getElementById('sePrice').value=p.price;const mw=document.getElementById('sePlanManualWrap');if(mw)mw.style.display='none';};chips.appendChild(chip);});const otherChip=document.createElement('button');otherChip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isOther?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isOther?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isOther?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;otherChip.textContent='Diğer';otherChip.onclick=()=>{chips.querySelectorAll('button').forEach(c=>{c.style.borderColor='rgba(255,255,255,.15)';c.style.background='rgba(255,255,255,.04)';c.style.color='rgba(255,255,255,.5)';});otherChip.style.borderColor='rgba(255,255,255,.6)';otherChip.style.background='rgba(255,255,255,.15)';otherChip.style.color='#fff';document.getElementById('sePlanManualWrap').style.display='block';document.getElementById('sePlan').value='';document.getElementById('sePrice').value='';};chips.appendChild(otherChip);const mw=document.createElement('div');mw.id='sePlanManualWrap';mw.style.cssText='display:'+(isOther?'flex':'none')+';flex-direction:column;gap:8px;margin-top:10px;';mw.innerHTML=`<input id="sePlanManualInput" class="add-input" type="text" placeholder="Plan adı..." value="${isOther?(s.plan||''):''}">`;chips.after(mw);document.getElementById('sePlanManualInput').oninput=()=>{document.getElementById('sePlan').value=document.getElementById('sePlanManualInput').value;};}else{planRow.style.display='none';}document.getElementById('seShareRow').style.display='none';document.getElementById('sePrice').value=s._fullPrice||s.fullPrice||s.price||'';document.getElementById('sePlan').value=s.plan||'';document.getElementById('seRenew').value=s.renew||'';document.getElementById('seEmail').value=s.email||'';document.getElementById('sePwd').value=s.pwd||'';document.getElementById('sePwd').type='password';renderSeUserPaySection(i,s);const m=document.getElementById('subEditModal');m.style.display='flex';}
+  chip.style.borderColor='rgba(255,255,255,.6)';chip.style.background='rgba(255,255,255,.15)';chip.style.color='#fff';chip.style.transform='';document.getElementById('sePlan').value=p.name;document.getElementById('sePrice').value=p.price;const mw=document.getElementById('sePlanManualWrap');if(mw)mw.style.display='none';};chips.appendChild(chip);});const otherChip=document.createElement('button');otherChip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isOther?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isOther?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isOther?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;otherChip.textContent='Diğer';otherChip.onclick=()=>{chips.querySelectorAll('button').forEach(c=>{c.style.borderColor='rgba(255,255,255,.15)';c.style.background='rgba(255,255,255,.04)';c.style.color='rgba(255,255,255,.5)';});otherChip.style.borderColor='rgba(255,255,255,.6)';otherChip.style.background='rgba(255,255,255,.15)';otherChip.style.color='#fff';document.getElementById('sePlanManualWrap').style.display='block';document.getElementById('sePlan').value='';document.getElementById('sePrice').value='';};chips.appendChild(otherChip);const mw=document.createElement('div');mw.id='sePlanManualWrap';mw.style.cssText='display:'+(isOther?'flex':'none')+';flex-direction:column;gap:8px;margin-top:10px;';mw.innerHTML=`<input id="sePlanManualInput" class="add-input" type="text" placeholder="Plan adı..." value="${isOther?(s.plan||''):''}">`;chips.after(mw);document.getElementById('sePlanManualInput').oninput=()=>{document.getElementById('sePlan').value=document.getElementById('sePlanManualInput').value;};}else{planRow.style.display='none';}document.getElementById('seShareRow').style.display='none';document.getElementById('sePrice').value=s._fullPrice||s.fullPrice||s.price||'';document.getElementById('sePlan').value=s.plan||'';document.getElementById('seRenew').value=s.renew||'';document.getElementById('seEmail').value=s.email||'';document.getElementById('sePwd').value=s.pwd||'';document.getElementById('sePwd').type='password';renderSeUserPaySection(i,s);const m=document.getElementById('subEditModal');m.style.display='flex';
+  // Swipe-to-close
+  const sheet=document.getElementById('seModalSheet');
+  if(sheet&&!sheet._swipeAdded){sheet._swipeAdded=true;let sy=0;sheet.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});sheet.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-sy>80)closeSubEdit();},{passive:true});}
+}
 function toggleSePwd(){const inp=document.getElementById('sePwd');inp.type=inp.type==='password'?'text':'password';}
 function openSubEditFromSheet(){const idx=active;if(idx<0)return;closeSheet();setTimeout(()=>openSubEdit(idx),280);}
 function closeSubEdit(){document.getElementById('subEditModal').style.display='none';}
+function renderSeUserPaySection(i,s){
+  const shareRow=document.getElementById('seShareRow');
+  if(!shareRow)return;
+  shareRow.style.display='block';
+  const userChips=document.getElementById('seUserChips');
+  const payChips=document.getElementById('sePayChips');
+  if(!userChips||!payChips)return;
+  const curCount=s._userCount||1;
+  const curPay=s._payMethod||'me';
+  userChips.innerHTML='';
+  [1,2,3,4,5,6].forEach(n=>{
+    const btn=document.createElement('button');
+    btn.className='plan-user-pill'+(n===curCount?' active':'');
+    btn.textContent=n;
+    btn.onclick=()=>{userChips.querySelectorAll('.plan-user-pill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
+    userChips.appendChild(btn);
+  });
+  payChips.innerHTML='';
+  [{method:'me',emoji:'💳',label:'Ben ödüyorum'},{method:'split',emoji:'🤝',label:'Eşit bölüşüyoruz'},{method:'other',emoji:'🎁',label:'Başkası ödüyor'}].forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='plan-pay-opt'+(opt.method===curPay?' active':'');
+    btn.dataset.method=opt.method;
+    btn.innerHTML=`<span style="font-size:16px;line-height:1;">${opt.emoji}</span><span>${opt.label}</span>`;
+    btn.onclick=()=>{payChips.querySelectorAll('.plan-pay-opt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
+    payChips.appendChild(btn);
+  });
+}
 function saveSubEdit(){if(seEditIdx<0)return;
   const fullPrice=parseFloat(document.getElementById('sePrice').value)||0;
   const plan=document.getElementById('sePlan').value.trim();
@@ -1344,9 +1374,9 @@ function saveSubEdit(){if(seEditIdx<0)return;
   const email=document.getElementById('seEmail').value.trim();
   const pwd=document.getElementById('sePwd').value;
   // user/payment
-  const userCountEl=document.querySelector('#seUserSection .plan-user-pill.active');
+  const userCountEl=document.querySelector('#seUserChips .plan-user-pill.active');
   const userCount=userCountEl?parseInt(userCountEl.textContent):SVC[seEditIdx]._userCount||1;
-  const payEl=document.querySelector('#sePaySection .plan-pay-opt.active');
+  const payEl=document.querySelector('#sePayChips .plan-pay-opt.active');
   const payMethod=payEl?payEl.dataset.method:(SVC[seEditIdx]._payMethod||'me');
   let myPrice=fullPrice;
   if(payMethod==='split')myPrice=fullPrice/userCount;
@@ -1950,153 +1980,86 @@ function renderSubs(){const paid=SVC.filter(s=>s.price>0);const displayCode=SETT
 function renderSpendingChart(svc) {
   try {
     var el = document.getElementById('spendingChart');
-    if (!el) {
-      console.error('spendingChart element not found');
+    if (!el) return;
+    if (!svc || svc.length === 0) {
+      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Henüz servis eklenmedi</div></div></div>';
       return;
     }
-    
-    if (!svc || svc.length === 0) { 
-      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Henüz servis eklenmedi</div></div></div>'; 
-      return; 
-    }
-    
     var displayCode = SETTINGS.displayCurrency || 'TRY';
     var dispSym = (CURRENCIES.find(function(c){return c.code===displayCode;})||CURRENCIES[0]).symbol;
-    var sorted = svc.slice().map(function(s) {
-      var cv = convertPrice(s.price||0, s.priceCurrency||'TRY');
-      return {id:s.id, name:s.name, color:s.color, _disp:cv.value};
-    }).sort(function(a,b){return b._disp-a._disp;});
-    var total = sorted.reduce(function(a,s){return a+s._disp;},0);
-    var cx=90, cy=90, r=80;
-    var sliceData=[];
-    var offset=0;
-
-    function polarToXY(angle, radius){
-      var rad = (angle-90)*Math.PI/180;
-      return {x: cx+radius*Math.cos(rad), y: cy+radius*Math.sin(rad)};
-    }
-
-    // Tüm servisleri göster (sadece ücretli değil)
     var allSvcs = svc.map(function(s) {
-      var cv;
-      try {
-        cv = convertPrice(s.price||0, s.priceCurrency||'TRY');
-      } catch(e) {
-        console.error('convertPrice error:', e);
-        cv = {value: s.price||0};
-      }
-      return {id:s.id, name:s.name, color:s.color||'rgba(255,255,255,.2)', _disp:cv.value||0};
+      var cv; try { cv = convertPrice(s.price||0, s.priceCurrency||'TRY'); } catch(e) { cv = {value:s.price||0}; }
+      return {id:s.id, name:s.name, color:s.color||'#888', _disp:cv.value||0};
     }).sort(function(a,b){return b._disp-a._disp;});
-    
+    var total = allSvcs.reduce(function(a,s){return a+s._disp;},0);
     var allTotal = allSvcs.reduce(function(a,s){return a+(s._disp||1);},0);
-    
-    // 3D pie chart - her dilim için üst yüzey + yan yüzey
+    var cx=80, cy=80, r=68, ir=30;
+    var sliceData=[], offset=0;
+    function polarToXY(angle,radius){var rad=(angle-90)*Math.PI/180;return {x:cx+radius*Math.cos(rad),y:cy+radius*Math.sin(rad)};}
     var svgSlices = allSvcs.map(function(s,i){
       var pct = allTotal>0 ? (s._disp||1)/allTotal : 1/allSvcs.length;
-      var deg = pct*360;
-      var startAngle = offset*360;
-      var endAngle = startAngle+deg;
-      var start = polarToXY(startAngle, r);
-      var end = polarToXY(endAngle, r);
-      var large = deg>180?1:0;
-      var midAngle = startAngle + deg/2;
-      sliceData.push({id:'ps'+i, name:s.name, color:s.color, price:s._disp, pct:pct, midAngle:midAngle, startAngle:startAngle, deg:deg});
-      
-      // Üst yüzey path
-      var topPath = pct>=0.999
-        ? 'M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 1 1 '+(cx-0.01)+' '+(cy-r)
-        : 'M '+cx+' '+cy+' L '+start.x.toFixed(2)+' '+start.y.toFixed(2)+' A '+r+' '+r+' 0 '+large+' 1 '+end.x.toFixed(2)+' '+end.y.toFixed(2)+' Z';
-      
-      // Derinlik için koyu renk
-      var darkColor = s.color;
-      if(s.color && s.color.startsWith('#')){
-        var rVal = parseInt(s.color.slice(1,3),16);
-        var gVal = parseInt(s.color.slice(3,5),16);
-        var bVal = parseInt(s.color.slice(5,7),16);
-        rVal = Math.max(0, rVal-60);
-        gVal = Math.max(0, gVal-60);
-        bVal = Math.max(0, bVal-60);
-        darkColor = '#'+rVal.toString(16).padStart(2,'0')+gVal.toString(16).padStart(2,'0')+bVal.toString(16).padStart(2,'0');
-      }
-      
+      var deg = pct*360; var sa=offset*360; var ea=sa+deg; var large=deg>180?1:0;
+      var os=polarToXY(sa,r), oe=polarToXY(ea,r), is_=polarToXY(sa,ir), ie=polarToXY(ea,ir);
+      var path = pct>=0.999
+        ? 'M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 1 1 '+(cx-0.01)+' '+(cy-r)+' L '+(cx-0.01)+' '+(cy-ir)+' A '+ir+' '+ir+' 0 1 0 '+cx+' '+(cy-ir)+' Z'
+        : 'M '+os.x.toFixed(1)+' '+os.y.toFixed(1)+' A '+r+' '+r+' 0 '+large+' 1 '+oe.x.toFixed(1)+' '+oe.y.toFixed(1)+' L '+ie.x.toFixed(1)+' '+ie.y.toFixed(1)+' A '+ir+' '+ir+' 0 '+large+' 0 '+is_.x.toFixed(1)+' '+is_.y.toFixed(1)+' Z';
+      sliceData.push({id:'ps'+i,name:s.name,color:s.color,price:s._disp,pct:pct,midAngle:sa+deg/2});
       offset+=pct;
-      
-      return '<g id="ps'+i+'" style="cursor:pointer;transform-origin:'+cx+'px '+cy+'px;transform:translateZ(0);opacity:0;transition:transform .35s cubic-bezier(.34,1.2,.64,1) '+(i*0.04).toFixed(2)+'s, opacity .3s '+(i*0.04).toFixed(2)+'s;" onclick="selectPieSlice('+i+')">'
-        // Yan yüzey (derinlik) - 12px kalınlık
-        +'<path d="'+topPath.replace(/Z$/, '')+' L '+end.x.toFixed(2)+' '+(end.y+12).toFixed(2)+' A '+r+' '+r+' 0 '+large+' 0 '+start.x.toFixed(2)+' '+(start.y+12).toFixed(2)+' L '+start.x.toFixed(2)+' '+start.y.toFixed(2)+' Z" fill="'+darkColor+'" stroke="none"/>'
-        // Üst yüzey
-        +'<path d="'+topPath+'" fill="'+s.color+'" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>'
-        +'</g>';
+      return '<path id="ps'+i+'" d="'+path+'" fill="'+s.color+'" stroke="rgba(12,12,22,.6)" stroke-width="1.5" style="cursor:pointer;opacity:0;transition:opacity .3s '+(i*0.05).toFixed(2)+'s,transform .25s cubic-bezier(.34,1.4,.64,1);transform-origin:'+cx+'px '+cy+'px;" onclick="selectPieSlice('+i+')"/>';
     }).join('');
-
-    var svgHtml = '<svg id="pieChartSvg" viewBox="0 0 180 200" width="160" height="180" style="flex-shrink:0;filter:drop-shadow(0 12px 28px rgba(0,0,0,.5));transform:perspective(500px) rotateX(35deg);transform-origin:center center;transition:transform .3s cubic-bezier(.34,1.2,.64,1);">'
-      + svgSlices
-      + '</svg>';
-    
-    var selectedHtml = '<div id="pieSelectedInfo" style="text-align:center;margin-top:16px;min-height:40px;transition:all .3s;">'
-      +'<div id="pieSelLbl" style="font-size:14px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:-.2px;"></div>'
-      +'</div>';
-
+    var totalStr = total>0 ? (dispSym+total.toFixed(0)) : '';
+    var svg = '<svg id="pieChartSvg" viewBox="0 0 160 160" width="140" height="140" style="flex-shrink:0;filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));">'
+      +svgSlices
+      +'<circle cx="'+cx+'" cy="'+cy+'" r="'+(ir-1)+'" fill="rgba(12,12,22,.92)"/>'
+      +(totalStr?'<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(255,255,255,.85)" font-family="-apple-system,sans-serif">'+totalStr+'</text>':'')
+      +'</svg>';
+    var legend = allSvcs.slice(0,7).map(function(s){
+      var pct2=total>0?Math.round(s._disp/total*100):0;
+      var nm=s.name.length>13?s.name.slice(0,12)+'…':s.name;
+      return '<div style="display:flex;align-items:center;gap:7px;">'
+        +'<div style="width:8px;height:8px;border-radius:2px;flex-shrink:0;background:'+s.color+'"></div>'
+        +'<span style="font-size:11px;color:rgba(255,255,255,.65);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+nm+'</span>'
+        +'<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);flex-shrink:0;">%'+pct2+'</span>'
+        +'</div>';
+    }).join('');
     el.innerHTML = '<div class="pie-chart-card">'
-      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px;">AYLIK HARCAMA</div>'
-      +'<div style="display:flex;justify-content:center;">'+svgHtml+'</div>'
-      +selectedHtml
+      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">AYLIK HARCAMA</div>'
+      +'<div style="display:flex;align-items:center;gap:14px;">'
+      +svg
+      +'<div style="flex:1;display:flex;flex-direction:column;gap:7px;min-width:0;">'+legend+'</div>'
+      +'</div>'
+      +'<div id="pieSelectedInfo" style="min-height:18px;margin-top:10px;">'
+      +'<div id="pieSelLbl" style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-align:center;"></div>'
+      +'</div>'
       +'</div>';
-
-    window._pieSliceData = sliceData;
-    window._pieSorted = sorted;
-    window._pieDispSym = dispSym;
-    window._pieTotal = total;
-    window._pieSelected = -1;
-
-    // Giriş animasyonu
-    setTimeout(function(){
-      sorted.forEach(function(s,i){
-        var el2=document.getElementById('ps'+i);
-        if(el2){ el2.style.opacity='1'; }
-      });
-    }, 60);
+    window._pieSliceData=sliceData; window._pieSorted=allSvcs; window._pieDispSym=dispSym; window._pieTotal=total; window._pieSelected=-1;
+    setTimeout(function(){allSvcs.forEach(function(s,i){var e2=document.getElementById('ps'+i);if(e2)e2.style.opacity='1';});},60);
   } catch(err) {
-    console.error('renderSpendingChart error:', err);
-    var el = document.getElementById('spendingChart');
-    if(el) el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">⚠️</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Grafik yüklenemedi</div></div></div>';
+    console.error('renderSpendingChart error:',err);
+    var el=document.getElementById('spendingChart');
+    if(el)el.innerHTML='<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">⚠️</div></div></div>';
   }
 }
 
 function selectPieSlice(idx) {
   var data = window._pieSliceData;
-  var sorted = window._pieSorted;
-  if (!data||!sorted) return;
-
+  if (!data) return;
   var prev = window._pieSelected;
   window._pieSelected = (prev===idx) ? -1 : idx;
-
   data.forEach(function(d,i){
     var el2=document.getElementById(d.id);
     if (!el2) return;
-    if (window._pieSelected===i){
-      // Tıklanan dilim yukarı yükselir
-      el2.style.transform='translateY(-15px)';
-    } else {
-      el2.style.transform='translateY(0)';
-    }
+    el2.style.transform = (window._pieSelected===i) ? 'scale(1.08)' : 'scale(1)';
+    el2.style.filter = (window._pieSelected===i) ? 'brightness(1.2)' : 'brightness(1)';
   });
-  
-  // SVG perspektif sabit kalsın
-  var svgEl = document.getElementById('pieChartSvg');
-  if(svgEl){
-    svgEl.style.transform='perspective(500px) rotateX(35deg)';
-  }
-
-  // Alt bilgi güncelle - sadece isim
   var lblEl=document.getElementById('pieSelLbl');
   if(window._pieSelected>=0 && lblEl){
-    var s=sorted[idx];
-    lblEl.textContent=s.name;
-    lblEl.style.color='#ffffff';
+    var s=data[idx];
+    var sym=window._pieDispSym||'₺';
+    lblEl.textContent=s.name+(s.price>0?' · '+sym+s.price.toFixed(2):'');
+    lblEl.style.color='rgba(255,255,255,.85)';
   } else if(lblEl){
     lblEl.textContent='';
-    lblEl.style.color='rgba(255,255,255,.5)';
   }
 }
 
