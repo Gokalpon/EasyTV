@@ -490,11 +490,11 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .plan-user-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
 .plan-user-pills{display:flex;flex-wrap:wrap;gap:7px;}
 .plan-user-pill{width:40px;height:40px;padding:0;border-radius:50%;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);font-size:14px;font-weight:700;font-family:inherit;color:rgba(255,255,255,.45);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.plan-user-pill.active{background:rgba(130,80,255,.28);border-color:rgba(130,80,255,.65);color:#fff;box-shadow:0 0 14px rgba(130,80,255,.35);}
+.plan-user-pill.active{background:#7c3aed;border-color:#7c3aed;color:#fff;}
 .plan-payment-section{margin-top:10px;padding:14px 16px;background:rgba(255,255,255,.05);border-radius:14px;border:1px solid rgba(255,255,255,.08);}
 .plan-payment-opts{display:flex;flex-direction:column;gap:7px;}
 .plan-pay-opt{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:16px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);cursor:pointer;transition:all .2s;font-size:13px;font-weight:600;font-family:inherit;color:rgba(255,255,255,.6);white-space:nowrap;}
-.plan-pay-opt.active{background:rgba(130,80,255,.22);border-color:rgba(130,80,255,.55);color:#fff;box-shadow:0 0 16px rgba(130,80,255,.25);}
+.plan-pay-opt.active{background:#7c3aed;border-color:#7c3aed;color:#fff;}
 .plan-pay-opt-radio{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;}
 .plan-pay-opt.active .plan-pay-opt-radio{border-color:#9333ea;background:#9333ea;}
 .plan-pay-opt.active .plan-pay-opt-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;}
