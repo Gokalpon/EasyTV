@@ -1359,7 +1359,6 @@ function renderSeUserPaySection(i,s){
     btn.className='plan-pay-opt'+(opt.method===curPay?' active':'');
     btn.dataset.method=opt.method;
     btn.textContent=opt.label;
-    btn.style.cssText='padding:9px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;';
     btn.onclick=()=>{payChips.querySelectorAll('.plan-pay-opt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
     payChips.appendChild(btn);
   });
@@ -1977,153 +1976,86 @@ function renderSubs(){const paid=SVC.filter(s=>s.price>0);const displayCode=SETT
 function renderSpendingChart(svc) {
   try {
     var el = document.getElementById('spendingChart');
-    if (!el) {
-      console.error('spendingChart element not found');
+    if (!el) return;
+    if (!svc || svc.length === 0) {
+      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Henüz servis eklenmedi</div></div></div>';
       return;
     }
-    
-    if (!svc || svc.length === 0) { 
-      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Henüz servis eklenmedi</div></div></div>'; 
-      return; 
-    }
-    
     var displayCode = SETTINGS.displayCurrency || 'TRY';
     var dispSym = (CURRENCIES.find(function(c){return c.code===displayCode;})||CURRENCIES[0]).symbol;
-    var sorted = svc.slice().map(function(s) {
-      var cv = convertPrice(s.price||0, s.priceCurrency||'TRY');
-      return {id:s.id, name:s.name, color:s.color, _disp:cv.value};
-    }).sort(function(a,b){return b._disp-a._disp;});
-    var total = sorted.reduce(function(a,s){return a+s._disp;},0);
-    var cx=90, cy=90, r=80;
-    var sliceData=[];
-    var offset=0;
-
-    function polarToXY(angle, radius){
-      var rad = (angle-90)*Math.PI/180;
-      return {x: cx+radius*Math.cos(rad), y: cy+radius*Math.sin(rad)};
-    }
-
-    // Tüm servisleri göster (sadece ücretli değil)
     var allSvcs = svc.map(function(s) {
-      var cv;
-      try {
-        cv = convertPrice(s.price||0, s.priceCurrency||'TRY');
-      } catch(e) {
-        console.error('convertPrice error:', e);
-        cv = {value: s.price||0};
-      }
-      return {id:s.id, name:s.name, color:s.color||'rgba(255,255,255,.2)', _disp:cv.value||0};
+      var cv; try { cv = convertPrice(s.price||0, s.priceCurrency||'TRY'); } catch(e) { cv = {value:s.price||0}; }
+      return {id:s.id, name:s.name, color:s.color||'#888', _disp:cv.value||0};
     }).sort(function(a,b){return b._disp-a._disp;});
-    
+    var total = allSvcs.reduce(function(a,s){return a+s._disp;},0);
     var allTotal = allSvcs.reduce(function(a,s){return a+(s._disp||1);},0);
-    
-    // 3D pie chart - her dilim için üst yüzey + yan yüzey
+    var cx=80, cy=80, r=68, ir=30;
+    var sliceData=[], offset=0;
+    function polarToXY(angle,radius){var rad=(angle-90)*Math.PI/180;return {x:cx+radius*Math.cos(rad),y:cy+radius*Math.sin(rad)};}
     var svgSlices = allSvcs.map(function(s,i){
       var pct = allTotal>0 ? (s._disp||1)/allTotal : 1/allSvcs.length;
-      var deg = pct*360;
-      var startAngle = offset*360;
-      var endAngle = startAngle+deg;
-      var start = polarToXY(startAngle, r);
-      var end = polarToXY(endAngle, r);
-      var large = deg>180?1:0;
-      var midAngle = startAngle + deg/2;
-      sliceData.push({id:'ps'+i, name:s.name, color:s.color, price:s._disp, pct:pct, midAngle:midAngle, startAngle:startAngle, deg:deg});
-      
-      // Üst yüzey path
-      var topPath = pct>=0.999
-        ? 'M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 1 1 '+(cx-0.01)+' '+(cy-r)
-        : 'M '+cx+' '+cy+' L '+start.x.toFixed(2)+' '+start.y.toFixed(2)+' A '+r+' '+r+' 0 '+large+' 1 '+end.x.toFixed(2)+' '+end.y.toFixed(2)+' Z';
-      
-      // Derinlik için koyu renk
-      var darkColor = s.color;
-      if(s.color && s.color.startsWith('#')){
-        var rVal = parseInt(s.color.slice(1,3),16);
-        var gVal = parseInt(s.color.slice(3,5),16);
-        var bVal = parseInt(s.color.slice(5,7),16);
-        rVal = Math.max(0, rVal-60);
-        gVal = Math.max(0, gVal-60);
-        bVal = Math.max(0, bVal-60);
-        darkColor = '#'+rVal.toString(16).padStart(2,'0')+gVal.toString(16).padStart(2,'0')+bVal.toString(16).padStart(2,'0');
-      }
-      
+      var deg = pct*360; var sa=offset*360; var ea=sa+deg; var large=deg>180?1:0;
+      var os=polarToXY(sa,r), oe=polarToXY(ea,r), is_=polarToXY(sa,ir), ie=polarToXY(ea,ir);
+      var path = pct>=0.999
+        ? 'M '+cx+' '+(cy-r)+' A '+r+' '+r+' 0 1 1 '+(cx-0.01)+' '+(cy-r)+' L '+(cx-0.01)+' '+(cy-ir)+' A '+ir+' '+ir+' 0 1 0 '+cx+' '+(cy-ir)+' Z'
+        : 'M '+os.x.toFixed(1)+' '+os.y.toFixed(1)+' A '+r+' '+r+' 0 '+large+' 1 '+oe.x.toFixed(1)+' '+oe.y.toFixed(1)+' L '+ie.x.toFixed(1)+' '+ie.y.toFixed(1)+' A '+ir+' '+ir+' 0 '+large+' 0 '+is_.x.toFixed(1)+' '+is_.y.toFixed(1)+' Z';
+      sliceData.push({id:'ps'+i,name:s.name,color:s.color,price:s._disp,pct:pct,midAngle:sa+deg/2});
       offset+=pct;
-      
-      return '<g id="ps'+i+'" style="cursor:pointer;transform-origin:'+cx+'px '+cy+'px;transform:translateZ(0);opacity:0;transition:transform .35s cubic-bezier(.34,1.2,.64,1) '+(i*0.04).toFixed(2)+'s, opacity .3s '+(i*0.04).toFixed(2)+'s;" onclick="selectPieSlice('+i+')">'
-        // Yan yüzey (derinlik) - 12px kalınlık
-        +'<path d="'+topPath.replace(/Z$/, '')+' L '+end.x.toFixed(2)+' '+(end.y+12).toFixed(2)+' A '+r+' '+r+' 0 '+large+' 0 '+start.x.toFixed(2)+' '+(start.y+12).toFixed(2)+' L '+start.x.toFixed(2)+' '+start.y.toFixed(2)+' Z" fill="'+darkColor+'" stroke="none"/>'
-        // Üst yüzey
-        +'<path d="'+topPath+'" fill="'+s.color+'" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>'
-        +'</g>';
+      return '<path id="ps'+i+'" d="'+path+'" fill="'+s.color+'" stroke="rgba(12,12,22,.6)" stroke-width="1.5" style="cursor:pointer;opacity:0;transition:opacity .3s '+(i*0.05).toFixed(2)+'s,transform .25s cubic-bezier(.34,1.4,.64,1);transform-origin:'+cx+'px '+cy+'px;" onclick="selectPieSlice('+i+')"/>';
     }).join('');
-
-    var svgHtml = '<svg id="pieChartSvg" viewBox="0 0 180 200" width="160" height="180" style="flex-shrink:0;filter:drop-shadow(0 12px 28px rgba(0,0,0,.5));transform:perspective(500px) rotateX(35deg);transform-origin:center center;transition:transform .3s cubic-bezier(.34,1.2,.64,1);">'
-      + svgSlices
-      + '</svg>';
-    
-    var selectedHtml = '<div id="pieSelectedInfo" style="text-align:center;margin-top:16px;min-height:40px;transition:all .3s;">'
-      +'<div id="pieSelLbl" style="font-size:14px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:-.2px;"></div>'
-      +'</div>';
-
+    var totalStr = total>0 ? (dispSym+total.toFixed(0)) : '';
+    var svg = '<svg id="pieChartSvg" viewBox="0 0 160 160" width="140" height="140" style="flex-shrink:0;filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));">'
+      +svgSlices
+      +'<circle cx="'+cx+'" cy="'+cy+'" r="'+(ir-1)+'" fill="rgba(12,12,22,.92)"/>'
+      +(totalStr?'<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(255,255,255,.85)" font-family="-apple-system,sans-serif">'+totalStr+'</text>':'')
+      +'</svg>';
+    var legend = allSvcs.slice(0,7).map(function(s){
+      var pct2=total>0?Math.round(s._disp/total*100):0;
+      var nm=s.name.length>13?s.name.slice(0,12)+'…':s.name;
+      return '<div style="display:flex;align-items:center;gap:7px;">'
+        +'<div style="width:8px;height:8px;border-radius:2px;flex-shrink:0;background:'+s.color+'"></div>'
+        +'<span style="font-size:11px;color:rgba(255,255,255,.65);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+nm+'</span>'
+        +'<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);flex-shrink:0;">%'+pct2+'</span>'
+        +'</div>';
+    }).join('');
     el.innerHTML = '<div class="pie-chart-card">'
-      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px;">AYLIK HARCAMA</div>'
-      +'<div style="display:flex;justify-content:center;">'+svgHtml+'</div>'
-      +selectedHtml
+      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">AYLIK HARCAMA</div>'
+      +'<div style="display:flex;align-items:center;gap:14px;">'
+      +svg
+      +'<div style="flex:1;display:flex;flex-direction:column;gap:7px;min-width:0;">'+legend+'</div>'
+      +'</div>'
+      +'<div id="pieSelectedInfo" style="min-height:18px;margin-top:10px;">'
+      +'<div id="pieSelLbl" style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-align:center;"></div>'
+      +'</div>'
       +'</div>';
-
-    window._pieSliceData = sliceData;
-    window._pieSorted = sorted;
-    window._pieDispSym = dispSym;
-    window._pieTotal = total;
-    window._pieSelected = -1;
-
-    // Giriş animasyonu
-    setTimeout(function(){
-      allSvcs.forEach(function(s,i){
-        var el2=document.getElementById('ps'+i);
-        if(el2){ el2.style.opacity='1'; }
-      });
-    }, 60);
+    window._pieSliceData=sliceData; window._pieSorted=allSvcs; window._pieDispSym=dispSym; window._pieTotal=total; window._pieSelected=-1;
+    setTimeout(function(){allSvcs.forEach(function(s,i){var e2=document.getElementById('ps'+i);if(e2)e2.style.opacity='1';});},60);
   } catch(err) {
-    console.error('renderSpendingChart error:', err);
-    var el = document.getElementById('spendingChart');
-    if(el) el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">⚠️</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Grafik yüklenemedi</div></div></div>';
+    console.error('renderSpendingChart error:',err);
+    var el=document.getElementById('spendingChart');
+    if(el)el.innerHTML='<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">⚠️</div></div></div>';
   }
 }
 
 function selectPieSlice(idx) {
   var data = window._pieSliceData;
-  var sorted = window._pieSorted;
-  if (!data||!sorted) return;
-
+  if (!data) return;
   var prev = window._pieSelected;
   window._pieSelected = (prev===idx) ? -1 : idx;
-
   data.forEach(function(d,i){
     var el2=document.getElementById(d.id);
     if (!el2) return;
-    if (window._pieSelected===i){
-      // Tıklanan dilim yukarı yükselir
-      el2.style.transform='translateY(-15px)';
-    } else {
-      el2.style.transform='translateY(0)';
-    }
+    el2.style.transform = (window._pieSelected===i) ? 'scale(1.08)' : 'scale(1)';
+    el2.style.filter = (window._pieSelected===i) ? 'brightness(1.2)' : 'brightness(1)';
   });
-  
-  // SVG perspektif sabit kalsın
-  var svgEl = document.getElementById('pieChartSvg');
-  if(svgEl){
-    svgEl.style.transform='perspective(500px) rotateX(35deg)';
-  }
-
-  // Alt bilgi güncelle - sadece isim
   var lblEl=document.getElementById('pieSelLbl');
   if(window._pieSelected>=0 && lblEl){
     var s=data[idx];
-    lblEl.textContent=s.name;
-    lblEl.style.color='#ffffff';
+    var sym=window._pieDispSym||'₺';
+    lblEl.textContent=s.name+(s.price>0?' · '+sym+s.price.toFixed(2):'');
+    lblEl.style.color='rgba(255,255,255,.85)';
   } else if(lblEl){
     lblEl.textContent='';
-    lblEl.style.color='rgba(255,255,255,.5)';
   }
 }
 

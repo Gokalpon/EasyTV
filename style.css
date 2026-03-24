@@ -642,12 +642,10 @@ button{-webkit-tap-highlight-color:transparent;}
 
 /* PIE CHART 3D */
 #pieChartSvg{
-  filter:drop-shadow(0 8px 24px rgba(0,0,0,.5));
-  transform:perspective(400px) rotateX(12deg);
-  transform-style:preserve-3d;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));
 }
 #pieChartSvg path{
-  transition:transform .35s cubic-bezier(.34,1.4,.64,1), filter .3s ease !important;
+  transition:transform .25s cubic-bezier(.34,1.4,.64,1), filter .2s ease, opacity .3s ease;
 }
 #pieChartSvg path:hover{
   filter:brightness(1.15);
