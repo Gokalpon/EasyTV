@@ -2051,7 +2051,7 @@ function renderSpendingChart(svc) {
 
     // Giriş animasyonu
     setTimeout(function(){
-      sorted.forEach(function(s,i){
+      allSvcs.forEach(function(s,i){
         var el2=document.getElementById('ps'+i);
         if(el2){ el2.style.opacity='1'; }
       });
