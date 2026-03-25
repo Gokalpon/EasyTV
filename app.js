@@ -361,6 +361,16 @@ function closePremiumSheet() {
 }
 
 function activatePremium() {
+  // İlk kez premium'a geçiyorsa 7 gün ücretsiz trial ver
+  if (!SETTINGS.premiumTrialUsed) {
+    SETTINGS.premiumTrialUsed = true;
+    SETTINGS.premiumTrialActive = true;
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 7);
+    SETTINGS.premiumTrialEndDate = endDate.toISOString();
+    showErrorToast('🎉 7 gün ücretsiz deneme başladı!', 'success', 5000);
+  }
+  
   SETTINGS.premium = true;
   saveData();
   closePremiumSheet();
@@ -371,23 +381,24 @@ function activatePremium() {
 function deactivatePremium() {
   if (SVC.length > FREE_LIMIT) {
     showAlert('⚠️', 'Premium İptal',
-      'Su an ' + SVC.length + ' servisin var. Premium iptal edilirse fazla servisler kilitlenir.',
+      'Şu an ' + SVC.length + ' servisin var. Premium iptal edilirse ' + (SVC.length - FREE_LIMIT) + ' servis kilitlenecek (silinmeyecek).',
       [
         { label: 'İptal Et', style: 'danger', action: function() {
           SETTINGS.premium = false;
-          SVC = SVC.slice(0, FREE_LIMIT);
+          SETTINGS.premiumTrialActive = false;
           saveData();
           closeAlert();
           updatePremiumBadge();
           buildGrid();
           renderSubs();
-          showToast('Premium iptal edildi. Fazla servisler silindi.');
+          showErrorToast('Premium iptal edildi. ' + (SVC.length - FREE_LIMIT) + ' servis kilitlendi.', 'warning', 5000);
         }},
         { label: 'Vazgeç', style: 'secondary', action: closeAlert }
       ]
     );
   } else {
     SETTINGS.premium = false;
+    SETTINGS.premiumTrialActive = false;
     saveData();
     updatePremiumBadge();
     showToast('Premium iptal edildi');
@@ -1105,14 +1116,20 @@ function updateNavGlow(tab) {
   const glow = document.getElementById('navGlow');
   const navItem = document.getElementById('nav-' + tab);
   if (!glow || !navItem) return;
+  
+  // Force reflow before calculating - pozisyon hesaplama hatası düzeltmesi
+  void navItem.offsetWidth;
+  
   const nav = document.getElementById('bottomNav');
+  if (!nav) return;
+  
   const navRect = nav.getBoundingClientRect();
   const itemRect = navItem.getBoundingClientRect();
   const center = itemRect.left - navRect.left + itemRect.width / 2;
+  
   glow.style.left = (center - 50) + 'px';
-  // Animasyonu yeniden tetikle
   glow.classList.remove('on');
-  void glow.offsetWidth; // reflow
+  void glow.offsetWidth;
   glow.classList.add('on');
 }
 
@@ -1727,9 +1744,20 @@ function confirmSmartPlanAdd() {
   // Premium limit: bu servis zaten listede yoksa ve toplam >= 6 ise → premium gerekli
   const existingIdx = SVC.findIndex(sv => sv.id === planModalSvc.id);
   const isNew = existingIdx < 0;
+  
+  // 7. hizmet ekleme pain point düzeltmesi - direkt premium'a yönlendirme yerine uyarı
   if (isNew && SVC.length >= FREE_LIMIT && !isPremium()) {
     closePlanModal();
-    setTimeout(() => openPremiumSheet(), 300);
+    
+    showAlert(
+      '🔒',
+      'Limit Doldu',
+      'Ücretsiz sürümde maksimum ' + FREE_LIMIT + ' hizmet ekleyebilirsiniz. Premium\'a geçin veya bir hizmeti kaldırın.',
+      [
+        { label: 'Premium\'a Geç', style: 'primary', action: function() { closeAlert(); setTimeout(() => openPremiumSheet(), 200); } },
+        { label: 'İptal', style: 'secondary', action: function() { closeAlert(); setTimeout(() => openAddModal(), 200); } }
+      ]
+    );
     return;
   }
   const s = planModalSvc;
