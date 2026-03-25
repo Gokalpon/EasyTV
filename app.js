@@ -988,17 +988,18 @@ function dragStart(e, tile, idx) {
   _dragStartX = e.clientX;
   _dragStartY = e.clientY;
   _dragPid = e.pointerId;
-  try { tile.setPointerCapture(e.pointerId); } catch(ex){}
+  // NOT: setPointerCapture kaldırıldı — scroll'u engelliyordu
   tile.addEventListener('pointermove', _onDragPointerMove);
   tile.addEventListener('pointerup', _onDragPointerUp);
   tile.addEventListener('pointercancel', _onDragPointerUp);
   _dragLongPress = setTimeout(() => {
-    // Uzun basışta jiggle moduna gir
+    // Uzun basışta jiggle moduna gir — sadece burada capture al
     if (!_jiggleMode) enterJiggleMode();
     _dragTile = tile;
     _dragIdx = idx;
     _dragActive = true;
     _dragMoved = true;
+    try { tile.setPointerCapture(e.pointerId); } catch(ex){}
     tile.classList.remove('jiggle');
     tile.classList.add('dragging');
     if (navigator.vibrate) navigator.vibrate(20);
@@ -1230,6 +1231,23 @@ function hidePinScreen() {
 
 function tap(i){if(active===i){openSheet(i);return;}if(active>=0)deactivate(active);active=i;activate(i);}
 function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.add('active');
+  
+  // Dinamik tema arka planını güncelle
+  if (typeof updateThemeColor !== 'undefined') {
+    var tg = TILE_GRADIENTS[s.id];
+    var rc = s.color || '#8250FF';
+    if (!rc && tg) { var mm = tg.match(/#[0-9a-fA-F]{6}/); rc = mm ? mm[0] : '#8250FF'; }
+    // Hex → rgba dönüşümü
+    if (rc.startsWith('#') && rc.length === 7) {
+      var r2 = parseInt(rc.slice(1,3),16);
+      var g2 = parseInt(rc.slice(3,5),16);
+      var b2 = parseInt(rc.slice(5,7),16);
+      updateThemeColor('rgba('+r2+','+g2+','+b2+',.35)');
+    } else {
+      updateThemeColor(rc);
+    }
+  }
+  
   // Ambient beam
   const beam=document.getElementById('ambientBeam');
   if(beam&&(s.color||TILE_GRADIENTS[s.id])){
