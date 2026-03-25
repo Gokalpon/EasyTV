@@ -2095,11 +2095,9 @@ function renderSpendingChart(svc) {
       offset+=pct;
       return '<path id="ps'+i+'" d="'+path+'" fill="'+s.color+'" stroke="rgba(12,12,22,.6)" stroke-width="1.5" style="cursor:pointer;opacity:0;transition:opacity .3s '+(i*0.05).toFixed(2)+'s,transform .25s cubic-bezier(.34,1.4,.64,1);transform-origin:'+cx+'px '+cy+'px;" onclick="selectPieSlice('+i+')"/>';
     }).join('');
-    var totalStr = total>0 ? (dispSym+total.toFixed(0)) : '';
     var svg = '<svg id="pieChartSvg" viewBox="0 0 160 160" width="140" height="140" style="flex-shrink:0;filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));">'
       +svgSlices
       +'<circle cx="'+cx+'" cy="'+cy+'" r="'+(ir-1)+'" fill="rgba(12,12,22,.92)"/>'
-      +(totalStr?'<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(255,255,255,.85)" font-family="-apple-system,sans-serif">'+totalStr+'</text>':'')
       +'</svg>';
     var legend = allSvcs.slice(0,7).map(function(s){
       var pct2=total>0?Math.round(s._disp/total*100):0;

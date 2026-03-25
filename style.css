@@ -173,7 +173,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 /* SHEET */
 .sheet{position:absolute;bottom:0;left:0;right:0;z-index:70;border-radius:28px 28px 0 0;overflow:hidden;transform:translateY(102%);transition:transform .44s cubic-bezier(.32,.72,0,1);}
 .sheet.open{transform:translateY(0);}
-.sheet-bg{position:absolute;inset:0;background:rgba(10,11,16,.96);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);}
+.sheet-bg{position:absolute;inset:0;background:rgba(10,11,16,.05);backdrop-filter:blur(60px) saturate(180%);-webkit-backdrop-filter:blur(60px) saturate(180%);}
 .sheet-color{position:absolute;inset:0;opacity:.1;transition:background .28s;}
 .sheet-body{position:relative;z-index:1;padding-bottom:36px;}.s-head{transition:transform .3s ease;}
 .s-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:12px auto 0;}
