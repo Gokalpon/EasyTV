@@ -1253,13 +1253,9 @@ function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._cu
     }
   }
   
-  // Ambient beam
+  // Morphing bubble - sadece renk güncelle, pozisyon CSS'te sabit
   const beam=document.getElementById('ambientBeam');
   if(beam&&(s.color||TILE_GRADIENTS[s.id])){
-    const rect=el.getBoundingClientRect();
-    const mainApp=el.closest('#mainApp');const phoneRect=mainApp?mainApp.getBoundingClientRect():{left:0,top:0};
-    const cx=rect.left-phoneRect.left+rect.width/2-90;
-    const cy=rect.top-phoneRect.top+rect.height/2-160;
     // TILE_GRADIENTS varsa ondan da renk çıkar
     var tileGrad = TILE_GRADIENTS[s.id];
     var rawCol = s.color;
@@ -1281,8 +1277,6 @@ function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._cu
       bb = Math.min(255, Math.round(bb * 1.8 + 40));
       beamCol = 'rgb('+rr+','+gg+','+bb+')';
     }
-    beam.style.left=cx+'px';
-    beam.style.top=cy+'px';
     beam.style.background=beamCol;
     beam.classList.add('active');
     // Nav glow rengi de değişsin
