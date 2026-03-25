@@ -1175,6 +1175,7 @@ function switchTab(tab) {
       tabEl.style.display = 'none';
     }
   });
+  if (tab === 'home')     buildGrid();
   if (tab === 'subs')     renderSubs();
   if (tab === 'settings') { renderProfile(); updateRateUI(); updateRegionUI(); applyLang(); }
 }
@@ -1296,14 +1297,36 @@ function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._cu
       navGlow.style.background='radial-gradient(circle,rgba('+nr+','+ng+','+nb+',.5) 0%,transparent 70%)';
     }
   }el.style.backgroundImage='none';el.style.backgroundColor=TILE_GRADIENTS[s.id]?'':s.color;if(TILE_GRADIENTS[s.id])el.style.background=TILE_GRADIENTS[s.id];el.style.backdropFilter='none';el.style.webkitBackdropFilter='none';el.style.transform='scale(1.04) translateZ(0)';if(s.textDark||L.textDark){el.classList.add('dark-text');el.querySelector('.tile-logo').innerHTML=L.htmlDark||L.html;el.style.boxShadow=`0 8px 28px rgba(${s.rgb},.3)`;}else{el.style.boxShadow=`0 0 0 2px rgba(255,255,255,.12),0 8px 30px rgba(${s.rgb},.45)`;}}
-function deactivate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.remove('active','dark-text');
+function deactivate(i){
+  // Null check - gridEl veya children[i] undefined olabilir
+  if (!gridEl || !gridEl.children || !gridEl.children[i]) {
+    active = -1;
+    const beam = document.getElementById('ambientBeam');
+    if (beam) { beam.classList.remove('active'); beam.style.opacity = '0'; }
+    return;
+  }
+  const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;
+  el.classList.remove('active','dark-text');
   const beam=document.getElementById('ambientBeam');
-  if(beam) beam.classList.remove('active');
+  if(beam) { beam.classList.remove('active'); beam.style.opacity = '0'; }
   const navGlow=document.getElementById('navGlow');
   if(navGlow) navGlow.style.background='radial-gradient(circle,rgba(120,60,255,.35) 0%,transparent 70%)';
   // Fiyat overlay temizle
   const priceEl=el.querySelector('.tile-price');
-  if(priceEl) priceEl.remove();const boxUrl='./assets/box2.png';el.style.background='';el.style.backgroundImage=`url('${boxUrl}')`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backdropFilter='';el.style.webkitBackdropFilter='';el.style.borderColor='';el.style.boxShadow='';el.style.transform='';if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}active=-1;}
+  if(priceEl) priceEl.remove();
+  const boxUrl='./assets/box2.png';
+  el.style.background='';
+  el.style.backgroundImage=`url('${boxUrl}')`;
+  el.style.backgroundSize='cover';
+  el.style.backgroundPosition='center';
+  el.style.backdropFilter='';
+  el.style.webkitBackdropFilter='';
+  el.style.borderColor='';
+  el.style.boxShadow='';
+  el.style.transform='';
+  if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}
+  active=-1;
+}
 function openSheet(i){active=i;const s=SVC[i],L=LOGO[s.id]||{w:28,h:28,html:null};const tileGrad=TILE_GRADIENTS[s.id]||s.color;document.getElementById('sColor').style.background=tileGrad;document.getElementById('sLogoWrap').style.background=tileGrad;
   
   // Dinamik tema rengini güncelle - servis rengine göre
