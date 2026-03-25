@@ -93,8 +93,8 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .nav-item:active{transform:scale(.82);}
 .nav-label{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.3px;transition:color .3s;}
 .nav-item.active .nav-label{color:rgba(255,255,255,.85);}
-.nav-item.active svg{filter:drop-shadow(0 0 10px rgba(130,80,255,.4));}
-.nav-dot{width:4px;height:4px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#818cf8);opacity:0;margin-top:1px;transition:opacity .3s,transform .35s cubic-bezier(.34,1.56,.64,1);transform:scale(0);box-shadow:0 0 6px rgba(130,80,255,.4);}
+.nav-item.active svg{filter:drop-shadow(0 1px 0 rgba(255,255,255,.9)) drop-shadow(0 2px 4px rgba(0,0,0,.6));}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:#fff;opacity:0;margin-top:1px;transition:opacity .3s,transform .35s cubic-bezier(.34,1.56,.64,1);transform:scale(0);box-shadow:0 0 4px rgba(255,255,255,.5);}
 .nav-item.active .nav-dot{opacity:1;transform:scale(1);}
 
 /* TAB HEADER */
@@ -111,7 +111,6 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .sub-card{position:relative;border-radius:18px;padding:16px;padding-left:20px;margin-bottom:8px;display:flex;align-items:center;gap:14px;background:linear-gradient(145deg,rgba(12,12,20,.68),rgba(8,8,16,.58));border:1px solid rgba(255,255,255,.07);overflow:hidden;transition:opacity .2s,transform .25s cubic-bezier(.34,1.4,.64,1);backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%);}.sub-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3.5px;background:var(--svc-color,rgba(255,255,255,.2));border-radius:18px 0 0 18px;}
 .sub-card:active{transform:scale(.97);}
 .sub-card::after{content:'';position:absolute;top:0;right:0;width:60%;height:100%;background:radial-gradient(ellipse at top right,rgba(130,80,255,.04),transparent 60%);pointer-events:none;}
-.sub-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
 .sub-dot{display:none;}
 .sub-info{flex:1;min-width:0;}
 .sub-name{font-size:15px;font-weight:650;color:#fff;letter-spacing:-.2px;}
@@ -699,9 +698,6 @@ button{-webkit-tap-highlight-color:transparent;}
   100%{opacity:0;transform:translateY(-50%) scale(.8);}
 }
 
-/* PIE CHART 3D */
-#pieChartSvg{filter:drop-shadow(0 8px 24px rgba(0,0,0,.4));transform-style:preserve-3d;}
-#pieChartSvg path{transition:transform .35s cubic-bezier(.34,1.4,.64,1),filter .35s,opacity .3s;}
 
 /* PIE açılış animasyonu */
 @keyframes pieSliceGrow{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
@@ -743,14 +739,6 @@ button{-webkit-tap-highlight-color:transparent;}
 .tile.active .tile-price{transform:translateY(0);opacity:1;}
 .tile-label{transition:transform .25s cubic-bezier(.34,1.5,.64,1),opacity .2s;}
 
-/* NOISE TEXTURE — belirgin */
-.bg-grain{
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:200px 200px;
-  opacity:.055;
-  mix-blend-mode:overlay;
-}
 
 /* NAV ACTIVE RENK */
 .pill-item.active{background:rgba(255,255,255,.14);color:#fff;}
-.nav-item.active svg{filter:drop-shadow(0 0 6px rgba(255,255,255,.4));}
