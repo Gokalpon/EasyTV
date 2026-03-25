@@ -1146,7 +1146,11 @@ function switchTab(tab) {
   // Jiggle modundan çık
   exitJiggleMode();
   curTab = tab;
-  updateNavGlow(tab);
+  
+  // Ambient beam'i gizle - tab değiştiğinde ışık kalmasın
+  if (active >= 0) { deactivate(active); }
+  var beam = document.getElementById('ambientBeam');
+  if (beam) { beam.classList.remove('active'); beam.style.opacity = '0'; }
   
   // Dinamik tema rengini güncelle
   if (typeof onTabChange !== 'undefined') {
