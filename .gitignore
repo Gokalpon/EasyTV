@@ -1,3 +1,4 @@
 *.backup
 *.old
 temp_*
+node_modules/
