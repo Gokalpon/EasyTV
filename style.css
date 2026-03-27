@@ -758,6 +758,43 @@ button{-webkit-tap-highlight-color:transparent;}
 /* NAV ACTIVE RENK */
 .pill-item.active{background:rgba(255,255,255,.14);color:#fff;}
 
+/* ── SUBSCRIPTION EDIT SHEET ── */
+.se-modal{display:none;position:absolute;inset:0;z-index:400;flex-direction:column;align-items:stretch;justify-content:flex-end;}
+.se-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.se-sheet{position:relative;z-index:1;background:rgba(13,12,22,.97);border-radius:28px 28px 0 0;box-shadow:0 -1px 0 rgba(255,255,255,.1),0 -32px 80px rgba(0,0,0,.7);width:100%;height:85vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .46s cubic-bezier(.32,.72,0,1);}
+
+/* Header */
+.se-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.16);margin:0 auto;}
+.se-header{flex-shrink:0;padding:14px 20px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
+.se-header-row{display:flex;align-items:center;gap:13px;margin-top:14px;}
+.se-logo{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.se-header-text{flex:1;min-width:0;}
+.se-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.4px;}
+.se-subtitle{font-size:12px;color:rgba(255,255,255,.35);margin-top:2px;}
+.se-close-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.5);flex-shrink:0;transition:all .18s;}
+.se-close-btn:active{background:rgba(255,255,255,.15);transform:scale(.9);}
+
+/* Body — scrollable */
+.se-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px 8px;display:flex;flex-direction:column;gap:20px;scrollbar-width:none;}
+.se-body::-webkit-scrollbar{display:none;}
+.se-section{display:flex;flex-direction:column;gap:8px;}
+.se-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;}
+.se-sublabel{font-size:13px;color:rgba(255,255,255,.4);font-weight:500;}
+.se-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;font-size:15px;font-weight:500;color:#fff;outline:none;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;-webkit-appearance:none;}
+.se-input:focus{border-color:rgba(130,80,255,.5);box-shadow:0 0 0 3px rgba(130,80,255,.14);background:rgba(255,255,255,.08);}
+.se-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.se-pwd-wrap{position:relative;display:flex;align-items:center;}
+.se-pwd-wrap .se-input{padding-right:48px;}
+.se-eye-btn{position:absolute;right:12px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.35);padding:6px;transition:color .18s;}
+.se-eye-btn:active{color:rgba(255,255,255,.7);}
+
+/* Footer — sticky */
+.se-footer{flex-shrink:0;padding:14px 20px 36px;display:flex;gap:10px;border-top:1px solid rgba(255,255,255,.06);background:rgba(13,12,22,.97);}
+.se-save-btn{flex:1;padding:16px;border:none;border-radius:20px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:-.2px;transition:all .2s cubic-bezier(.34,1.4,.64,1);}
+.se-save-btn:active{transform:scale(.97);opacity:.85;}
+.se-del-btn{padding:16px 18px;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.2);border-radius:20px;font-size:14px;font-weight:700;color:rgba(255,80,70,.9);cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;}
+.se-del-btn:active{transform:scale(.95);background:rgba(255,59,48,.2);}
+
 /* ── PREMIUM ANİMASYONLAR ── */
 
 /* Sheet açılma: yukarı spring */

@@ -483,58 +483,77 @@
     </div>
   </div>
 
-  <div id="subEditModal" style="display:none;position:absolute;inset:0;z-index:400;background:rgba(0,0,0,.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);flex-direction:column;align-items:center;justify-content:flex-end;">
-    <div id="seModalSheet" style="background:rgba(16,16,26,.95);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border-radius:28px 28px 0 0;box-shadow:0 -1px 0 rgba(255,255,255,.08),0 -24px 60px rgba(0,0,0,.5);width:100%;max-height:82vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 20px 52px;box-sizing:border-box;scrollbar-width:none;position:relative;transform:translateY(100%);transition:transform .44s cubic-bezier(.32,.72,0,1);">
-      <div style="display:flex;justify-content:center;padding:12px 0 6px;flex-shrink:0;">
-        <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);"></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-top:4px;">
-        <div id="seLogoWrap" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
-        <div>
-          <div id="seServiceName" style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-.3px;"></div>
-          <div id="seSubDetailLbl" style="font-size:12px;color:rgba(255,255,255,.38);margin-top:1px;">Üyelik Bilgileri</div>
+  <div id="subEditModal" class="se-modal">
+    <div class="se-backdrop" onclick="closeSubEdit()"></div>
+    <div id="seModalSheet" class="se-sheet">
+
+      <!-- Sticky header -->
+      <div class="se-header">
+        <div class="se-handle"></div>
+        <div class="se-header-row">
+          <div id="seLogoWrap" class="se-logo"></div>
+          <div class="se-header-text">
+            <div id="seServiceName" class="se-title"></div>
+            <div id="seSubDetailLbl" class="se-subtitle">Üyelik Bilgileri</div>
+          </div>
+          <button class="se-close-btn" onclick="closeSubEdit()">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 1l9 9M10 1L1 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div>
-          <div id="sePriceLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">AYLIK FİYAT</div>
-          <input id="sePrice" class="add-input" type="number" placeholder="0.00" step="0.01" inputmode="decimal" min="0">
+
+      <!-- Scrollable body -->
+      <div class="se-body">
+        <div class="se-section">
+          <div id="sePriceLbl" class="se-label">AYLIK FİYAT</div>
+          <input id="sePrice" class="se-input" type="number" placeholder="0.00" step="0.01" inputmode="decimal" min="0">
         </div>
-        <div id="sePlanRow">
-          <div id="sePlanLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">PLAN</div>
-          <div id="sePlanChips" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+
+        <div id="sePlanRow" class="se-section">
+          <div id="sePlanLbl" class="se-label">PLAN</div>
+          <div id="sePlanChips" class="se-chips"></div>
           <input id="sePlan" type="hidden">
         </div>
-        <div id="seShareRow" style="display:none;">
-          <div id="seShareLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.35);margin-bottom:10px;letter-spacing:.5px;">PAYLAŞIM</div>
-          <div id="seShareWhoLbl" style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:8px;">Kaç kişi kullanıyor?</div>
-          <div id="seUserChips" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;"></div>
-          <div id="seShareHowLbl" style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:8px;">Ödeme şekli?</div>
-          <div id="sePayChips" style="display:flex;gap:7px;flex-wrap:wrap;"></div>
+
+        <div id="seShareRow" class="se-section" style="display:none;">
+          <div id="seShareLbl" class="se-label">PAYLAŞIM</div>
+          <div id="seShareWhoLbl" class="se-sublabel">Kaç kişi kullanıyor?</div>
+          <div id="seUserChips" class="se-chips" style="margin-bottom:14px;"></div>
+          <div id="seShareHowLbl" class="se-sublabel">Ödeme şekli?</div>
+          <div id="sePayChips" class="se-chips"></div>
           <div id="seShareResult" style="display:none;"></div>
         </div>
-        <div>
-          <div id="seRenewLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">YENİLEME TARİHİ</div>
-          <input id="seRenew" class="add-input" type="date" style="color-scheme:dark;">
+
+        <div class="se-section">
+          <div id="seRenewLbl" class="se-label">YENİLEME TARİHİ</div>
+          <input id="seRenew" class="se-input" type="date" style="color-scheme:dark;">
         </div>
-        <div>
-          <div id="seEmailLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">E-POSTA</div>
-          <input id="seEmail" class="add-input" type="email" placeholder="example@mail.com">
+
+        <div class="se-section">
+          <div id="seEmailLbl" class="se-label">E-POSTA</div>
+          <input id="seEmail" class="se-input" type="email" placeholder="ornek@mail.com" autocomplete="off">
         </div>
-        <div>
-          <div id="sePwdLbl" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.5px;">ŞİFRE</div>
-          <div style="position:relative;display:flex;align-items:center;">
-            <input id="sePwd" class="add-input" type="password" placeholder="••••••••" style="padding-right:44px;width:100%;box-sizing:border-box;">
-            <button onclick="toggleSePwd()" style="position:absolute;right:12px;background:none;border:none;cursor:pointer;padding:4px;">
-              <svg id="sePwdEye" width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 8C1 8 4 2 10 2s9 6 9 6-3 6-9 6S1 8 1 8z" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/><circle cx="10" cy="8" r="2.5" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/></svg>
+
+        <div class="se-section">
+          <div id="sePwdLbl" class="se-label">ŞİFRE</div>
+          <div class="se-pwd-wrap">
+            <input id="sePwd" class="se-input" type="password" placeholder="••••••••" autocomplete="new-password">
+            <button onclick="toggleSePwd()" class="se-eye-btn">
+              <svg id="sePwdEye" width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 8C1 8 4 2 10 2s9 6 9 6-3 6-9 6S1 8 1 8z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="8" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
             </button>
           </div>
         </div>
       </div>
-      <div style="display:flex;gap:10px;margin-top:22px;">
-        <button id="sesSaveBtn" onclick="saveSubEdit()" style="flex:1;padding:16px;border:none;border-radius:22px;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:-.2px;">Kaydet</button>
-        <button id="sesDeleteBtn" onclick="deleteSubEdit()" style="padding:16px 20px;background:#fff;border:none;border-radius:22px;font-size:15px;font-weight:700;color:#d00000;cursor:pointer;">Sil</button>
+
+      <!-- Sticky footer -->
+      <div class="se-footer">
+        <button id="sesDeleteBtn" onclick="deleteSubEdit()" class="se-del-btn">
+          <svg width="15" height="16" viewBox="0 0 15 16" fill="none"><path d="M6 2h3M1 4h13M2.5 4l1 10h8l1-10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sil
+        </button>
+        <button id="sesSaveBtn" onclick="saveSubEdit()" class="se-save-btn">Kaydet</button>
       </div>
+
     </div>
   </div>
 
