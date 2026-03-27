@@ -757,3 +757,68 @@ button{-webkit-tap-highlight-color:transparent;}
 
 /* NAV ACTIVE RENK */
 .pill-item.active{background:rgba(255,255,255,.14);color:#fff;}
+
+/* ── PREMIUM ANİMASYONLAR ── */
+
+/* Sheet açılma: yukarı spring */
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes sheetFadeIn{from{opacity:0;transform:translateY(60px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pressIn{0%{transform:scale(1)}50%{transform:scale(.94)}100%{transform:scale(1)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes tabFadeIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pinPop{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
+
+/* Sub kartları staggered giriş */
+.sub-card{animation:cardIn .38s cubic-bezier(.22,1,.36,1) both;}
+.sub-card:nth-child(1){animation-delay:.04s}
+.sub-card:nth-child(2){animation-delay:.08s}
+.sub-card:nth-child(3){animation-delay:.12s}
+.sub-card:nth-child(4){animation-delay:.16s}
+.sub-card:nth-child(5){animation-delay:.20s}
+.sub-card:nth-child(n+6){animation-delay:.22s}
+
+/* Buton press feedback */
+button:active:not(.key):not(.nav-item):not(.toggle){transform:scale(.96);transition:transform .1s !important;}
+
+/* Menu item press */
+.menu-item{transition:background .15s,transform .18s cubic-bezier(.34,1.4,.64,1);}
+.menu-item:active{background:rgba(255,255,255,.06)!important;transform:scale(.985);}
+
+/* Toggle daha smooth */
+.toggle{transition:background .28s cubic-bezier(.34,1.4,.64,1);}
+.toggle-knob{transition:left .28s cubic-bezier(.34,1.56,.64,1),transform .18s;}
+.toggle:active .toggle-knob{transform:scaleX(1.25);}
+
+/* Tab geçişi */
+.tab-panel{animation:tabFadeIn .32s cubic-bezier(.22,1,.36,1) both;}
+
+/* Nav item tap */
+.nav-item{transition:opacity .22s,transform .22s cubic-bezier(.34,1.56,.64,1);}
+.nav-item:active{transform:scale(.85)!important;}
+
+/* Sheet gövdesi — add modal */
+.add-sheet{transition:transform .46s cubic-bezier(.32,.72,0,1);}
+.alert-sheet{transition:transform .46s cubic-bezier(.32,.72,0,1);}
+
+/* Input focus — glow */
+.add-input{transition:border-color .2s,box-shadow .2s,background .2s;}
+.add-input:focus{border-color:rgba(130,80,255,.5)!important;box-shadow:0 0 0 3.5px rgba(130,80,255,.15),0 2px 12px rgba(0,0,0,.3)!important;background:rgba(255,255,255,.07)!important;outline:none;}
+
+/* Stat card hover */
+.stat-card{transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;}
+.stat-card:active{transform:scale(.93);}
+
+/* Edit buton */
+button[onclick*="openSubEdit"]{transition:all .18s cubic-bezier(.34,1.4,.64,1)!important;}
+button[onclick*="openSubEdit"]:active{transform:scale(.9)!important;opacity:.7!important;}
+
+/* PIN dot dolunca pop */
+.pin-dot.f{animation:pinPop .25s cubic-bezier(.34,1.56,.64,1) both!important;}
+
+/* Quick stat pill */
+.quick-stat-pill{transition:transform .22s cubic-bezier(.34,1.4,.64,1),background .2s;}
+.quick-stat-pill:active{transform:scale(.93);}
+
+/* Add btn */
+.add-btn:active{transform:scale(.86)!important;}
