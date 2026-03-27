@@ -554,7 +554,8 @@ let qrRotateInterval=null,qrCountdown=null,qrSec=30,_qrSeed=Date.now();
 let lockTimer=null,isLocked=false;
 let pinVal='',pinMode='unlock',pinStep=0,tempPin='';
 let selectedPopular=null;
-function saveData(){try{localStorage.setItem('easytv_svc',JSON.stringify(SVC));localStorage.setItem('easytv_settings',JSON.stringify(SETTINGS));localStorage.setItem('easytv_profile',JSON.stringify(PROFILE));localStorage.setItem('easytv_pin',SETTINGS.pin||'1111');}catch(e){}}
+function saveData(){try{localStorage.setItem('easytv_settings',JSON.stringify(SETTINGS));localStorage.setItem('easytv_profile',JSON.stringify(PROFILE));localStorage.setItem('easytv_pin',SETTINGS.pinHash||'');}catch(e){}_saveSVCEncrypted();}
+async function _saveSVCEncrypted(){try{const enc=await Promise.all(SVC.map(s=>encryptCreds(s)));localStorage.setItem('easytv_svc',JSON.stringify(enc));}catch(e){const stripped=SVC.map(s=>({...s,email:'',pwd:''}));try{localStorage.setItem('easytv_svc',JSON.stringify(stripped));}catch(e2){}}}
 function loadData(){try{const s=localStorage.getItem('easytv_svc');const st=localStorage.getItem('easytv_settings');const pr=localStorage.getItem('easytv_profile');if(s)SVC=JSON.parse(s);if(st)SETTINGS=JSON.parse(st);if(pr)PROFILE=JSON.parse(pr);if(!SETTINGS.pin)SETTINGS.pin='1111';if(!SETTINGS.autolock)SETTINGS.autolock=true;if(!SETTINGS.faceid)SETTINGS.faceid=true;if(!SETTINGS.qrrotate)SETTINGS.qrrotate=true;if(SETTINGS.remind1===undefined)SETTINGS.remind1=false;if(SETTINGS.remind3===undefined)SETTINGS.remind3=false;if(SETTINGS.remind7===undefined)SETTINGS.remind7=false;if(SETTINGS.premium===undefined)SETTINGS.premium=false;// eski localStorage premium key'ini temizle
 localStorage.removeItem('easytv_premium');}catch(e){SETTINGS={pin:'1111',autolock:true,faceid:true,qrrotate:true};}}
 let EXCHANGE_RATES={};let RATES_TIMESTAMP=0;
@@ -852,7 +853,7 @@ async function checkPin(){
     } else if(pinMode==='change2'){
       if(pinVal===tempPin){await savePin(pinVal);pinMode='unlock';showToast('PIN güncellendi');hidePinScreen();pinVal='';}
       else{shakePin();pinVal='';document.getElementById('pinHint').textContent='Eslesmed, tekrar dene';}
-    } else { unlockApp(); }
+    } else { await setKeyFromRawPIN(pinVal); unlockApp(); }
   } else { shakePin(); pinVal=''; }
 }
 const gridEl = document.getElementById('grid');
@@ -1109,7 +1110,8 @@ function unlockApp() {
   const homeEl = document.getElementById('tab-home');
   if (homeEl) homeEl.style.display = 'flex';
   curTab = 'home';
-  buildGrid(); applySettings(); applyLang(); checkRenewals(); resetLockTimer();
+  _decryptSVCInMemory().then(()=>{buildGrid();renderSubs&&renderSubs();});
+  applySettings(); applyLang(); checkRenewals(); resetLockTimer();
   scheduleRenewalNotifs && scheduleRenewalNotifs();
   // PIN skip butonunu sadece PIN kapalıysa göster
   const skipBtn = document.getElementById('pinSkipBtn');
@@ -1190,6 +1192,7 @@ function resetLockTimer() {
   lockTimer = setTimeout(() => {
     if (!isLocked) {
       isLocked = true;
+      _clearCryptoKey();
       document.getElementById('lockOverlay').classList.add('visible');
     }
   }, 2 * 60 * 1000);
@@ -1878,18 +1881,44 @@ document.addEventListener('visibilitychange',()=>{
 
 
 // ══════════════════════════════════════════════════
-// ŞIFRELEME SİSTEMİ (Web Crypto API — AES-GCM)
+// ŞIFRELEME SİSTEMİ (Web Crypto API — AES-GCM + PBKDF2)
 // ══════════════════════════════════════════════════
-const CRYPTO_KEY_MATERIAL = 'easytv_ck_v1';
 let _cryptoKey = null;
+
+// Per-device salt — secret değil, sadece rainbow table'ı engeller
+function _getCryptoSalt() {
+  let s = localStorage.getItem('easytv_csk');
+  if (!s) {
+    s = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
+    localStorage.setItem('easytv_csk', s);
+  }
+  return Uint8Array.from(atob(s), c => c.charCodeAt(0));
+}
+
+// PIN'den PBKDF2 ile AES-256-GCM key türet (100k iterasyon)
+async function setKeyFromRawPIN(rawPin) {
+  const salt = _getCryptoSalt();
+  const km = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(rawPin), 'PBKDF2', false, ['deriveKey']
+  );
+  _cryptoKey = await crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt, iterations:100000, hash:'SHA-256'},
+    km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']
+  );
+}
 
 async function getCryptoKey() {
   if (_cryptoKey) return _cryptoKey;
+  // Fallback: userId tabanlı key (PIN girilmeden unlock edilen durumlar)
   const userId = (currentUser && currentUser.id) || 'guest';
-  const raw = userId + '::easytv_crypto_salt_v2';
-  const enc = new TextEncoder().encode(raw);
-  const hash = await crypto.subtle.digest('SHA-256', enc);
-  _cryptoKey = await crypto.subtle.importKey('raw', hash, {name:'AES-GCM'}, false, ['encrypt','decrypt']);
+  const salt = _getCryptoSalt();
+  const km = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(userId + '::easytv_v3'), 'PBKDF2', false, ['deriveKey']
+  );
+  _cryptoKey = await crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt, iterations:50000, hash:'SHA-256'},
+    km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']
+  );
   return _cryptoKey;
 }
 
@@ -1946,8 +1975,17 @@ async function decryptCreds(svc) {
   const d = {...svc};
   if (svc.email) d.email = await decryptStr(svc.email);
   if (svc.pwd)   d.pwd   = await decryptStr(svc.pwd);
+  delete d._enc;
   return d;
 }
+
+// Unlock'ta SVC'yi bellekte çöz
+async function _decryptSVCInMemory() {
+  try { SVC = await Promise.all(SVC.map(s => decryptCreds(s))); } catch(e) {}
+}
+
+// Kilitlemede key'i bellekten sil
+function _clearCryptoKey() { _cryptoKey = null; }
 
 // saveDataRaw: sadece ham veri kaydet (şifrelemeden önce)
 function saveDataRaw() {
