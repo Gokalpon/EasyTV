@@ -1,699 +1,239 @@
-/* =====================================================
-   THEME 2 — Full Visual Redesign
-   Reference: orange→magenta→purple gradient, glassmorphism
-   Font: Space Grotesk (Turkish unicode-range)
-   Keep: .tile grid boxes + .bottom-nav
-   ===================================================== */
+/* THEME 2 — Space Grotesk + Glassmorphism + Dark */
 
-/* ── FONT: Space Grotesk — Turkish ── */
-@font-face {
-  font-family: 'SG';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url('./assets/fonts/space-grotesk-latin-ext-wght-normal.woff2') format('woff2');
-  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,
-    U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,
-    U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
-}
-@font-face {
-  font-family: 'SG';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url('./assets/fonts/space-grotesk-latin-wght-normal.woff2') format('woff2');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,
-    U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,
-    U+2212,U+2215,U+FEFF,U+FFFD;
-}
+@font-face{font-family:'SG';font-weight:300 700;font-display:swap;
+  src:url('./assets/fonts/space-grotesk-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+@font-face{font-family:'SG';font-weight:300 700;font-display:swap;
+  src:url('./assets/fonts/space-grotesk-latin-wght-normal.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
 
-/* ── GLOBAL RESET ── */
-*, *::before, *::after {
-  font-family: 'SG', -apple-system, system-ui, sans-serif !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+*{font-family:'SG',-apple-system,sans-serif!important;-webkit-font-smoothing:antialiased;}
 
-/* ── TRANSITIONS everywhere ── */
-button, a, .menu-item, .toggle, .nav-item, .key, .tile,
-.add-sheet, .alert-sheet, .sheet, .sub-card, .stat-card {
-  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
+/* ── BASE ── */
+body{background:#09090e;}
 
-/* =====================================================
-   BACKGROUND — Reference gradient recreated
-   orange top-center → magenta middle →
-   deep purple bottom · dark blue sides · black edges
-   ===================================================== */
-body { background: #000008; }
-
-.bg {
+/* ── BACKGROUND: koyu antrasit + çok hafif orb'lar ── */
+.bg{
   background:
-    radial-gradient(ellipse 58% 42% at 50% 14%, rgba(255,130,0,.92) 0%, transparent 58%),
-    radial-gradient(ellipse 78% 52% at 50% 44%, rgba(220,18,130,.82) 0%, transparent 62%),
-    radial-gradient(ellipse 68% 56% at 50% 80%, rgba(88,0,218,.88) 0%, transparent 60%),
-    radial-gradient(ellipse 48% 95% at 2%  50%, rgba(0,18,185,.72) 0%, transparent 56%),
-    radial-gradient(ellipse 48% 95% at 98% 50%, rgba(0,18,185,.72) 0%, transparent 56%),
-    #000008 !important;
-  background-attachment: fixed;
+    radial-gradient(ellipse 70% 50% at 20% 20%,rgba(255,110,0,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 70%,rgba(160,0,220,.09) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 45% at 55% 45%,rgba(200,20,120,.06) 0%,transparent 60%),
+    #09090e!important;
 }
-.bg::before, .bg::after { display: none !important; }
+.bg::before,.bg::after{display:none!important;}
+.bg-grain{background:transparent!important;}
+.bg-grain::before,.bg-grain::after{display:none!important;}
 
-/* Animated grain/noise overlay for depth */
-.bg-grain {
-  background: transparent !important;
-  position: fixed !important;
-  inset: 0 !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-  opacity: .045 !important;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") !important;
-  background-size: 200px 200px !important;
+/* Animasyonlu orb'lar */
+.bg-ambient{background:transparent!important;}
+.bg-ambient::before{
+  content:'';position:absolute;width:480px;height:480px;top:-120px;left:-160px;
+  background:radial-gradient(circle,rgba(255,110,0,.12) 0%,rgba(200,20,120,.07) 45%,transparent 68%);
+  filter:blur(80px);animation:orb1 32s ease-in-out infinite alternate;
 }
-.bg-grain::before, .bg-grain::after { display: none !important; }
+.bg-ambient::after{
+  content:'';position:absolute;width:420px;height:420px;bottom:-100px;right:-140px;
+  background:radial-gradient(circle,rgba(120,0,240,.15) 0%,rgba(0,20,200,.08) 45%,transparent 68%);
+  filter:blur(80px);animation:orb2 38s ease-in-out infinite alternate;
+}
+@keyframes orb1{0%{transform:translate(0,0) scale(1)}50%{transform:translate(70px,-50px) scale(1.15)}100%{transform:translate(-30px,60px) scale(.9)}}
+@keyframes orb2{0%{transform:translate(0,0) scale(1)}40%{transform:translate(-60px,50px) scale(1.12)}100%{transform:translate(40px,-40px) scale(.88)}}
 
-/* Floating aura orbs — animated */
-.bg-ambient {
-  background: transparent !important;
-  position: fixed !important;
-  inset: 0 !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-  overflow: visible !important;
+/* ── GLASS MIXIN ── */
+.sub-card,.stat-card,.menu-group,.pie-chart-card,.cred-section,.home-quick-stat{
+  background:rgba(255,255,255,.055)!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  border-top:1px solid rgba(255,255,255,.18)!important;
+  backdrop-filter:blur(44px) saturate(160%)!important;
+  -webkit-backdrop-filter:blur(44px) saturate(160%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 32px rgba(0,0,0,.5)!important;
 }
-.bg-ambient::before {
-  content: '';
-  position: absolute;
-  width: 420px; height: 420px;
-  top: -80px; left: -100px;
-  background: radial-gradient(circle, rgba(255,110,0,.55) 0%, rgba(220,18,130,.3) 45%, transparent 68%);
-  filter: blur(70px);
-  animation: t2orb1 28s ease-in-out infinite alternate;
-}
-.bg-ambient::after {
-  content: '';
-  position: absolute;
-  width: 380px; height: 380px;
-  bottom: -60px; right: -90px;
-  background: radial-gradient(circle, rgba(70,0,215,.65) 0%, rgba(0,18,185,.35) 45%, transparent 68%);
-  filter: blur(70px);
-  animation: t2orb2 34s ease-in-out infinite alternate;
+.sub-card{border-radius:22px!important;}
+.stat-card{border-radius:18px!important;}
+.menu-group{border-radius:22px!important;overflow:hidden!important;}
+
+/* ── TRANSITIONS ── */
+button,.menu-item,.key,.nav-item,.tile,.sub-card,.toggle,.add-btn{
+  transition:all .2s cubic-bezier(.34,1.56,.64,1)!important;
 }
 
-@keyframes t2orb1 {
-  0%   { transform: translate(0,0) scale(1); }
-  40%  { transform: translate(90px,-50px) scale(1.18); }
-  100% { transform: translate(-20px,70px) scale(.88); }
-}
-@keyframes t2orb2 {
-  0%   { transform: translate(0,0) scale(1); }
-  50%  { transform: translate(-80px,55px) scale(1.14); }
-  100% { transform: translate(50px,-45px) scale(.9); }
-}
+/* ── PHONE ── */
+.phone{border-radius:52px;box-shadow:0 0 0 1px rgba(255,255,255,.05),0 0 0 9px #09090e,0 0 0 11px rgba(255,255,255,.03),0 60px 180px rgba(0,0,0,.99);}
 
-/* =====================================================
-   PHONE FRAME
-   ===================================================== */
-.phone {
-  border-radius: 52px;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.06),
-    0 0 0 9px #000008,
-    0 0 0 11px rgba(255,255,255,.04),
-    0 60px 180px rgba(0,0,0,.99),
-    0 0 120px rgba(220,18,130,.08);
-}
+/* ── STATUS BAR ── */
+.sb-time{font-weight:700;font-size:15px;letter-spacing:-.3px;}
 
-/* =====================================================
-   GLASSMORPHISM MIXIN — applied to all panels
-   .glass class used in descriptions
-   ===================================================== */
-/* Common glass surface */
-.sub-card,
-.stat-card,
-.menu-group,
-.pie-chart-card,
-.cred-section,
-.add-input,
-.home-quick-stat {
-  background: rgba(255,255,255,.08) !important;
-  border: 1px solid rgba(255,255,255,.13) !important;
-  border-top: 1px solid rgba(255,255,255,.22) !important;
-  backdrop-filter: blur(48px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(48px) saturate(180%) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.16),
-    inset 0 -1px 0 rgba(0,0,0,.18),
-    0 8px 40px rgba(0,0,0,.45) !important;
+/* ── HOME ── */
+.add-btn{
+  width:38px!important;height:38px!important;border-radius:50%!important;
+  background:rgba(255,255,255,.08)!important;
+  border:1px solid rgba(255,255,255,.15)!important;
+  backdrop-filter:blur(24px)!important;-webkit-backdrop-filter:blur(24px)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 4px 16px rgba(0,0,0,.4)!important;
 }
+.add-btn:active{transform:scale(.9)!important;}
 
-/* =====================================================
-   STATUS BAR
-   ===================================================== */
-.sb-time {
-  font-weight: 700;
-  font-size: 15px;
-  letter-spacing: -.3px;
-}
+/* ── TAB HEADERS ── */
+.tab-title{font-size:30px!important;font-weight:700!important;letter-spacing:-1px!important;color:#fff!important;}
+.tab-sub{font-size:13px!important;font-weight:500!important;color:rgba(255,255,255,.35)!important;}
 
-/* =====================================================
-   HOME HEADER
-   ===================================================== */
-.home-header {
-  padding: 16px 20px 12px !important;
-}
+/* ── TILES: korunuyor, sadece active ── */
+.tile:active{transform:scale(.95)!important;}
 
-.add-btn {
-  width: 38px !important;
-  height: 38px !important;
-  border-radius: 50% !important;
-  background: rgba(255,255,255,.1) !important;
-  border: 1px solid rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(32px) !important;
-  -webkit-backdrop-filter: blur(32px) !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.18) !important;
+/* ── SUBS ── */
+.sub-name{font-size:15px;font-weight:700;letter-spacing:-.2px;}
+.sub-price{font-size:17px;font-weight:700;letter-spacing:-.4px;}
+.subs-total-val{
+  font-size:54px!important;font-weight:700!important;letter-spacing:-3px!important;
+  background:linear-gradient(135deg,#ff8a00,#d41ab0,#6200ea)!important;
+  -webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important;background-clip:text!important;
 }
-.add-btn:active {
-  transform: scale(.92) !important;
-  background: rgba(255,255,255,.16) !important;
-}
+.subs-total-lbl{font-size:10px!important;font-weight:700!important;letter-spacing:2px!important;color:rgba(255,255,255,.28)!important;text-transform:uppercase!important;}
 
-/* =====================================================
-   TILES — PRESERVED (do not change layout/colors)
-   Only add subtle hover
-   ===================================================== */
-.tile:active {
-  transform: scale(.96) !important;
-}
+/* ── STATS ── */
+.stat-val{font-size:22px!important;font-weight:700!important;letter-spacing:-.5px!important;}
+.stat-lbl{font-size:10px!important;font-weight:700!important;letter-spacing:.5px!important;text-transform:uppercase!important;color:rgba(255,255,255,.3)!important;}
 
-/* =====================================================
-   TAB HEADERS
-   ===================================================== */
-.tab-title {
-  font-size: 30px !important;
-  font-weight: 700 !important;
-  letter-spacing: -1px !important;
-  color: #fff !important;
-  line-height: 1.1 !important;
-}
-.tab-sub {
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: rgba(255,255,255,.38) !important;
-  letter-spacing: .1px !important;
-  margin-top: 2px !important;
-}
+/* ── SETTINGS ── */
+.settings-section-lbl{font-size:10px!important;font-weight:700!important;letter-spacing:1.2px!important;text-transform:uppercase!important;color:rgba(255,255,255,.25)!important;}
+.menu-lbl{font-size:15px!important;font-weight:600!important;letter-spacing:-.2px!important;}
+.menu-desc{font-size:12px!important;color:rgba(255,255,255,.32)!important;font-weight:400!important;}
+.menu-item:active{background:rgba(255,255,255,.05)!important;transform:scale(.98)!important;}
 
-/* =====================================================
-   SUBSCRIPTION LIST CARDS
-   ===================================================== */
-.sub-card {
-  border-radius: 22px !important;
-  overflow: hidden;
-}
-.sub-name {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -.25px;
-}
-.sub-price {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -.4px;
-}
-.subs-total-val {
-  font-size: 56px !important;
-  font-weight: 700 !important;
-  letter-spacing: -3px !important;
-  background: linear-gradient(135deg, #FF8A00, #E0188F, #6200EA) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-}
-.subs-total-lbl {
-  font-size: 10px !important;
-  font-weight: 700 !important;
-  letter-spacing: 2px !important;
-  color: rgba(255,255,255,.3) !important;
-  text-transform: uppercase !important;
-}
+/* ── TOGGLE ── */
+.toggle.on{background:linear-gradient(135deg,#d41ab0,#6200ea)!important;box-shadow:0 2px 12px rgba(212,26,176,.4)!important;}
 
-/* =====================================================
-   STAT CARDS
-   ===================================================== */
-.stat-card {
-  border-radius: 20px !important;
+/* ── NAV: korunuyor, sadece glass ── */
+.bottom-nav{
+  background:rgba(6,6,12,.85)!important;
+  backdrop-filter:blur(56px) saturate(220%)!important;
+  -webkit-backdrop-filter:blur(56px) saturate(220%)!important;
+  border-top:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 -8px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08)!important;
 }
-.stat-val {
-  font-size: 22px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.5px !important;
-}
-.stat-lbl {
-  font-size: 10px !important;
-  font-weight: 700 !important;
-  letter-spacing: .5px !important;
-  text-transform: uppercase !important;
-  color: rgba(255,255,255,.35) !important;
-}
+.nav-label{font-size:9px!important;font-weight:700!important;letter-spacing:.6px!important;text-transform:uppercase!important;}
 
-/* =====================================================
-   SETTINGS
-   ===================================================== */
-.menu-group {
-  border-radius: 24px !important;
-  overflow: hidden !important;
+/* ── SHEETS ── */
+.sheet-bg{background:rgba(4,4,10,.75)!important;backdrop-filter:blur(60px)!important;-webkit-backdrop-filter:blur(60px)!important;}
+.add-sheet,.alert-sheet,.edit-sheet{
+  border-radius:34px 34px 0 0!important;
+  background:rgba(10,8,20,.9)!important;
+  backdrop-filter:blur(56px) saturate(180%)!important;
+  -webkit-backdrop-filter:blur(56px) saturate(180%)!important;
+  border-top:1px solid rgba(255,255,255,.1)!important;
+  box-shadow:0 -8px 48px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.1)!important;
 }
-.menu-lbl {
-  font-size: 15px !important;
-  font-weight: 600 !important;
-  letter-spacing: -.2px !important;
-}
-.menu-desc {
-  font-size: 12px !important;
-  color: rgba(255,255,255,.35) !important;
-  font-weight: 400 !important;
-}
-.menu-item {
-  transition: background .15s ease !important;
-}
-.menu-item:active {
-  background: rgba(255,255,255,.06) !important;
-}
-.settings-section-lbl {
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  letter-spacing: 1px !important;
-  text-transform: uppercase !important;
-  color: rgba(255,255,255,.28) !important;
-}
+.add-title,.s-name{font-size:20px!important;font-weight:700!important;letter-spacing:-.4px!important;}
 
-/* =====================================================
-   TOGGLE
-   ===================================================== */
-.toggle.on {
-  background: linear-gradient(135deg, #FF8A00, #E0188F) !important;
-  box-shadow: 0 2px 12px rgba(220,18,130,.45) !important;
+/* ── INPUTS ── */
+.add-input{
+  background:rgba(255,255,255,.06)!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  border-radius:16px!important;font-weight:500!important;
+  backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;
 }
+.add-input:focus{border-color:rgba(212,26,176,.5)!important;background:rgba(255,255,255,.09)!important;box-shadow:0 0 0 3px rgba(212,26,176,.15)!important;}
 
-/* =====================================================
-   NAV — PRESERVED STRUCTURE, enhanced glass
-   ===================================================== */
-.bottom-nav {
-  background: rgba(4,4,12,.82) !important;
-  backdrop-filter: blur(60px) saturate(240%) !important;
-  -webkit-backdrop-filter: blur(60px) saturate(240%) !important;
-  border-top: 1px solid rgba(255,255,255,.1) !important;
-  box-shadow:
-    0 -12px 48px rgba(0,0,0,.55),
-    inset 0 1px 0 rgba(255,255,255,.1) !important;
+/* ── BUTTONS ── */
+.add-save-btn,.wlc-btn,.intro-cta,.onboard-btn,.premium-buy-btn{
+  border-radius:20px!important;
+  background:linear-gradient(135deg,#ff8a00 0%,#d41ab0 50%,#6200ea 100%)!important;
+  color:#fff!important;font-weight:700!important;font-size:16px!important;letter-spacing:-.2px!important;
+  border:none!important;
+  box-shadow:0 6px 28px rgba(212,26,176,.35),0 2px 8px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2)!important;
 }
-.nav-label {
-  font-size: 9px !important;
-  font-weight: 700 !important;
-  letter-spacing: .5px !important;
-  text-transform: uppercase !important;
+.add-save-btn:active,.wlc-btn:active,.intro-cta:active,.onboard-btn:active{
+  transform:scale(.97)!important;box-shadow:0 3px 14px rgba(212,26,176,.25)!important;
 }
+.cred-btn,.app-open-btn,.qr-btn{
+  border-radius:16px!important;
+  background:rgba(255,255,255,.08)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  font-weight:600!important;
+}
+.cred-btn:active,.app-open-btn:active{transform:scale(.95)!important;}
 
-/* =====================================================
-   SHEETS & MODALS — frosted glass
-   ===================================================== */
-.sheet-bg {
-  background: rgba(4,4,12,.72) !important;
-  backdrop-filter: blur(64px) saturate(220%) !important;
-  -webkit-backdrop-filter: blur(64px) saturate(220%) !important;
-}
-.add-sheet,
-.alert-sheet,
-.edit-sheet {
-  border-radius: 36px 36px 0 0 !important;
-  background: rgba(8,6,18,.88) !important;
-  backdrop-filter: blur(56px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(56px) saturate(200%) !important;
-  border-top: 1px solid rgba(255,255,255,.12) !important;
-  box-shadow: 0 -8px 48px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.1) !important;
-}
-.add-title {
-  font-size: 20px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.4px !important;
-}
-.s-name {
-  font-size: 20px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.4px !important;
-}
-.add-input {
-  border-radius: 16px !important;
-  font-weight: 500 !important;
-  font-size: 15px !important;
-  color: #fff !important;
-}
-.add-input:focus {
-  border-color: rgba(220,18,130,.55) !important;
-  background: rgba(255,255,255,.12) !important;
-  box-shadow: 0 0 0 3px rgba(220,18,130,.18) !important;
-}
-.cred-btn {
-  border-radius: 14px !important;
-  background: rgba(255,255,255,.08) !important;
-  border: 1px solid rgba(255,255,255,.12) !important;
-  font-weight: 600 !important;
-}
-.cred-btn:active {
-  transform: scale(.95) !important;
-}
-
-/* =====================================================
-   BUTTONS — Gradient CTAs
-   ===================================================== */
-/* Primary gradient button — all CTA variants */
-.add-save-btn,
-.wlc-btn,
-.intro-cta,
-.onboard-btn,
-.premium-buy-btn {
-  border-radius: 20px !important;
-  background: linear-gradient(135deg, #FF8A00 0%, #E0188F 45%, #6200EA 100%) !important;
-  color: #fff !important;
-  font-weight: 700 !important;
-  font-size: 16px !important;
-  letter-spacing: -.2px !important;
-  border: none !important;
-  box-shadow:
-    0 6px 32px rgba(220,18,130,.38),
-    0 2px 8px rgba(0,0,0,.5),
-    inset 0 1px 0 rgba(255,255,255,.22) !important;
-  position: relative !important;
-  overflow: hidden !important;
-}
-.add-save-btn:active,
-.wlc-btn:active,
-.intro-cta:active,
-.onboard-btn:active {
-  transform: scale(.97) !important;
-  box-shadow:
-    0 3px 16px rgba(220,18,130,.3),
-    0 1px 4px rgba(0,0,0,.4) !important;
-}
-
-/* Glass secondary buttons */
-.app-open-btn,
-.qr-btn {
-  border-radius: 18px !important;
-  background: rgba(255,255,255,.09) !important;
-  border: 1px solid rgba(255,255,255,.14) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  font-weight: 600 !important;
-}
-
-/* =====================================================
-   PIN SCREEN
-   ===================================================== */
-.pin-screen {
+/* ── PIN SCREEN ── */
+.pin-screen,.welcome-screen,.onboard-screen{
   background:
-    radial-gradient(ellipse 58% 42% at 50% 14%, rgba(255,130,0,.88) 0%, transparent 58%),
-    radial-gradient(ellipse 78% 52% at 50% 44%, rgba(220,18,130,.78) 0%, transparent 62%),
-    radial-gradient(ellipse 68% 56% at 50% 80%, rgba(88,0,218,.85) 0%, transparent 60%),
-    radial-gradient(ellipse 48% 95% at 2%  50%, rgba(0,18,185,.68) 0%, transparent 56%),
-    radial-gradient(ellipse 48% 95% at 98% 50%, rgba(0,18,185,.68) 0%, transparent 56%),
-    #000008 !important;
+    radial-gradient(ellipse 65% 45% at 20% 25%,rgba(255,110,0,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 45% at 80% 70%,rgba(140,0,230,.1) 0%,transparent 60%),
+    #09090e!important;
 }
-.pin-screen::before, .pin-screen::after { display: none !important; }
-.pin-greeting {
-  font-size: 26px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.6px !important;
-  color: #fff !important;
+.pin-screen::before,.pin-screen::after,.welcome-screen::before,.welcome-screen::after,.onboard-screen::before{display:none!important;}
+.pin-greeting{font-size:26px!important;font-weight:700!important;letter-spacing:-.6px!important;color:#fff!important;}
+.pin-hint{font-size:14px!important;color:rgba(255,255,255,.4)!important;font-weight:500!important;}
+.pin-dot.f{background:linear-gradient(135deg,#d41ab0,#6200ea)!important;border-color:transparent!important;box-shadow:0 0 14px rgba(212,26,176,.55)!important;}
+.key{
+  background:rgba(255,255,255,.07)!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;
+  border-radius:18px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 14px rgba(0,0,0,.3)!important;
 }
-.pin-hint {
-  font-size: 14px !important;
-  color: rgba(255,255,255,.42) !important;
-  font-weight: 500 !important;
-}
-.pin-dot.f {
-  background: linear-gradient(135deg, #FF8A00, #E0188F) !important;
-  border-color: transparent !important;
-  box-shadow: 0 0 16px rgba(220,18,130,.6) !important;
-}
-.key {
-  background: rgba(255,255,255,.08) !important;
-  border: 1px solid rgba(255,255,255,.11) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border-radius: 18px !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 4px 16px rgba(0,0,0,.3) !important;
-}
-.key:active {
-  transform: scale(.9) !important;
-  background: rgba(255,255,255,.15) !important;
-}
-.key-num {
-  font-size: 28px !important;
-  font-weight: 400 !important;
-  letter-spacing: -.5px !important;
-}
+.key:active{transform:scale(.88)!important;background:rgba(255,255,255,.13)!important;}
+.key-num{font-size:28px!important;font-weight:400!important;letter-spacing:-.5px!important;}
 
-/* =====================================================
-   WELCOME / ONBOARD SCREENS
-   ===================================================== */
-.welcome-screen {
+/* ── INTRO SCREEN ── */
+#introScreen{
   background:
-    radial-gradient(ellipse 58% 42% at 50% 14%, rgba(255,130,0,.9) 0%, transparent 58%),
-    radial-gradient(ellipse 78% 52% at 50% 44%, rgba(220,18,130,.8) 0%, transparent 62%),
-    radial-gradient(ellipse 68% 56% at 50% 80%, rgba(88,0,218,.86) 0%, transparent 60%),
-    radial-gradient(ellipse 48% 95% at 2%  50%, rgba(0,18,185,.7) 0%, transparent 56%),
-    radial-gradient(ellipse 48% 95% at 98% 50%, rgba(0,18,185,.7) 0%, transparent 56%),
-    #000008 !important;
+    radial-gradient(ellipse 65% 45% at 20% 25%,rgba(255,110,0,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 45% at 80% 70%,rgba(140,0,230,.1) 0%,transparent 60%),
+    #09090e!important;
 }
-.welcome-screen::before, .welcome-screen::after { display: none !important; }
+#introTagline{font-family:'SG',sans-serif!important;font-size:28px!important;font-weight:700!important;letter-spacing:-.8px!important;text-shadow:none!important;}
+#introSub{font-size:14px!important;color:rgba(255,255,255,.42)!important;}
+.intro-feat-txt{font-size:14px!important;font-weight:500!important;color:rgba(255,255,255,.65)!important;}
+.intro-feat-dot{background:linear-gradient(135deg,#d41ab0,#6200ea)!important;box-shadow:0 0 8px rgba(212,26,176,.45)!important;}
+.intro-hint{color:rgba(255,255,255,.32)!important;font-size:13px!important;font-weight:500!important;}
 
-.onboard-screen {
+/* ── LOGIN SCREEN ── */
+#loginScreen{
   background:
-    radial-gradient(ellipse 58% 42% at 50% 14%, rgba(255,130,0,.9) 0%, transparent 58%),
-    radial-gradient(ellipse 78% 52% at 50% 44%, rgba(220,18,130,.8) 0%, transparent 62%),
-    radial-gradient(ellipse 68% 56% at 50% 80%, rgba(88,0,218,.86) 0%, transparent 60%),
-    radial-gradient(ellipse 48% 95% at 2%  50%, rgba(0,18,185,.7) 0%, transparent 56%),
-    radial-gradient(ellipse 48% 95% at 98% 50%, rgba(0,18,185,.7) 0%, transparent 56%),
-    #000008 !important;
+    radial-gradient(ellipse 65% 45% at 20% 25%,rgba(255,110,0,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 45% at 80% 70%,rgba(140,0,230,.1) 0%,transparent 60%),
+    #09090e!important;
 }
-.onboard-screen::before { display: none !important; }
-.onboard-title {
-  font-size: 26px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.6px !important;
+#loginScreen>div:nth-child(1),#loginScreen>div:nth-child(2){display:none!important;}
+#loginScreen button[onclick="showSignupOptions()"]{
+  background:linear-gradient(135deg,#ff8a00 0%,#d41ab0 50%,#6200ea 100%)!important;
+  border:none!important;border-radius:22px!important;
+  font-family:'SG',sans-serif!important;font-weight:700!important;font-size:16px!important;
+  box-shadow:0 6px 28px rgba(212,26,176,.35),inset 0 1px 0 rgba(255,255,255,.2)!important;
 }
-.wlc-tagline {
-  font-size: 26px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.6px !important;
+#appleLoginBtn,#googleLoginBtn{
+  background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.11)!important;
+  border-radius:18px!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;
+  font-family:'SG',sans-serif!important;font-weight:600!important;
 }
+#appleLoginBtn:active,#googleLoginBtn:active{transform:scale(.97)!important;background:rgba(255,255,255,.13)!important;}
 
-/* =====================================================
-   INTRO SCREEN — override inline styles
-   ===================================================== */
-#introScreen {
+/* ── AUTH LOADING ── */
+.auth-loading{
   background:
-    radial-gradient(ellipse 58% 42% at 50% 14%, rgba(255,130,0,.9) 0%, transparent 58%),
-    radial-gradient(ellipse 78% 52% at 50% 44%, rgba(220,18,130,.8) 0%, transparent 62%),
-    radial-gradient(ellipse 68% 56% at 50% 80%, rgba(88,0,218,.86) 0%, transparent 60%),
-    radial-gradient(ellipse 48% 95% at 2%  50%, rgba(0,18,185,.7) 0%, transparent 56%),
-    radial-gradient(ellipse 48% 95% at 98% 50%, rgba(0,18,185,.7) 0%, transparent 56%),
-    #000008 !important;
+    radial-gradient(ellipse 55% 45% at 50% 30%,rgba(140,0,230,.1) 0%,transparent 60%),
+    #09090e!important;
 }
-/* Intro tagline override — has inline font-family:Syne */
-#introTagline {
-  font-family: 'SG', sans-serif !important;
-  font-size: 26px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.7px !important;
-  text-shadow: 0 4px 32px rgba(220,18,130,.35) !important;
-}
-#introSub {
-  font-size: 15px !important;
-  color: rgba(255,255,255,.48) !important;
-  line-height: 1.65 !important;
-}
-.intro-cta {
-  width: 100% !important;
-  padding: 18px !important;
-  font-size: 16px !important;
-}
-.intro-hint {
-  color: rgba(255,255,255,.35) !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-}
-.intro-feat-txt {
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  color: rgba(255,255,255,.72) !important;
-}
-.intro-feat-dot {
-  background: linear-gradient(135deg, #FF8A00, #E0188F) !important;
-  box-shadow: 0 0 10px rgba(220,18,130,.5) !important;
-}
+.auth-spinner{border-color:rgba(212,26,176,.15)!important;border-top-color:rgba(212,26,176,.9)!important;box-shadow:0 0 20px rgba(212,26,176,.25)!important;}
 
-/* =====================================================
-   LOGIN SCREEN — override inline styles
-   ===================================================== */
-#loginScreen {
-  background:
-    radial-gradient(ellipse 58% 42% at 50% 14%, rgba(255,130,0,.9) 0%, transparent 58%),
-    radial-gradient(ellipse 78% 52% at 50% 44%, rgba(220,18,130,.8) 0%, transparent 62%),
-    radial-gradient(ellipse 68% 56% at 50% 80%, rgba(88,0,218,.86) 0%, transparent 60%),
-    radial-gradient(ellipse 48% 95% at 2%  50%, rgba(0,18,185,.7) 0%, transparent 56%),
-    radial-gradient(ellipse 48% 95% at 98% 50%, rgba(0,18,185,.7) 0%, transparent 56%),
-    #000008 !important;
-}
-/* Hide the inline-styled orb divs inside loginScreen */
-#loginScreen > div:nth-child(1),
-#loginScreen > div:nth-child(2) { display: none !important; }
+/* ── PREMIUM ── */
+.premium-sheet-inner{background:linear-gradient(160deg,rgba(255,110,0,.05) 0%,rgba(8,6,18,.98) 30%,#060614 100%)!important;}
+.premium-title{font-size:26px!important;font-weight:700!important;letter-spacing:-.6px!important;}
 
-/* Login title */
-#loginScreen > div:nth-child(3) > div {
-  font-family: 'SG', sans-serif !important;
-  font-size: 32px !important;
-  font-weight: 700 !important;
-  letter-spacing: -1px !important;
-}
+/* ── PROFILE ── */
+#profileAvatar{border-radius:16px!important;background:linear-gradient(135deg,rgba(255,138,0,.25),rgba(212,26,176,.2))!important;border:1px solid rgba(255,255,255,.12)!important;}
 
-/* Login primary button — "Hesap Oluştur" */
-#loginScreen button:first-of-type,
-#loginScreen button[onclick="showSignupOptions()"] {
-  background: linear-gradient(135deg, #FF8A00 0%, #E0188F 45%, #6200EA 100%) !important;
-  border: none !important;
-  box-shadow: 0 8px 36px rgba(220,18,130,.42), inset 0 1px 0 rgba(255,255,255,.22) !important;
-  border-radius: 22px !important;
-  font-family: 'SG', sans-serif !important;
-  font-weight: 700 !important;
-  font-size: 16px !important;
-}
+/* ── PILLS ── */
+.plan-user-pill.active{background:linear-gradient(135deg,#d41ab0,#6200ea)!important;border-color:transparent!important;box-shadow:0 4px 14px rgba(212,26,176,.38)!important;}
+.plan-pay-opt.active{background:rgba(212,26,176,.14)!important;border-color:rgba(212,26,176,.4)!important;}
+.add-tab.active{background:rgba(255,255,255,.1)!important;border-color:rgba(255,255,255,.18)!important;}
 
-/* Login glass buttons — Apple, Google, Mail */
-#appleLoginBtn,
-#googleLoginBtn {
-  background: rgba(255,255,255,.09) !important;
-  border: 1px solid rgba(255,255,255,.13) !important;
-  border-radius: 18px !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  font-family: 'SG', sans-serif !important;
-  font-weight: 600 !important;
-}
-#appleLoginBtn:active, #googleLoginBtn:active {
-  transform: scale(.97) !important;
-  background: rgba(255,255,255,.15) !important;
-}
+/* ── TOAST ── */
+.toast{background:rgba(8,6,18,.95)!important;backdrop-filter:blur(44px)!important;-webkit-backdrop-filter:blur(44px)!important;border:1px solid rgba(255,255,255,.09)!important;border-radius:20px!important;font-weight:600!important;box-shadow:0 8px 32px rgba(0,0,0,.55)!important;}
 
-/* =====================================================
-   AUTH LOADING SCREEN
-   ===================================================== */
-.auth-loading {
-  background:
-    radial-gradient(ellipse 58% 42% at 50% 14%, rgba(255,130,0,.88) 0%, transparent 58%),
-    radial-gradient(ellipse 78% 52% at 50% 44%, rgba(220,18,130,.78) 0%, transparent 62%),
-    radial-gradient(ellipse 68% 56% at 50% 80%, rgba(88,0,218,.84) 0%, transparent 60%),
-    radial-gradient(ellipse 48% 95% at 2%  50%, rgba(0,18,185,.68) 0%, transparent 56%),
-    radial-gradient(ellipse 48% 95% at 98% 50%, rgba(0,18,185,.68) 0%, transparent 56%),
-    #000008 !important;
-}
-.auth-spinner {
-  border-color: rgba(220,18,130,.18) !important;
-  border-top-color: rgba(220,18,130,.92) !important;
-  box-shadow: 0 0 20px rgba(220,18,130,.3) !important;
-}
+/* ── ONBOARD TITLE ── */
+.onboard-title{font-size:26px!important;font-weight:700!important;letter-spacing:-.6px!important;}
+.wlc-tagline{font-size:26px!important;font-weight:700!important;letter-spacing:-.6px!important;}
 
-/* =====================================================
-   PREMIUM SHEET
-   ===================================================== */
-.premium-sheet-inner {
-  background: linear-gradient(160deg,
-    rgba(255,130,0,.07) 0%,
-    rgba(10,6,24,.98) 35%,
-    #060614 100%) !important;
-}
-.premium-title {
-  font-size: 26px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.6px !important;
-}
-.premium-buy-btn {
-  border-radius: 20px !important;
-  font-size: 16px !important;
-  padding: 18px !important;
-}
-
-/* =====================================================
-   PROFILE / AVATAR
-   ===================================================== */
-.profile-name {
-  font-size: 24px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.5px !important;
-}
-.profile-email {
-  font-size: 13px !important;
-  color: rgba(255,255,255,.38) !important;
-}
-
-/* Profile avatar inline override */
-#profileAvatar {
-  border-radius: 16px !important;
-  background: linear-gradient(135deg, rgba(255,138,0,.3), rgba(220,18,130,.25)) !important;
-  border: 1px solid rgba(255,255,255,.14) !important;
-}
-
-/* =====================================================
-   TOAST
-   ===================================================== */
-.toast {
-  background: rgba(6,6,18,.94) !important;
-  backdrop-filter: blur(48px) saturate(210%) !important;
-  -webkit-backdrop-filter: blur(48px) saturate(210%) !important;
-  border: 1px solid rgba(255,255,255,.1) !important;
-  border-radius: 20px !important;
-  font-weight: 600 !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,.5) !important;
-}
-
-/* =====================================================
-   PILLS / CHIPS / TABS
-   ===================================================== */
-.plan-user-pill.active {
-  background: linear-gradient(135deg, #FF8A00, #E0188F) !important;
-  border-color: transparent !important;
-  box-shadow: 0 4px 16px rgba(220,18,130,.4) !important;
-}
-.plan-pay-opt.active {
-  background: rgba(255,138,0,.15) !important;
-  border-color: rgba(255,138,0,.45) !important;
-  color: #fff !important;
-}
-.add-tab.active {
-  background: rgba(255,255,255,.12) !important;
-  color: #fff !important;
-  border-color: rgba(255,255,255,.2) !important;
-}
-
-/* =====================================================
-   SMOOTH SCROLL PHYSICS
-   ===================================================== */
-.grid-scroll, .subs-scroll, .settings-scroll, .add-sheet-scroll {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* =====================================================
-   ACTIVE STATE SCALE — Apple haptic feel
-   ===================================================== */
-.menu-item:active,
-.nav-item:active,
-.cred-btn:active,
-.plan-user-pill:active,
-.plan-pay-opt:active,
-.add-tab:active {
-  transform: scale(.97) !important;
-  opacity: .85 !important;
-}
+/* ── SCROLL ── */
+.grid-scroll,.subs-scroll,.settings-scroll,.add-sheet-scroll{-webkit-overflow-scrolling:touch;}
