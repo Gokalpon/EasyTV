@@ -775,7 +775,7 @@ button{-webkit-tap-highlight-color:transparent;}
 .se-close-btn:active{background:rgba(255,255,255,.15);transform:scale(.9);}
 
 /* Body — scrollable */
-.se-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px 8px;display:flex;flex-direction:column;gap:20px;scrollbar-width:none;}
+.se-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px 8px;display:flex;flex-direction:column;gap:20px;scrollbar-width:none;}
 .se-body::-webkit-scrollbar{display:none;}
 .se-section{display:flex;flex-direction:column;gap:8px;}
 .se-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;}
