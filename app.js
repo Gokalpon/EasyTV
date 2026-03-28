@@ -271,7 +271,7 @@ function setIntroLang(lang){
   const chev=document.getElementById('introLangChevron');
   if(menu) menu.style.display='none';
   if(chev) chev.style.transform='';
-  document.getElementById('introTagline').innerHTML=lang==='tr'?'Yayın servislerinizi<br>kolayca açın.':'Open your streaming<br>services with ease.';
+  document.getElementById('introTagline').innerHTML=lang==='tr'?'Tüm servisleriniz<br>tek bir yerde.':'All your services<br>in one place.';
   document.getElementById('introSub').innerHTML=lang==='tr'?'Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.':'Access everything in one place.<br>Track your subscriptions and payments.';
   const f1=document.getElementById('introFeat1');const f2=document.getElementById('introFeat2');const f3=document.getElementById('introFeat3');
   if(f1)f1.textContent=lang==='tr'?'Otomatik yenileme takibi & hatırlatıcı':'Auto renewal tracking & reminders';
