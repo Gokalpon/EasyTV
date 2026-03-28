@@ -411,18 +411,20 @@ function deactivatePremium() {
 }
 
 function updatePremiumBadge() {
-  var badge = document.getElementById('premiumStatusBadge');
+  var badge = document.getElementById('premiumBadge');
   var tog = document.getElementById('premiumToggle');
-  if (!badge) return;
-  if (isPremium()) {
-    badge.textContent = '\u2746 Aktif';
-    badge.style.color = '#c084fc';
-    if (tog) { tog.classList.add('on'); tog.style.background = '#9333ea'; }
-  } else {
-    badge.textContent = '\u20BA49,99/ay \u00B7 Premium\u0027a Ge\u00E7';
-    badge.style.color = 'rgba(255,255,255,.45)';
-    if (tog) { tog.classList.remove('on'); tog.style.background = 'rgba(255,255,255,.15)'; }
+  if (badge) {
+    if (isPremium()) {
+      badge.textContent = 'Aktif';
+      badge.classList.remove('pasif');
+      badge.classList.add('aktif');
+    } else {
+      badge.textContent = 'Pasif';
+      badge.classList.remove('aktif');
+      badge.classList.add('pasif');
+    }
   }
+  if (tog) { tog.classList.toggle('on', isPremium()); tog.style.background = isPremium() ? '#9333ea' : 'rgba(255,255,255,.15)'; }
 }
 
 function togglePremiumFromSettings() {
