@@ -103,30 +103,59 @@
   <div class="intro-glow" style="position:absolute;pointer-events:none;"></div>
   <div class="intro-glow2" style="position:absolute;pointer-events:none;"></div>
 
-  <!-- LOGO: üstten 150px -->
-  <div style="position:absolute;top:150px;left:0;right:0;display:flex;justify-content:center;z-index:1;">
-    <img src="./assets/EasyTVLogo.png" style="height:64px;width:auto;object-fit:contain;opacity:0;animation:logoEntrance .9s cubic-bezier(.34,1.2,.64,1) .1s forwards;">
+  <!-- LOGO -->
+  <div style="position:absolute;top:72px;left:0;right:0;display:flex;justify-content:center;z-index:1;animation:introFadeUp .7s .1s both;">
+    <img src="./assets/EasyTVLogo.png" style="height:52px;width:auto;object-fit:contain;">
   </div>
 
-  <!-- BAŞLIK: üstten 254px -->
-  <div style="position:absolute;top:254px;left:32px;right:32px;text-align:center;z-index:1;animation:introFadeUp .7s .3s both;">
-    <div id="introTagline" style="font-family:'Syne','Inter',sans-serif;font-size:20px;font-weight:800;color:#fff;letter-spacing:-.4px;line-height:1.35;text-shadow:0 2px 20px rgba(130,80,255,.3);"><span style="display:block;">Tüm abonelikleriniz</span><span style="display:block;">tek bir yerde.</span></div>
+  <!-- BAŞLIK + ALT YAZI -->
+  <div style="position:absolute;top:158px;left:28px;right:28px;text-align:center;z-index:1;animation:introFadeUp .7s .28s both;">
+    <div id="introTagline" style="font-family:'Syne','Inter',sans-serif;font-size:27px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1.25;text-shadow:0 2px 24px rgba(130,80,255,.35);">Tüm abonelikleriniz<br>tek bir yerde.</div>
+    <div id="introSub" style="font-size:13px;color:rgba(255,255,255,.42);line-height:1.6;margin-top:10px;letter-spacing:-.1px;">Netflix'ten Spotify'a, hepsini tek yerden<br>takip et, analiz et, güvende sakla.</div>
   </div>
 
-  <!-- ALT YAZI: üstten 330px -->
-  <div style="position:absolute;top:330px;left:40px;right:40px;text-align:center;z-index:1;animation:introFadeUp .7s .45s both;">
-    <div id="introSub" style="font-size:14px;color:rgba(255,255,255,.45);line-height:1.65;">Şifrelerinizi güvende saklayın.<br>QR ile saniyeler içinde oturum açın.</div>
+  <!-- SERVİS LOGO MOZAİĞİ -->
+  <div style="position:absolute;top:296px;left:0;right:0;z-index:1;animation:introFadeUp .8s .5s both;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 14%,#000 86%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,#000 14%,#000 86%,transparent 100%);">
+    <!-- Satır 1: sola kayar -->
+    <div class="intro-logo-row intro-row-l" style="margin-bottom:10px;">
+      <div class="intro-logo-tile" style="background:#E50914;"><img src="./assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#FF0000;"><img src="./assets/youtube.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="./assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#1A98FF;"><img src="./assets/prime video.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#3B1F6B;"><img src="./assets/hbo.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#f5f5f7;"><img src="./assets/appleb.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#1DB954;"><img src="./assets/Spotify.png" style="width:34px;height:34px;object-fit:contain;"></div>
+      <!-- duplicate for seamless loop -->
+      <div class="intro-logo-tile" style="background:#E50914;"><img src="./assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#FF0000;"><img src="./assets/youtube.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="./assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#1A98FF;"><img src="./assets/prime video.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#3B1F6B;"><img src="./assets/hbo.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#f5f5f7;"><img src="./assets/appleb.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#1DB954;"><img src="./assets/Spotify.png" style="width:34px;height:34px;object-fit:contain;"></div>
+    </div>
+    <!-- Satır 2: sağa kayar -->
+    <div class="intro-logo-row intro-row-r">
+      <div class="intro-logo-tile" style="background:#9146FF;"><img src="./assets/twitch.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#FFD100;"><img src="./assets/tvplus2.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#F9D100;"><img src="./assets/exxenb.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#6F2DA8;"><img src="./assets/bein.png" style="width:34px;height:34px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#53FC18;"><img src="./assets/kickb.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#E50914;"><img src="./assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="./assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <!-- duplicate for seamless loop -->
+      <div class="intro-logo-tile" style="background:#9146FF;"><img src="./assets/twitch.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#FFD100;"><img src="./assets/tvplus2.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#F9D100;"><img src="./assets/exxenb.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#6F2DA8;"><img src="./assets/bein.png" style="width:34px;height:34px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#53FC18;"><img src="./assets/kickb.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#E50914;"><img src="./assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="./assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
+    </div>
   </div>
 
-  <!-- ÖZELLİKLER: üstten 580px -->
-  <div style="position:absolute;top:580px;left:32px;right:32px;display:flex;flex-direction:column;gap:13px;z-index:1;animation:introFadeUp .7s .6s both;">
-    <div class="intro-feat"><div class="intro-feat-dot"></div><span class="intro-feat-txt" id="introFeat1">Otomatik yenileme takibi & hatırlatıcı</span></div>
-    <div class="intro-feat"><div class="intro-feat-dot"></div><span class="intro-feat-txt" id="introFeat2">Aylık harcama özeti ve analizi</span></div>
-    <div class="intro-feat"><div class="intro-feat-dot"></div><span class="intro-feat-txt" id="introFeat3">PIN & Face ID ile güvenli giriş</span></div>
-  </div>
-
-  <!-- BUTONLAR: alttan 52px -->
-  <div style="position:absolute;bottom:52px;left:32px;right:32px;z-index:1;animation:introSlideUp .7s .75s both;">
+  <!-- BUTONLAR -->
+  <div style="position:absolute;bottom:44px;left:28px;right:28px;z-index:1;animation:introSlideUp .7s .75s both;">
     <div style="display:flex;justify-content:center;margin-bottom:14px;position:relative;">
       <button id="introLangTrigger" onclick="toggleLangMenu()" style="background:none;border:none;cursor:pointer;font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.8px;display:flex;align-items:center;gap:5px;padding:6px 0;">
         <span id="introLangLabel">TR</span>

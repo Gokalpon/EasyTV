@@ -263,6 +263,13 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .add-save-btn{margin:14px 16px 0;width:calc(100% - 32px);padding:16px;border-radius:14px;background:#fff;color:#000;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;border:none;transition:opacity .16s,transform .16s;}
 .add-save-btn:active{opacity:.8;transform:scale(.98);}
 
+@keyframes introScrollL{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes introScrollR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.intro-logo-row{display:flex;gap:10px;width:max-content;}
+.intro-logo-tile{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.82;}
+.intro-row-l{animation:introScrollL 28s linear infinite;}
+.intro-row-r{animation:introScrollR 24s linear infinite;}
+
 /* WELCOME */
 @keyframes wlcOrb1{0%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,40px) scale(1.2)}100%{transform:translate(-20px,10px) scale(.95)}}
 @keyframes wlcOrb2{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-40px,-30px) scale(1.15)}100%{transform:translate(15px,-10px) scale(.9)}}
