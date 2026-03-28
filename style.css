@@ -335,7 +335,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .ob-pin-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(255,255,255,.18);background:transparent;transition:background .18s,border-color .18s,transform .22s cubic-bezier(.34,1.5,.64,1);}
 .ob-pin-dot.f{background:linear-gradient(135deg,#a78bfa,#818cf8);border-color:rgba(130,80,255,.5);transform:scale(1.18);box-shadow:0 0 12px rgba(130,80,255,.4);}
 .ob-pin-dot.err{background:#ff3b30;border-color:#ff3b30;box-shadow:0 0 10px rgba(255,59,48,.3);}
-.ob-key{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;transition:transform .15s,background .12s;box-shadow:0 1px 0 rgba(255,255,255,.06) inset;}
+.ob-key{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform .15s,background .12s;box-shadow:0 1px 0 rgba(255,255,255,.06) inset;}
 .ob-key:active{background:rgba(255,255,255,.15);transform:scale(.88);}
 .ob-key-num{font-size:22px;font-weight:300;letter-spacing:-.5px;color:#fff;line-height:1;}
 .ob-key-sub{font-size:8px;letter-spacing:.8px;color:rgba(255,255,255,.3);margin-top:2px;text-transform:uppercase;}
@@ -371,7 +371,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 .pin-dots.shake{animation:shake .36s ease;}
 .keypad{display:grid;grid-template-columns:repeat(3,68px);gap:14px;}
-.key{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;transition:transform .15s,background .12s;inset 0 1px 0 rgba(255,255,255,.06);}
+.key{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform .15s,background .12s;}
 .key:hover{box-shadow:0 0 12px rgba(130,80,255,.1);}
 @keyframes keyTap{0%{background:rgba(255,255,255,.09);transform:scale(1);}30%{background:rgba(255,255,255,.70);transform:scale(.74);box-shadow:0 0 0 6px rgba(255,255,255,.25);}100%{background:rgba(255,255,255,.09);transform:scale(1);box-shadow:none;}}
 .key-tap{animation:keyTap .35s cubic-bezier(.2,.8,.3,1) forwards;}
