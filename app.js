@@ -2144,7 +2144,9 @@ function startVGEffect(x,y,color){
   _vgSpawning=true;
   _vgOrigin={x:x,y:y};
   _vgColor=color||'#8b5cf6';
-  if(!_vgRaf) _vgLoop();
+  _vgParticles=[];
+  if(_vgRaf){ cancelAnimationFrame(_vgRaf); _vgRaf=null; }
+  _vgLoop();
 }
 
 function stopVGEffect(){
