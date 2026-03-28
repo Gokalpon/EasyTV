@@ -447,6 +447,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* INTRO SPLASH */
+@keyframes logoBounce{0%{transform:translateY(-38px) scaleY(.7);opacity:0}55%{transform:translateY(6px) scaleY(1.06);opacity:1}72%{transform:translateY(-4px) scaleY(.97)}84%{transform:translateY(3px) scaleY(1.02)}93%{transform:translateY(-1px) scaleY(.99)}100%{transform:translateY(0) scaleY(1);opacity:1}}
 @keyframes introFadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes introFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes introSlideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
@@ -476,6 +477,16 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .intro-cta:active{transform:scale(.96) translateY(2px)!important;box-shadow:0 2px 12px rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.8) inset!important;filter:none!important;opacity:1!important;}
 .intro-hint{text-align:center;margin-top:14px;font-size:12px;color:rgba(255,255,255,.2);cursor:pointer;}
 .intro-lang-bar{display:flex;gap:8px;justify-content:center;margin-bottom:20px;animation:introFadeIn .6s .15s both;}
+
+/* WELCOME SCREEN BRAND BUTTON PRESS EFFECTS */
+@keyframes appleFlash{0%{opacity:0;transform:scale(1)}30%{opacity:.55}100%{opacity:0;transform:scale(1.8)}}
+@keyframes googleRing{0%{opacity:0;transform:scale(.85)}40%{opacity:.7}100%{opacity:0;transform:scale(1.5)}}
+#appleLoginBtn{position:relative;overflow:hidden;transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s;}
+#appleLoginBtn.pressed{transform:scale(.95)!important;box-shadow:0 0 0 2px rgba(255,255,255,.35)!important;}
+#appleLoginBtn .apple-ripple{position:absolute;inset:0;border-radius:16px;background:rgba(255,255,255,.22);pointer-events:none;animation:appleFlash .5s cubic-bezier(.4,0,.2,1) both;}
+#googleLoginBtn{position:relative;overflow:hidden;transition:transform .18s cubic-bezier(.34,1.56,.64,1);}
+#googleLoginBtn.pressed{transform:scale(.95)!important;}
+#googleLoginBtn .google-ring{position:absolute;inset:-3px;border-radius:18px;pointer-events:none;border:2.5px solid transparent;background:conic-gradient(from 0deg,#4285F4 0deg 90deg,#34A853 90deg 180deg,#FBBC05 180deg 270deg,#EA4335 270deg 360deg) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;animation:googleRing .55s cubic-bezier(.4,0,.2,1) both;}
 .intro-lang-btn{padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);font-size:12px;font-weight:500;font-family:inherit;color:rgba(255,255,255,.35);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;letter-spacing:.1px;}
 .intro-lang-btn.active{border-color:rgba(130,80,255,.5);background:rgba(130,80,255,.12);color:#fff;}
 

@@ -793,6 +793,18 @@ function buildServicePicker(){
     el.innerHTML='<div class="sp-logo-wrap" style="background:'+s.color+';">'+logoHtml+ckHtml+'</div>'
       +'<div class="sp-name">'+name+'</div>';
 
+    // Van Gogh swirl on press
+    (function(svc,elem){
+      elem.addEventListener('touchstart',function(e){
+        var touch=e.touches[0];
+        var screen=document.getElementById('onboardScreen');
+        var sr=screen?screen.getBoundingClientRect():{left:0,top:0};
+        startVGEffect(touch.clientX-sr.left, touch.clientY-sr.top, svc.color);
+      },{passive:true});
+      elem.addEventListener('touchend',stopVGEffect,{passive:true});
+      elem.addEventListener('touchcancel',stopVGEffect,{passive:true});
+    })(s,el);
+
     el.onclick=function(){
       var i2=obSelectedServices.indexOf(s.id);
       if(i2>=0) obSelectedServices.splice(i2,1);
@@ -2073,6 +2085,125 @@ function openPinChange() {
 
 // saveData cloud sync wrapper'ı uygula
 try { _wrapSaveData(); } catch(e) { console.error('_wrapSaveData hatası:', e); }
+
+// ── WELCOME SCREEN BRAND PRESS EFFECTS ──
+(function(){
+  function addPressEffect(id, makeRipple){
+    var btn = document.getElementById(id);
+    if(!btn) return;
+    function onDown(e){
+      btn.classList.add('pressed');
+      var old = btn.querySelector('.apple-ripple,.google-ring');
+      if(old) old.remove();
+      var r = makeRipple();
+      btn.appendChild(r);
+      setTimeout(function(){ r.remove(); }, 560);
+    }
+    function onUp(){ btn.classList.remove('pressed'); }
+    btn.addEventListener('touchstart', onDown, {passive:true});
+    btn.addEventListener('touchend', onUp, {passive:true});
+    btn.addEventListener('touchcancel', onUp, {passive:true});
+    btn.addEventListener('mousedown', onDown);
+    btn.addEventListener('mouseup', onUp);
+    btn.addEventListener('mouseleave', onUp);
+  }
+  addPressEffect('appleLoginBtn', function(){
+    var d = document.createElement('div');
+    d.className = 'apple-ripple';
+    return d;
+  });
+  addPressEffect('googleLoginBtn', function(){
+    var d = document.createElement('div');
+    d.className = 'google-ring';
+    return d;
+  });
+})();
+
+// ── VAN GOGH SWIRL CANVAS (Onboard service picker) ──
+var _vgCanvas=null,_vgCtx=null,_vgRaf=null,_vgParticles=[],_vgSpawning=false,_vgOrigin={x:196,y:426},_vgColor='#8b5cf6';
+var _VG_MAX=160,_VG_SPAWN_RATE=8;
+
+function _vgHexToRgb(hex){
+  var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return {r:r,g:g,b:b};
+}
+
+function _initVGCanvas(){
+  var screen=document.getElementById('onboardScreen');
+  if(!screen) return;
+  if(_vgCanvas && _vgCanvas.parentNode===screen) return;
+  _vgCanvas=document.createElement('canvas');
+  _vgCanvas.width=393; _vgCanvas.height=852;
+  _vgCanvas.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+  screen.insertBefore(_vgCanvas, screen.firstChild);
+  _vgCtx=_vgCanvas.getContext('2d');
+}
+
+function startVGEffect(x,y,color){
+  _initVGCanvas();
+  _vgSpawning=true;
+  _vgOrigin={x:x,y:y};
+  _vgColor=color||'#8b5cf6';
+  if(!_vgRaf) _vgLoop();
+}
+
+function stopVGEffect(){
+  _vgSpawning=false;
+}
+
+function _vgLoop(){
+  if(!_vgCtx){ _vgRaf=null; return; }
+  var t=Date.now()*0.001;
+  _vgCtx.clearRect(0,0,393,852);
+
+  // Spawn new particles
+  if(_vgSpawning && _vgParticles.length<_VG_MAX){
+    for(var k=0;k<_VG_SPAWN_RATE;k++){
+      var angle0=Math.random()*Math.PI*2;
+      var speed0=0.4+Math.random()*0.8;
+      _vgParticles.push({
+        x:_vgOrigin.x+(Math.random()-0.5)*20,
+        y:_vgOrigin.y+(Math.random()-0.5)*20,
+        vx:Math.cos(angle0)*speed0,
+        vy:Math.sin(angle0)*speed0,
+        life:1.0,
+        decay:0.006+Math.random()*0.008,
+        size:2+Math.random()*4,
+        rgb:_vgHexToRgb(_vgColor)
+      });
+    }
+  }
+
+  // Update + draw
+  var rgb=_vgHexToRgb(_vgColor);
+  for(var i=_vgParticles.length-1;i>=0;i--){
+    var p=_vgParticles[i];
+    // Van Gogh flow field: layered sin/cos
+    var flowAngle=Math.sin(p.x*0.008+t*0.8)*Math.PI*1.5
+                 +Math.cos(p.y*0.012-t*0.6)*Math.PI
+                 +Math.sin((p.x+p.y)*0.006+t*0.4)*Math.PI*0.5;
+    var flowStr=0.06;
+    p.vx+=Math.cos(flowAngle)*flowStr;
+    p.vy+=Math.sin(flowAngle)*flowStr;
+    // Gentle drag
+    p.vx*=0.97; p.vy*=0.97;
+    p.x+=p.vx; p.y+=p.vy;
+    p.life-=p.decay;
+    if(p.life<=0){ _vgParticles.splice(i,1); continue; }
+    var alpha=p.life*0.55;
+    _vgCtx.beginPath();
+    _vgCtx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);
+    _vgCtx.fillStyle='rgba('+p.rgb.r+','+p.rgb.g+','+p.rgb.b+','+alpha.toFixed(3)+')';
+    _vgCtx.fill();
+  }
+
+  if(_vgParticles.length>0){
+    _vgRaf=requestAnimationFrame(_vgLoop);
+  } else {
+    _vgRaf=null;
+    if(_vgCtx) _vgCtx.clearRect(0,0,393,852);
+  }
+}
 
 // ── BAŞLAT ──
 try { applySettings(); } catch(e) { console.error('applySettings hatası:', e); }
