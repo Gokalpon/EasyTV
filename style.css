@@ -447,7 +447,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* INTRO SPLASH */
-@keyframes logoBounce{0%{opacity:0;transform:translateY(-28px)}50%{opacity:1;transform:translateY(8px)}68%{transform:translateY(-5px)}82%{transform:translateY(3px)}92%{transform:translateY(-1px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes logoBounce{0%{opacity:0;filter:blur(32px) brightness(3.5);transform:scale(1.45)}28%{opacity:.75;filter:blur(14px) brightness(1.9);transform:scale(1.14)}58%{opacity:.95;filter:blur(3px) brightness(1.15);transform:scale(1.02)}78%{filter:blur(.5px) brightness(1.04);transform:scale(.99)}100%{opacity:1;filter:blur(0) brightness(1);transform:scale(1)}}
 @keyframes introFadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes introFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes introSlideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
