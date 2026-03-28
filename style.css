@@ -265,10 +265,10 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 
 @keyframes introScrollL{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @keyframes introScrollR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-.intro-logo-row{display:flex;gap:10px;width:max-content;}
+.intro-logo-row{display:flex;gap:10px;width:max-content;flex-shrink:0;will-change:transform;}
 .intro-logo-tile{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.82;}
 .intro-row-l{animation:introScrollL 28s linear infinite;}
-.intro-row-r{animation:introScrollR 24s linear infinite;}
+.intro-row-r{animation:introScrollR 24s linear infinite;margin-top:0;}
 
 /* WELCOME */
 @keyframes wlcOrb1{0%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,40px) scale(1.2)}100%{transform:translate(-20px,10px) scale(.95)}}

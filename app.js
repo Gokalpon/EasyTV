@@ -271,11 +271,12 @@ function setIntroLang(lang){
   const chev=document.getElementById('introLangChevron');
   if(menu) menu.style.display='none';
   if(chev) chev.style.transform='';
-  document.getElementById('introTagline').innerHTML=lang==='tr'?'<span style="display:block;">Tüm abonelikleriniz</span><span style="display:block;">tek bir yerde.</span>':'<span style="display:block;">All your subscriptions,</span><span style="display:block;">in one place.</span>';
-  document.getElementById('introSub').innerHTML=lang==='tr'?'Şifrelerinizi güvende saklayın.<br>QR ile saniyeler içinde oturum açın.':'Keep your passwords safe.<br>Sign in with QR in seconds.';
-  document.getElementById('introFeat1').textContent=lang==='tr'?'Otomatik yenileme takibi & hatırlatıcı':'Auto renewal tracking & reminders';
-  document.getElementById('introFeat2').textContent=lang==='tr'?'Aylık harcama özeti ve analizi':'Monthly spending summary & analysis';
-  document.getElementById('introFeat3').textContent=lang==='tr'?'PIN & Face ID ile güvenli giriş':'Secure login with PIN & Face ID';
+  document.getElementById('introTagline').innerHTML=lang==='tr'?'Yayın servislerinizi<br>kolayca açın.':'Open your streaming<br>services with ease.';
+  document.getElementById('introSub').innerHTML=lang==='tr'?'Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.':'Access everything in one place.<br>Track your subscriptions and payments.';
+  const f1=document.getElementById('introFeat1');const f2=document.getElementById('introFeat2');const f3=document.getElementById('introFeat3');
+  if(f1)f1.textContent=lang==='tr'?'Otomatik yenileme takibi & hatırlatıcı':'Auto renewal tracking & reminders';
+  if(f2)f2.textContent=lang==='tr'?'Aylık harcama özeti ve analizi':'Monthly spending summary & analysis';
+  if(f3)f3.textContent=lang==='tr'?'PIN & Face ID ile güvenli giriş':'Secure login with PIN & Face ID';
   document.getElementById('introCta').textContent=lang==='tr'?'Başlayın':'Get Started';
   document.getElementById('introHint').textContent=lang==='tr'?'Zaten hesabınız var mı? Giriş yapın':'Already have an account? Sign in';
   // Welcome sayfasını da senkronize et
