@@ -1,4 +1,253 @@
+<<<<<<< HEAD
 ﻿*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
+=======
+﻿/* Düzenle modalındaki tıklanabilir tuşlar: + butonun animasyon ve renkleriyle aynı */
+.se-modal .se-save-btn,
+.se-modal .se-delete-btn,
+.se-modal .fit-text-btn,
+.se-modal .se-close-btn {
+  background: rgba(255,255,255,.08) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 -2px 8px rgba(130,80,255,.08);
+  border-radius: 20px !important;
+  backdrop-filter: blur(40px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+  transition: transform var(--sp-fast) var(--sp-bounce), box-shadow var(--sp-fast) var(--sp-snappy), opacity var(--sp-fast) var(--sp-snappy), background .18s;
+  position: relative;
+  overflow: hidden;
+}
+.se-modal .se-save-btn:active,
+.se-modal .se-delete-btn:active,
+.se-modal .fit-text-btn:active,
+.se-modal .se-close-btn:active {
+  /* Unified button and chip styles for premium, proportional, and modal actions */
+  .premium-button, .proportional-button, .action-chip, .edit-modal .modal-action-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    border-radius: 1.5em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0.7em 1.6em;
+    margin: 0.3em 0.5em;
+    font-size: 1.08em;
+    position: relative;
+    overflow: hidden;
+    min-width: 2.5em;
+    min-height: 2.5em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    z-index: 1;
+  }
+  .premium-button.premium, .proportional-button.premium, .action-chip.premium, .edit-modal .modal-action-btn.premium {
+    background: linear-gradient(90deg, #ffd700 0%, #ffb300 100%);
+    color: #222;
+    box-shadow: 0 4px 16px 0 rgba(255,215,0,0.18);
+  }
+  .premium-button:active, .proportional-button:active, .action-chip:active, .edit-modal .modal-action-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
+  }
+  .premium-button:focus-visible, .proportional-button:focus-visible, .action-chip:focus-visible, .edit-modal .modal-action-btn:focus-visible {
+    outline: 2px solid #ffd700;
+    outline-offset: 2px;
+  }
+  .premium-button .icon, .proportional-button .icon, .action-chip .icon, .edit-modal .modal-action-btn .icon {
+    margin-right: 0.5em;
+    font-size: 1.2em;
+  }
+  /* Locked tile effect for non-premium services */
+  .locked-tile {
+    filter: grayscale(0.7) blur(1px) brightness(0.85);
+    pointer-events: none;
+    position: relative;
+  }
+  .locked-tile::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.18);
+    z-index: 2;
+    border-radius: inherit;
+  }
+  /* Modal action button animation and style (deduplicated) */
+  .edit-modal .modal-action-btn {
+    background: linear-gradient(90deg, #ffd700 0%, #ffb300 100%);
+    color: #222;
+    box-shadow: 0 4px 16px 0 rgba(255,215,0,0.18);
+    border-radius: 1.5em;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+    min-width: 2.5em;
+    min-height: 2.5em;
+    padding: 0.7em 1.6em;
+    margin: 0.3em 0.5em;
+    font-size: 1.08em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    z-index: 1;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+  }
+  .edit-modal .modal-action-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
+  }
+  .edit-modal .modal-action-btn:focus-visible {
+    outline: 2px solid #ffd700;
+    outline-offset: 2px;
+  }
+  .edit-modal .modal-action-btn .icon {
+    margin-right: 0.5em;
+    font-size: 1.2em;
+  }
+  transform: scale(.96);
+  box-shadow: 0 0 0 2px rgba(130,80,255,.10);
+}
+.se-chips button.active, .plan-user-pill.active, .plan-pay-opt.active {
+  background: rgba(130,80,255,.18) !important;
+  color: #fff !important;
+  border: 1.5px solid #c084fc !important;
+  box-shadow: 0 0 8px 0 rgba(130,80,255,.10);
+  position: relative;
+}
+.se-chips button.active::after, .plan-user-pill.active::after, .plan-pay-opt.active::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 22px;
+  background: radial-gradient(circle,rgba(130,80,255,.13) 0%,transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: premiumBtnGlow 2.5s infinite alternate;
+}
+.plan-user-pill, .plan-pay-opt {
+  font-size: 14px !important;
+  font-weight: 700;
+  border-radius: 18px !important;
+  padding: 11px 18px !important;
+  margin: 2px 0;
+  min-width: 44px;
+  min-height: 36px;
+  letter-spacing: -0.2px;
+}
+.plan-pay-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none !important;
+  background: rgba(255,255,255,.10) !important;
+  color: rgba(255,255,255,.7) !important;
+  box-shadow: none !important;
+  position: relative;
+  padding: 11px 18px !important;
+  font-size: 14px !important;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s, color .18s, transform .16s, box-shadow .18s;
+}
+.plan-pay-opt .plan-pay-opt-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.25);
+  margin-right: 8px;
+  background: transparent;
+  transition: border-color .18s, background .18s;
+}
+.plan-pay-opt.active .plan-pay-opt-radio {
+  border-color: #c084fc;
+  background: #c084fc;
+}
+.plan-pay-opt .plan-pay-opt-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.plan-pay-opt .plan-pay-opt-lbl {
+  font-size: 14px;
+  font-weight: 700;
+  color: inherit;
+}
+.plan-pay-opt .plan-pay-opt-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,.35);
+  font-weight: 500;
+}
+.plan-pay-opt .plan-pay-price {
+  font-size: 13px;
+  font-weight: 700;
+  margin-left: 12px;
+}
+.key {
+  background: rgba(255,255,255,.10) !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #fff !important;
+  font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+  font-size: 18px;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  transition: background .18s, color .18s, box-shadow .22s;
+}
+.key:active {
+  background: rgba(130,80,255,.18) !important;
+  color: #a259ff !important;
+  box-shadow: 0 0 12px 2px rgba(130,80,255,.18);
+  animation: keyPressAnim 0.32s cubic-bezier(.34,1.4,.64,1);
+}
+
+@keyframes keyPressAnim {
+  0% { box-shadow: 0 0 0 0 rgba(130,80,255,0.18); }
+  60% { box-shadow: 0 0 16px 8px rgba(130,80,255,0.22); }
+  100% { box-shadow: 0 0 0 0 rgba(130,80,255,0.18); }
+}
+.share-btn {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255,255,255,.10);
+  border: none;
+  color: rgba(255,255,255,.7);
+  transition: background .18s, transform .16s;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: none;
+}
+.share-btn:active {
+  background: rgba(255,255,255,.18);
+}
+button, .add-btn, .add-btn-abs, #appleLoginBtn, #googleLoginBtn {
+  font-family: 'Space Grotesk','Inter',sans-serif !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 
 /* ── SPRING MOTION TOKENS (stiffness:120, damping:20) ── */
 :root{
@@ -195,8 +444,14 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .s-info{flex:1;min-width:0;}
 .s-name{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.4px;}
 .s-sub{display:none;}
+<<<<<<< HEAD
 .s-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);cursor:pointer;color:rgba(255,255,255,.55);font-size:11px;display:flex;align-items:center;justify-content:center;transition:background .16s;flex-shrink:0;}
 .s-close:active{background:rgba(255,255,255,.22);}
+=======
+.s-close{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.13);cursor:pointer;color:rgba(255,255,255,.7);font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .16s,box-shadow .3s;flex-shrink:0;box-shadow:0 0 0 0 rgba(130,80,255,0.18);position:relative;overflow:hidden;}
+.s-close:active{background:rgba(255,255,255,.22);box-shadow:0 0 16px 4px rgba(130,80,255,.18);}
+.s-close.premium-anim::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle,rgba(130,80,255,.18) 0%,transparent 70%);animation:premiumBtnGlow 2.5s infinite alternate;pointer-events:none;z-index:0;}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 .s-divider{height:1px;background:rgba(255,255,255,.08);margin:0 20px;}
 .cred-section{margin:14px 14px 0;border-radius:18px;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.08);}
 .cred-row{display:flex;align-items:center;gap:13px;padding:14px 16px;transition:background .12s;}
@@ -207,8 +462,15 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .cred-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,.36);letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px;}
 .cred-val{font-size:15px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cred-acts{display:flex;gap:6px;flex-shrink:0;}
+<<<<<<< HEAD
 .cred-btn{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.09);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .16s,transform .1s;}
 .cred-btn:active{transform:scale(.84);background:rgba(255,255,255,.18);}
+=======
+.cred-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.13);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .16s,transform .1s,box-shadow .3s;box-shadow:0 0 0 0 rgba(130,80,255,0.18);position:relative;overflow:hidden;}
+.cred-btn:active{transform:scale(.84);background:rgba(255,255,255,.18);box-shadow:0 0 16px 4px rgba(130,80,255,.18);}
+.cred-btn.premium-anim::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle,rgba(130,80,255,.18) 0%,transparent 70%);animation:premiumBtnGlow 2.5s infinite alternate;pointer-events:none;z-index:0;}
+@keyframes premiumBtnGlow{0%{box-shadow:0 0 0 0 rgba(130,80,255,0.18);}100%{box-shadow:0 0 24px 8px rgba(130,80,255,0.28);}}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 .cred-btn.ok{background:rgba(52,199,89,.22);border-color:rgba(52,199,89,.35);}
 
 /* SHEET ACTION BUTTONS */
@@ -217,8 +479,14 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .qr-btn:active{transform:scale(.97);opacity:.85;}
 .app-open-btn{width:100%;padding:14px 20px;border-radius:16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;transition:background .18s,transform .16s;}
 .app-open-btn:active{transform:scale(.97);background:rgba(255,255,255,.18);}
+<<<<<<< HEAD
 .share-btn{width:100%;padding:13px 20px;border-radius:16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.6);transition:background .18s,transform .16s;}
 .share-btn:active{transform:scale(.97);}
+=======
+.share-btn{width:100%;padding:13px 20px;border-radius:16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.6);transition:background .18s,transform .16s,box-shadow .3s;box-shadow:0 0 0 0 rgba(130,80,255,0.10);position:relative;overflow:hidden;}
+.share-btn:active{transform:scale(.97);box-shadow:0 0 16px 4px rgba(130,80,255,.13);}
+.share-btn.premium-anim::after{content:'';position:absolute;inset:-4px;border-radius:16px;background:radial-gradient(circle,rgba(130,80,255,.13) 0%,transparent 70%);animation:premiumBtnGlow 2.5s infinite alternate;pointer-events:none;z-index:0;}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 
 /* QR OVERLAY */
 .qr-ov{position:absolute;inset:0;z-index:90;background:#000;border-radius:54px;overflow:hidden;display:flex;flex-direction:column;align-items:center;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);}
@@ -346,8 +614,14 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .ob-pin-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(255,255,255,.18);background:transparent;transition:background .18s,border-color .18s,transform .22s cubic-bezier(.34,1.5,.64,1);}
 .ob-pin-dot.f{background:linear-gradient(135deg,#a78bfa,#818cf8);border-color:rgba(130,80,255,.5);transform:scale(1.18);box-shadow:0 0 12px rgba(130,80,255,.4);}
 .ob-pin-dot.err{background:#ff3b30;border-color:#ff3b30;box-shadow:0 0 10px rgba(255,59,48,.3);}
+<<<<<<< HEAD
 .ob-key{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform var(--sp-fast) var(--sp-bounce),background var(--sp-fast) var(--sp-snappy);box-shadow:0 1px 0 rgba(255,255,255,.06) inset;}
 .ob-key:active{background:rgba(255,255,255,.15);transform:scale(.88);}
+=======
+.ob-key{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.13);outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform var(--sp-fast) var(--sp-bounce),background var(--sp-fast) var(--sp-snappy),box-shadow .3s;box-shadow:0 0 0 0 rgba(130,80,255,0.18);position:relative;overflow:hidden;}
+.ob-key:active{background:rgba(255,255,255,.15);transform:scale(.88);box-shadow:0 0 16px 4px rgba(130,80,255,.18);}
+.ob-key.premium-anim::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(130,80,255,.18) 0%,transparent 70%);animation:premiumBtnGlow 2.5s infinite alternate;pointer-events:none;z-index:0;}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 .ob-key-num{font-size:22px;font-weight:300;letter-spacing:-.5px;color:#fff;line-height:1;}
 .ob-key-sub{font-size:8px;letter-spacing:.8px;color:rgba(255,255,255,.3);margin-top:2px;text-transform:uppercase;}
 .onboard-bottom{padding:0 28px 56px;display:flex;flex-direction:column;gap:0;padding-bottom:max(34px,env(safe-area-inset-bottom));}
@@ -382,13 +656,24 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 .pin-dots.shake{animation:shake .36s ease;}
 .keypad{display:grid;grid-template-columns:repeat(3,68px);gap:14px;}
+<<<<<<< HEAD
 .key{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform var(--sp-fast) var(--sp-bounce),background var(--sp-fast) var(--sp-snappy);}
 .key:hover{box-shadow:0 0 12px rgba(130,80,255,.1);}
+=======
+.key{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.13);outline:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform var(--sp-fast) var(--sp-bounce),background var(--sp-fast) var(--sp-snappy),box-shadow .3s;box-shadow:0 0 0 0 rgba(130,80,255,0.18);position:relative;overflow:hidden;}
+.key:hover{box-shadow:0 0 12px rgba(130,80,255,.1);}
+.key:active{background:rgba(255,255,255,.15);transform:scale(.88);box-shadow:0 0 16px 4px rgba(130,80,255,.18);}
+.key.premium-anim::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(130,80,255,.18) 0%,transparent 70%);animation:premiumBtnGlow 2.5s infinite alternate;pointer-events:none;z-index:0;}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 @keyframes keyTap{0%{background:rgba(255,255,255,.09);transform:scale(1);}30%{background:rgba(255,255,255,.70);transform:scale(.74);box-shadow:0 0 0 6px rgba(255,255,255,.25);}100%{background:rgba(255,255,255,.09);transform:scale(1);box-shadow:none;}}
 .key-tap{animation:keyTap .35s cubic-bezier(.2,.8,.3,1) forwards;}
 .key:active{background:rgba(255,255,255,.32);transform:scale(.84);}
 .key-pressed{background:rgba(255,255,255,.38);transform:scale(.82);}
+<<<<<<< HEAD
 .key-num{font-size:25px;font-weight:300;line-height:1;}
+=======
+.key-num{font-size:22px;font-weight:300;line-height:1;}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 .key-abc{font-size:9px;font-weight:600;letter-spacing:.8px;color:rgba(255,255,255,.4);margin-top:2px;}
 .pin-face-btn{margin-top:32px;display:flex;align-items:center;gap:8px;background:none;border:none;outline:none;color:rgba(255,255,255,.38);font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:color .18s;-webkit-tap-highlight-color:transparent;}
 .pin-face-btn:active{color:rgba(255,255,255,.8);}
@@ -836,8 +1121,53 @@ button{-webkit-tap-highlight-color:transparent;}
 
 /* Footer — sticky */
 .se-footer{flex-shrink:0;padding:14px 20px 36px;display:flex;gap:10px;border-top:1px solid rgba(255,255,255,.06);background:rgba(13,12,22,.97);}
+<<<<<<< HEAD
 .se-save-btn{flex:1;padding:16px;border:none;border-radius:20px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:-.2px;transition:all .2s cubic-bezier(.34,1.4,.64,1);}
 .se-save-btn:active{transform:scale(.97);opacity:.85;}
+=======
+#sesDeleteBtn, .se-footer .se-delete-btn, .se-footer .delete-btn {
+  min-width: 54px;
+  min-height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  color: #d00000;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 0 0 0 rgba(130,80,255,0.18);
+  transition: background .16s, box-shadow .3s, transform .1s;
+  position: relative;
+  overflow: hidden;
+}
+#sesDeleteBtn, .se-footer .se-delete-btn, .se-footer .delete-btn {
+  white-space: nowrap;
+}
+
+.fit-text-btn {
+  font-size: 16px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  letter-spacing: -0.2px;
+}
+#sesDeleteBtn:active, .se-footer .se-delete-btn:active, .se-footer .delete-btn:active {
+  background: #ffe5e5;
+  color: #d00000;
+  box-shadow: 0 0 16px 4px rgba(130,80,255,.18);
+  transform: scale(.92);
+}
+#sesDeleteBtn.premium-anim::after, .se-footer .se-delete-btn.premium-anim::after, .se-footer .delete-btn.premium-anim::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle,rgba(130,80,255,.18) 0%,transparent 70%);
+  animation: premiumBtnGlow 2.5s infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+.se-save-btn{flex:1;padding:16px 0;border:none;border-radius:22px;font-size:16px;font-weight:800;color:#fff;cursor:pointer;letter-spacing:-.2px;transition:all .2s cubic-bezier(.34,1.4,.64,1);background:#e50914;box-shadow:none;position:relative;overflow:hidden;font-family:'Space Grotesk','Inter',sans-serif;}
+.se-save-btn:active{transform:scale(.97);opacity:.85;background:#b00610;}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 .se-del-btn{padding:16px 18px;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.2);border-radius:20px;font-size:14px;font-weight:700;color:rgba(255,80,70,.9);cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;}
 .se-del-btn:active{transform:scale(.95);background:rgba(255,59,48,.2);}
 
@@ -893,7 +1223,27 @@ button:active:not(.key):not(.ob-key):not(.nav-item):not(.toggle){transform:scale
 .stat-card:active{transform:scale(.93);}
 
 /* Edit buton */
+<<<<<<< HEAD
 button[onclick*="openSubEdit"]{transition:all .18s cubic-bezier(.34,1.4,.64,1)!important;}
+=======
+button[onclick*="openSubEdit"] {
+  background: rgba(30,32,40,0.22) !important; /* tek renk buzlu cam */
+  color: #fff !important;
+  font-family: 'Raleway', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  border: 1.5px solid rgba(255,255,255,0.13) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 12px 0 rgba(60, 60, 90, 0.10);
+  padding: 7px 18px !important;
+  min-width: 72px;
+  min-height: 32px;
+  letter-spacing: 0.1px;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  transition: all .18s cubic-bezier(.34,1.4,.64,1)!important;
+}
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 button[onclick*="openSubEdit"]:active{transform:scale(.9)!important;opacity:.7!important;}
 
 /* PIN dot dolunca pop */

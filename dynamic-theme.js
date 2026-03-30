@@ -12,6 +12,7 @@ function initDynamicTheme() {
     oldGlow.style.display = 'none';
   }
   
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
   // Yeni dinamik blur arka plan ekle
   let dynamicBg = document.getElementById('dynamicThemeBg');
   if (!dynamicBg) {
@@ -30,9 +31,14 @@ function initDynamicTheme() {
       z-index: 49;
       opacity: 0;
       transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+<<<<<<< HEAD
+      animation: dynamicBeamMove 8s linear infinite alternate;
     `;
     document.body.appendChild(dynamicBg);
-    
+      animation: dynamicBeamMove 8s linear infinite alternate;
+    `;
+    document.body.appendChild(dynamicBg);
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
     // Fade in
     setTimeout(() => {
       dynamicBg.style.opacity = '1';
@@ -43,18 +49,127 @@ function initDynamicTheme() {
 // Tema rengini güncelle
 function updateThemeColor(color) {
   if (!color) return;
+<<<<<<< HEAD
   
+=======
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
   currentThemeColor = color;
   const dynamicBg = document.getElementById('dynamicThemeBg');
   if (dynamicBg) {
     dynamicBg.style.background = `radial-gradient(ellipse at center bottom, ${color} 0%, transparent 70%)`;
+<<<<<<< HEAD
+    dynamicBg.style.opacity = '1';
+    dynamicBg.style.animationPlayState = 'running';
   }
-  
+    dynamicBg.style.opacity = '1';
+    dynamicBg.style.animationPlayState = 'running';
+    ambientBeam.style.opacity = '0.6';
+    ambientBeam.style.animationPlayState = 'running';
+  }
+// Her tuş ve servis kutusu tıklandığında ışık efektini göster
+document.addEventListener('click', function(e) {
+  // Sadece buton, .tile veya .service gibi tıklamalarda göster
+  let show = false;
+  let el = e.target;
+  while (el) {
+    if (el.tagName === 'BUTTON' || el.classList?.contains('tile') || el.classList?.contains('service')) {
+      show = true;
+      break;
+    }
+    el = el.parentElement;
+  }
+  const dynamicBg = document.getElementById('dynamicThemeBg');
+  const ambientBeam = document.getElementById('ambientBeam');
+  if (show) {
+    if (dynamicBg) {
+      dynamicBg.style.opacity = '1';
+      dynamicBg.style.animationPlayState = 'running';
+    }
+    if (ambientBeam) {
+      ambientBeam.style.opacity = '0.6';
+      ambientBeam.style.animationPlayState = 'running';
+    }
+  } else {
+    // Boşluğa tıklanırsa efekt kaybolsun
+    if (dynamicBg) {
+      dynamicBg.style.opacity = '0';
+      dynamicBg.style.animationPlayState = 'paused';
+    }
+    if (ambientBeam) {
+      ambientBeam.style.opacity = '0';
+      ambientBeam.style.animationPlayState = 'paused';
+    }
+  }
+});
+// Sis gibi hareketli animasyon ekle
+const animStyle = document.createElement('style');
+animStyle.textContent = `
+@keyframes dynamicBeamMove {
+  0% { transform: translateY(0) scale(1); opacity: 0.7; }
+  40% { transform: translateY(-10px) scale(1.04); opacity: 0.8; }
+  60% { transform: translateY(10px) scale(0.98); opacity: 0.6; }
+  100% { transform: translateY(-5px) scale(1.02); opacity: 0.7; }
+}
+`;
+document.head.appendChild(animStyle);
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
   // Ambient beam'i de güncelle
   const ambientBeam = document.getElementById('ambientBeam');
   if (ambientBeam) {
     ambientBeam.style.background = `radial-gradient(ellipse at center, ${color.replace('0.3', '0.15')} 0%, transparent 60%)`;
+<<<<<<< HEAD
   }
+=======
+    ambientBeam.style.opacity = '0.6';
+    ambientBeam.style.animationPlayState = 'running';
+  }
+// Her tuş ve servis kutusu tıklandığında ışık efektini göster
+document.addEventListener('click', function(e) {
+  // Sadece buton, .tile veya .service gibi tıklamalarda göster
+  let show = false;
+  let el = e.target;
+  while (el) {
+    if (el.tagName === 'BUTTON' || el.classList?.contains('tile') || el.classList?.contains('service')) {
+      show = true;
+      break;
+    }
+    el = el.parentElement;
+  }
+  const dynamicBg = document.getElementById('dynamicThemeBg');
+  const ambientBeam = document.getElementById('ambientBeam');
+  if (show) {
+    if (dynamicBg) {
+      dynamicBg.style.opacity = '1';
+      dynamicBg.style.animationPlayState = 'running';
+    }
+    if (ambientBeam) {
+      ambientBeam.style.opacity = '0.6';
+      ambientBeam.style.animationPlayState = 'running';
+    }
+  } else {
+    // Boşluğa tıklanırsa efekt kaybolsun
+    if (dynamicBg) {
+      dynamicBg.style.opacity = '0';
+      dynamicBg.style.animationPlayState = 'paused';
+    }
+    if (ambientBeam) {
+      ambientBeam.style.opacity = '0';
+      ambientBeam.style.animationPlayState = 'paused';
+    }
+  }
+});
+// Sis gibi hareketli animasyon ekle
+const animStyle = document.createElement('style');
+animStyle.textContent = `
+@keyframes dynamicBeamMove {
+  0% { transform: translateY(0) scale(1); opacity: 0.7; }
+  40% { transform: translateY(-10px) scale(1.04); opacity: 0.8; }
+  60% { transform: translateY(10px) scale(0.98); opacity: 0.6; }
+  100% { transform: translateY(-5px) scale(1.02); opacity: 0.7; }
+}
+`;
+document.head.appendChild(animStyle);
+>>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 }
 
 // Servis kartına tıklandığında tema rengini güncelle
