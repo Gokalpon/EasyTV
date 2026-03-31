@@ -1,22 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
-  <!-- PWA & iOS Add to Home Screen meta -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="EasyTV">
-  <meta name="theme-color" content="#0a0a0a">
-  <meta name="mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/EasyTVLogo.png">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="msapplication-TileColor" content="#0a0a0a">
-  <meta name="msapplication-tap-highlight" content="no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="EasyTV">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -26,12 +10,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>EasyTV</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&family=Raleway:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/raleway-font.css">
-<link rel="stylesheet" href="/akira-font.css">
-<link rel="stylesheet" href="/style.css">
-<script src="/error-handler.js"></script>
-<script src="/premium-system.js"></script>
-<script src="/dynamic-theme.js"></script>
+<link rel="stylesheet" href="raleway-font.css">
+<link rel="stylesheet" href="akira-font.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="style.css">
+<script src="error-handler.js"></script>
+<script src="premium-system.js"></script>
+<script src="dynamic-theme.js"></script>
 </head>
 <body>
 
@@ -52,15 +37,29 @@
   <symbol id="i-eyeoff" viewBox="0 0 18 15"><path d="M1 1l16 13M7.5 3.5A8 8 0 019 3.5c3 0 6 2 8 6a14 14 0 01-2.5 3.3M4.5 5.3C2.7 6.6 1.5 8.3 1 9.5c2 4 5 6 8 6a8 8 0 003.8-.9" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/></symbol>
 </defs></svg>
 
-<!-- Mobilde mockup çerçevesi kaldırıldı, içerik doğrudan body içinde renderlanacak -->
-<div id="authLoading" class="auth-loading">
-  <img src="/assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
-  <div class="auth-spinner"></div>
-</div>
-<div id="loginScreen" style="display:none;position:absolute;top:0;left:0;width:100vw;height:100vh;max-height:100vh;z-index:500;flex-direction:column;background:linear-gradient(170deg,#0a0b18 0%,#020205 45%,#000 60%,#04040f 100%);overflow:hidden;">
-<!-- Arka plan orb'ları ve diğer içerikler burada devam edecek -->
+<div class="phone" id="phone">
+  <div class="pill"></div>
+  <div class="bg"></div>
+  <div class="bg-ambient"></div>
+  <div class="bg-grain"></div>
+  <div id="ambientBeam" class="ambient-beam"></div>
+
+  <!-- AUTH LOADING -->
+  <div class="auth-loading" id="authLoading">
+    <img src="./assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
+    <div class="auth-spinner"></div>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;max-height:100%;z-index:500;flex-direction:column;background:linear-gradient(170deg,#0a0b18 0%,#020205 45%,#000 60%,#04040f 100%);overflow:hidden;">
+
+  <!-- Arka plan orb'ları -->
+  <div style="position:absolute;width:280px;height:280px;top:-40px;left:-40px;background:radial-gradient(circle,rgba(120,50,255,.2) 0%,transparent 60%);filter:blur(40px);pointer-events:none;animation:wlcOrb1 14s ease-in-out infinite alternate;"></div>
+  <div style="position:absolute;width:220px;height:220px;bottom:60px;right:-30px;background:radial-gradient(circle,rgba(200,40,130,.12) 0%,transparent 60%);filter:blur(40px);pointer-events:none;animation:wlcOrb2 18s ease-in-out infinite alternate;"></div>
+
+  <!-- Üst: Logo -->
   <div style="display:flex;align-items:center;justify-content:center;padding-top:56px;flex-shrink:0;">
-    <img src="/assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:38px;width:auto;object-fit:contain;opacity:.92;">
+    <img src="./assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:38px;width:auto;object-fit:contain;opacity:.92;">
   </div>
 
   <!-- Orta: Başlık -->
@@ -108,7 +107,7 @@
 
   <!-- LOGO -->
   <div style="position:absolute;top:72px;left:0;right:0;display:flex;justify-content:center;z-index:1;animation:introFadeUp .7s .1s both;">
-    <img src="/assets/EasyTVLogo.png" style="height:52px;width:auto;object-fit:contain;animation:logoBounce 1.1s cubic-bezier(.25,.46,.45,.94) .08s both;">
+    <img src="./assets/EasyTVLogo.png" style="height:52px;width:auto;object-fit:contain;animation:logoBounce 1.1s cubic-bezier(.25,.46,.45,.94) .08s both;">
   </div>
 
   <!-- BAŞLIK + ALT YAZI -->
@@ -121,37 +120,37 @@
   <div style="position:absolute;top:352px;left:0;right:0;height:128px;z-index:1;animation:introFadeUp .9s .6s both;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 18%,#000 82%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,#000 18%,#000 82%,transparent 100%);overflow:hidden;">
     <!-- Satır 1: sola kayar -->
     <div class="intro-logo-row intro-row-l" style="margin-bottom:10px;">
-      <div class="intro-logo-tile" style="background:#E50914;"><img src="/assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#FF0000;"><img src="/assets/youtube.png" style="width:32px;height:32px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="/assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#1A98FF;"><img src="/assets/prime video.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#3B1F6B;"><img src="/assets/hbo.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#f5f5f7;"><img src="/assets/appleb.png" style="width:32px;height:32px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#1DB954;"><img src="/assets/Spotify.png" style="width:34px;height:34px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#E50914;"><img src="./assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#FF0000;"><img src="./assets/youtube.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="./assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#1A98FF;"><img src="./assets/prime video.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#3B1F6B;"><img src="./assets/hbo.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#f5f5f7;"><img src="./assets/appleb.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#1DB954;"><img src="./assets/Spotify.png" style="width:34px;height:34px;object-fit:contain;"></div>
       <!-- duplicate for seamless loop -->
-      <div class="intro-logo-tile" style="background:#E50914;"><img src="/assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#FF0000;"><img src="/assets/youtube.png" style="width:32px;height:32px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="/assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#1A98FF;"><img src="/assets/prime video.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#3B1F6B;"><img src="/assets/hbo.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#f5f5f7;"><img src="/assets/appleb.png" style="width:32px;height:32px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#1DB954;"><img src="/assets/Spotify.png" style="width:34px;height:34px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#E50914;"><img src="./assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#FF0000;"><img src="./assets/youtube.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="./assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#1A98FF;"><img src="./assets/prime video.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#3B1F6B;"><img src="./assets/hbo.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#f5f5f7;"><img src="./assets/appleb.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#1DB954;"><img src="./assets/Spotify.png" style="width:34px;height:34px;object-fit:contain;"></div>
     </div>
     <!-- Satır 2: sağa kayar -->
     <div class="intro-logo-row intro-row-r">
-      <div class="intro-logo-tile" style="background:#9146FF;"><img src="/assets/twitch.png" style="width:32px;height:32px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#FFD100;"><img src="/assets/tvplus2.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#F9D100;"><img src="/assets/exxenb.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#6F2DA8;"><img src="/assets/bein.png" style="width:34px;height:34px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#53FC18;"><img src="/assets/kickb.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#9146FF;"><img src="./assets/twitch.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#FFD100;"><img src="./assets/tvplus2.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#F9D100;"><img src="./assets/exxenb.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#6F2DA8;"><img src="./assets/bein.png" style="width:34px;height:34px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#53FC18;"><img src="./assets/kickb.png" style="width:32px;height:32px;object-fit:contain;"></div>
       <div class="intro-logo-tile" style="background:#E50914;"><img src="./assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
       <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="./assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
       <!-- duplicate for seamless loop -->
-      <div class="intro-logo-tile" style="background:#9146FF;"><img src="/assets/twitch.png" style="width:32px;height:32px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#FFD100;"><img src="/assets/tvplus2.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#F9D100;"><img src="/assets/exxenb.png" style="width:36px;height:36px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#6F2DA8;"><img src="/assets/bein.png" style="width:34px;height:34px;object-fit:contain;"></div>
-      <div class="intro-logo-tile" style="background:#53FC18;"><img src="/assets/kickb.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#9146FF;"><img src="./assets/twitch.png" style="width:32px;height:32px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#FFD100;"><img src="./assets/tvplus2.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#F9D100;"><img src="./assets/exxenb.png" style="width:36px;height:36px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#6F2DA8;"><img src="./assets/bein.png" style="width:34px;height:34px;object-fit:contain;"></div>
+      <div class="intro-logo-tile" style="background:#53FC18;"><img src="./assets/kickb.png" style="width:32px;height:32px;object-fit:contain;"></div>
       <div class="intro-logo-tile" style="background:#E50914;"><img src="./assets/netflix_N.png" style="width:32px;height:32px;object-fit:contain;"></div>
       <div class="intro-logo-tile" style="background:#0ABFBC;"><img src="./assets/Disney+.png" style="width:36px;height:36px;object-fit:contain;"></div>
     </div>
@@ -690,5 +689,4 @@
 
 <script src="app.js"></script>
 </body>
-<script src="/app.js"></script>
 </html>
