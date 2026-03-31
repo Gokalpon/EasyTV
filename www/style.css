@@ -1,37 +1,3 @@
-/* --- H3 Per-Letter Fade-In, Slide-Up, Blur Animation --- */
-.animated-h3 {
-  display: inline-block;
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #fff;
-  line-height: 1.15;
-  transition: color 0.3s;
-  white-space: pre-wrap;
-}
-.animated-h3 span {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(24px);
-  filter: blur(8px);
-  animation: h3fadein-html 0.7s cubic-bezier(0.22,0.68,0.52,1.01) both;
-}
-@keyframes h3fadein-html {
-  0% {
-    opacity: 0;
-    transform: translateY(24px);
-    filter: blur(8px);
-  }
-  60% {
-    opacity: 1;
-    filter: blur(2px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
 /* --- FORCE SPACE GROTESK ON ALL ONBOARDING HEADINGS, EVEN DYNAMIC/INLINE --- */
 .onboard-title,
 div .onboard-title,
@@ -105,7 +71,29 @@ input, .se-input, .se-label, .se-sublabel, .se-chips button, .key, .share-btn, .
   gap: 7px;
   user-select: none;
 }
-/* Animasyon ve kararan şerit efektleri kaldırıldı */
+.se-chips button:active, .plan-user-pill:active, .plan-pay-opt:active {
+  background: rgba(130,80,255,.13) !important;
+  color: #a259ff !important;
+  transform: scale(.96);
+  box-shadow: 0 0 0 2px rgba(130,80,255,.10);
+}
+.se-chips button.active, .plan-user-pill.active, .plan-pay-opt.active {
+  background: rgba(130,80,255,.18) !important;
+  color: #fff !important;
+  border: 1.5px solid #c084fc !important;
+  box-shadow: 0 0 8px 0 rgba(130,80,255,.10);
+  position: relative;
+}
+.se-chips button.active::after, .plan-user-pill.active::after, .plan-pay-opt.active::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 22px;
+  background: radial-gradient(circle,rgba(130,80,255,.13) 0%,transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: premiumBtnGlow 2.5s infinite alternate;
+}
 .plan-user-pill, .plan-pay-opt {
   font-size: 14px !important;
   font-weight: 700;
