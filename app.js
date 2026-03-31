@@ -1,4 +1,5 @@
-﻿// ══════════════════════════════════════════════════
+﻿import { createClient } from '@supabase/supabase-js';
+// ══════════════════════════════════════════════════
 // SUPABASE KURULUMU
 // ══════════════════════════════════════════════════
 // ⚠️ ÖNEMLİ: Supabase RLS politikalarını aktif edin!
