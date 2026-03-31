@@ -522,6 +522,7 @@ function updateMyCost(price, sym) {
 }
 
 // unlockFromLock
+// unlockFromLock
 function unlockFromLock() {
   // Show PIN/Face ID screen instead of unlocking directly
   const lockEl = document.getElementById('lockScreen');
@@ -933,14 +934,10 @@ function buildGrid() {
   }
   gridEl.style.display = '';
   const BOX_IMG = './assets/box2.png';
-<<<<<<< HEAD
-  SVC.forEach((s, i) => {
-=======
   const active = isPremium() ? SVC : SVC.slice(0, FREE_LIMIT);
   const locked = isPremium() ? [] : SVC.slice(FREE_LIMIT);
   // Render active services (normal)
   active.forEach((s, i) => {
->>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
     const tile = document.createElement('div');
     tile.className = 'tile';
     tile.style.backgroundImage = `url('${BOX_IMG}')`;
@@ -983,8 +980,6 @@ function buildGrid() {
     setTimeout(() => { tile.style.opacity='1'; tile.style.transform=''; tile.classList.remove('skeleton'); }, Math.min(i*70+300, 900));
     gridEl.appendChild(tile);
   });
-<<<<<<< HEAD
-=======
   // Render locked services (visually disabled, not deleted)
   locked.forEach((s, i) => {
     const tile = document.createElement('div');
@@ -1027,7 +1022,6 @@ function buildGrid() {
     setTimeout(() => { tile.style.opacity='0.5'; tile.style.transform=''; tile.classList.remove('skeleton'); }, Math.min((i+active.length)*70+300, 900));
     gridEl.appendChild(tile);
   });
->>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
 }
 
 // ── Drag-to-Reorder — iPhone-style jiggle mode ──
@@ -1501,9 +1495,6 @@ function renderSeUserPaySection(i,s){
     const btn=document.createElement('button');
     btn.className='plan-user-pill'+(n===curCount?' active':'');
     btn.textContent=n;
-<<<<<<< HEAD
-    btn.onclick=()=>{userChips.querySelectorAll('.plan-user-pill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
-=======
     btn.onclick=()=>{
       userChips.querySelectorAll('.plan-user-pill').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
@@ -1514,7 +1505,6 @@ function renderSeUserPaySection(i,s){
       btn.style.transition='all .18s';
       setTimeout(()=>{btn.style.transform='';},180);
     };
->>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
     userChips.appendChild(btn);
   });
   payChips.innerHTML='';
@@ -1523,9 +1513,6 @@ function renderSeUserPaySection(i,s){
     btn.className='plan-pay-opt'+(opt.method===curPay?' active':'');
     btn.dataset.method=opt.method;
     btn.innerHTML=`<span style="font-size:16px;line-height:1;">${opt.emoji}</span><span>${opt.label}</span>`;
-<<<<<<< HEAD
-    btn.onclick=()=>{payChips.querySelectorAll('.plan-pay-opt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
-=======
     btn.onclick=()=>{
       payChips.querySelectorAll('.plan-pay-opt').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
@@ -1536,7 +1523,6 @@ function renderSeUserPaySection(i,s){
       btn.style.transition='all .18s';
       setTimeout(()=>{btn.style.transform='';},180);
     };
->>>>>>> 695e095 (Düzenle modalı ve kilitli hizmetler için animasyon ve stil optimizasyonu)
     payChips.appendChild(btn);
   });
 }
