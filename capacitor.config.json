@@ -1,5 +1,5 @@
 {
   "appId": "com.easytvhub.app",
   "appName": "EasyTV Hub",
-  "webDir": "."
+  "webDir": "www"
 }
