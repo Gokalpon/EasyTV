@@ -1351,7 +1351,15 @@ function hidePinScreen() {
 }
 
 
-function tap(i){if(active===i){openSheet(i);return;}if(active>=0)deactivate(active);active=i;activate(i);}
+function tap(i) {
+  if (active === i) {
+    openSheet(i);
+    return;
+  }
+  if (active >= 0) deactivate(active);
+  active = i;
+  activate(i);
+}
 function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.add('active');
   
   // Dinamik tema arka planını güncelle
@@ -1438,21 +1446,90 @@ function deactivate(i){
   if(s.textDark||L.textDark){el.querySelector('.tile-logo').innerHTML=L.html;}
   active=-1;
 }
-function openSheet(i){active=i;const s=SVC[i],L=LOGO[s.id]||{w:28,h:28,html:null};const tileGrad=TILE_GRADIENTS[s.id]||s.color;const sColor=document.getElementById('sColor');const sLogoWrap=document.getElementById('sLogoWrap');const sIco=document.getElementById('sIco');const sName=document.getElementById('sName');const emailV=document.getElementById('emailV');const pwdV=document.getElementById('pwdV');const eyeU=document.getElementById('eyeU');const qrBtn=document.getElementById('qrBtn');const appOpenBtn=document.getElementById('appOpenBtn');const dimmer=document.getElementById('dimmer');const sheetEl=document.getElementById('sheet');if(!sColor||!sLogoWrap||!sIco||!sName||!emailV||!pwdV||!eyeU||!qrBtn||!appOpenBtn||!dimmer||!sheetEl)return;sColor.style.background=tileGrad;sLogoWrap.style.background=tileGrad;
- 
-  // Dinamik tema rengini güncelle - servis rengine göre
+function openSheet(i) {
+  active = i;
+  const s = SVC[i];
+  if (!s) return;
+  const L = LOGO[s.id] || { w: 28, h: 28, html: null };
+  const tileGrad = TILE_GRADIENTS[s.id] || s.color;
+
+  // DOM elementlerini topluca alalım
+  const ids = ['sColor', 'sLogoWrap', 'sIco', 'sName', 'emailV', 'pwdV', 'eyeU', 'qrBtn', 'appOpenBtn', 'dimmer', 'sheet'];
+  const els = {};
+  ids.forEach(id => els[id] = document.getElementById(id));
+
+  // Kritik elementler yoksa çık
+  if (!els.sheet || !els.dimmer) return;
+
+  // İçerik güncellemelerini animasyon başlamadan hemen önce yapalım
+  if (els.sColor) els.sColor.style.background = tileGrad;
+  if (els.sLogoWrap) els.sLogoWrap.style.background = tileGrad;
+
+  // Dinamik tema
   if (typeof onServiceClick !== 'undefined' && s.id) {
     onServiceClick(s.id);
-  }const isImgLogo=L.html&&L.html.includes('<img');const useDark=s.textDark||L.textDark;const activeHtml=(useDark&&L.htmlDark)?L.htmlDark:L.html;if(s.faviconUrl){sIco.innerHTML=`<img src="${s.faviconUrl}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;">`;}else if(isImgLogo&&activeHtml){const imgSrc=(activeHtml.match(/src="([^"]+)"/)||[])[1]||'';sIco.innerHTML=imgSrc?`<img src="${imgSrc}" style="width:38px;height:38px;object-fit:contain;">`:`<span style="font-size:24px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0]}</span>`;}else if(L.html){const sc2=22/Math.max(L.w||22,L.h||22);const svgHtml=useDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html;sIco.innerHTML=`<div style="width:${Math.round((L.w||22)*sc2)}px;height:${Math.round((L.h||22)*sc2)}px;display:flex;align-items:center;justify-content:center;">${svgHtml}</div>`;}else{sIco.innerHTML=`<span style="font-size:30px;font-weight:800;color:${useDark?'#000':'#fff'}">${(s.name||'?')[0].toUpperCase()}</span>`;}sName.textContent=s.name;emailV.textContent=s.email?s.email.replace(/^(.{3}).*(@.*)$/,'$1•••$2'):'—';pwdShow=false;pwdV.textContent='••••••••••';eyeU.setAttribute('href','#i-eye');['uE','uP'].forEach(id=>{const el=document.getElementById(id);if(el)el.setAttribute('href','#i-copy');});['btnE','btnP'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('ok');});qrBtn.style.background=TILE_GRADIENTS[s.id]||s.color;qrBtn.style.color=(s.textDark||L.textDark)?'#000':'#fff';appOpenBtn.textContent=`${s.name} Uygulamasını Aç`;dimmer.classList.add('on');
-  // Sheet scroll parallax
+  }
+
+  // Logo render
+  if (els.sIco) {
+    const isImgLogo = L.html && L.html.includes('<img');
+    const useDark = s.textDark || L.textDark;
+    const activeHtml = (useDark && L.htmlDark) ? L.htmlDark : L.html;
+
+    if (s.faviconUrl) {
+      els.sIco.innerHTML = `<img src="${s.faviconUrl}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;">`;
+    } else if (isImgLogo && activeHtml) {
+      const imgSrc = (activeHtml.match(/src="([^"]+)"/) || [])[1] || '';
+      els.sIco.innerHTML = imgSrc ? `<img src="${imgSrc}" style="width:38px;height:38px;object-fit:contain;">` : `<span style="font-size:24px;font-weight:800;color:${useDark ? '#000' : '#fff'}">${(s.name || '?')[0]}</span>`;
+    } else if (L.html) {
+      const sc2 = 22 / Math.max(L.w || 22, L.h || 22);
+      const svgHtml = useDark ? (L.htmlDark || L.html.replace(/fill="white"/g, 'fill="black"')) : L.html;
+      els.sIco.innerHTML = `<div style="width:${Math.round((L.w || 22) * sc2)}px;height:${Math.round((L.h || 22) * sc2)}px;display:flex;align-items:center;justify-content:center;">${svgHtml}</div>`;
+    } else {
+      els.sIco.innerHTML = `<span style="font-size:30px;font-weight:800;color:${useDark ? '#000' : '#fff'}">${(s.name || '?')[0].toUpperCase()}</span>`;
+    }
+  }
+
+  if (els.sName) els.sName.textContent = s.name;
+  if (els.emailV) els.emailV.textContent = s.email ? s.email.replace(/^(.{3}).*(@.*)$/, '$1•••$2') : '—';
+  
+  pwdShow = false;
+  if (els.pwdV) els.pwdV.textContent = '••••••••••';
+  if (els.eyeU) els.eyeU.setAttribute('href', '#i-eye');
+
+  ['uE', 'uP'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('href', '#i-copy');
+  });
+
+  ['btnE', 'btnP'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('ok');
+  });
+
+  if (els.qrBtn) {
+    els.qrBtn.style.background = tileGrad;
+    els.qrBtn.style.color = (s.textDark || L.textDark) ? '#000' : '#fff';
+  }
+  
+  if (els.appOpenBtn) els.appOpenBtn.textContent = `${s.name} Uygulamasını Aç`;
+
+  // Paralaks sıfırla
+  const sHead = document.querySelector('.s-head');
+  if (sHead) sHead.style.transform = '';
+
+  // Glitch önleme: Senkron tetikleme
+  els.dimmer.classList.add('on');
+  els.sheet.classList.add('open');
+
+  // Scroll event korumalı
   const sheetBody = document.querySelector('.sheet-body');
-  if(sheetBody){
-    sheetBody.onscroll = function(){
-      const sHead = document.querySelector('.s-head');
-      if(sHead) sHead.style.transform = 'translateY('+Math.min(sheetBody.scrollTop*0.3,20)+'px) scale('+(1-sheetBody.scrollTop*0.0003)+')';
+  if (sheetBody) {
+    sheetBody.onscroll = function() {
+      const sh = document.querySelector('.s-head');
+      if (sh) sh.style.transform = 'translateY(' + Math.min(sheetBody.scrollTop * 0.3, 20) + 'px) scale(' + (1 - sheetBody.scrollTop * 0.0003) + ')';
     };
   }
-  sheetEl.classList.add('open');
 }
 function closeSheet(){const sheetEl=document.getElementById('sheet');const dimmer=document.getElementById('dimmer');if(sheetEl)sheetEl.classList.remove('open');if(dimmer)dimmer.classList.remove('on');if(active>=0)deactivate(active);}
 function togglePwd(){const pwdEl=document.getElementById('pwdV');const eyeU=document.getElementById('eyeU');if(!pwdEl||!eyeU)return;pwdShow=!pwdShow;pwdEl.textContent=pwdShow&&active>=0?SVC[active].pwd:'••••••••••';eyeU.setAttribute('href',pwdShow?'#i-eyeoff':'#i-eye');}
@@ -2391,7 +2468,6 @@ function renderSubs(){
     }else{
       cLogo=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;
     }
-    card.style.boxShadow=`inset 3px 0 0 ${s.color}`;
     card.innerHTML=`<div style="width:44px;height:44px;border-radius:13px;background:${s.color||'rgba(255,255,255,.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">${cLogo}</div><div style="flex:1;min-width:0;"><div class="sub-name">${s.name}</div><div class="sub-plan">${s.plan||'Standart'}</div>${badge}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;"><div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.5px;white-space:nowrap;">${s.price>0?formatPrice(s.price):'—'}</div><div style="font-size:11px;color:rgba(255,255,255,.33);margin-top:-2px;">${s.price>0?t('per_month'):''}</div><button onclick="event.stopPropagation();openSubEdit(${idx})" style="margin-top:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 13px;color:rgba(255,255,255,.75);font-size:12px;font-weight:600;cursor:pointer;">${t('edit_btn')}</button></div>`;
     card.onclick=()=>openSheet(idx);
     list.appendChild(card);

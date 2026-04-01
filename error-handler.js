@@ -42,55 +42,92 @@ function showErrorToast(message, type = 'error', duration = 4000) {
     errorToastContainer.id = 'errorToastContainer';
     errorToastContainer.style.cssText = `
       position: fixed;
-      top: 80px;
+      top: 40px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 9999;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      gap: 8px;
       pointer-events: none;
-      width: 90%;
-      max-width: 360px;
+      width: 100%;
     `;
     document.body.appendChild(errorToastContainer);
+  }
+
+  // Aynı mesajdan çok varsa temizle (kalabalığı önlemek için)
+  const existingToasts = errorToastContainer.querySelectorAll('.error-toast');
+  if (existingToasts.length > 2) {
+    existingToasts[0].remove();
   }
 
   // Toast elementi oluştur
   const toast = document.createElement('div');
   toast.className = 'error-toast';
 
-  // Type'a göre renk ve icon
+  // Type'a göre ışık rengi
   const config = {
-    error: { bg: 'rgba(255,59,48,.95)', icon: '⚠️' },
-    success: { bg: 'rgba(52,199,89,.95)', icon: '✓' },
-    warning: { bg: 'rgba(255,159,10,.95)', icon: '⚡' },
-    info: { bg: 'rgba(90,200,250,.95)', icon: 'ℹ️' }
+    error: { glow: '#ff3b30' },
+    success: { glow: '#4cd964' },
+    warning: { glow: '#ff3b30' }, // Kullanıcı uyarılarda da kırmızı ışık istedi
+    info: { glow: '#007aff' }
   };
-  const { bg, icon } = config[type] || config.error;
+  const { glow } = config[type] || config.error;
 
   toast.style.cssText = `
-    background: ${bg};
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(35px) saturate(200%);
+    -webkit-backdrop-filter: blur(35px) saturate(200%);
     color: #fff;
-    padding: 14px 18px;
-    border-radius: 16px;
-    font-size: 14px;
+    padding: 16px 32px;
+    border-radius: 14px;
+    font-size: 13px;
     font-weight: 600;
-    box-shadow: 0 8px 32px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.2);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.08);
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    text-align: center;
     pointer-events: all;
-    animation: toastSlideIn 0.3s cubic-bezier(.34,1.56,.64,1);
-    border: 1px solid rgba(255,255,255,.2);
+    animation: toastSlideIn 0.45s cubic-bezier(.32,.72,0,1);
+    position: relative;
+    width: fit-content;
+    min-width: 260px;
+    max-width: 320px;
+    margin: 0 auto;
+    border: none;
+    overflow: visible;
   `;
 
-  toast.innerHTML = `
-    <span style="font-size:18px;flex-shrink:0;">${icon}</span>
-    <span style="flex:1;line-height:1.4;">${message}</span>
+  // Sol taraftaki parlayan dikey neon ışık şeridi
+  const light = document.createElement('div');
+  light.style.cssText = `
+    position: absolute;
+    left: 0;
+    top: 15%;
+    bottom: 15%;
+    width: 4px;
+    background: ${glow};
+    border-radius: 0 4px 4px 0;
+    box-shadow: 2px 0 15px ${glow}, 5px 0 30px ${glow};
+    z-index: 2;
   `;
+  toast.appendChild(light);
+
+  const textSpan = document.createElement('span');
+  textSpan.style.cssText = `
+    line-height: 1.5; 
+    color: #fff; 
+    width: 100%; 
+    display: block; 
+    position: relative; 
+    z-index: 1; 
+    text-align: center; 
+    letter-spacing: -0.1px;
+  `;
+  textSpan.textContent = message;
+  toast.appendChild(textSpan);
 
   errorToastContainer.appendChild(toast);
 
