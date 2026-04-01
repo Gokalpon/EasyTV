@@ -21,10 +21,10 @@ function initDynamicTheme() {
       bottom: 0;
       left: 0;
       right: 0;
-      height: 200px;
-      background: radial-gradient(ellipse at center bottom, ${currentThemeColor} 0%, transparent 70%);
-      filter: blur(60px);
-      -webkit-filter: blur(60px);
+      height: 140px;
+      background: transparent;
+      filter: blur(44px);
+      -webkit-filter: blur(44px);
       pointer-events: none;
       z-index: 49;
       opacity: 0;
@@ -45,15 +45,15 @@ function updateThemeColor(color) {
   currentThemeColor = color;
   const dynamicBg = document.getElementById('dynamicThemeBg');
   if (dynamicBg) {
-    dynamicBg.style.background = `radial-gradient(ellipse at center bottom, ${color} 0%, transparent 70%)`;
-    dynamicBg.style.opacity = '1';
+    dynamicBg.style.background = 'transparent';
+    dynamicBg.style.opacity = '0';
     dynamicBg.style.animationPlayState = 'running';
   }
   // Ambient beam'i de güncelle
   const ambientBeam = document.getElementById('ambientBeam');
   if (ambientBeam) {
-    ambientBeam.style.background = `radial-gradient(ellipse at center, ${color.replace('0.3', '0.15')} 0%, transparent 60%)`;
-    ambientBeam.style.opacity = '0.6';
+    ambientBeam.style.background = 'transparent';
+    ambientBeam.style.opacity = '0';
     ambientBeam.style.animationPlayState = 'running';
   }
 // Her tuş ve servis kutusu tıklandığında ışık efektini göster
@@ -72,11 +72,11 @@ document.addEventListener('click', function(e) {
   const ambientBeam = document.getElementById('ambientBeam');
   if (show) {
     if (dynamicBg) {
-      dynamicBg.style.opacity = '1';
+      dynamicBg.style.opacity = '0';
       dynamicBg.style.animationPlayState = 'running';
     }
     if (ambientBeam) {
-      ambientBeam.style.opacity = '0.6';
+      ambientBeam.style.opacity = '0';
       ambientBeam.style.animationPlayState = 'running';
     }
   } else {
@@ -95,10 +95,10 @@ document.addEventListener('click', function(e) {
 const animStyle = document.createElement('style');
 animStyle.textContent = `
 @keyframes dynamicBeamMove {
-  0% { transform: translateY(0) scale(1); opacity: 0.7; }
-  40% { transform: translateY(-10px) scale(1.04); opacity: 0.8; }
-  60% { transform: translateY(10px) scale(0.98); opacity: 0.6; }
-  100% { transform: translateY(-5px) scale(1.02); opacity: 0.7; }
+  0% { transform: translateY(0) scale(1); opacity: 0.38; }
+  40% { transform: translateY(-6px) scale(1.02); opacity: 0.48; }
+  60% { transform: translateY(6px) scale(0.99); opacity: 0.3; }
+  100% { transform: translateY(-4px) scale(1.01); opacity: 0.4; }
 }
 `;
 document.head.appendChild(animStyle);
@@ -138,28 +138,29 @@ if (typeof window !== 'undefined') {
 }
 
 // CSS ekle
-const style = document.createElement('style');
-style.textContent = `
+const dynamicThemeStyle = document.createElement('style');
+dynamicThemeStyle.textContent = `
   /* Dinamik tema için ambient beam */
   .ambient-beam {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(ellipse at center, rgba(130,80,255,.15) 0%, transparent 60%);
-    filter: blur(80px);
-    -webkit-filter: blur(80px);
+    width: 420px;
+    height: 420px;
+    background: transparent;
+    filter: blur(56px);
+    -webkit-filter: blur(56px);
     pointer-events: none;
     z-index: 1;
-    opacity: 0.6;
+    opacity: 0;
     transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* Bottom nav artık blur arka plana sahip değil */
-  #navGlow {
-    display: none !important;
+  .service-selector-card {
+    position: relative;
+    overflow: visible;
   }
 `;
-document.head.appendChild(style);
+document.head.appendChild(dynamicThemeStyle);

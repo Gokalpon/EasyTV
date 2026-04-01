@@ -1,0 +1,25 @@
+{
+  "name": "EasyTV",
+  "short_name": "EasyTV",
+  "description": "TV aboneliklerini tek yerde yönetmek için mobil web uygulaması.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#05050a",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./assets/EasyTVLogo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/EasyTVLogo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
