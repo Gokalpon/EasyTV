@@ -154,31 +154,40 @@ function _initLogoGallery() {
   if (!el || el.dataset.init) return;
   el.dataset.init = '1';
   var S = [
-    ['./assets/netflix_N.png','#E50914'],['./assets/youtube.png','#FF0000'],
-    ['./assets/Disney+.png','#0ABFBC'],['./assets/prime video.png','#1A98FF'],
-    ['./assets/hbo.png','#3B1F6B'],['./assets/appleb.png','#f5f5f7'],
-    ['./assets/Spotify.png','#1DB954'],['./assets/twitch.png','#9146FF'],
-    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#F9D100'],
-    ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
+    ['./assets/netflix_N.png','#E50914','Netflix'],['./assets/youtube.png','#FF0000','YouTube'],
+    ['./assets/Disney+.png','#0ABFBC','Disney+'],['./assets/prime video.png','#1A98FF','Prime'],
+    ['./assets/hbo.png','#3B1F6B','HBO Max'],['./assets/appleb.png','#f5f5f7','Apple TV'],
+    ['./assets/Spotify.png','#1DB954','Spotify'],['./assets/twitch.png','#9146FF','Twitch'],
+    ['./assets/tvplus2.png','#FFD100','TV+'],['./assets/exxenb.png','#F9D100','EXXEN'],
+    ['./assets/bein.png','#6F2DA8','beIN'],['./assets/kickb.png','#53FC18','Kick']
   ];
-  var N=S.length, TW=56, GAP=10, BR=13, STEP=TW+GAP, TOTAL=N*STEP;
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=128;
+  // Portrait card: TW×TH (e.g. 72×96 ≈ 3:4)
+  var N=S.length, TW=72, TH=96, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=160;
+  el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
-  cv.style.cssText='width:100%;height:100%;position:absolute;top:0;left:0;cursor:grab;touch-action:pan-x;';
+  cv.style.cssText='width:100%;height:100%;position:absolute;top:0;left:0;cursor:grab;touch-action:pan-x;user-select:none;';
   el.style.position='relative';
   el.appendChild(cv);
   var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
   var imgs=S.map(function(s){var i=new Image();i.src=s[0];return i;});
-  // Scroll state
+  // Scroll + drag state
   var sc={cur:0,tgt:0}, dn=false, sx=0, ss=0, vel=0, lx=0;
   function lerp(a,b,t){return a+(b-a)*t;}
-  cv.addEventListener('touchstart',function(e){dn=true;sx=lx=e.touches[0].clientX;ss=sc.tgt;vel=0;},{passive:true});
-  cv.addEventListener('touchmove',function(e){if(!dn)return;var x=e.touches[0].clientX;vel=lx-x;lx=x;sc.tgt=ss+(sx-x);},{passive:true});
-  cv.addEventListener('touchend',function(){dn=false;sc.tgt+=vel*3.5;});
-  // Circular bending: same formula as OGL component
-  // R = (H² + B²) / (2B), arc = R - sqrt(R² - x²)
-  var H=cW/2, BEND=28, R=(H*H+BEND*BEND)/(2*BEND);
+  function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;cv.style.cursor='grabbing';}
+  function onMove(x){if(!dn)return;vel=lx-x;lx=x;sc.tgt=ss+(sx-x);}
+  function onUp(){dn=false;sc.tgt+=vel*3.5;cv.style.cursor='grab';}
+  cv.addEventListener('touchstart',function(e){onDown(e.touches[0].clientX);},{passive:true});
+  cv.addEventListener('touchmove',function(e){onMove(e.touches[0].clientX);},{passive:true});
+  cv.addEventListener('touchend',onUp);
+  cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
+  cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
+  cv.addEventListener('mouseup',onUp);
+  cv.addEventListener('mouseleave',onUp);
+  cv.addEventListener('wheel',function(e){sc.tgt+=e.deltaY*0.6;e.preventDefault();},{passive:false});
+  // Circular bending: R = (H² + B²) / (2B)
+  var H=cW/2, BEND=36, R=(H*H+BEND*BEND)/(2*BEND);
   function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();}
   function tick(){
     var intro=document.getElementById('introScreen');
@@ -191,32 +200,34 @@ function _initLogoGallery() {
       for(var i=0;i<N;i++){
         var tx=startX+i*STEP+pass*TOTAL-off;
         var cx=tx+TW/2, dx=cx-cW/2;
-        if(cx<-TW||cx>cW+TW) continue;
+        if(cx<-TW*2||cx>cW+TW*2) continue;
         var eff=Math.min(Math.abs(dx),H);
         var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-        var ty=12+arc; // base y + circular drop
-        var rot=-Math.sign(dx)*Math.asin(Math.min(eff/R,1))*0.55;
-        var alpha=1-Math.max(0,(Math.abs(dx)/(H*0.95)-0.72)/0.28);
+        var ty=8+arc;
+        var rot=-Math.sign(dx)*Math.asin(Math.min(eff/R,1))*0.6;
+        var alpha=1-Math.max(0,(Math.abs(dx)/(H*0.92)-0.65)/0.35);
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
         ctx.save();
         ctx.globalAlpha=alpha;
-        ctx.translate(cx,ty+TW/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TW/2));
-        rr(tx,ty,TW,TW,BR); ctx.fillStyle=S[i][1]; ctx.fill();
+        ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
+        // Card background
+        rr(tx,ty,TW,TH,BR); ctx.fillStyle=S[i][1]; ctx.fill();
+        // Logo image (clipped to card)
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           ctx.save(); ctx.clip();
-          var sz=TW*0.62; ctx.drawImage(imgs[i],tx+(TW-sz)/2,ty+(TW-sz)/2,sz,sz);
+          var sz=TW*0.6; ctx.drawImage(imgs[i],tx+(TW-sz)/2,ty+(TH-sz)/2,sz,sz);
           ctx.restore();
         }
         ctx.restore();
       }
     }
-    // Edge fade via destination-out
+    // Edge fade
     ctx.save(); ctx.globalCompositeOperation='destination-out';
-    var gL=ctx.createLinearGradient(0,0,cW*0.18,0); gL.addColorStop(0,'rgba(0,0,0,1)'); gL.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=gL; ctx.fillRect(0,0,cW*0.18,cH);
-    var gR=ctx.createLinearGradient(cW,0,cW*0.82,0); gR.addColorStop(0,'rgba(0,0,0,1)'); gR.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=gR; ctx.fillRect(cW*0.82,0,cW*0.18,cH);
+    var gL=ctx.createLinearGradient(0,0,cW*0.16,0); gL.addColorStop(0,'rgba(0,0,0,1)'); gL.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gL; ctx.fillRect(0,0,cW*0.16,cH);
+    var gR=ctx.createLinearGradient(cW,0,cW*0.84,0); gR.addColorStop(0,'rgba(0,0,0,1)'); gR.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gR; ctx.fillRect(cW*0.84,0,cW*0.16,cH);
     ctx.restore();
     requestAnimationFrame(tick);
   }
