@@ -50,6 +50,11 @@ function _showFallbackScreen() {
   if (mainApp) mainApp.style.display = 'none';
   if (introScreen) introScreen.style.display = 'flex';
   _initFuzzyLogo();
+  // Char reveal on intro text
+  setTimeout(function() {
+    _charReveal(document.getElementById('introTagline'), 0.28);
+    _charReveal(document.getElementById('introSub'), 0.56);
+  }, 50);
 }
 
 // ── FUZZY LOGO (EasyTV logosu için canvas glitch efekti) ──
@@ -103,7 +108,50 @@ function _initFuzzyLogo() {
     }
     raf = requestAnimationFrame(draw);
     setTimeout(scheduleGlitch, 900);
+    // Interactive glitch on tap/click
+    function _triggerGlitch() {
+      isGlitching = true;
+      setTimeout(function() { isGlitching = false; }, 220);
+    }
+    cv.style.cursor = 'pointer';
+    cv.addEventListener('click', _triggerGlitch);
+    cv.addEventListener('touchstart', _triggerGlitch, { passive: true });
   };
+}
+
+// ── Char-by-char text reveal ──
+function _charReveal(el, baseDelay) {
+  if (!el) return;
+  baseDelay = baseDelay || 0;
+  var delay = baseDelay;
+  // Strip any previously applied spans
+  var html = el.innerHTML.replace(/<span class="cr-char"[^>]*>([^<]*)<\/span>/g, '$1');
+  var parts = html.split(/(<br\s*\/?>)/i);
+  var result = '';
+  for (var p = 0; p < parts.length; p++) {
+    var part = parts[p];
+    if (/^<br/i.test(part)) {
+      result += part;
+    } else {
+      for (var i = 0; i < part.length; i++) {
+        var ch = part[i];
+        if (ch === ' ' || ch === '\t' || ch === '\n') {
+          result += ch;
+        } else {
+          result += '<span class="cr-char" style="animation-delay:' + delay.toFixed(3) + 's">' + ch + '</span>';
+          delay += 0.02;
+        }
+      }
+    }
+  }
+  el.innerHTML = result;
+}
+
+function _applyLogoReveal(imgEl) {
+  if (!imgEl) return;
+  imgEl.classList.remove('logo-reveal');
+  void imgEl.offsetWidth; // reflow to restart
+  imgEl.classList.add('logo-reveal');
 }
 
 function _showAuthScreens() {
@@ -231,7 +279,11 @@ async function onAuthSuccess(user) {
   if (SETTINGS.usePin === false || !SETTINGS.pin) {
     unlockApp();
   } else {
-    if (pinScreen) pinScreen.style.display = 'flex';
+    if (pinScreen) {
+      pinScreen.style.display = 'flex';
+      _applyLogoReveal(pinScreen.querySelector('.pin-logo img'));
+      _charReveal(document.getElementById('pinGreeting'), 0.15);
+    }
   }
 }
 
@@ -404,6 +456,9 @@ function showWelcomeFromIntro() {
     if(!ls) return;
     ls.style.display = 'flex';
     ls.style.animation = 'screenSlideIn .38s cubic-bezier(.34,1.2,.64,1) both';
+    _applyLogoReveal(document.getElementById('loginLogo'));
+    _charReveal(document.getElementById('loginHeading'), 0.18);
+    _charReveal(document.getElementById('loginSub'), 0.46);
   }, 280);
 }
 
@@ -419,7 +474,12 @@ function goToLogin() {
     ls.style.display = 'flex';
     ls.style.opacity = '0';
     ls.style.transition = 'opacity .4s cubic-bezier(.4,0,.2,1)';
-    requestAnimationFrame(() => requestAnimationFrame(() => { ls.style.opacity = '1'; }));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      ls.style.opacity = '1';
+      _applyLogoReveal(document.getElementById('loginLogo'));
+      _charReveal(document.getElementById('loginHeading'), 0.18);
+      _charReveal(document.getElementById('loginSub'), 0.46);
+    }));
   }, 420);
 }
 
@@ -849,7 +909,8 @@ function renderOnboardStep(){const prog=document.getElementById('obProgress');pr
     <div id="pin-no-check" style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;"></div>
   </div>
 </div>
-</div>`;}else if(obStep===2){btn.style.display='none';setSkip('none');if(SETTINGS.usePin===false){onboardNext();return;}const KL={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">PIN Oluştur</div><div class="onboard-sub" id="obPinSub">4 haneli giriş şifreni belirle.</div></div><div class="ob-pin-dots"><div class="ob-pin-dot" id="op0"></div><div class="ob-pin-dot" id="op1"></div><div class="ob-pin-dot" id="op2"></div><div class="ob-pin-dot" id="op3"></div></div><div class="onboard-pin-grid">${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`<button class="ob-key" onclick="obKp(${JSON.stringify(k)})">${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:k==='del'?`<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M8 1H20a2 2 0 012 2v10a2 2 0 01-2 2H8L2 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M12 5.5l5 5M17 5.5l-5 5" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>`:`<div><div class="ob-key-num">${k}</div>${KL[k]?`<div class="ob-key-sub">${KL[k]}</div>`:''}</div>`}</button>`).join('')}</div></div>`;obNewPin='';obPinStep=0;}else if(obStep>=3){btn.style.display='';setSkip('none');if(btnText)btnText.textContent='Başla';content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">Hazırsın!</div><div class="onboard-sub">EasyTV kurulumu tamamlandı.</div></div></div>`;}}
+</div>`;}else if(obStep===2){btn.style.display='none';setSkip('none');if(SETTINGS.usePin===false){onboardNext();return;}const KL={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">PIN Oluştur</div><div class="onboard-sub" id="obPinSub">4 haneli giriş şifreni belirle.</div></div><div class="ob-pin-dots"><div class="ob-pin-dot" id="op0"></div><div class="ob-pin-dot" id="op1"></div><div class="ob-pin-dot" id="op2"></div><div class="ob-pin-dot" id="op3"></div></div><div class="onboard-pin-grid">${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`<button class="ob-key" onclick="obKp(${JSON.stringify(k)})">${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:k==='del'?`<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M8 1H20a2 2 0 012 2v10a2 2 0 01-2 2H8L2 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M12 5.5l5 5M17 5.5l-5 5" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>`:`<div><div class="ob-key-num">${k}</div>${KL[k]?`<div class="ob-key-sub">${KL[k]}</div>`:''}</div>`}</button>`).join('')}</div></div>`;obNewPin='';obPinStep=0;}else if(obStep>=3){btn.style.display='';setSkip('none');if(btnText)btnText.textContent='Başla';content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">Hazırsın!</div><div class="onboard-sub">EasyTV kurulumu tamamlandı.</div></div></div>`;}
+requestAnimationFrame(function(){var t=content.querySelector('.onboard-title');var s=content.querySelector('.onboard-sub');_charReveal(t,0.1);_charReveal(s,0.32);});}
 let obPinStep=0;
 function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent='PIN\'ini bir kez daha gir.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent='Eşleşmedi. Tekrar dene.';}}}}
 function _obSlideNext(cb){const c=document.getElementById('obContent');c.style.animation='obSlideOut .25s cubic-bezier(.55,.06,.68,.19) both';c.addEventListener('animationend',function h(){c.removeEventListener('animationend',h);cb();},{once:true});}
@@ -869,7 +930,11 @@ function finishOnboard(){
   setTimeout(()=>{
     if(onboardScreen) onboardScreen.style.display='none';
     if(SETTINGS.usePin===false){unlockApp();}
-    else if(pinScreen){pinScreen.style.display='flex';}
+    else if(pinScreen){
+      pinScreen.style.display='flex';
+      _applyLogoReveal(pinScreen.querySelector('.pin-logo img'));
+      _charReveal(document.getElementById('pinGreeting'), 0.15);
+    }
   },500);
 }
 function skipServices(){obStep++;renderOnboardStep();}

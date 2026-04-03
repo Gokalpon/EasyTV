@@ -1505,5 +1505,13 @@ button[onclick*="openSubEdit"]:active{transform:scale(.9)!important;opacity:.7!i
 .quick-stat-pill{transition:transform .22s cubic-bezier(.34,1.4,.64,1),background .2s;}
 .quick-stat-pill:active{transform:scale(.93);}
 
+/* ── Char-by-char reveal ── */
+@keyframes charReveal{from{opacity:.5;filter:blur(5px);}to{opacity:1;filter:blur(0);}}
+.cr-char{display:inline;animation:charReveal .38s cubic-bezier(.4,0,.2,1) both;}
+
+/* ── Logo reveal (non-intro screens) ── */
+@keyframes logoRevealAnim{from{opacity:0;filter:blur(6px);}to{opacity:1;filter:blur(0);}}
+.logo-reveal{animation:logoRevealAnim .55s .08s cubic-bezier(.4,0,.2,1) both;}
+
 /* Add btn */
 .add-btn:active{transform:scale(.86)!important;}
