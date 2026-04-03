@@ -9,16 +9,27 @@
 <meta name="theme-color" content="#0a0a0a">
 <meta name="mobile-web-app-capable" content="yes">
 <title>EasyTV</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="./assets/EasyTVLogo.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&family=Raleway:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="raleway-font.css">
 <link rel="stylesheet" href="akira-font.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css">
-<script src="error-handler.js"></script>
-<script src="premium-system.js"></script>
-<script src="dynamic-theme.js"></script>
+<link rel="stylesheet" href="style.css?v=20260401b">
+<script src="error-handler.js?v=20260401b"></script>
+<script src="premium-system.js?v=20260401b"></script>
+<script src="dynamic-theme.js?v=20260401b"></script>
 </head>
 <body>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('./service-worker.js').catch(function(err) {
+        console.warn('SW register failed', err);
+      });
+    });
+  }
+</script>
 
 <svg id="cb-svg" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -58,8 +69,8 @@
   <div style="position:absolute;width:220px;height:220px;bottom:60px;right:-30px;background:radial-gradient(circle,rgba(200,40,130,.12) 0%,transparent 60%);filter:blur(40px);pointer-events:none;animation:wlcOrb2 18s ease-in-out infinite alternate;"></div>
 
   <!-- Üst: Logo -->
-  <div style="display:flex;align-items:center;justify-content:center;padding-top:56px;flex-shrink:0;">
-    <img src="./assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:38px;width:auto;object-fit:contain;opacity:.92;">
+  <div style="position:absolute;top:72px;left:0;right:0;display:flex;justify-content:center;z-index:1;animation:introFadeUp .7s .1s both;">
+    <img src="./assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:52px;width:auto;object-fit:contain;animation:logoBounce 1.1s cubic-bezier(.25,.46,.45,.94) .08s both;">
   </div>
 
   <!-- Orta: Başlık -->
@@ -71,8 +82,11 @@
   <!-- Alt: Butonlar -->
   <div style="padding:0 24px 44px;display:flex;flex-direction:column;gap:10px;flex-shrink:0;">
 
-    <button onclick="showSignupOptions()" style="width:100%;padding:19px;background:linear-gradient(135deg,rgba(130,60,255,.9),rgba(80,40,220,.75));border:1px solid rgba(160,100,255,.25);border-radius:20px;font-size:18px;font-weight:700;font-family:'Space Grotesk','Inter',sans-serif;color:#fff;cursor:pointer;box-shadow:0 8px 28px rgba(100,40,255,.25);letter-spacing:.5px;text-transform:uppercase;">
-      Hesap Oluştur
+    <button class="cta-btn cta-btn-purple" onclick="showSignupOptions()" style="font-size:18px;">
+      <span class="cta-btn-label">
+        <span class="cta-btn-text">Hesap Oluştur</span>
+      </span>
+      <span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </button>
 
     <div style="display:flex;align-items:center;gap:12px;margin:2px 0;">
@@ -81,19 +95,28 @@
       <div style="flex:1;height:1px;background:rgba(255,255,255,.06);"></div>
     </div>
 
-    <button id="appleLoginBtn" onclick="loginWith('apple')" style="width:100%;padding:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;font-size:17px;font-weight:700;font-family:'Space Grotesk','Inter',sans-serif;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;letter-spacing:.5px;">
-      <svg width="17" height="20" viewBox="0 0 17 20" fill="white"><path d="M14.04 10.54c-.02-2.08 1.7-3.08 1.78-3.13-1-1.46-2.52-1.65-3.05-1.67-1.3-.13-2.54.77-3.2.77-.66 0-1.68-.75-2.76-.73-1.43.02-2.75.83-3.48 2.1-1.49 2.57-.38 6.37 1.07 8.46.71 1.02 1.55 2.17 2.66 2.13 1.07-.04 1.47-.69 2.77-.69 1.29 0 1.65.69 2.78.67 1.15-.02 1.88-1.05 2.58-2.07.82-1.18 1.15-2.33 1.17-2.39-.03-.01-2.31-.89-2.32-3.45zM11.81 4.17C12.36 3.5 12.73 2.6 12.62 1.7c-.79.04-1.74.53-2.31 1.19-.5.58-.95 1.51-.83 2.4.88.07 1.78-.45 2.33-1.12z"/></svg>
-      Apple ile Giriş Yap
+    <button id="appleLoginBtn" class="cta-btn cta-btn-white" onclick="loginWith('apple')" style="font-size:17px;">
+      <span class="cta-btn-label">
+        <span class="cta-btn-icon"><svg width="17" height="20" viewBox="0 0 17 20" fill="white"><path d="M14.04 10.54c-.02-2.08 1.7-3.08 1.78-3.13-1-1.46-2.52-1.65-3.05-1.67-1.3-.13-2.54.77-3.2.77-.66 0-1.68-.75-2.76-.73-1.43.02-2.75.83-3.48 2.1-1.49 2.57-.38 6.37 1.07 8.46.71 1.02 1.55 2.17 2.66 2.13 1.07-.04 1.47-.69 2.77-.69 1.29 0 1.65.69 2.78.67 1.15-.02 1.88-1.05 2.58-2.07.82-1.18 1.15-2.33 1.17-2.39-.03-.01-2.31-.89-2.32-3.45zM11.81 4.17C12.36 3.5 12.73 2.6 12.62 1.7c-.79.04-1.74.53-2.31 1.19-.5.58-.95 1.51-.83 2.4.88.07 1.78-.45 2.33-1.12z"/></svg></span>
+        <span class="cta-btn-text">Apple ile Giriş Yap</span>
+      </span>
+      <span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </button>
 
-    <button id="googleLoginBtn" onclick="loginWith('google')" style="width:100%;padding:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;font-size:17px;font-weight:700;font-family:'Space Grotesk','Inter',sans-serif;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;letter-spacing:.5px;">
-      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-      Google ile Giriş Yap
+    <button id="googleLoginBtn" class="cta-btn cta-btn-white" onclick="loginWith('google')" style="font-size:17px;">
+      <span class="cta-btn-label">
+        <span class="cta-btn-icon"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg></span>
+        <span class="cta-btn-text">Google ile Giriş Yap</span>
+      </span>
+      <span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </button>
 
-    <button onclick="skipAuth()" style="width:100%;padding:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;font-size:17px;font-weight:700;font-family:'Space Grotesk','Inter',sans-serif;color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-transform:uppercase;letter-spacing:.5px;">
-      <svg width="14" height="14" viewBox="0 0 20 16" fill="none"><rect x="1" y="1" width="18" height="14" rx="3" stroke="rgba(255,255,255,.4)" stroke-width="1.5" fill="none"/><path d="M1 5h18" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/></svg>
-      Mail ile Giriş Yap
+    <button class="cta-btn cta-btn-white" onclick="skipAuth()" style="font-size:17px;color:rgba(255,255,255,.82);">
+      <span class="cta-btn-label">
+        <span class="cta-btn-icon"><svg width="14" height="14" viewBox="0 0 20 16" fill="none"><rect x="1" y="1" width="18" height="14" rx="3" stroke="rgba(255,255,255,.72)" stroke-width="1.5" fill="none"/><path d="M1 5h18" stroke="rgba(255,255,255,.72)" stroke-width="1.5"/></svg></span>
+        <span class="cta-btn-text">Maıl ile Giriş Yap</span>
+      </span>
+      <span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </button>
 
     <div onclick="skipAuth()" style="text-align:center;padding:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.22);font-weight:500;">Şimdilik atla</div>
@@ -168,7 +191,7 @@
         <button onclick="setIntroLang('en')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:.6px;text-align:center;">EN</button>
       </div>
     </div>
-    <button class="intro-cta" id="introCta" onclick="showWelcomeFromIntro()">Başlayın</button>
+    <button class="intro-cta cta-btn cta-btn-white" id="introCta" onclick="showWelcomeFromIntro()"><span class="cta-btn-label"><span class="cta-btn-text">Başlayın</span></span><span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     <div class="intro-hint" id="introHint" onclick="showWelcomeFromIntro()">Zaten hesabınız var mı? Giriş yapın</div>
   </div>
 
@@ -179,16 +202,13 @@
     <div class="onboard-progress" id="obProgress"></div>
     <div class="onboard-content" id="obContent"></div>
     <div class="onboard-bottom">
-      <button class="onboard-btn" id="obNextBtn" onclick="onboardNext()">Devam</button>
+      <button class="onboard-btn cta-btn cta-btn-purple" id="obNextBtn" onclick="onboardNext()"><span class="cta-btn-label"><span class="cta-btn-text">Devam</span></span><span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         <style>
-          .onboard-btn, .intro-cta, button, .add-btn, .add-btn-abs, #appleLoginBtn, #googleLoginBtn {
+          .onboard-btn, .intro-cta, .add-btn, .add-btn-abs, #appleLoginBtn, #googleLoginBtn {
             font-family: 'Raleway', 'Space Grotesk', 'Inter', sans-serif !important;
             font-size: 16px !important;
             font-weight: 700 !important;
-            text-transform: none !important;
             letter-spacing: .1px !important;
-            border-radius: 16px !important;
-            padding: 14px 0 !important;
           }
           .onboard-title, .intro-title, #introTagline, .welcome-title {
             font-family: 'Akira', 'Space Grotesk', 'Inter', sans-serif !important;
@@ -272,7 +292,7 @@
         <div class="subs-summary">
           <div><div class="subs-total-lbl">Aylık Toplam</div><div class="subs-total-val" id="totalMonthly">₺0</div></div>
         </div>
-        <div id="spendingChart" style="margin:0 16px 16px;padding:0;"></div>
+        <div id="spendingChart" style="margin:0 0 16px;padding:0;"></div>
         <div id="subsList"></div>
       </div>
     </div>
@@ -396,7 +416,7 @@
       </div>
     </div>
 
-    <div class="nav-fade"></div
+    <div class="nav-fade"></div>
   </div>
 
   <div class="dimmer" id="dimmer" onclick="closeSheet()"></div>
@@ -677,7 +697,7 @@
     </div>
   </div>
   
-  <div class="bottom-nav" id="bottomNav">
+  <div class="bottom-nav" id="bottomNav" style="display:none;">
       <div class="nav-glow" id="navGlow"></div>
       <div class="nav-item active" id="nav-home" onclick="switchTab('home')"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M2 9.5L11 2l9 7.5V20a1 1 0 01-1 1H14v-5h-4v5H3a1 1 0 01-1-1V9.5z" stroke="white" stroke-width="1.7" stroke-linejoin="round" fill="none"/></svg><span class="nav-label">Ana Sayfa</span><div class="nav-dot"></div></div>
       <div class="nav-item" id="nav-subs" onclick="switchTab('subs')"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="1" y="4" width="20" height="14" rx="3" stroke="white" stroke-width="1.7" fill="none"/><path d="M1 9h20" stroke="white" stroke-width="1.7"/><path d="M5 14h4M14 14h3" stroke="white" stroke-width="1.7" stroke-linecap="round"/></svg><span class="nav-label">Üyelikler</span><div class="nav-dot"></div></div>
@@ -687,6 +707,6 @@
 </div>
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=20260401b"></script>
 </body>
 </html>
