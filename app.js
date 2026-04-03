@@ -49,6 +49,61 @@ function _showFallbackScreen() {
   if (pinScreen) pinScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'none';
   if (introScreen) introScreen.style.display = 'flex';
+  _initFuzzyLogo();
+}
+
+// ── FUZZY LOGO (EasyTV logosu için canvas glitch efekti) ──
+function _initFuzzyLogo() {
+  var wrap = document.getElementById('introLogoWrap');
+  if (!wrap || wrap.dataset.fuzzy) return;
+  wrap.dataset.fuzzy = '1';
+  var logoH = 57;
+  var fuzzRange = 20;
+  var img = new window.Image();
+  img.src = './assets/EasyTVLogo.png';
+  img.onload = function() {
+    var scale = logoH / img.naturalHeight;
+    var logoW = Math.round(img.naturalWidth * scale);
+    var off = document.createElement('canvas');
+    off.width = logoW; off.height = logoH;
+    off.getContext('2d').drawImage(img, 0, 0, logoW, logoH);
+    var cv = document.createElement('canvas');
+    cv.width = logoW + fuzzRange * 2; cv.height = logoH;
+    cv.style.cssText = 'height:' + logoH + 'px;width:auto;display:block;';
+    wrap.appendChild(cv);
+    var ctx = cv.getContext('2d');
+    var startTime = performance.now();
+    var isGlitching = false;
+    var raf;
+    function scheduleGlitch() {
+      setTimeout(function() {
+        var intro = document.getElementById('introScreen');
+        if (!intro || intro.style.display === 'none') return;
+        isGlitching = true;
+        setTimeout(function() { isGlitching = false; scheduleGlitch(); }, 140 + Math.random() * 80);
+      }, 2200 + Math.random() * 2500);
+    }
+    function draw(ts) {
+      var elapsed = ts - startTime;
+      var intensity;
+      if (elapsed < 700) {
+        intensity = 0.9 * Math.max(0, 1 - elapsed / 700) + 0.05;
+      } else {
+        intensity = isGlitching ? 0.6 : 0.05;
+      }
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      ctx.save();
+      ctx.translate(fuzzRange, 0);
+      for (var j = 0; j < logoH; j++) {
+        var dx = Math.floor(intensity * (Math.random() - 0.5) * fuzzRange * 2);
+        ctx.drawImage(off, 0, j, logoW, 1, dx, j, logoW, 1);
+      }
+      ctx.restore();
+      raf = requestAnimationFrame(draw);
+    }
+    raf = requestAnimationFrame(draw);
+    setTimeout(scheduleGlitch, 900);
+  };
 }
 
 function _showAuthScreens() {
