@@ -848,17 +848,6 @@ function buildServicePicker(){
     el.innerHTML='<div class="sp-logo-wrap">'+logoHtml+'</div>'
       +'<div class="sp-name">'+name+'</div>';
 
-    // Van Gogh swirl on press
-    (function(svc,elem){
-      elem.addEventListener('touchstart',function(e){
-        var touch=e.touches[0];
-        var screen=document.getElementById('onboardScreen');
-        var sr=screen?screen.getBoundingClientRect():{left:0,top:0};
-        startVGEffect(touch.clientX-sr.left, touch.clientY-sr.top, svc.color);
-      },{passive:true});
-      elem.addEventListener('touchend',stopVGEffect,{passive:true});
-      elem.addEventListener('touchcancel',stopVGEffect,{passive:true});
-    })(s,el);
 
     el.onclick=function(){
       var i2=obSelectedServices.indexOf(s.id);
@@ -2304,97 +2293,6 @@ try { _wrapSaveData(); } catch(e) { console.error('_wrapSaveData hatası:', e); 
   });
 })();
 
-// ── VAN GOGH SWIRL CANVAS (Onboard service picker) ──
-var _vg={canvas:null,ctx:null,raf:null,particles:[],spawning:false,ox:196,oy:426,r:139,g:92,b:246};
-
-function _initVG(){
-  var screen=document.getElementById('onboardScreen');
-  if(!screen) return false;
-  if(_vg.canvas && _vg.canvas.parentNode===screen) return true;
-  var c=document.createElement('canvas');
-  c.width=393; c.height=852;
-  c.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;';
-  screen.insertBefore(c,screen.firstChild);
-  _vg.canvas=c; _vg.ctx=c.getContext('2d');
-  return true;
-}
-
-function startVGEffect(x,y,color){
-  if(_vg.raf){cancelAnimationFrame(_vg.raf);_vg.raf=null;}
-  _vg.particles.length=0;
-  if(!_initVG()||!_vg.ctx) return;
-  _vg.spawning=true; _vg.ox=x; _vg.oy=y;
-  var h=color||'#8b5cf6';
-  _vg.r=parseInt(h.slice(1,3),16)||139;
-  _vg.g=parseInt(h.slice(3,5),16)||92;
-  _vg.b=parseInt(h.slice(5,7),16)||246;
-  _vg.ctx.clearRect(0,0,393,852);
-  _vg.raf=requestAnimationFrame(_vgTick);
-}
-
-function stopVGEffect(){_vg.spawning=false;}
-
-function _vgTick(){
-  var ctx=_vg.ctx;
-  if(!ctx){_vg.raf=null;return;}
-  var t=Date.now()*0.001;
-  var r=_vg.r,g=_vg.g,b=_vg.b;
-
-  // Soft trail — persists strokes like wet paint
-  ctx.fillStyle='rgba(0,0,0,0.055)';
-  ctx.fillRect(0,0,393,852);
-
-  // Spawn
-  if(_vg.spawning && _vg.particles.length<220){
-    for(var k=0;k<14;k++){
-      var a=Math.random()*Math.PI*2;
-      var sp=0.6+Math.random()*2;
-      _vg.particles.push({
-        x:_vg.ox+(Math.random()-0.5)*18, y:_vg.oy+(Math.random()-0.5)*18,
-        px:_vg.ox, py:_vg.oy,
-        vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
-        life:1, decay:0.007+Math.random()*0.007,
-        w:1.5+Math.random()*3.5
-      });
-    }
-  }
-
-  // Update + draw as brushstrokes
-  ctx.lineCap='round';
-  var ps=_vg.particles;
-  for(var i=ps.length-1;i>=0;i--){
-    var p=ps[i];
-    p.px=p.x; p.py=p.y;
-
-    // Swirl: tangent of circle around origin + sin/cos waviness
-    var dx=p.x-_vg.ox, dy=p.y-_vg.oy;
-    var dist=Math.sqrt(dx*dx+dy*dy)+1;
-    var baseAngle=Math.atan2(dy,dx)+Math.PI*0.5;
-    var swirlFactor=1.1+Math.sin(dist*0.025+t*1.8)*0.35;
-    var wave=Math.sin(p.x*0.022+t*1.3)*0.7+Math.cos(p.y*0.018-t*0.95)*0.5;
-    var angle=baseAngle*swirlFactor+wave;
-    var str=0.22;
-    p.vx+=Math.cos(angle)*str; p.vy+=Math.sin(angle)*str;
-    p.vx*=0.90; p.vy*=0.90;
-    p.x+=p.vx; p.y+=p.vy;
-    p.life-=p.decay;
-    if(p.life<=0){ps.splice(i,1);continue;}
-
-    ctx.beginPath();
-    ctx.moveTo(p.px,p.py);
-    ctx.lineTo(p.x,p.y);
-    ctx.strokeStyle='rgba('+r+','+g+','+b+','+(p.life*0.72).toFixed(2)+')';
-    ctx.lineWidth=p.w*p.life;
-    ctx.stroke();
-  }
-
-  if(ps.length>0){
-    _vg.raf=requestAnimationFrame(_vgTick);
-  } else {
-    _vg.raf=null;
-    ctx.clearRect(0,0,393,852);
-  }
-}
 
 // ── BAŞLAT ──
 try { applySettings(); } catch(e) { console.error('applySettings hatası:', e); }
