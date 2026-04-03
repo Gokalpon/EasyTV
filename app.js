@@ -161,8 +161,10 @@ function _initLogoGallery() {
     ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#F9D100'],
     ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
   ];
-  var N=S.length, TW=84, TH=112, GAP=14, BR=18, PERSP=14, STEP=TW+GAP, TOTAL=N*STEP;
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=180;
+  // VP is BELOW canvas — fan effect: center card upright, edges tilt outward
+  // Card shape: TOP narrower, BOTTOM wider (lines converge downward to VP)
+  var N=S.length, TW=82, TH=110, GAP=12, BR=16, PERSP=10, STEP=TW+GAP, TOTAL=N*STEP;
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=176;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
@@ -183,25 +185,31 @@ function _initLogoGallery() {
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
   cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
   cv.addEventListener('wheel',function(e){sc.tgt+=e.deltaY*0.6;e.preventDefault();},{passive:false});
-  // Perspective trapezoid: top full width, bottom narrower by PERSP px each side
+  // Trapezoid: TOP narrower (inset p each side), BOTTOM full width — VP below
   function trap(tx,ty,tw,th,r,p){
-    var bx=tx+p, bw=tw-p*2, br2=r*0.65;
+    var r2=r*0.7; // smaller radius for bottom corners
     ctx.beginPath();
-    ctx.moveTo(tx+r,ty); ctx.lineTo(tx+tw-r,ty);
-    ctx.arcTo(tx+tw,ty,tx+tw,ty+r,r);
-    ctx.lineTo(bx+bw,ty+th-br2);
-    ctx.arcTo(bx+bw,ty+th,bx+bw-br2,ty+th,br2);
-    ctx.lineTo(bx+br2,ty+th);
-    ctx.arcTo(bx,ty+th,bx,ty+th-br2,br2);
-    ctx.lineTo(tx,ty+r);
-    ctx.arcTo(tx,ty,tx+r,ty,r);
+    // top edge — narrower, inset by p
+    ctx.moveTo(tx+p+r,ty);
+    ctx.lineTo(tx+tw-p-r,ty);
+    ctx.arcTo(tx+tw-p,ty, tx+tw-p,ty+r, r);
+    // right side — widens toward bottom
+    ctx.lineTo(tx+tw,ty+th-r2);
+    ctx.arcTo(tx+tw,ty+th, tx+tw-r2,ty+th, r2);
+    // bottom edge — full width
+    ctx.lineTo(tx+r2,ty+th);
+    ctx.arcTo(tx,ty+th, tx,ty+th-r2, r2);
+    // left side — widens toward bottom
+    ctx.lineTo(tx+p,ty+r);
+    ctx.arcTo(tx+p,ty, tx+p+r,ty, r);
     ctx.closePath();
   }
-  var H=cW/2, BEND=40, R=(H*H+BEND*BEND)/(2*BEND);
+  // Fan from VP below: negative bend → arc UP (center lowest, edges rise slightly)
+  var H=cW/2, BEND=32, R=(H*H+BEND*BEND)/(2*BEND);
   function tick(){
     var intro=document.getElementById('introScreen');
     if(!intro||intro.style.display==='none'){requestAnimationFrame(tick);return;}
-    if(!dn) sc.tgt+=0.45; // auto-scroll when idle
+    if(!dn) sc.tgt+=0.45;
     sc.cur=lerp(sc.cur,sc.tgt,0.065);
     ctx.clearRect(0,0,cW,cH);
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
@@ -213,14 +221,17 @@ function _initLogoGallery() {
         if(cx<-TW*2||cx>cW+TW*2) continue;
         var eff=Math.min(Math.abs(dx),H);
         var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-        var ty=6+arc;
-        var rot=-Math.sign(dx)*Math.asin(Math.min(eff/R,1))*0.65;
-        var alpha=1-Math.max(0,(Math.abs(dx)/(H*0.9)-0.62)/0.38);
+        // Inverted arc: center is at bottom, edges rise
+        var ty=cH-TH-8+arc*(arc/BEND*0.4)-arc;
+        // Rotation: fan outward from VP below — OPPOSITE sign vs previous
+        var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*0.68;
+        var alpha=1-Math.max(0,(Math.abs(dx)/(H*0.88)-0.60)/0.40);
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
+        // Pivot at bottom-center of card (toward VP)
         ctx.save();
         ctx.globalAlpha=alpha;
-        ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
+        ctx.translate(cx,ty+TH); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH));
         trap(tx,ty,TW,TH,BR,PERSP); ctx.fillStyle=S[i][1]; ctx.fill();
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           ctx.save(); ctx.clip();
