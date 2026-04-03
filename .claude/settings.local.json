@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(start index.html)",
+      "Bash(cp \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/style.css\" \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/www/style.css\")",
+      "Bash(cp \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/app.js\" \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/www/app.js\")",
+      "Bash(cp \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/index.html\" \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/www/index.html\")"
+    ]
+  }
+}

@@ -78,7 +78,6 @@ function _initFuzzyLogo() {
     cv.style.cssText = 'height:' + logoH + 'px;width:auto;display:block;';
     wrap.appendChild(cv);
     var ctx = cv.getContext('2d');
-    var startTime = performance.now();
     var isGlitching = false;
     var raf;
     function scheduleGlitch() {
@@ -89,26 +88,23 @@ function _initFuzzyLogo() {
         setTimeout(function() { isGlitching = false; scheduleGlitch(); }, 140 + Math.random() * 80);
       }, 2200 + Math.random() * 2500);
     }
-    function draw(ts) {
-      var elapsed = ts - startTime;
-      var intensity;
-      if (elapsed < 700) {
-        intensity = 0.9 * Math.max(0, 1 - elapsed / 700) + 0.05;
-      } else {
-        intensity = isGlitching ? 0.6 : 0.05;
-      }
+    function draw() {
       ctx.clearRect(0, 0, cv.width, cv.height);
       ctx.save();
       ctx.translate(fuzzRange, 0);
-      for (var j = 0; j < logoH; j++) {
-        var dx = Math.floor(intensity * (Math.random() - 0.5) * fuzzRange * 2);
-        ctx.drawImage(off, 0, j, logoW, 1, dx, j, logoW, 1);
+      if (isGlitching) {
+        for (var j = 0; j < logoH; j++) {
+          var dx = Math.floor(0.6 * (Math.random() - 0.5) * fuzzRange * 2);
+          ctx.drawImage(off, 0, j, logoW, 1, dx, j, logoW, 1);
+        }
+      } else {
+        ctx.drawImage(off, 0, 0, logoW, logoH);
       }
       ctx.restore();
       raf = requestAnimationFrame(draw);
     }
     raf = requestAnimationFrame(draw);
-    setTimeout(scheduleGlitch, 900);
+    setTimeout(scheduleGlitch, 2000);
     // Interactive glitch on tap/click
     function _triggerGlitch() {
       isGlitching = true;
@@ -163,9 +159,9 @@ function _initLogoGallery() {
   ];
   // CircularGallery arc: center card highest, edges drop + tilt outward
   // Card shape: top full width, bottom ~5% narrower (subtle perspective)
-  var N=S.length, TW=84, TH=114, GAP=12, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
-  var PERSP=Math.round(TW*0.025); // ~5% total = 2px per side
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=176;
+  var N=S.length, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
+  var PERSP=Math.round(TW*0.025); // ~5% total
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=180;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
@@ -201,7 +197,7 @@ function _initLogoGallery() {
     ctx.closePath();
   }
   // R from bend: center at BASE_Y, edges drop by arc amount
-  var H=cW/2, BEND=44, R=(H*H+BEND*BEND)/(2*BEND);
+  var H=cW/2, BEND=38, R=(H*H+BEND*BEND)/(2*BEND);
   function tick(){
     var intro=document.getElementById('introScreen');
     if(!intro||intro.style.display==='none'){requestAnimationFrame(tick);return;}
@@ -217,13 +213,12 @@ function _initLogoGallery() {
         if(cx<-TW*2||cx>cW+TW*2) continue;
         var eff=Math.min(Math.abs(dx),H);
         var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-        var ty=8+arc; // center at top, edges drop
-        // Rotation: -sign matches CircularGallery (right card tilts left = CCW)
-        var rot=-Math.sign(dx)*Math.asin(Math.min(eff/R,1))*0.72;
-        var alpha=1-Math.max(0,(Math.abs(dx)/(H*0.9)-0.60)/0.40);
+        var ty=6+arc; // center at top, edges drop down along arc
+        // Rotation: fan outward like dealing poker cards
+        var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*1.1;
+        var alpha=1-Math.max(0,(Math.abs(dx)/H-0.62)/0.26);
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
-        // Pivot at card center
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
@@ -236,12 +231,6 @@ function _initLogoGallery() {
         ctx.restore();
       }
     }
-    ctx.save(); ctx.globalCompositeOperation='destination-out';
-    var gL=ctx.createLinearGradient(0,0,cW*0.15,0); gL.addColorStop(0,'rgba(0,0,0,1)'); gL.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=gL; ctx.fillRect(0,0,cW*0.15,cH);
-    var gR=ctx.createLinearGradient(cW,0,cW*0.85,0); gR.addColorStop(0,'rgba(0,0,0,1)'); gR.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=gR; ctx.fillRect(cW*0.85,0,cW*0.15,cH);
-    ctx.restore();
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
@@ -556,7 +545,6 @@ function showWelcomeFromIntro() {
     if(!ls) return;
     ls.style.display = 'flex';
     ls.style.animation = 'screenSlideIn .38s cubic-bezier(.34,1.2,.64,1) both';
-    _applyLogoReveal(document.getElementById('loginLogo'));
     _charReveal(document.getElementById('loginHeading'), 0.18);
     _charReveal(document.getElementById('loginSub'), 0.46);
   }, 280);
@@ -576,7 +564,6 @@ function goToLogin() {
     ls.style.transition = 'opacity .4s cubic-bezier(.4,0,.2,1)';
     requestAnimationFrame(() => requestAnimationFrame(() => {
       ls.style.opacity = '1';
-      _applyLogoReveal(document.getElementById('loginLogo'));
       _charReveal(document.getElementById('loginHeading'), 0.18);
       _charReveal(document.getElementById('loginSub'), 0.46);
     }));

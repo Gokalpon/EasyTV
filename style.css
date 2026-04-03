@@ -236,12 +236,13 @@ body{width:100vw;min-height:100vh;display:flex;align-items:center;justify-conten
 @keyframes ambFloat3{0%{transform:translate(-30px,0) scale(1);opacity:.4;filter:blur(50px)}35%{transform:translate(50px,-50px) scale(1.25);opacity:.6;filter:blur(40px)}65%{transform:translate(-60px,30px) scale(.8);opacity:.35;filter:blur(65px)}100%{transform:translate(-30px,0) scale(1);opacity:.4;filter:blur(50px)}}
 
 @media (max-width: 430px){
- .phone{width:100vw;max-width:none;height:100dvh;min-height:100vh;border-radius:0;box-shadow:none;}
+ .phone{width:100vw;max-width:none;height:100svh;min-height:unset;border-radius:0;box-shadow:none;}
+ body{align-items:flex-start;}
 }
 
 @media (display-mode: standalone){
- body{background:#000;}
- .phone{max-width:none;width:100vw;height:100dvh;min-height:100dvh;}
+ body{background:#000;align-items:flex-start;}
+ .phone{max-width:none;width:100vw;height:100svh;min-height:unset;}
 }
 
 /* RENK KÖRÜ MODU */
