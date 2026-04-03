@@ -818,6 +818,16 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 #introScreen .cta-btn-white::after{
   display:none !important;
 }
+#introCta{
+  background:#d4d4d4 !important;
+  border:1.5px solid #b8b8b8 !important;
+  box-shadow:none !important;
+  width:fit-content !important;
+  min-width:220px !important;
+  display:block !important;
+  margin:0 auto !important;
+}
+#introCta::after,#introCta::before{display:none !important;}
 #introScreen .intro-cta .cta-btn-label,
 #introScreen .cta-btn-white .cta-btn-label{
   justify-content:center;
