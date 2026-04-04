@@ -50,12 +50,8 @@ function _showFallbackScreen() {
   if (mainApp) mainApp.style.display = 'none';
   if (introScreen) introScreen.style.display = 'flex';
   _initFuzzyLogo();
+  _stabilizeIntroHero();
   _initLogoGallery();
-  // Char reveal on intro text
-  setTimeout(function() {
-    _charReveal(document.getElementById('introTagline'), 0.28);
-    _charReveal(document.getElementById('introSub'), 0.56);
-  }, 50);
 }
 
 // ── FUZZY LOGO (EasyTV logosu için canvas glitch efekti) ──
@@ -63,57 +59,30 @@ function _initFuzzyLogo() {
   var wrap = document.getElementById('introLogoWrap');
   if (!wrap || wrap.dataset.fuzzy) return;
   wrap.dataset.fuzzy = '1';
-  var logoH = 57;
-  var fuzzRange = 20;
-  var img = new window.Image();
-  img.src = './assets/EasyTVLogo.png';
-  img.onload = function() {
-    var scale = logoH / img.naturalHeight;
-    var logoW = Math.round(img.naturalWidth * scale);
-    var off = document.createElement('canvas');
-    off.width = logoW; off.height = logoH;
-    off.getContext('2d').drawImage(img, 0, 0, logoW, logoH);
-    var cv = document.createElement('canvas');
-    cv.width = logoW + fuzzRange * 2; cv.height = logoH;
-    cv.style.cssText = 'height:' + logoH + 'px;width:auto;display:block;';
-    wrap.appendChild(cv);
-    var ctx = cv.getContext('2d');
-    var isGlitching = false;
-    var raf;
-    function scheduleGlitch() {
-      setTimeout(function() {
-        var intro = document.getElementById('introScreen');
-        if (!intro || intro.style.display === 'none') return;
-        isGlitching = true;
-        setTimeout(function() { isGlitching = false; scheduleGlitch(); }, 140 + Math.random() * 80);
-      }, 2200 + Math.random() * 2500);
-    }
-    function draw() {
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      ctx.save();
-      ctx.translate(fuzzRange, 0);
-      if (isGlitching) {
-        for (var j = 0; j < logoH; j++) {
-          var dx = Math.floor(0.6 * (Math.random() - 0.5) * fuzzRange * 2);
-          ctx.drawImage(off, 0, j, logoW, 1, dx, j, logoW, 1);
-        }
-      } else {
-        ctx.drawImage(off, 0, 0, logoW, logoH);
-      }
-      ctx.restore();
-      raf = requestAnimationFrame(draw);
-    }
-    raf = requestAnimationFrame(draw);
-    setTimeout(scheduleGlitch, 2000);
-    // Interactive glitch on tap/click
-    function _triggerGlitch() {
-      isGlitching = true;
-      setTimeout(function() { isGlitching = false; }, 220);
-    }
-    cv.style.cursor = 'pointer';
-    cv.addEventListener('click', _triggerGlitch);
-    cv.addEventListener('touchstart', _triggerGlitch, { passive: true });
-  };
+  var img = document.getElementById('introLogoImg');
+  if (!img) return;
+  img.style.display = 'block';
+  img.style.opacity = '1';
+  img.style.transform = 'none';
+  img.style.filter = 'none';
+}
+
+function _stabilizeIntroHero() {
+  var ids = ['introLogoWrap', 'introLogoImg', 'introTagline', 'introSub'];
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.style.animation = 'none';
+    el.style.transition = 'none';
+    el.style.transform = 'none';
+    el.style.filter = 'none';
+    el.style.opacity = '1';
+    el.style.webkitFilter = 'none';
+    el.style.backdropFilter = 'none';
+    el.style.webkitBackdropFilter = 'none';
+  });
+  var img = document.getElementById('introLogoImg');
+  if (img) img.style.display = 'block';
 }
 
 // ── Char-by-char text reveal ──
@@ -1037,17 +1006,18 @@ function buildServicePicker(){
     var el=document.createElement('div');
     el.className='sp-item'+(sel?' sel':'');
     el.style.setProperty('--sp-accent',s.color||'#8b5cf6');
+    el.style.setProperty('--sp-rgb',s.rgb||'139,92,246');
 
     var logoHtml='';
     if(L&&L.html&&L.html.indexOf('<img')>=0){
       var useHtml=isDark&&L.htmlDark?(sel?L.htmlDark:L.html):L.html;
       var srcM=useHtml.match(/src="([^"]+)"/);
-      logoHtml=srcM?'<img src="'+srcM[1]+'" style="width:52px;height:52px;object-fit:contain;">':'';
+      logoHtml=srcM?'<img src="'+srcM[1]+'">':'';
     } else if(L&&L.html){
       var inlineHtml=isDark&&L.htmlDark?(sel?(L.htmlDark||L.html):L.html):L.html;
-      logoHtml='<div style="transform:scale(.85);width:52px;height:52px;display:flex;align-items:center;justify-content:center;">'+inlineHtml+'</div>';
+      logoHtml='<div class="sp-inline-logo">'+inlineHtml+'</div>';
     } else {
-      logoHtml='<span style="font-size:22px;font-weight:800;color:'+(isDark?'#000':'#fff')+';">'+s.name.slice(0,2).toUpperCase()+'</span>';
+      logoHtml='<span class="sp-text-logo">'+s.name.slice(0,2).toUpperCase()+'</span>';
     }
 
     var name=s.name.length>9?s.name.slice(0,8)+'…':s.name;
@@ -2663,24 +2633,6 @@ function selectPieSlice(idx) {
   }
 }
 
-function renderProfile(){
-  const profileName=document.getElementById('profileName');
-  const profileEmail=document.getElementById('profileEmail');
-  const av=document.getElementById('profileAvatar');
-  const statApps=document.getElementById('statApps');
-  const statSubs=document.getElementById('statSubs');
-  const statSaved=document.getElementById('statSaved');
-  if(profileName)profileName.textContent=PROFILE.name||'Kullanıcı';
-  if(profileEmail)profileEmail.textContent=PROFILE.email||'kullanici@email.com';
-  if(av)av.textContent=(PROFILE.name||'K')[0].toUpperCase();
-  if(statApps)statApps.textContent=SVC.length;
-  if(statSubs)statSubs.textContent=SVC.filter(s=>s.price>0).length;
-  const displayCode=SETTINGS.displayCurrency||'TRY';
-  const totalConverted=SVC.filter(s=>s.price>0).reduce((a,s)=>{const cv=convertPrice(s.price,s.priceCurrency||'TRY');return a+cv.value;},0);
-  const dispSym=(CURRENCIES.find(cc=>cc.code===displayCode)||CURRENCIES[0]).symbol;
-  if(statSaved)statSaved.textContent=dispSym+totalConverted.toFixed(0);
-}
-
 function openEditProfile(){
   const modal=document.getElementById('profileEditModal');
   const editName=document.getElementById('editName');
@@ -2703,57 +2655,6 @@ function saveProfile(){
   renderProfile();
   closeEditProfile();
   showToast('✓ Profil güncellendi');
-}
-
-function exportData(){
-  const data={svc:SVC,settings:SETTINGS,profile:PROFILE};
-  const json=JSON.stringify(data,null,2);
-  const blob=new Blob([json],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download='easytv_backup.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('✓ Veriler kaydedildi');
-}
-
-function triggerImport(){
-  const input=document.createElement('input');
-  input.type='file';
-  input.accept='.json';
-  input.onchange=e=>{
-    const file=e.target.files[0];
-    if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      try{
-        const data=JSON.parse(ev.target.result);
-        if(data.svc)SVC=data.svc;
-        if(data.settings)SETTINGS=data.settings;
-        if(data.profile)PROFILE=data.profile;
-        saveData();
-        buildGrid();
-        renderProfile();
-        showToast('✓ Veriler geri yüklendi');
-      }catch(err){showToast('✗ Geçersiz dosya');}
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-function confirmDeleteAll(){
-  if(confirm('Tüm verileriniz silinecek. Emin misiniz?')){
-    localStorage.clear();
-    SVC=[];
-    SETTINGS={pin:'1111',autolock:true,faceid:true,qrrotate:true};
-    PROFILE={name:'Kullanıcı',email:'kullanici@email.com'};
-    saveData();
-    buildGrid();
-    renderProfile();
-    showToast('✓ Tüm veriler silindi');
-  }
 }
 
 // ══════════════════════════════════════════════════

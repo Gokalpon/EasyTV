@@ -1,12 +1,12 @@
-const CACHE_NAME = 'easytv-static-v1';
+const CACHE_NAME = 'easytv-static-v3';
 const ASSETS = [
   './',
   './index.html',
-  './style.css?v=20260401b',
-  './app.js',
-  './error-handler.js?v=20260401b',
-  './premium-system.js?v=20260401b',
-  './dynamic-theme.js?v=20260401b',
+  './style.css?v=20260404b',
+  './app.js?v=20260404b',
+  './error-handler.js?v=20260404b',
+  './premium-system.js?v=20260404b',
+  './dynamic-theme.js?v=20260404b',
   './akira-font.css',
   './raleway-font.css',
   './manifest.webmanifest',
