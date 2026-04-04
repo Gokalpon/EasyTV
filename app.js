@@ -1004,9 +1004,7 @@ function buildServicePicker(){
     var isDark=s.textDark||(L&&L.textDark);
     var sel=obSelectedServices.includes(s.id);
     var el=document.createElement('div');
-    el.className='sp-item'+(sel?' sel':'');
-    el.style.setProperty('--sp-accent',s.color||'#8b5cf6');
-    el.style.setProperty('--sp-rgb',s.rgb||'139,92,246');
+    el.className='sp-item '+s.id+(sel?' sel':'');
 
     var logoHtml='';
     if(L&&L.html&&L.html.indexOf('<img')>=0){
