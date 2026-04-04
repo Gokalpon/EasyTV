@@ -1022,7 +1022,8 @@ function buildServicePicker(){
 
     var name=s.name.length>9?s.name.slice(0,8)+'…':s.name;
 
-    el.innerHTML='<div class="sp-logo-wrap">'+logoHtml+'</div>'
+    var glowStyle=sel?'background:rgba('+s.rgb+',.4);border-color:rgba('+s.rgb+',.7);box-shadow:0 0 0 1.5px rgba('+s.rgb+',.5),0 0 16px rgba('+s.rgb+',.65),0 0 32px rgba('+s.rgb+',.35),0 0 52px rgba('+s.rgb+',.15);':'';
+    el.innerHTML='<div class="sp-logo-wrap" style="'+glowStyle+'">'+logoHtml+'</div>'
       +'<div class="sp-name">'+name+'</div>';
 
 
