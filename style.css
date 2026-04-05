@@ -574,9 +574,9 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .sp-item:active{transform:scale(.92);}
 .sp-logo-wrap{width:80px;height:80px;border-radius:20px;display:flex;justify-content:center;align-items:center;position:relative;background:rgba(255,255,255,.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-top:1px solid rgba(255,255,255,.25);border-left:1px solid rgba(255,255,255,.25);box-shadow:0 4px 20px rgba(0,0,0,.5);transition:transform .2s ease,box-shadow .2s ease;}
 .sp-logo-wrap:hover{transform:translateY(-2px);}
-.sp-logo-wrap img,.sp-inline-logo{width:40px;height:40px;object-fit:contain;filter:brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,.6));}
+.sp-logo-wrap img,.sp-inline-logo{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
 .sp-inline-logo{display:flex;align-items:center;justify-content:center;}
-.sp-text-logo{font-size:18px;font-weight:800;color:#fff;filter:brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,.6));}
+.sp-text-logo{font-size:18px;font-weight:800;color:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
 .sp-name{color:#a0a0a0;font-size:12px;font-weight:500;}
 .sp-item.netflix .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(229,9,20,.35);}
 .sp-item.spotify .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(30,215,96,.35);}
