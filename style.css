@@ -572,24 +572,37 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .service-pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;justify-items:center;padding:4px 0 20px;}
 .sp-item{display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .sp-item:active{transform:scale(.92);}
-.sp-logo-wrap{width:80px;height:80px;border-radius:20px;display:flex;justify-content:center;align-items:center;position:relative;background:url('./assets/box2.png') center/cover no-repeat;border:none;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:transform .2s ease,box-shadow .2s ease;}
+.sp-logo-wrap{width:84px;height:84px;border-radius:20px;display:flex;justify-content:center;align-items:center;position:relative;background:url('./assets/box2.png') center/cover no-repeat;border:1.5px solid transparent;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:all .25s cubic-bezier(.34,1.4,.64,1);overflow:hidden;}
+.sp-logo-wrap::after{content:'';position:absolute;inset:0;border-radius:inherit;background:transparent;transition:background .25s ease;pointer-events:none;z-index:1;}
 .sp-logo-wrap:hover{transform:translateY(-2px);}
-.sp-logo-wrap img,.sp-inline-logo{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
+.sp-logo-wrap img,.sp-inline-logo{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));position:relative;z-index:2;}
 .sp-inline-logo{display:flex;align-items:center;justify-content:center;}
-.sp-text-logo{font-size:18px;font-weight:800;color:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
+.sp-text-logo{font-size:20px;font-weight:800;color:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));position:relative;z-index:2;}
 .sp-name{color:#a0a0a0;font-size:12px;font-weight:500;}
-.sp-item.sel.netflix .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(229,9,20,.6),0 0 60px rgba(229,9,20,.3);}
-.sp-item.sel.spotify .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(30,215,96,.6),0 0 60px rgba(30,215,96,.3);}
-.sp-item.sel.tvplus .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(255,180,0,.6),0 0 60px rgba(255,180,0,.3);}
-.sp-item.sel.youtube .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(255,0,0,.6),0 0 60px rgba(255,0,0,.3);}
-.sp-item.sel.twitch .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(145,70,255,.6),0 0 60px rgba(145,70,255,.3);}
-.sp-item.sel.prime .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(0,168,225,.6),0 0 60px rgba(0,168,225,.3);}
-.sp-item.sel.disney .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(17,60,207,.6),0 0 60px rgba(17,60,207,.3);}
-.sp-item.sel.hbo .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(145,70,255,.6),0 0 60px rgba(145,70,255,.3);}
-.sp-item.sel.apple .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(200,200,200,.5),0 0 60px rgba(200,200,200,.2);}
-.sp-item.sel.kick .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(83,252,24,.6),0 0 60px rgba(83,252,24,.3);}
-.sp-item.sel.exxen .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(249,209,0,.6),0 0 60px rgba(249,209,0,.3);}
-.sp-item.sel.bein .sp-logo-wrap{box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(111,45,168,.6),0 0 60px rgba(111,45,168,.3);}
+.sp-item.sel.netflix .sp-logo-wrap{border-color:rgba(229,9,20,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(229,9,20,.6),0 0 60px rgba(229,9,20,.3);}
+.sp-item.sel.netflix .sp-logo-wrap::after{background:rgba(229,9,20,.25);}
+.sp-item.sel.spotify .sp-logo-wrap{border-color:rgba(30,215,96,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(30,215,96,.6),0 0 60px rgba(30,215,96,.3);}
+.sp-item.sel.spotify .sp-logo-wrap::after{background:rgba(30,215,96,.25);}
+.sp-item.sel.tvplus .sp-logo-wrap{border-color:rgba(255,180,0,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(255,180,0,.6),0 0 60px rgba(255,180,0,.3);}
+.sp-item.sel.tvplus .sp-logo-wrap::after{background:rgba(255,180,0,.25);}
+.sp-item.sel.youtube .sp-logo-wrap{border-color:rgba(255,0,0,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(255,0,0,.6),0 0 60px rgba(255,0,0,.3);}
+.sp-item.sel.youtube .sp-logo-wrap::after{background:rgba(255,0,0,.25);}
+.sp-item.sel.twitch .sp-logo-wrap{border-color:rgba(145,70,255,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(145,70,255,.6),0 0 60px rgba(145,70,255,.3);}
+.sp-item.sel.twitch .sp-logo-wrap::after{background:rgba(145,70,255,.25);}
+.sp-item.sel.prime .sp-logo-wrap{border-color:rgba(0,168,225,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(0,168,225,.6),0 0 60px rgba(0,168,225,.3);}
+.sp-item.sel.prime .sp-logo-wrap::after{background:rgba(0,168,225,.25);}
+.sp-item.sel.disney .sp-logo-wrap{border-color:rgba(17,60,207,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(17,60,207,.6),0 0 60px rgba(17,60,207,.3);}
+.sp-item.sel.disney .sp-logo-wrap::after{background:rgba(17,60,207,.25);}
+.sp-item.sel.hbo .sp-logo-wrap{border-color:rgba(145,70,255,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(145,70,255,.6),0 0 60px rgba(145,70,255,.3);}
+.sp-item.sel.hbo .sp-logo-wrap::after{background:rgba(145,70,255,.25);}
+.sp-item.sel.apple .sp-logo-wrap{border-color:rgba(200,200,200,.4);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(200,200,200,.5),0 0 60px rgba(200,200,200,.2);}
+.sp-item.sel.apple .sp-logo-wrap::after{background:rgba(200,200,200,.15);}
+.sp-item.sel.kick .sp-logo-wrap{border-color:rgba(83,252,24,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(83,252,24,.6),0 0 60px rgba(83,252,24,.3);}
+.sp-item.sel.kick .sp-logo-wrap::after{background:rgba(83,252,24,.25);}
+.sp-item.sel.exxen .sp-logo-wrap{border-color:rgba(249,209,0,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(249,209,0,.6),0 0 60px rgba(249,209,0,.3);}
+.sp-item.sel.exxen .sp-logo-wrap::after{background:rgba(249,209,0,.25);}
+.sp-item.sel.bein .sp-logo-wrap{border-color:rgba(111,45,168,.55);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 30px rgba(111,45,168,.6),0 0 60px rgba(111,45,168,.3);}
+.sp-item.sel.bein .sp-logo-wrap::after{background:rgba(111,45,168,.25);}
 .sp-item.sel .sp-name{color:#fff;}
 @keyframes spItemIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
