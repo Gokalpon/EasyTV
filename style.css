@@ -577,7 +577,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .sp-inline-logo{display:flex;align-items:center;justify-content:center;}
 .sp-text-logo{font-size:22px;font-weight:800;color:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
 .sp-name{color:#a0a0a0;font-size:11px;font-weight:500;}
-.sp-item::before{content:'';position:absolute;bottom:-2px;left:5px;width:70px;height:70px;border-radius:50%;z-index:0;opacity:0;filter:blur(14px);transition:opacity .3s ease;}
+.sp-item::before{content:'';position:absolute;top:0;left:0;width:90px;height:90px;border-radius:20px;z-index:0;opacity:0;filter:blur(12px);transition:opacity .3s ease;}
 .sp-item.sel::before{opacity:1;}
 .sp-item.sel.netflix::before{background:rgba(229,9,20,.65);}
 .sp-item.sel.spotify::before{background:rgba(30,215,96,.65);}
