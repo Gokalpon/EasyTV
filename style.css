@@ -577,7 +577,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .sp-inline-logo{display:flex;align-items:center;justify-content:center;}
 .sp-text-logo{font-size:22px;font-weight:800;color:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
 .sp-name{color:#a0a0a0;font-size:11px;font-weight:500;}
-.sp-item::before{content:'';position:absolute;top:4px;left:-4px;width:90px;height:90px;border-radius:20px;z-index:0;opacity:0;filter:blur(5px);transition:opacity .3s ease;}
+.sp-item::before{content:'';position:absolute;bottom:-6px;left:-4px;width:90px;height:90px;border-radius:20px;z-index:0;opacity:0;filter:blur(5px);transition:opacity .3s ease;}
 .sp-item.sel::before{opacity:1;}
 .sp-item.sel.netflix::before{background:rgba(229,9,20,.65);}
 .sp-item.sel.spotify::before{background:rgba(30,215,96,.65);}
@@ -592,17 +592,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .sp-item.sel.exxen::before{background:rgba(249,209,0,.65);}
 .sp-item.sel.bein::before{background:rgba(111,45,168,.65);}
 .sp-item.sel .sp-name{color:#fff;}
-.sp-item.sel .sp-logo-wrap{
-  background-image:
-    radial-gradient(ellipse at top left,    rgba(255,255,255,.32) 0%, transparent 52%),
-    radial-gradient(ellipse at top right,   rgba(255,255,255,.32) 0%, transparent 52%),
-    radial-gradient(ellipse at bottom left, rgba(255,255,255,.18) 0%, transparent 48%),
-    radial-gradient(ellipse at bottom right,rgba(255,255,255,.18) 0%, transparent 48%);
-  background-color:rgba(var(--sp-rgb),.32);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 4px 20px rgba(0,0,0,.5);
-}
+.sp-item.sel .sp-logo-wrap{background:url('./assets/box1.png') center/cover no-repeat;}
 @keyframes spItemIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 .cta-btn{
