@@ -1005,6 +1005,7 @@ function buildServicePicker(){
     var sel=obSelectedServices.includes(s.id);
     var el=document.createElement('div');
     el.className='sp-item '+s.id+(sel?' sel':'');
+    if(s.rgb) el.style.setProperty('--sp-rgb', s.rgb);
 
     var logoHtml='';
     if(L&&L.html&&L.html.indexOf('<img')>=0){
