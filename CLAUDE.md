@@ -56,3 +56,10 @@ vercel.json         — Vercel deployment ayarları
 ## Bağımlılıklar
 - `@supabase/supabase-js@2` — CDN üzerinden yüklenir
 - Google Fonts: Space Grotesk, Inter, Syne, Playfair Display, Raleway
+
+## Çalışma Stili — UI İterasyon Yöntemi
+Kullanıcı localhost'a erişemez (Claude Code uzak sunucuda çalışır). UI değişikliklerini iteratif yaparken:
+1. **Slider/tuner panel**: CSS değerlerini canlı ayarlamak için geçici bir floating panel ekle (`position:fixed`, sağ-alt köşe). Kullanıcı Vercel'den açar, slider'larla ayarlar, CSS'i kopyalar.
+2. **Önce CSS'i göster**: Push etmeden önce değişikliği kullanıcıya yaz, onay bekle.
+3. **Paneli kaldır**: Kullanıcı final değerleri onayladıktan sonra paneli index.html'den temizle.
+- Tuner panel örneği: `<!-- BACKLIGHT TUNER — KALDIRILACAK -->` bloğu olarak işaretle.
