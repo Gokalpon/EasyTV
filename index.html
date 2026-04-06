@@ -671,5 +671,77 @@
 </div>
 
 <script src="app.js?v=20260404c"></script>
+
+<!-- BACKLIGHT TUNER — KALDIRILACAK -->
+<div id="bl-tuner" style="position:fixed;bottom:16px;right:16px;z-index:99999;background:rgba(0,0,0,.92);border:1px solid #333;border-radius:12px;padding:14px;width:220px;font-family:monospace;font-size:11px;color:#fff;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <b style="color:#a78bfa;">⚡ Backlight</b>
+    <button onclick="document.getElementById('bl-tuner').style.display='none'" style="background:none;border:none;color:#888;cursor:pointer;font-size:14px;">✕</button>
+  </div>
+  <div id="bl-rows"></div>
+  <div style="margin-top:10px;background:#1a1a2e;border-radius:6px;padding:8px;color:#a78bfa;white-space:pre;font-size:10px;line-height:1.6;" id="bl-out"></div>
+  <button onclick="navigator.clipboard.writeText(document.getElementById('bl-out').textContent)" style="margin-top:8px;width:100%;background:#7c3aed;color:#fff;border:none;border-radius:6px;padding:6px;cursor:pointer;font-size:11px;">📋 Kopyala</button>
+</div>
+<style id="bl-live"></style>
+<script>
+(function(){
+  const params = [
+    {id:'top',    label:'top',    min:-30, max:60,  val:5,    unit:'px'},
+    {id:'left',   label:'left',   min:-30, max:60,  val:-7,   unit:'px'},
+    {id:'width',  label:'width',  min:30,  max:150, val:90,   unit:'px'},
+    {id:'height', label:'height', min:30,  max:150, val:90,   unit:'px'},
+    {id:'radius', label:'radius', min:0,   max:60,  val:10,   unit:'px'},
+    {id:'blur',   label:'blur',   min:0,   max:30,  val:10,   unit:'px'},
+    {id:'opacity',label:'opacity',min:0,   max:1,   val:0.65, unit:'', step:0.05},
+  ];
+
+  const rows = document.getElementById('bl-rows');
+  params.forEach(p => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:6px;';
+    row.innerHTML = `
+      <span style="width:50px;color:#888;">${p.label}</span>
+      <input type="range" min="${p.min}" max="${p.max}" value="${p.val}" step="${p.step||1}" data-id="${p.id}" style="flex:1;accent-color:#7c3aed;">
+      <span id="lbl-${p.id}" style="width:36px;text-align:right;color:#fff;">${p.val}${p.unit}</span>
+    `;
+    rows.appendChild(row);
+  });
+
+  function update() {
+    const v = {};
+    params.forEach(p => {
+      const el = document.querySelector(`[data-id="${p.id}"]`);
+      v[p.id] = parseFloat(el.value);
+      document.getElementById('lbl-'+p.id).textContent = v[p.id] + p.unit;
+    });
+
+    document.getElementById('bl-live').textContent = `
+      .sp-item::before {
+        top: ${v.top}px !important;
+        left: ${v.left}px !important;
+        width: ${v.width}px !important;
+        height: ${v.height}px !important;
+        border-radius: ${v.radius}px !important;
+        filter: blur(${v.blur}px) !important;
+      }
+    `;
+
+    document.getElementById('bl-out').textContent =
+`.sp-item::before {
+  top: ${v.top}px;
+  left: ${v.left}px;
+  width: ${v.width}px;
+  height: ${v.height}px;
+  border-radius: ${v.radius}px;
+  filter: blur(${v.blur}px);
+  opacity (colors): ${v.opacity};
+}`;
+  }
+
+  rows.addEventListener('input', update);
+  update();
+})();
+</script>
+<!-- /BACKLIGHT TUNER -->
 </body>
 </html>
