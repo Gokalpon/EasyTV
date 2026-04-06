@@ -572,12 +572,25 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .service-pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;justify-items:center;padding:4px 0 20px;}
 .sp-item{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;}
 .sp-item:active .sp-logo-wrap{transform:scale(.92);}
-.sp-logo-wrap{width:90px;height:90px;border-radius:20px;display:flex;justify-content:center;align-items:center;position:relative;z-index:1;background:url('./assets/box1.png') center/cover no-repeat;border:none;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:transform .25s cubic-bezier(.34,1.4,.64,1);}
+.sp-logo-wrap{width:90px;height:90px;border-radius:20px;display:flex;justify-content:center;align-items:center;position:relative;z-index:1;background:url('./assets/box1.png') center/cover no-repeat;border:none;box-shadow:none;transition:transform .25s cubic-bezier(.34,1.4,.64,1);}
 .sp-logo-wrap img,.sp-inline-logo{width:54px;height:54px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
 .sp-inline-logo{display:flex;align-items:center;justify-content:center;}
 .sp-text-logo{font-size:22px;font-weight:800;color:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
 .sp-name{color:#a0a0a0;font-size:11px;font-weight:500;}
-
+.sp-item::before{content:'';position:absolute;bottom:-2px;left:5px;width:70px;height:70px;border-radius:50%;z-index:0;opacity:0;filter:blur(14px);transition:opacity .3s ease;}
+.sp-item.sel::before{opacity:1;}
+.sp-item.sel.netflix::before{background:rgba(229,9,20,.65);}
+.sp-item.sel.spotify::before{background:rgba(30,215,96,.65);}
+.sp-item.sel.tvplus::before{background:rgba(255,180,0,.65);}
+.sp-item.sel.youtube::before{background:rgba(255,0,0,.65);}
+.sp-item.sel.twitch::before{background:rgba(145,70,255,.65);}
+.sp-item.sel.prime::before{background:rgba(0,168,225,.65);}
+.sp-item.sel.disney::before{background:rgba(17,60,207,.65);}
+.sp-item.sel.hbo::before{background:rgba(145,70,255,.65);}
+.sp-item.sel.apple::before{background:rgba(200,200,200,.6);}
+.sp-item.sel.kick::before{background:rgba(83,252,24,.65);}
+.sp-item.sel.exxen::before{background:rgba(249,209,0,.65);}
+.sp-item.sel.bein::before{background:rgba(111,45,168,.65);}
 .sp-item.sel .sp-name{color:#fff;}
 @keyframes spItemIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
