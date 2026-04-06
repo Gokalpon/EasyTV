@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Backlight Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0f; color: #fff; font-family: monospace; display: flex; height: 100vh; }
+
+  /* Preview panel */
+  .preview {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    background: #000;
+  }
+
+  .sp-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .sp-logo-wrap {
+    width: 90px;
+    height: 90px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    background: url('./assets/box1.png') center/cover no-repeat;
+    border: none;
+    box-shadow: none;
+  }
+
+  .sp-logo-wrap img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.4));
+  }
+
+  .sp-name { color: #a0a0a0; font-size: 11px; font-weight: 500; }
+  .sp-item.sel .sp-name { color: #fff; }
+
+  .sp-item::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  .sp-item.sel::before { opacity: 1; }
+
+  /* Controls panel */
+  .controls {
+    width: 320px;
+    background: #111;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+  }
+
+  .controls h2 { font-size: 14px; color: #aaa; margin-bottom: 4px; }
+
+  .ctrl-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ctrl-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #888;
+  }
+
+  .ctrl-label span { color: #fff; font-weight: bold; }
+
+  input[type=range] {
+    width: 100%;
+    accent-color: #7c3aed;
+    cursor: pointer;
+  }
+
+  .output-box {
+    background: #1a1a2e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 11px;
+    color: #7c3aed;
+    line-height: 1.8;
+    white-space: pre;
+  }
+
+  .colors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .color-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .color-btn.active { border-color: #fff; }
+
+  .copy-btn {
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  .copy-btn:hover { background: #6d28d9; }
+</style>
+</head>
+<body>
+
+<div class="preview" id="preview">
+  <!-- Cards injected by JS -->
+</div>
+
+<div class="controls">
+  <h2>🎛 Backlight Ayarları</h2>
+
+  <div class="ctrl-row">
+    <div class="ctrl-label">top <span id="vTop">5px</span></div>
+    <input type="range" id="top" min="-30" max="60" value="5" step="1">
+  </div>
+  <div class="ctrl-row">
+    <div class="ctrl-label">left <span id="vLeft">-7px</span></div>
+    <input type="range" id="left" min="-30" max="60" value="-7" step="1">
+  </div>
+  <div class="ctrl-row">
+    <div class="ctrl-label">width <span id="vWidth">90px</span></div>
+    <input type="range" id="width" min="30" max="160" value="90" step="1">
+  </div>
+  <div class="ctrl-row">
+    <div class="ctrl-label">height <span id="vHeight">90px</span></div>
+    <input type="range" id="height" min="30" max="160" value="90" step="1">
+  </div>
+  <div class="ctrl-row">
+    <div class="ctrl-label">border-radius <span id="vRadius">10px</span></div>
+    <input type="range" id="radius" min="0" max="80" value="10" step="1">
+  </div>
+  <div class="ctrl-row">
+    <div class="ctrl-label">blur <span id="vBlur">10px</span></div>
+    <input type="range" id="blur" min="0" max="40" value="10" step="1">
+  </div>
+  <div class="ctrl-row">
+    <div class="ctrl-label">opacity <span id="vOpacity">0.65</span></div>
+    <input type="range" id="opacity" min="0" max="1" value="0.65" step="0.05">
+  </div>
+
+  <div>
+    <div class="ctrl-label" style="margin-bottom:8px;">Renk</div>
+    <div class="colors" id="colorPicker"></div>
+  </div>
+
+  <div class="output-box" id="output"></div>
+  <button class="copy-btn" onclick="copyCSS()">📋 CSS'i Kopyala</button>
+</div>
+
+<script>
+const COLORS = {
+  netflix:  {name:'Netflix',  bg:'rgba(229,9,20,VAL)',    logo:'./assets/netflix_N.png'},
+  youtube:  {name:'YouTube',  bg:'rgba(255,0,0,VAL)',     logo:'./assets/youtube.png'},
+  spotify:  {name:'Spotify',  bg:'rgba(30,215,96,VAL)',   logo:'./assets/Spotify.png'},
+  kick:     {name:'Kick',     bg:'rgba(83,252,24,VAL)',   logo:'./assets/kick.png'},
+  twitch:   {name:'Twitch',   bg:'rgba(145,70,255,VAL)',  logo:'./assets/twitch.png'},
+  prime:    {name:'Prime',    bg:'rgba(0,168,225,VAL)',   logo:'./assets/prime video.png'},
+  disney:   {name:'Disney+',  bg:'rgba(17,60,207,VAL)',   logo:'./assets/Disney+.png'},
+  exxen:    {name:'EXXEN',    bg:'rgba(249,209,0,VAL)',   logo:'./assets/exxen.png'},
+  tvplus:   {name:'TV+',      bg:'rgba(255,180,0,VAL)',   logo:'./assets/tvplus.png'},
+};
+
+const colorDots = {
+  netflix:'#E50914', youtube:'#FF0000', spotify:'#1DB954',
+  kick:'#53FC18', twitch:'#9146FF', prime:'#1A98FF',
+  disney:'#0ABFBC', exxen:'#F9D100', tvplus:'#FFD100',
+};
+
+let activeColor = 'spotify';
+
+// Build color picker
+const picker = document.getElementById('colorPicker');
+Object.entries(colorDots).forEach(([id, hex]) => {
+  const btn = document.createElement('div');
+  btn.className = 'color-btn' + (id === activeColor ? ' active' : '');
+  btn.style.background = hex;
+  btn.title = COLORS[id].name;
+  btn.onclick = () => {
+    activeColor = id;
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  };
+  picker.appendChild(btn);
+});
+
+// Build preview cards
+const preview = document.getElementById('preview');
+['netflix','spotify','kick'].forEach(id => {
+  const c = COLORS[id];
+  const el = document.createElement('div');
+  el.className = 'sp-item sel ' + id;
+  el.id = 'card-' + id;
+  el.innerHTML = `
+    <div class="sp-logo-wrap">
+      <img src="${c.logo}" alt="${c.name}">
+    </div>
+    <div class="sp-name">${c.name}</div>
+  `;
+  preview.appendChild(el);
+});
+
+function getValues() {
+  return {
+    top:     parseInt(document.getElementById('top').value),
+    left:    parseInt(document.getElementById('left').value),
+    width:   parseInt(document.getElementById('width').value),
+    height:  parseInt(document.getElementById('height').value),
+    radius:  parseInt(document.getElementById('radius').value),
+    blur:    parseInt(document.getElementById('blur').value),
+    opacity: parseFloat(document.getElementById('opacity').value),
+  };
+}
+
+function render() {
+  const v = getValues();
+
+  // Update labels
+  document.getElementById('vTop').textContent    = v.top + 'px';
+  document.getElementById('vLeft').textContent   = v.left + 'px';
+  document.getElementById('vWidth').textContent  = v.width + 'px';
+  document.getElementById('vHeight').textContent = v.height + 'px';
+  document.getElementById('vRadius').textContent = v.radius + 'px';
+  document.getElementById('vBlur').textContent   = v.blur + 'px';
+  document.getElementById('vOpacity').textContent = v.opacity.toFixed(2);
+
+  // Apply to all preview cards
+  ['netflix','spotify','kick'].forEach(id => {
+    const c = COLORS[id];
+    const el = document.getElementById('card-' + id);
+    if (!el) return;
+    const bg = c.bg.replace('VAL', v.opacity.toFixed(2));
+    el.style.setProperty('--bl-top',    v.top + 'px');
+    el.style.setProperty('--bl-left',   v.left + 'px');
+    el.style.setProperty('--bl-width',  v.width + 'px');
+    el.style.setProperty('--bl-height', v.height + 'px');
+    el.style.setProperty('--bl-radius', v.radius + 'px');
+    el.style.setProperty('--bl-blur',   v.blur + 'px');
+    el.style.setProperty('--bl-bg',     bg);
+  });
+
+  // Inject ::before via style tag
+  let style = document.getElementById('bl-style');
+  if (!style) { style = document.createElement('style'); style.id = 'bl-style'; document.head.appendChild(style); }
+  style.textContent = `
+    #card-netflix::before  { background: ${COLORS.netflix.bg.replace('VAL', v.opacity.toFixed(2))}; }
+    #card-spotify::before  { background: ${COLORS.spotify.bg.replace('VAL', v.opacity.toFixed(2))}; }
+    #card-kick::before     { background: ${COLORS.kick.bg.replace('VAL', v.opacity.toFixed(2))}; }
+    .sp-item::before {
+      top: ${v.top}px !important;
+      left: ${v.left}px !important;
+      width: ${v.width}px !important;
+      height: ${v.height}px !important;
+      border-radius: ${v.radius}px !important;
+      filter: blur(${v.blur}px) !important;
+    }
+  `;
+
+  // Update CSS output
+  document.getElementById('output').textContent =
+`.sp-item::before {
+  top: ${v.top}px;
+  left: ${v.left}px;
+  width: ${v.width}px;
+  height: ${v.height}px;
+  border-radius: ${v.radius}px;
+  filter: blur(${v.blur}px);
+  opacity: ${v.opacity.toFixed(2)};  /* .sel only */
+}`;
+}
+
+function copyCSS() {
+  const text = document.getElementById('output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ Kopyalandı!';
+    setTimeout(() => btn.textContent = "📋 CSS'i Kopyala", 1500);
+  });
+}
+
+// Listen to all sliders
+document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', render));
+
+render();
+</script>
+</body>
+</html>
