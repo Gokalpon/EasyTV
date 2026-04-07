@@ -201,27 +201,21 @@ function _initLogoGallery() {
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-        // Kart dokusu
-        trap(tx,ty,TW,TH,BR,PERSP);
-        ctx.save();
-        ctx.clip();
+        // box1_long.png — şeffaf arka plan, klipsiz direkt çiz (contain)
         if(boxImg.complete&&boxImg.naturalWidth>0){
           var bw=boxImg.naturalWidth,bh=boxImg.naturalHeight;
-          var bs=Math.max(TW/bw,TH/bh);
+          var bs=Math.min(TW/bw,TH/bh);
           var bW=bw*bs,bH=bh*bs;
           ctx.drawImage(boxImg,tx+(TW-bW)/2,ty+(TH-bH)/2,bW,bH);
-        } else {
-          ctx.fillStyle='#1a1a2e'; ctx.fill();
         }
         // Logo (contain — oran korunur)
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
-          var maxSz=TW*0.62;
+          var maxSz=TW*0.58;
           var is=Math.min(maxSz/iw,maxSz/ih);
           var iW=iw*is,iH=ih*is;
           ctx.drawImage(imgs[i],tx+(TW-iW)/2,ty+(TH-iH)/2-4,iW,iH);
         }
-        ctx.restore();
         ctx.restore();
       }
     }
