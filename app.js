@@ -41,13 +41,27 @@ function _showFallbackScreen() {
   const mainApp = document.getElementById('mainApp');
   const introScreen = document.getElementById('introScreen');
   if (authLoading) authLoading.style.display = 'none';
-  if (bottomNav) bottomNav.style.display = 'none';
-  // Her zaman intro ekranı göster
   if (welcomeScreen) welcomeScreen.style.display = 'none';
   if (loginScreen) loginScreen.style.display = 'none';
   if (onboardScreen) onboardScreen.style.display = 'none';
-  if (pinScreen) pinScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'none';
+  // Onboarding tamamlandıysa intro'ya değil PIN/ana ekrana git
+  if (localStorage.getItem('easytv_setup_done') === '1') {
+    if (introScreen) introScreen.style.display = 'none';
+    if (SETTINGS && SETTINGS.usePin !== false && SETTINGS.pin) {
+      if (bottomNav) bottomNav.style.display = 'none';
+      if (pinScreen) pinScreen.style.display = 'flex';
+      _applyLogoReveal && _applyLogoReveal(pinScreen && pinScreen.querySelector('.pin-logo img'));
+      _charReveal(document.getElementById('pinGreeting'), 0.15);
+    } else {
+      if (pinScreen) pinScreen.style.display = 'none';
+      unlockApp();
+    }
+    return;
+  }
+  // Onboarding yapılmamış — intro göster
+  if (bottomNav) bottomNav.style.display = 'none';
+  if (pinScreen) pinScreen.style.display = 'none';
   if (introScreen) introScreen.style.display = 'flex';
   _initFuzzyLogo();
   _stabilizeIntroHero();
@@ -1408,14 +1422,9 @@ function unlockApp() {
     if (pinHint) pinHint.textContent = 'PIN ile giriş yapın';
     pinVal = ''; updatePinDots();
   }, 520);
-  // Sekmeleri başlat — sadece home görünür
-  ['subs','profile','settings'].forEach(id => {
-    const el = document.getElementById('tab-' + id);
-    if (el) el.style.display = 'none';
-  });
-  const homeEl = document.getElementById('tab-home');
-  if (homeEl) homeEl.style.display = 'flex';
-  curTab = 'home';
+  // Sekme geçişini switchTab ile yap — nav .active class doğru güncellensin
+  curTab = null;
+  switchTab('home');
   _decryptSVCInMemory().then(()=>{buildGrid();renderSubs&&renderSubs();});
   applySettings(); applyLang(); checkRenewals(); resetLockTimer();
   scheduleRenewalNotifs && scheduleRenewalNotifs();
