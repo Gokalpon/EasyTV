@@ -141,10 +141,10 @@ function _initLogoGallery() {
     ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
   ];
 
-  // TW:TH = 1536:2752 = 9:16 — box1_long.png orijinal oranı
-  var N=S.length, TW=92, TH=165, GAP=14, BR=20, STEP=TW+GAP, TOTAL=N*STEP;
+  // TW:TH = 1536:2752 = 9:16 — box1_long.png orijinal oranı korundu
+  var N=S.length, TW=108, TH=193, GAP=14, BR=24, STEP=TW+GAP, TOTAL=N*STEP;
   var PERSP=0;
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=215;
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=240;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
