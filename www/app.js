@@ -141,9 +141,9 @@ function _initLogoGallery() {
     ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
   ];
 
-  var N=S.length, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
+  var N=S.length, TW=106, TH=143, GAP=14, BR=18, STEP=TW+GAP, TOTAL=N*STEP;
   var PERSP=Math.round(TW*0.025);
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=188;
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=206;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
@@ -206,14 +206,20 @@ function _initLogoGallery() {
         ctx.save();
         ctx.clip();
         if(boxImg.complete&&boxImg.naturalWidth>0){
-          ctx.drawImage(boxImg,tx,ty,TW,TH);
+          var bw=boxImg.naturalWidth,bh=boxImg.naturalHeight;
+          var bs=Math.max(TW/bw,TH/bh);
+          var bW=bw*bs,bH=bh*bs;
+          ctx.drawImage(boxImg,tx+(TW-bW)/2,ty+(TH-bH)/2,bW,bH);
         } else {
           ctx.fillStyle='#1a1a2e'; ctx.fill();
         }
-        // Logo
+        // Logo (contain — oran korunur)
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
-          var sz=TW*0.62;
-          ctx.drawImage(imgs[i],tx+(TW-sz)/2,ty+(TH-sz)/2-4,sz,sz);
+          var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
+          var maxSz=TW*0.62;
+          var is=Math.min(maxSz/iw,maxSz/ih);
+          var iW=iw*is,iH=ih*is;
+          ctx.drawImage(imgs[i],tx+(TW-iW)/2,ty+(TH-iH)/2-4,iW,iH);
         }
         ctx.restore();
         ctx.restore();
