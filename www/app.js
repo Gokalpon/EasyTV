@@ -218,7 +218,6 @@ function _initLogoGallery() {
   var cW=el.offsetWidth||393, cH=244;
   // OVER: extra canvas space above/below so glow is never clipped
   var OVER=90, cvH=cH+OVER*2;
-
   el.style.height=cH+'px';
   el.style.overflow='visible'; // allow glow to bleed outside div
   el.style.position='relative';
@@ -327,7 +326,13 @@ function _initLogoGallery() {
         ctx.translate(-pos.cx, -(pos.ty+TH/2));
 
         if(boxImg.complete&&boxImg.naturalWidth>0){
-          ctx.drawImage(boxImg, pos.tx, pos.ty, TW, TH);
+          var bw=boxImg.naturalWidth,bh=boxImg.naturalHeight;
+          var bs=Math.max(TW/bw,TH/bh);
+          var bW=bw*bs,bH=bh*bs;
+          drawRR(pos.tx,pos.ty,TW,TH,14);
+          ctx.save(); ctx.clip();
+          ctx.drawImage(boxImg,pos.tx+(TW-bW)/2,pos.ty+(TH-bH)/2,bW,bH);
+          ctx.restore();
         }
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           var iw=imgs[i].naturalWidth, ih=imgs[i].naturalHeight;
