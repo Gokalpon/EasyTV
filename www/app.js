@@ -127,20 +127,13 @@ function _charReveal(el, baseDelay) {
   el.innerHTML = result;
 }
 
-// ── Circular Gallery — box1_long.png + brand backlight ──
+// ── Circular Gallery — sadece box1_long.png dokusu ──
 function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
   el.dataset.init = '1';
-  // [renk, brandColor] — logo yok, sadece tint + backlight
-  var S = [
-    '#E50914','#FF0000','#0ABFBC','#1A98FF',
-    '#3B1F6B','#f5f5f7','#1DB954','#9146FF',
-    '#FFD100','#F9D100','#6F2DA8','#53FC18'
-  ];
-  function hexRgb(hex){return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
 
-  var N=S.length, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
+  var N=12, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
   var PERSP=Math.round(TW*0.025);
   var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=188;
   el.style.height=cH+'px';
@@ -162,7 +155,6 @@ function _initLogoGallery() {
   cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
   cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
-  // Trapezoid kart şekli
   function trap(tx,ty,tw,th,r,p){
     var br2=r*0.72;
     ctx.beginPath();
@@ -197,23 +189,9 @@ function _initLogoGallery() {
         var alpha=1-Math.max(0,(Math.abs(dx)/H-0.62)/0.26);
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
-        var rgb=hexRgb(S[i]);
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-
-        // 1 — Backlight glow (tile neonPulse gibi — renkli, alttan)
-        ctx.save();
-        ctx.shadowColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.8)';
-        ctx.shadowBlur=22;
-        ctx.shadowOffsetX=0;
-        ctx.shadowOffsetY=10;
-        trap(tx,ty,TW,TH,BR,PERSP);
-        ctx.fillStyle='rgba(0,0,0,.01)';
-        ctx.fill();
-        ctx.restore();
-
-        // 2 — box1_long.png dokusu (clip içinde)
         trap(tx,ty,TW,TH,BR,PERSP);
         ctx.save();
         ctx.clip();
@@ -222,14 +200,7 @@ function _initLogoGallery() {
         } else {
           ctx.fillStyle='#1a1a2e'; ctx.fill();
         }
-        // 3 — Brand renk tint
-        ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.30)';
-        ctx.fillRect(tx,ty,TW,TH);
-        // 4 — Üst inset highlight (tile'daki inset 0 1px 0 rgba(255,255,255,.1) gibi)
-        ctx.fillStyle='rgba(255,255,255,0.07)';
-        ctx.fillRect(tx,ty,TW,2);
         ctx.restore();
-
         ctx.restore();
       }
     }
