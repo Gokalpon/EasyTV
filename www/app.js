@@ -1196,16 +1196,6 @@ function buildGrid() {
     tile.addEventListener('pointerdown', (e) => dragStart(e, tile, i));
     tile.addEventListener('pointerup', (e) => {
       if (!_dragMoved) {
-        // Ripple efekti
-        const rect = tile.getBoundingClientRect();
-        const rp = document.createElement('span');
-        rp.className = 'ripple';
-        const sz = Math.max(rect.width, rect.height);
-        rp.style.width = rp.style.height = sz + 'px';
-        rp.style.left = (e.clientX - rect.left - sz/2) + 'px';
-        rp.style.top = (e.clientY - rect.top - sz/2) + 'px';
-        tile.appendChild(rp);
-        setTimeout(() => rp.remove(), 500);
         tap(i);
       }
     });
