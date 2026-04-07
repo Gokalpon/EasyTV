@@ -141,9 +141,10 @@ function _initLogoGallery() {
     ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
   ];
 
-  var N=S.length, TW=106, TH=143, GAP=14, BR=18, STEP=TW+GAP, TOTAL=N*STEP;
-  var PERSP=Math.round(TW*0.025);
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=206;
+  // TW:TH = 1536:2752 = 9:16 — box1_long.png orijinal oranı
+  var N=S.length, TW=92, TH=165, GAP=14, BR=20, STEP=TW+GAP, TOTAL=N*STEP;
+  var PERSP=0;
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=215;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
@@ -201,20 +202,18 @@ function _initLogoGallery() {
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-        // box1_long.png — şeffaf arka plan, klipsiz direkt çiz (contain)
+        // box1_long.png — TW:TH tam oranla eşleşiyor, direkt çiz
         if(boxImg.complete&&boxImg.naturalWidth>0){
-          var bw=boxImg.naturalWidth,bh=boxImg.naturalHeight;
-          var bs=Math.min(TW/bw,TH/bh);
-          var bW=bw*bs,bH=bh*bs;
-          ctx.drawImage(boxImg,tx+(TW-bW)/2,ty+(TH-bH)/2,bW,bH);
+          ctx.drawImage(boxImg,tx,ty,TW,TH);
         }
-        // Logo (contain — oran korunur)
+        // Logo — kart ortasında, üst %60 alanda (contain)
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
-          var maxSz=TW*0.58;
+          var maxSz=TW*0.56;
           var is=Math.min(maxSz/iw,maxSz/ih);
           var iW=iw*is,iH=ih*is;
-          ctx.drawImage(imgs[i],tx+(TW-iW)/2,ty+(TH-iH)/2-4,iW,iH);
+          var logoY=ty+TH*0.38-iH/2;
+          ctx.drawImage(imgs[i],tx+(TW-iW)/2,logoY,iW,iH);
         }
         ctx.restore();
       }
