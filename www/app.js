@@ -127,7 +127,7 @@ function _charReveal(el, baseDelay) {
   el.innerHTML = result;
 }
 
-// ── Circular Gallery — box1_long.png + logolar ──
+// ── Circular Gallery — box1_long.png + logolar + backlight ──
 function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
@@ -135,16 +135,17 @@ function _initLogoGallery() {
   var S = [
     ['./assets/netflix_N.png','#E50914'],['./assets/youtube.png','#FF0000'],
     ['./assets/Disney+.png','#0ABFBC'],['./assets/prime video.png','#1A98FF'],
-    ['./assets/hbo.png','#3B1F6B'],['./assets/appleb.png','#f5f5f7'],
+    ['./assets/hbo.png','#6B2D8B'],['./assets/appleb.png','#e0e0e0'],
     ['./assets/Spotify.png','#1DB954'],['./assets/twitch.png','#9146FF'],
-    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#F9D100'],
+    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#FFD100'],
     ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
   ];
+  function hexRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
 
-  // TW:TH = 400:621 = 0.644 — box1_long.png orijinal oranı
-  var N=S.length, TW=105, TH=163, GAP=14, BR=22, STEP=TW+GAP, TOTAL=N*STEP;
+  // TW:TH = 400:621 = 0.644 oranı, %5 büyütülmüş
+  var N=S.length, TW=110, TH=171, GAP=14, BR=22, STEP=TW+GAP, TOTAL=N*STEP;
   var PERSP=0;
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=218;
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=228;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
@@ -165,19 +166,38 @@ function _initLogoGallery() {
   cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
   cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
-  function trap(tx,ty,tw,th,r,p){
-    var br2=r*0.72;
-    ctx.beginPath();
-    ctx.moveTo(tx+r,ty); ctx.lineTo(tx+tw-r,ty);
-    ctx.arcTo(tx+tw,ty,tx+tw,ty+r,r);
-    ctx.lineTo(tx+tw-p,ty+th-br2);
-    ctx.arcTo(tx+tw-p,ty+th,tx+tw-p-br2,ty+th,br2);
-    ctx.lineTo(tx+p+br2,ty+th);
-    ctx.arcTo(tx+p,ty+th,tx+p,ty+th-br2,br2);
-    ctx.lineTo(tx,ty+r);
-    ctx.arcTo(tx,ty,tx+r,ty,r);
-    ctx.closePath();
+
+  // <!-- BACKLIGHT TUNER — KALDIRILACAK -->
+  if(!document.getElementById('_blTuner')){
+    var g=window.BLG||{blur:28,ox:0,oy:12,op:0.6};
+    var tp=document.createElement('div');
+    tp.id='_blTuner';
+    tp.style.cssText='position:fixed;bottom:20px;right:16px;z-index:9999;background:rgba(10,10,20,.92);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;width:220px;font-family:monospace;font-size:11px;color:#fff;backdrop-filter:blur(20px);';
+    function mkSlider(label,key,min,max,step){
+      var row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:8px;';
+      var lbl=document.createElement('span');lbl.style.cssText='width:42px;color:rgba(255,255,255,.5);';lbl.textContent=label;
+      var sl=document.createElement('input');sl.type='range';sl.min=min;sl.max=max;sl.step=step;sl.value=g[key];
+      sl.style.cssText='flex:1;accent-color:#8250ff;';
+      var val=document.createElement('span');val.style.cssText='width:36px;text-align:right;color:#a78bfa;';val.textContent=g[key];
+      sl.oninput=function(){g[key]=parseFloat(this.value);val.textContent=this.value;window.BLG=g;};
+      row.append(lbl,sl,val);return row;
+    }
+    var title=document.createElement('div');title.style.cssText='font-size:12px;font-weight:700;margin-bottom:10px;color:#a78bfa;letter-spacing:.5px;';title.textContent='✦ Gallery Glow';
+    tp.appendChild(title);
+    tp.appendChild(mkSlider('blur',  'blur', 0, 60, 1));
+    tp.appendChild(mkSlider('glow X','ox',  -30, 30, 1));
+    tp.appendChild(mkSlider('glow Y','oy',  0,  40, 1));
+    tp.appendChild(mkSlider('opacity','op', 0, 1, 0.02));
+    var copyBtn=document.createElement('button');
+    copyBtn.textContent='Kopyala';
+    copyBtn.style.cssText='width:100%;margin-top:4px;padding:6px;background:#8250ff;border:none;border-radius:8px;color:#fff;font-size:11px;cursor:pointer;';
+    copyBtn.onclick=function(){navigator.clipboard&&navigator.clipboard.writeText('BLG={blur:'+g.blur+',ox:'+g.ox+',oy:'+g.oy+',op:'+g.op+'}');};
+    tp.appendChild(copyBtn);
+    document.body.appendChild(tp);
+    window.BLG=g;
   }
+  // <!-- /BACKLIGHT TUNER -->
+
   var H=cW/2, BEND=38, R=(H*H+BEND*BEND)/(2*BEND);
   function tick(){
     var intro=document.getElementById('introScreen');
@@ -187,6 +207,7 @@ function _initLogoGallery() {
     ctx.clearRect(0,0,cW,cH);
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var startX=(cW-TOTAL)/2;
+    var g=window.BLG||{blur:28,ox:0,oy:12,op:0.6};
     for(var pass=-1;pass<=1;pass++){
       for(var i=0;i<N;i++){
         var tx=startX+i*STEP+pass*TOTAL-off;
@@ -199,21 +220,33 @@ function _initLogoGallery() {
         var alpha=1-Math.max(0,(Math.abs(dx)/H-0.62)/0.26);
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
+        var rgb=hexRgb(S[i][1]);
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-        // box1_long.png — TW:TH tam oranla eşleşiyor, direkt çiz
+
+        // 1 — Backlight glow
+        ctx.save();
+        ctx.shadowColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+g.op+')';
+        ctx.shadowBlur=g.blur;
+        ctx.shadowOffsetX=g.ox;
+        ctx.shadowOffsetY=g.oy;
+        ctx.fillStyle='rgba(0,0,0,.01)';
+        ctx.fillRect(tx+4,ty+4,TW-8,TH-8);
+        ctx.restore();
+
+        // 2 — box1_long.png
         if(boxImg.complete&&boxImg.naturalWidth>0){
           ctx.drawImage(boxImg,tx,ty,TW,TH);
         }
-        // Logo — kart ortasında, üst %60 alanda (contain)
+
+        // 3 — Logo — tam orta
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
           var maxSz=TW*0.56;
           var is=Math.min(maxSz/iw,maxSz/ih);
           var iW=iw*is,iH=ih*is;
-          var logoY=ty+TH*0.38-iH/2;
-          ctx.drawImage(imgs[i],tx+(TW-iW)/2,logoY,iW,iH);
+          ctx.drawImage(imgs[i],tx+(TW-iW)/2,ty+(TH-iH)/2,iW,iH);
         }
         ctx.restore();
       }
