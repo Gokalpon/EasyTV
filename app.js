@@ -127,13 +127,21 @@ function _charReveal(el, baseDelay) {
   el.innerHTML = result;
 }
 
-// ── Circular Gallery — sadece box1_long.png dokusu ──
+// ── Circular Gallery — box1_long.png + logolar ──
 function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
   el.dataset.init = '1';
+  var S = [
+    ['./assets/netflix_N.png','#E50914'],['./assets/youtube.png','#FF0000'],
+    ['./assets/Disney+.png','#0ABFBC'],['./assets/prime video.png','#1A98FF'],
+    ['./assets/hbo.png','#3B1F6B'],['./assets/appleb.png','#f5f5f7'],
+    ['./assets/Spotify.png','#1DB954'],['./assets/twitch.png','#9146FF'],
+    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#F9D100'],
+    ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
+  ];
 
-  var N=12, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
+  var N=S.length, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
   var PERSP=Math.round(TW*0.025);
   var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=188;
   el.style.height=cH+'px';
@@ -144,6 +152,7 @@ function _initLogoGallery() {
   el.appendChild(cv);
   var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
   var boxImg=new Image(); boxImg.src='./assets/box1_long.png';
+  var imgs=S.map(function(s){var i=new Image();i.src=s[0];return i;});
   var sc={cur:0,tgt:0}, dn=false, sx=0, ss=0, vel=0, lx=0;
   function lerp(a,b,t){return a+(b-a)*t;}
   function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;}
@@ -192,6 +201,7 @@ function _initLogoGallery() {
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
+        // Kart dokusu
         trap(tx,ty,TW,TH,BR,PERSP);
         ctx.save();
         ctx.clip();
@@ -199,6 +209,11 @@ function _initLogoGallery() {
           ctx.drawImage(boxImg,tx,ty,TW,TH);
         } else {
           ctx.fillStyle='#1a1a2e'; ctx.fill();
+        }
+        // Logo
+        if(imgs[i].complete&&imgs[i].naturalWidth>0){
+          var sz=TW*0.62;
+          ctx.drawImage(imgs[i],tx+(TW-sz)/2,ty+(TH-sz)/2-4,sz,sz);
         }
         ctx.restore();
         ctx.restore();
