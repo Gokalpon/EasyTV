@@ -41,13 +41,27 @@ function _showFallbackScreen() {
   const mainApp = document.getElementById('mainApp');
   const introScreen = document.getElementById('introScreen');
   if (authLoading) authLoading.style.display = 'none';
-  if (bottomNav) bottomNav.style.display = 'none';
-  // Her zaman intro ekranı göster
   if (welcomeScreen) welcomeScreen.style.display = 'none';
   if (loginScreen) loginScreen.style.display = 'none';
   if (onboardScreen) onboardScreen.style.display = 'none';
-  if (pinScreen) pinScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'none';
+  // Onboarding tamamlandıysa intro'ya değil PIN/ana ekrana git
+  if (localStorage.getItem('easytv_setup_done') === '1') {
+    if (introScreen) introScreen.style.display = 'none';
+    if (SETTINGS && SETTINGS.usePin !== false && SETTINGS.pin) {
+      if (bottomNav) bottomNav.style.display = 'none';
+      if (pinScreen) pinScreen.style.display = 'flex';
+      _applyLogoReveal && _applyLogoReveal(pinScreen && pinScreen.querySelector('.pin-logo img'));
+      _charReveal(document.getElementById('pinGreeting'), 0.15);
+    } else {
+      if (pinScreen) pinScreen.style.display = 'none';
+      unlockApp();
+    }
+    return;
+  }
+  // Onboarding yapılmamış — intro göster
+  if (bottomNav) bottomNav.style.display = 'none';
+  if (pinScreen) pinScreen.style.display = 'none';
   if (introScreen) introScreen.style.display = 'flex';
   _initFuzzyLogo();
   _stabilizeIntroHero();
@@ -113,59 +127,55 @@ function _charReveal(el, baseDelay) {
   el.innerHTML = result;
 }
 
-// ── Circular Gallery (CircularGallery bending algo → Canvas 2D) ──
+// ── Circular Gallery — box1_long.png + brand backlight ──
 function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
   el.dataset.init = '1';
+  // [renk, brandColor] — logo yok, sadece tint + backlight
   var S = [
-    ['./assets/netflix_N.png','#E50914'],['./assets/youtube.png','#FF0000'],
-    ['./assets/Disney+.png','#0ABFBC'],['./assets/prime video.png','#1A98FF'],
-    ['./assets/hbo.png','#3B1F6B'],['./assets/appleb.png','#f5f5f7'],
-    ['./assets/Spotify.png','#1DB954'],['./assets/twitch.png','#9146FF'],
-    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#F9D100'],
-    ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
+    '#E50914','#FF0000','#0ABFBC','#1A98FF',
+    '#3B1F6B','#f5f5f7','#1DB954','#9146FF',
+    '#FFD100','#F9D100','#6F2DA8','#53FC18'
   ];
-  // CircularGallery arc: center card highest, edges drop + tilt outward
-  // Card shape: top full width, bottom ~5% narrower (subtle perspective)
+  function hexRgb(hex){return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
+
   var N=S.length, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
-  var PERSP=Math.round(TW*0.025); // ~5% total
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=180;
+  var PERSP=Math.round(TW*0.025);
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=188;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
-  cv.style.cssText='width:100%;height:100%;position:absolute;top:0;left:0;cursor:grab;touch-action:pan-x;user-select:none;';
+  cv.style.cssText='width:100%;height:100%;position:absolute;top:0;left:0;touch-action:pan-x;user-select:none;';
   el.style.position='relative';
   el.appendChild(cv);
   var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-  var imgs=S.map(function(s){var i=new Image();i.src=s[0];return i;});
+  var boxImg=new Image(); boxImg.src='./assets/box1_long.png';
   var sc={cur:0,tgt:0}, dn=false, sx=0, ss=0, vel=0, lx=0;
   function lerp(a,b,t){return a+(b-a)*t;}
-  function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;cv.style.cursor='grabbing';}
+  function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;}
   function onMove(x){if(!dn)return;vel=lx-x;lx=x;sc.tgt=ss+(sx-x);}
-  function onUp(){dn=false;sc.tgt+=vel*3.5;cv.style.cursor='grab';}
+  function onUp(){dn=false;sc.tgt+=vel*3.5;}
   cv.addEventListener('touchstart',function(e){onDown(e.touches[0].clientX);},{passive:true});
   cv.addEventListener('touchmove',function(e){onMove(e.touches[0].clientX);},{passive:true});
   cv.addEventListener('touchend',onUp);
   cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
   cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
-  cv.addEventListener('wheel',function(e){sc.tgt+=e.deltaY*0.6;e.preventDefault();},{passive:false});
-  // Trapezoid: TOP full width, BOTTOM narrower by p each side (~5% total)
+  // Trapezoid kart şekli
   function trap(tx,ty,tw,th,r,p){
     var br2=r*0.72;
     ctx.beginPath();
     ctx.moveTo(tx+r,ty); ctx.lineTo(tx+tw-r,ty);
-    ctx.arcTo(tx+tw,ty, tx+tw,ty+r, r);
+    ctx.arcTo(tx+tw,ty,tx+tw,ty+r,r);
     ctx.lineTo(tx+tw-p,ty+th-br2);
-    ctx.arcTo(tx+tw-p,ty+th, tx+tw-p-br2,ty+th, br2);
+    ctx.arcTo(tx+tw-p,ty+th,tx+tw-p-br2,ty+th,br2);
     ctx.lineTo(tx+p+br2,ty+th);
-    ctx.arcTo(tx+p,ty+th, tx+p,ty+th-br2, br2);
+    ctx.arcTo(tx+p,ty+th,tx+p,ty+th-br2,br2);
     ctx.lineTo(tx,ty+r);
-    ctx.arcTo(tx,ty, tx+r,ty, r);
+    ctx.arcTo(tx,ty,tx+r,ty,r);
     ctx.closePath();
   }
-  // R from bend: center at BASE_Y, edges drop by arc amount
   var H=cW/2, BEND=38, R=(H*H+BEND*BEND)/(2*BEND);
   function tick(){
     var intro=document.getElementById('introScreen');
@@ -182,21 +192,44 @@ function _initLogoGallery() {
         if(cx<-TW*2||cx>cW+TW*2) continue;
         var eff=Math.min(Math.abs(dx),H);
         var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-        var ty=6+arc; // center at top, edges drop down along arc
-        // Rotation: fan outward like dealing poker cards
+        var ty=6+arc;
         var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*1.1;
         var alpha=1-Math.max(0,(Math.abs(dx)/H-0.62)/0.26);
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
+        var rgb=hexRgb(S[i]);
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-        trap(tx,ty,TW,TH,BR,PERSP); ctx.fillStyle=S[i][1]; ctx.fill();
-        if(imgs[i].complete&&imgs[i].naturalWidth>0){
-          ctx.save(); ctx.clip();
-          var sz=TW*0.62; ctx.drawImage(imgs[i],tx+(TW-sz)/2,ty+(TH-sz)/2-4,sz,sz);
-          ctx.restore();
+
+        // 1 — Backlight glow (tile neonPulse gibi — renkli, alttan)
+        ctx.save();
+        ctx.shadowColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.8)';
+        ctx.shadowBlur=22;
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=10;
+        trap(tx,ty,TW,TH,BR,PERSP);
+        ctx.fillStyle='rgba(0,0,0,.01)';
+        ctx.fill();
+        ctx.restore();
+
+        // 2 — box1_long.png dokusu (clip içinde)
+        trap(tx,ty,TW,TH,BR,PERSP);
+        ctx.save();
+        ctx.clip();
+        if(boxImg.complete&&boxImg.naturalWidth>0){
+          ctx.drawImage(boxImg,tx,ty,TW,TH);
+        } else {
+          ctx.fillStyle='#1a1a2e'; ctx.fill();
         }
+        // 3 — Brand renk tint
+        ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.30)';
+        ctx.fillRect(tx,ty,TW,TH);
+        // 4 — Üst inset highlight (tile'daki inset 0 1px 0 rgba(255,255,255,.1) gibi)
+        ctx.fillStyle='rgba(255,255,255,0.07)';
+        ctx.fillRect(tx,ty,TW,2);
+        ctx.restore();
+
         ctx.restore();
       }
     }
@@ -768,6 +801,17 @@ const REGION_DATA = {
   as: {label:'🌏 Asya',deep:{netflix:'netflix://',youtube:'youtube://',disney:'disneyplus://',prime:'aiv://',apple:'videos://',twitch:'twitch://',spotify:'spotify://'},store:{netflix:'https://apps.apple.com/jp/app/netflix/id363590051',youtube:'https://apps.apple.com/jp/app/youtube/id544007664',disney:'https://apps.apple.com/jp/app/disney/id1446075923',prime:'https://apps.apple.com/jp/app/amazon-prime-video/id545519333',apple:'https://apps.apple.com/jp/app/apple-tv/id1174078549',twitch:'https://apps.apple.com/jp/app/twitch/id460177396',spotify:'https://apps.apple.com/jp/app/spotify/id324684580'}},
 };
 const TILE_GRADIENTS = {disney:'linear-gradient(145deg, #0DD3C5 0%, #0880A0 100%)',hbo:'linear-gradient(145deg, #6B2D8B 0%, #3B1260 55%, #1E0A3C 100%)',prime:'linear-gradient(145deg, #1A98FF 0%, #0066CC 100%)',apple:'linear-gradient(145deg, #ffffff 0%, #e8e8e8 100%)',tvplus:'linear-gradient(145deg, #FFD100 0%, #FFA500 100%)'};
+function toggleCountryDropdown(){const d=document.getElementById('countryDropdown');const isOpen=d.style.display==='block';d.style.display=isOpen?'none':'block';if(!isOpen){renderLoginCountries('');setTimeout(()=>{const s=document.getElementById('loginCountrySearch');if(s)s.focus();},100);}}
+function renderLoginCountries(q){const list=document.getElementById('loginCountryList');if(!list)return;const cur=SETTINGS.country||'tr';const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())):COUNTRIES;list.innerHTML=filtered.map(c=>`<div onclick="selectLoginCountry('${c.code}','${c.region}')" style="padding:12px 16px;font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.7)'};cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;">${c.name}${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>`).join('');}
+function filterLoginCountries(q){renderLoginCountries(q);}
+function selectLoginCountry(code,region){SETTINGS.country=code;SETTINGS.region=region;saveData();const c=COUNTRIES.find(x=>x.code===code);if(c)document.getElementById('selectedCountryLabel').textContent=c.name;document.getElementById('countryDropdown').style.display='none';updateRegionUI();}
+const CURRENCIES=[{code:'TRY',symbol:'₺',name:'Türk Lirası'},{code:'USD',symbol:'$',name:'Amerikan Doları'},{code:'EUR',symbol:'€',name:'Euro'},{code:'GBP',symbol:'£',name:'Sterlin'},{code:'JPY',symbol:'¥',name:'Japon Yeni'},{code:'CAD',symbol:'CA$',name:'Kanada Doları'},{code:'AUD',symbol:'A$',name:'Avustralya Doları'},{code:'CHF',symbol:'Fr',name:'İsviçre Frangı'},{code:'SEK',symbol:'kr',name:'İsveç Kronu'},{code:'NOK',symbol:'kr',name:'Norveç Kronu'},{code:'KRW',symbol:'₩',name:'Güney Kore Wonu'},{code:'INR',symbol:'₹',name:'Hindistan Rupisi'},{code:'BRL',symbol:'R$',name:'Brezilya Reali'},{code:'SGD',symbol:'S$',name:'Singapur Doları'},{code:'AED',symbol:'AED',name:'BAE Dirhemi'},{code:'SAR',symbol:'SAR',name:'Suudi Riyali'}];
+const POPULAR_SVCS=[{id:'netflix',name:'Netflix',color:'#E50914',rgb:'229,9,20',prices:{tr:{amount:219.99,plan:'Standart'},us:{amount:15.49,plan:'Standard'},eu:{amount:13.99,plan:'Standard'},as:{amount:13.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile Paylaşımı',price:269.99}]}},{id:'youtube',name:'YouTube',color:'#FF0000',rgb:'255,0,0',prices:{tr:{amount:109.99,plan:'Premium'},us:{amount:13.99,plan:'Premium'},eu:{amount:11.99,plan:'Premium'},as:{amount:11.99,plan:'Premium'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile (6 kişi)',price:179.99},{name:'Öğrenci',price:69.99}]}},{id:'disney',name:'Disney+',color:'#0ABFBC',rgb:'10,191,188',prices:{tr:{amount:149.99,plan:'Standart'},us:{amount:7.99,plan:'Basic'},eu:{amount:8.99,plan:'Standard'},as:{amount:8.99,plan:'Standard'}},plans:{tr:[{name:'Standart (Reklamlı)',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]}},{id:'prime',name:'Prime Video',color:'#1A98FF',rgb:'26,152,255',prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}},plans:{tr:[{name:'Prime Üyelik',price:129.99},{name:'Prime Video Kanal',price:49.99}]}},{id:'hbo',name:'HBO Max',color:'#3B1F6B',rgb:'59,31,107',prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate (4K)',price:249.99}]}},{id:'apple',name:'Apple TV+',color:'#ffffff',rgb:'255,255,255',textDark:true,prices:{tr:{amount:99.99,plan:'Aile'},us:{amount:9.99,plan:'Monthly'},eu:{amount:8.99,plan:'Monthly'},as:{amount:8.99,plan:'Monthly'}},plans:{tr:[{name:'Bireysel',price:49.99},{name:'Aile (6 kişi)',price:99.99}]}},{id:'twitch',name:'Twitch',color:'#9146FF',rgb:'145,70,255',prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Turbo',price:89.99},{name:'Kanal Aboneliği',price:49.99}]}},{id:'kick',name:'Kick',color:'#53FC18',rgb:'83,252,24',textDark:true,prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Kanal Aboneliği',price:49.99}]}},{id:'exxen',name:'EXXEN',color:'#F9D100',rgb:'249,209,0',textDark:true,prices:{tr:{amount:179.99,plan:'Reklamlı HD'},us:{amount:0,plan:'N/A'},eu:{amount:0,plan:'N/A'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Reklamlı HD',price:119.99},{name:'Reklamsız HD',price:179.99},{name:'Reklamsız 4K',price:239.99},{name:'Spor Paketi',price:349.99}]}},{id:'bein',name:'beIN Connect',color:'#6F2DA8',rgb:'111,45,168',prices:{tr:{amount:249.99,plan:'Spor Paketi'},us:{amount:0,plan:'N/A'},eu:{amount:19.99,plan:'Sports'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Eğlence Paketi',price:149.99},{name:'Spor Paketi',price:249.99},{name:'Süper Paket',price:349.99}]}},{id:'spotify',name:'Spotify',color:'#1DB954',rgb:'29,185,84',prices:{tr:{amount:79.99,plan:'Bireysel'},us:{amount:10.99,plan:'Individual'},eu:{amount:10.99,plan:'Individual'},as:{amount:10.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:79.99},{name:'Öğrenci',price:49.99},{name:'Duo (2 kişi)',price:129.99},{name:'Aile (6 kişi)',price:159.99}]}},{id:'tvplus',name:'Turkcell TV+',color:'#FFD100',rgb:'255,209,0',textDark:true,prices:{tr:{amount:109.99,plan:'Bireysel'},us:{amount:9.99,plan:'Individual'},eu:{amount:9.99,plan:'Individual'},as:{amount:9.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99}]}}];
+const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/netflix_N.png" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/youtube.png" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/Disney+.png" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/prime video.png" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/hbo.png" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/apple.png" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/appleb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/twitch.png" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/kick.png" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/kickb.png" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/exxen.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/exxenb.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/bein.png" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/Spotify.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/Spotifyb.png" style="width:66px;height:66px;object-fit:contain;">`},tvplus:{w:66,h:66,html:`<img src="./assets/tvplus.png" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/tvplus2.png" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
+let SVC=[],SETTINGS={},PROFILE={name:'Kullanıcı',email:'kullanici@icloud.com'};
+let active=-1,pwdShow=false;
+let qrRotateInterval=null,qrCountdown=null,qrSec=30,_qrSeed=Date.now();
+let lockTimer=null,isLocked=false;
 let pinVal='',pinMode='unlock',pinStep=0,tempPin='';
 let selectedPopular=null;
 function saveData(){try{localStorage.setItem('easytv_settings',JSON.stringify(SETTINGS));localStorage.setItem('easytv_profile',JSON.stringify(PROFILE));localStorage.setItem('easytv_pin',SETTINGS.pinHash||'');}catch(e){}_saveSVCEncrypted();}
@@ -993,9 +1037,8 @@ function buildServicePicker(){
     var isDark=s.textDark||(L&&L.textDark);
     var sel=obSelectedServices.includes(s.id);
     var el=document.createElement('div');
-    el.className='sp-item'+(sel?' sel':'');
-    el.style.setProperty('--sp-accent',s.color||'#8b5cf6');
-    el.style.setProperty('--sp-rgb',s.rgb||'139,92,246');
+    el.className='sp-item '+s.id+(sel?' sel':'');
+    if(s.rgb) el.style.setProperty('--sp-rgb', s.rgb);
 
     var logoHtml='';
     if(L&&L.html&&L.html.indexOf('<img')>=0){
@@ -1369,14 +1412,9 @@ function unlockApp() {
     if (pinHint) pinHint.textContent = 'PIN ile giriş yapın';
     pinVal = ''; updatePinDots();
   }, 520);
-  // Sekmeleri başlat — sadece home görünür
-  ['subs','profile','settings'].forEach(id => {
-    const el = document.getElementById('tab-' + id);
-    if (el) el.style.display = 'none';
-  });
-  const homeEl = document.getElementById('tab-home');
-  if (homeEl) homeEl.style.display = 'flex';
-  curTab = 'home';
+  // Sekme geçişini switchTab ile yap — nav .active class doğru güncellensin
+  curTab = null;
+  switchTab('home');
   _decryptSVCInMemory().then(()=>{buildGrid();renderSubs&&renderSubs();});
   applySettings(); applyLang(); checkRenewals(); resetLockTimer();
   scheduleRenewalNotifs && scheduleRenewalNotifs();
@@ -1730,7 +1768,7 @@ function confirmPlanAdd(){if(!planModalSvc||!planModalSelected)return;const s=pl
   const svc={...s,email:'',pwd:'',price:myPrice,_fullPrice:p.price,_userCount:typeof _planUserCount!=='undefined'?_planUserCount:1,_payMethod:typeof _planPayMethod!=='undefined'?_planPayMethod:'me',plan:p.name,renew};if(existing>=0)SVC[existing]=svc;else SVC.push(svc);saveData();buildGrid();renderSubs&&renderSubs();closePlanModal();showToast('✓ '+s.name+' eklendi');const newIdx=existing>=0?existing:SVC.length-1;setTimeout(()=>tap(newIdx),350);}
 function closeAddModal(){const addModal=document.getElementById('addModal');if(addModal)addModal.classList.remove('open');selectedPopular=null;}
 function buildRemoveGrid(){const g=document.getElementById('removeGrid');g.innerHTML='';if(SVC.length===0){g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.3);font-size:13px;padding:20px;">Ekli servis yok</div>';return;}SVC.forEach((s,i)=>{const L=LOGO[s.id]||LOGO._custom;const div=document.createElement('div');div.style.cssText='position:relative;aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:1.5px solid rgba(255,90,80,.3);background:rgba(255,60,50,.06);';const logoHtml=L.html?`<div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`:`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0]}</span>`;div.innerHTML=`${logoHtml}<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.7);text-align:center;">${s.name}</div><div style="position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:rgba(255,59,48,.8);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;line-height:1;">×</div>`;div.onclick=()=>{const nm=s.name;SVC.splice(i,1);saveData();buildGrid();buildRemoveGrid();renderSubs&&renderSubs();showToast(`${nm} çıkarıldı`);};g.appendChild(div);});}
-function buildPopularGrid(){var g=document.getElementById('popularGrid');g.innerHTML='';POPULAR_SVCS.forEach(function(s){var L=LOGO[s.id]||LOGO._custom;var el=document.createElement('div');el.className='popular-item';var logoHtml='';var isDark=s.textDark||L.textDark;if(L.html&&L.html.indexOf('<img')>=0){var useHtml=isDark&&L.htmlDark?L.htmlDark:L.html;var src=useHtml.match(/src="([^"]+)"/)&&useHtml.match(/src="([^"]+)"/)[1]||'';logoHtml='<img src="'+src+'" style="width:60%;height:60%;object-fit:contain;">';}else if(L.html){logoHtml='<div style="transform:scale(.7);transform-origin:center;">'+(isDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html)+'</div>';}else{logoHtml='<span style="font-size:18px;font-weight:800;color:'+(isDark?'#000':'#fff')+'">'+s.name[0]+'</span>';}el.innerHTML='<div class="popular-ico" style="background:'+s.color+'">'+logoHtml+'</div><div class="popular-name">'+s.name+'</div>';el.onclick=function(){closeAddModal();openPlanModal(s);};g.appendChild(el);});}
+function buildPopularGrid(){var g=document.getElementById('popularGrid');g.innerHTML='';POPULAR_SVCS.forEach(function(s){var L=LOGO[s.id]||LOGO._custom;var el=document.createElement('div');el.className='popular-item';var logoHtml='';var isDark=s.textDark||L.textDark;if(L.html&&L.html.indexOf('<img')>=0){var useHtml=isDark&&L.htmlDark?L.htmlDark:L.html;var src=useHtml.match(/src="([^"]+)"/)&&useHtml.match(/src="([^"]+)"/)[1]||'';logoHtml='<img src="'+src+'" style="width:60%;height:60%;object-fit:contain;">';}else if(L.html){logoHtml='<div style="transform:scale(.7);transform-origin:center;">'+(isDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html)+'</div>';}else{logoHtml='<span style="font-size:18px;font-weight:800;color:'+(isDark?'#000':'#fff')+'">'+s.name[0]+'</span>';}el.innerHTML='<div class="popular-ico" style="background:'+s.color+';--ico-glow:'+s.color+';border:2px solid '+s.color+'">'+logoHtml+'</div><div class="popular-name">'+s.name+'</div>';el.onclick=function(){closeAddModal();openPlanModal(s);};g.appendChild(el);});}
 function formatDate(d){return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});}
 let seEditIdx=-1;
 function openSubEdit(i){seEditIdx=i;const s=SVC[i];const L=LOGO[s.id]||{w:28,h:28,html:null};document.getElementById('seServiceName').textContent=s.name;const logoWrap=document.getElementById('seLogoWrap');logoWrap.style.background=s.color;if(L.html&&L.html.includes('<img')){const useHtml=(L.textDark||s.textDark)&&L.htmlDark?L.htmlDark:L.html;const src=useHtml.match(/src="([^"]+)"/)?.[1]||'';logoWrap.innerHTML=`<img src="${src}" style="width:28px;height:28px;object-fit:contain;">`;}else if(L.html){const sc=22/Math.max(L.w||22,L.h||22);logoWrap.innerHTML=`<div style="width:${Math.round((L.w||22)*sc)}px;height:${Math.round((L.h||22)*sc)}px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`;}else{logoWrap.innerHTML=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;}const saveBtn=document.getElementById('sesSaveBtn');saveBtn.style.background=TILE_GRADIENTS[s.id]||s.color||'rgba(255,255,255,.15)';saveBtn.style.color=(s.textDark||(LOGO[s.id]||{}).textDark)?'#000':'#fff';const chips=document.getElementById('sePlanChips');chips.innerHTML='';const oldWrap=document.getElementById('sePlanManualWrap');if(oldWrap)oldWrap.remove();const planRow=document.getElementById('sePlanRow');const planOpts=getCountryPlans(s.id);const sym=getCountrySymbol();if(planOpts.length>0){planRow.style.display='block';const isOther=!planOpts.find(p=>p.name===(s.plan||''));planOpts.forEach(p=>{const chip=document.createElement('button');const isSel=(s.plan||'')===p.name;chip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isSel?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isSel?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isSel?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;chip.textContent=p.name+' · '+sym+p.price.toFixed(0);chip.onclick=()=>{

@@ -127,61 +127,55 @@ function _charReveal(el, baseDelay) {
   el.innerHTML = result;
 }
 
-// ── Circular Gallery (CircularGallery bending algo → Canvas 2D) ──
+// ── Circular Gallery — box1_long.png + brand backlight ──
 function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
   el.dataset.init = '1';
+  // [renk, brandColor] — logo yok, sadece tint + backlight
   var S = [
-    ['./assets/netflix_N.png','#E50914'],['./assets/youtube.png','#FF0000'],
-    ['./assets/Disney+.png','#0ABFBC'],['./assets/prime video.png','#1A98FF'],
-    ['./assets/hbo.png','#3B1F6B'],['./assets/appleb.png','#f5f5f7'],
-    ['./assets/Spotify.png','#1DB954'],['./assets/twitch.png','#9146FF'],
-    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#F9D100'],
-    ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
+    '#E50914','#FF0000','#0ABFBC','#1A98FF',
+    '#3B1F6B','#f5f5f7','#1DB954','#9146FF',
+    '#FFD100','#F9D100','#6F2DA8','#53FC18'
   ];
-  function hexRgba(hex,a){var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return'rgba('+r+','+g+','+b+','+a+')';}
-  // CircularGallery arc: center card highest, edges drop + tilt outward
-  // Card shape: top full width, bottom ~5% narrower (subtle perspective)
+  function hexRgb(hex){return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
+
   var N=S.length, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
-  var PERSP=Math.round(TW*0.025); // ~5% total
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=180;
+  var PERSP=Math.round(TW*0.025);
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=188;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
-  cv.style.cssText='width:100%;height:100%;position:absolute;top:0;left:0;cursor:grab;touch-action:pan-x;user-select:none;';
+  cv.style.cssText='width:100%;height:100%;position:absolute;top:0;left:0;touch-action:pan-x;user-select:none;';
   el.style.position='relative';
   el.appendChild(cv);
   var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-  var imgs=S.map(function(s){var i=new Image();i.src=s[0];return i;});
   var boxImg=new Image(); boxImg.src='./assets/box1_long.png';
   var sc={cur:0,tgt:0}, dn=false, sx=0, ss=0, vel=0, lx=0;
   function lerp(a,b,t){return a+(b-a)*t;}
-  function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;cv.style.cursor='grabbing';}
+  function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;}
   function onMove(x){if(!dn)return;vel=lx-x;lx=x;sc.tgt=ss+(sx-x);}
-  function onUp(){dn=false;sc.tgt+=vel*3.5;cv.style.cursor='grab';}
+  function onUp(){dn=false;sc.tgt+=vel*3.5;}
   cv.addEventListener('touchstart',function(e){onDown(e.touches[0].clientX);},{passive:true});
   cv.addEventListener('touchmove',function(e){onMove(e.touches[0].clientX);},{passive:true});
   cv.addEventListener('touchend',onUp);
   cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
   cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
-  cv.addEventListener('wheel',function(e){sc.tgt+=e.deltaY*0.6;e.preventDefault();},{passive:false});
-  // Trapezoid: TOP full width, BOTTOM narrower by p each side (~5% total)
+  // Trapezoid kart şekli
   function trap(tx,ty,tw,th,r,p){
     var br2=r*0.72;
     ctx.beginPath();
     ctx.moveTo(tx+r,ty); ctx.lineTo(tx+tw-r,ty);
-    ctx.arcTo(tx+tw,ty, tx+tw,ty+r, r);
+    ctx.arcTo(tx+tw,ty,tx+tw,ty+r,r);
     ctx.lineTo(tx+tw-p,ty+th-br2);
-    ctx.arcTo(tx+tw-p,ty+th, tx+tw-p-br2,ty+th, br2);
+    ctx.arcTo(tx+tw-p,ty+th,tx+tw-p-br2,ty+th,br2);
     ctx.lineTo(tx+p+br2,ty+th);
-    ctx.arcTo(tx+p,ty+th, tx+p,ty+th-br2, br2);
+    ctx.arcTo(tx+p,ty+th,tx+p,ty+th-br2,br2);
     ctx.lineTo(tx,ty+r);
-    ctx.arcTo(tx,ty, tx+r,ty, r);
+    ctx.arcTo(tx,ty,tx+r,ty,r);
     ctx.closePath();
   }
-  // R from bend: center at BASE_Y, edges drop by arc amount
   var H=cW/2, BEND=38, R=(H*H+BEND*BEND)/(2*BEND);
   function tick(){
     var intro=document.getElementById('introScreen');
@@ -191,7 +185,6 @@ function _initLogoGallery() {
     ctx.clearRect(0,0,cW,cH);
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var startX=(cW-TOTAL)/2;
-    var g=window.BLG||{blur:22,ox:-6,oy:14,tint:0.38};
     for(var pass=-1;pass<=1;pass++){
       for(var i=0;i<N;i++){
         var tx=startX+i*STEP+pass*TOTAL-off;
@@ -199,47 +192,44 @@ function _initLogoGallery() {
         if(cx<-TW*2||cx>cW+TW*2) continue;
         var eff=Math.min(Math.abs(dx),H);
         var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-        var ty=6+arc; // center at top, edges drop down along arc
-        // Rotation: fan outward like dealing poker cards
+        var ty=6+arc;
         var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*1.1;
         var alpha=1-Math.max(0,(Math.abs(dx)/H-0.62)/0.26);
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
+        var rgb=hexRgb(S[i]);
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
 
-        // 1 — Dış glow (shadow behind card)
+        // 1 — Backlight glow (tile neonPulse gibi — renkli, alttan)
         ctx.save();
-        ctx.shadowColor=S[i][1];
-        ctx.shadowBlur=g.blur;
-        ctx.shadowOffsetX=g.ox;
-        ctx.shadowOffsetY=g.oy;
+        ctx.shadowColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.8)';
+        ctx.shadowBlur=22;
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=10;
         trap(tx,ty,TW,TH,BR,PERSP);
         ctx.fillStyle='rgba(0,0,0,.01)';
         ctx.fill();
         ctx.restore();
 
-        // 2 — Kart arkaplanı (box1_long.png)
+        // 2 — box1_long.png dokusu (clip içinde)
         trap(tx,ty,TW,TH,BR,PERSP);
         ctx.save();
         ctx.clip();
         if(boxImg.complete&&boxImg.naturalWidth>0){
           ctx.drawImage(boxImg,tx,ty,TW,TH);
         } else {
-          ctx.fillStyle='#1a1a1f'; ctx.fill();
+          ctx.fillStyle='#1a1a2e'; ctx.fill();
         }
-        // 3 — Renk tint overlay (ışık camdan süzülüyor)
-        ctx.fillStyle=hexRgba(S[i][1],g.tint);
+        // 3 — Brand renk tint
+        ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.30)';
         ctx.fillRect(tx,ty,TW,TH);
+        // 4 — Üst inset highlight (tile'daki inset 0 1px 0 rgba(255,255,255,.1) gibi)
+        ctx.fillStyle='rgba(255,255,255,0.07)';
+        ctx.fillRect(tx,ty,TW,2);
         ctx.restore();
 
-        // 4 — Logo
-        if(imgs[i].complete&&imgs[i].naturalWidth>0){
-          ctx.save(); ctx.clip();
-          var sz=TW*0.62; ctx.drawImage(imgs[i],tx+(TW-sz)/2,ty+(TH-sz)/2-4,sz,sz);
-          ctx.restore();
-        }
         ctx.restore();
       }
     }
