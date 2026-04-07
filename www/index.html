@@ -685,30 +685,27 @@
 <script>
 (function(){
   var params=[
-    {id:'blur', label:'blur',   min:0,  max:60, val:22,   unit:'px'},
-    {id:'ox',   label:'glow X', min:-40,max:40, val:-6,   unit:'px'},
-    {id:'oy',   label:'glow Y', min:-40,max:40, val:14,   unit:'px'},
-    {id:'tint', label:'tint',   min:0,  max:1,  val:0.38, unit:'', step:0.02},
+    {id:'spread', label:'spread', min:0.2, max:3,  val:1.2,  unit:'',   step:0.05},
+    {id:'op',     label:'opacity',min:0,   max:1,  val:0.55, unit:'',   step:0.02},
   ];
-  window.BLG={blur:22,ox:-6,oy:14,tint:0.38};
+  window.BLG={spread:1.2, op:0.55};
   var rows=document.getElementById('gl-rows');
   params.forEach(function(p){
     var row=document.createElement('div');
     row.style.cssText='display:flex;align-items:center;gap:6px;margin-bottom:6px;';
     row.innerHTML='<span style="width:52px;color:#888;">'+p.label+'</span>'
-      +'<input type="range" min="'+p.min+'" max="'+p.max+'" value="'+p.val+'" step="'+(p.step||1)+'" data-id="'+p.id+'" style="flex:1;accent-color:#7c3aed;">'
-      +'<span id="gl-lbl-'+p.id+'" style="width:38px;text-align:right;color:#fff;">'+p.val+p.unit+'</span>';
+      +'<input type="range" min="'+p.min+'" max="'+p.max+'" value="'+p.val+'" step="'+p.step+'" data-id="'+p.id+'" style="flex:1;accent-color:#7c3aed;">'
+      +'<span id="gl-lbl-'+p.id+'" style="width:38px;text-align:right;color:#fff;">'+p.val+'</span>';
     rows.appendChild(row);
   });
   function update(){
     params.forEach(function(p){
       var el=document.querySelector('[data-id="'+p.id+'"]');
-      var v=parseFloat(el.value);
-      window.BLG[p.id]=v;
-      document.getElementById('gl-lbl-'+p.id).textContent=v+p.unit;
+      window.BLG[p.id]=parseFloat(el.value);
+      document.getElementById('gl-lbl-'+p.id).textContent=el.value;
     });
     var g=window.BLG;
-    document.getElementById('gl-out').textContent='BLG = {\n  blur: '+g.blur+',\n  ox: '+g.ox+',\n  oy: '+g.oy+',\n  tint: '+g.tint+'\n}';
+    document.getElementById('gl-out').textContent='BLG={spread:'+g.spread+',op:'+g.op+'}';
   }
   rows.addEventListener('input',update);
   update();

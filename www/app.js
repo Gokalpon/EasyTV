@@ -165,32 +165,6 @@ function _initLogoGallery() {
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
   cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
 
-  // <!-- BACKLIGHT TUNER — KALDIRILACAK -->
-  if(!document.getElementById('_blTuner')){
-    window.BLG={spread:1.2,op:0.55};
-    var tp=document.createElement('div');
-    tp.id='_blTuner';
-    tp.style.cssText='position:fixed;bottom:20px;right:16px;z-index:9999;background:rgba(10,10,20,.92);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;width:220px;font-family:monospace;font-size:11px;color:#fff;backdrop-filter:blur(20px);';
-    function mkSlider(label,key,min,max,step){
-      var row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:8px;';
-      var lbl=document.createElement('span');lbl.style.cssText='width:52px;color:rgba(255,255,255,.5);';lbl.textContent=label;
-      var sl=document.createElement('input');sl.type='range';sl.min=min;sl.max=max;sl.step=step;sl.value=window.BLG[key];
-      sl.style.cssText='flex:1;accent-color:#8250ff;';
-      var val=document.createElement('span');val.style.cssText='width:34px;text-align:right;color:#a78bfa;';val.textContent=window.BLG[key];
-      sl.oninput=function(){window.BLG[key]=parseFloat(this.value);val.textContent=this.value;};
-      row.append(lbl,sl,val);return row;
-    }
-    var ttl=document.createElement('div');ttl.style.cssText='font-size:12px;font-weight:700;margin-bottom:10px;color:#a78bfa;';ttl.textContent='✦ Gallery Glow';
-    tp.appendChild(ttl);
-    tp.appendChild(mkSlider('spread','spread',0.3,3,0.05));
-    tp.appendChild(mkSlider('opacity','op',0,1,0.02));
-    var cb=document.createElement('button');
-    cb.textContent='Kopyala';cb.style.cssText='width:100%;margin-top:4px;padding:6px;background:#8250ff;border:none;border-radius:8px;color:#fff;font-size:11px;cursor:pointer;';
-    cb.onclick=function(){var g=window.BLG;navigator.clipboard&&navigator.clipboard.writeText('BLG={spread:'+g.spread+',op:'+g.op+'}');};
-    tp.appendChild(cb);
-    document.body.appendChild(tp);
-  }
-  // <!-- /BACKLIGHT TUNER -->
 
   var H=cW/2, BEND=38, R=(H*H+BEND*BEND)/(2*BEND);
   function tick(){
