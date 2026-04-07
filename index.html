@@ -672,5 +672,49 @@
 
 <script src="app.js?v=20260404c"></script>
 
+<!-- GALLERY TUNER — KALDIRILACAK -->
+<div id="gl-tuner" style="position:fixed;bottom:16px;right:16px;z-index:99999;background:rgba(0,0,0,.92);border:1px solid #333;border-radius:12px;padding:14px;width:220px;font-family:monospace;font-size:11px;color:#fff;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <b style="color:#a78bfa;">✦ Gallery Glow</b>
+    <button onclick="document.getElementById('gl-tuner').style.display='none'" style="background:none;border:none;color:#888;cursor:pointer;font-size:14px;">✕</button>
+  </div>
+  <div id="gl-rows"></div>
+  <div style="margin-top:10px;background:#1a1a2e;border-radius:6px;padding:8px;color:#a78bfa;white-space:pre;font-size:10px;line-height:1.6;" id="gl-out"></div>
+  <button onclick="navigator.clipboard.writeText(document.getElementById('gl-out').textContent)" style="margin-top:8px;width:100%;background:#7c3aed;color:#fff;border:none;border-radius:6px;padding:6px;cursor:pointer;font-size:11px;">📋 Kopyala</button>
+</div>
+<script>
+(function(){
+  var params=[
+    {id:'blur', label:'blur',   min:0,  max:60, val:22,   unit:'px'},
+    {id:'ox',   label:'glow X', min:-40,max:40, val:-6,   unit:'px'},
+    {id:'oy',   label:'glow Y', min:-40,max:40, val:14,   unit:'px'},
+    {id:'tint', label:'tint',   min:0,  max:1,  val:0.38, unit:'', step:0.02},
+  ];
+  window.BLG={blur:22,ox:-6,oy:14,tint:0.38};
+  var rows=document.getElementById('gl-rows');
+  params.forEach(function(p){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:6px;margin-bottom:6px;';
+    row.innerHTML='<span style="width:52px;color:#888;">'+p.label+'</span>'
+      +'<input type="range" min="'+p.min+'" max="'+p.max+'" value="'+p.val+'" step="'+(p.step||1)+'" data-id="'+p.id+'" style="flex:1;accent-color:#7c3aed;">'
+      +'<span id="gl-lbl-'+p.id+'" style="width:38px;text-align:right;color:#fff;">'+p.val+p.unit+'</span>';
+    rows.appendChild(row);
+  });
+  function update(){
+    params.forEach(function(p){
+      var el=document.querySelector('[data-id="'+p.id+'"]');
+      var v=parseFloat(el.value);
+      window.BLG[p.id]=v;
+      document.getElementById('gl-lbl-'+p.id).textContent=v+p.unit;
+    });
+    var g=window.BLG;
+    document.getElementById('gl-out').textContent='BLG = {\n  blur: '+g.blur+',\n  ox: '+g.ox+',\n  oy: '+g.oy+',\n  tint: '+g.tint+'\n}';
+  }
+  rows.addEventListener('input',update);
+  update();
+})();
+</script>
+<!-- /GALLERY TUNER -->
+
 </body>
 </html>

@@ -126,6 +126,7 @@ function _initLogoGallery() {
     ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#F9D100'],
     ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
   ];
+  function hexRgba(hex,a){var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return'rgba('+r+','+g+','+b+','+a+')';}
   // CircularGallery arc: center card highest, edges drop + tilt outward
   // Card shape: top full width, bottom ~5% narrower (subtle perspective)
   var N=S.length, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
@@ -139,6 +140,7 @@ function _initLogoGallery() {
   el.appendChild(cv);
   var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
   var imgs=S.map(function(s){var i=new Image();i.src=s[0];return i;});
+  var boxImg=new Image(); boxImg.src='./assets/box1_long.png';
   var sc={cur:0,tgt:0}, dn=false, sx=0, ss=0, vel=0, lx=0;
   function lerp(a,b,t){return a+(b-a)*t;}
   function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;cv.style.cursor='grabbing';}
@@ -175,6 +177,7 @@ function _initLogoGallery() {
     ctx.clearRect(0,0,cW,cH);
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var startX=(cW-TOTAL)/2;
+    var g=window.BLG||{blur:22,ox:-6,oy:14,tint:0.38};
     for(var pass=-1;pass<=1;pass++){
       for(var i=0;i<N;i++){
         var tx=startX+i*STEP+pass*TOTAL-off;
@@ -191,7 +194,33 @@ function _initLogoGallery() {
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-        trap(tx,ty,TW,TH,BR,PERSP); ctx.fillStyle=S[i][1]; ctx.fill();
+
+        // 1 — Dış glow (shadow behind card)
+        ctx.save();
+        ctx.shadowColor=S[i][1];
+        ctx.shadowBlur=g.blur;
+        ctx.shadowOffsetX=g.ox;
+        ctx.shadowOffsetY=g.oy;
+        trap(tx,ty,TW,TH,BR,PERSP);
+        ctx.fillStyle='rgba(0,0,0,.01)';
+        ctx.fill();
+        ctx.restore();
+
+        // 2 — Kart arkaplanı (box1_long.png)
+        trap(tx,ty,TW,TH,BR,PERSP);
+        ctx.save();
+        ctx.clip();
+        if(boxImg.complete&&boxImg.naturalWidth>0){
+          ctx.drawImage(boxImg,tx,ty,TW,TH);
+        } else {
+          ctx.fillStyle='#1a1a1f'; ctx.fill();
+        }
+        // 3 — Renk tint overlay (ışık camdan süzülüyor)
+        ctx.fillStyle=hexRgba(S[i][1],g.tint);
+        ctx.fillRect(tx,ty,TW,TH);
+        ctx.restore();
+
+        // 4 — Logo
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           ctx.save(); ctx.clip();
           var sz=TW*0.62; ctx.drawImage(imgs[i],tx+(TW-sz)/2,ty+(TH-sz)/2-4,sz,sz);
