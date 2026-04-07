@@ -127,7 +127,7 @@ function _charReveal(el, baseDelay) {
   el.innerHTML = result;
 }
 
-// ── Circular Gallery — box1_long.png + logolar + backlight ──
+// ── Circular Gallery ──
 function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
@@ -142,9 +142,7 @@ function _initLogoGallery() {
   ];
   function hexRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
 
-  // TW:TH = 400:621 = 0.644 oranı, %5 büyütülmüş
-  var N=S.length, TW=110, TH=171, GAP=14, BR=22, STEP=TW+GAP, TOTAL=N*STEP;
-  var PERSP=0;
+  var N=S.length, TW=110, TH=171, GAP=14, STEP=TW+GAP, TOTAL=N*STEP;
   var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=228;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
@@ -169,32 +167,28 @@ function _initLogoGallery() {
 
   // <!-- BACKLIGHT TUNER — KALDIRILACAK -->
   if(!document.getElementById('_blTuner')){
-    var g=window.BLG||{blur:28,ox:0,oy:12,op:0.6};
+    window.BLG={spread:1.2,op:0.55};
     var tp=document.createElement('div');
     tp.id='_blTuner';
     tp.style.cssText='position:fixed;bottom:20px;right:16px;z-index:9999;background:rgba(10,10,20,.92);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;width:220px;font-family:monospace;font-size:11px;color:#fff;backdrop-filter:blur(20px);';
     function mkSlider(label,key,min,max,step){
       var row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:8px;';
-      var lbl=document.createElement('span');lbl.style.cssText='width:42px;color:rgba(255,255,255,.5);';lbl.textContent=label;
-      var sl=document.createElement('input');sl.type='range';sl.min=min;sl.max=max;sl.step=step;sl.value=g[key];
+      var lbl=document.createElement('span');lbl.style.cssText='width:52px;color:rgba(255,255,255,.5);';lbl.textContent=label;
+      var sl=document.createElement('input');sl.type='range';sl.min=min;sl.max=max;sl.step=step;sl.value=window.BLG[key];
       sl.style.cssText='flex:1;accent-color:#8250ff;';
-      var val=document.createElement('span');val.style.cssText='width:36px;text-align:right;color:#a78bfa;';val.textContent=g[key];
-      sl.oninput=function(){g[key]=parseFloat(this.value);val.textContent=this.value;window.BLG=g;};
+      var val=document.createElement('span');val.style.cssText='width:34px;text-align:right;color:#a78bfa;';val.textContent=window.BLG[key];
+      sl.oninput=function(){window.BLG[key]=parseFloat(this.value);val.textContent=this.value;};
       row.append(lbl,sl,val);return row;
     }
-    var title=document.createElement('div');title.style.cssText='font-size:12px;font-weight:700;margin-bottom:10px;color:#a78bfa;letter-spacing:.5px;';title.textContent='✦ Gallery Glow';
-    tp.appendChild(title);
-    tp.appendChild(mkSlider('blur',  'blur', 0, 60, 1));
-    tp.appendChild(mkSlider('glow X','ox',  -30, 30, 1));
-    tp.appendChild(mkSlider('glow Y','oy',  0,  40, 1));
-    tp.appendChild(mkSlider('opacity','op', 0, 1, 0.02));
-    var copyBtn=document.createElement('button');
-    copyBtn.textContent='Kopyala';
-    copyBtn.style.cssText='width:100%;margin-top:4px;padding:6px;background:#8250ff;border:none;border-radius:8px;color:#fff;font-size:11px;cursor:pointer;';
-    copyBtn.onclick=function(){navigator.clipboard&&navigator.clipboard.writeText('BLG={blur:'+g.blur+',ox:'+g.ox+',oy:'+g.oy+',op:'+g.op+'}');};
-    tp.appendChild(copyBtn);
+    var ttl=document.createElement('div');ttl.style.cssText='font-size:12px;font-weight:700;margin-bottom:10px;color:#a78bfa;';ttl.textContent='✦ Gallery Glow';
+    tp.appendChild(ttl);
+    tp.appendChild(mkSlider('spread','spread',0.3,3,0.05));
+    tp.appendChild(mkSlider('opacity','op',0,1,0.02));
+    var cb=document.createElement('button');
+    cb.textContent='Kopyala';cb.style.cssText='width:100%;margin-top:4px;padding:6px;background:#8250ff;border:none;border-radius:8px;color:#fff;font-size:11px;cursor:pointer;';
+    cb.onclick=function(){var g=window.BLG;navigator.clipboard&&navigator.clipboard.writeText('BLG={spread:'+g.spread+',op:'+g.op+'}');};
+    tp.appendChild(cb);
     document.body.appendChild(tp);
-    window.BLG=g;
   }
   // <!-- /BACKLIGHT TUNER -->
 
@@ -207,7 +201,7 @@ function _initLogoGallery() {
     ctx.clearRect(0,0,cW,cH);
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var startX=(cW-TOTAL)/2;
-    var g=window.BLG||{blur:28,ox:0,oy:12,op:0.6};
+    var g=window.BLG||{spread:1.2,op:0.55};
     for(var pass=-1;pass<=1;pass++){
       for(var i=0;i<N;i++){
         var tx=startX+i*STEP+pass*TOTAL-off;
@@ -221,32 +215,25 @@ function _initLogoGallery() {
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
         var rgb=hexRgb(S[i][1]);
+
+        // 1 — Backlight: radial gradient, rotasyondan bağımsız, kartın altında
+        var gr=TW*g.spread;
+        var gx=cx, gy=ty+TH*0.65;
+        var grd=ctx.createRadialGradient(gx,gy,0,gx,gy,gr);
+        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+g.op*alpha+')');
+        grd.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=grd;
+        ctx.fillRect(gx-gr,gy-gr,gr*2,gr*2);
+
+        // 2 — Kart + logo (rotation ile)
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-
-        // 1 — Backlight glow
-        ctx.save();
-        ctx.shadowColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+g.op+')';
-        ctx.shadowBlur=g.blur;
-        ctx.shadowOffsetX=g.ox;
-        ctx.shadowOffsetY=g.oy;
-        ctx.fillStyle='rgba(0,0,0,.01)';
-        ctx.fillRect(tx+4,ty+4,TW-8,TH-8);
-        ctx.restore();
-
-        // 2 — box1_long.png
-        if(boxImg.complete&&boxImg.naturalWidth>0){
-          ctx.drawImage(boxImg,tx,ty,TW,TH);
-        }
-
-        // 3 — Logo — tam orta
+        if(boxImg.complete&&boxImg.naturalWidth>0) ctx.drawImage(boxImg,tx,ty,TW,TH);
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
-          var maxSz=TW*0.56;
-          var is=Math.min(maxSz/iw,maxSz/ih);
-          var iW=iw*is,iH=ih*is;
-          ctx.drawImage(imgs[i],tx+(TW-iW)/2,ty+(TH-iH)/2,iW,iH);
+          var maxSz=TW*0.56, is=Math.min(maxSz/iw,maxSz/ih);
+          ctx.drawImage(imgs[i],tx+(TW-iw*is)/2,ty+(TH-ih*is)/2,iw*is,ih*is);
         }
         ctx.restore();
       }
