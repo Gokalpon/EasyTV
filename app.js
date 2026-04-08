@@ -191,7 +191,7 @@ function _initLogoGallery() {
         var rgb=hexRgb(S[i][1]);
 
         // 1 — Backlight kutusu (kartın arkasında, rotasyonsuz)
-        var gs=TW*(0.5+g.blur/40); // blur slider → yayılma boyutu
+        var gs=TW*(0.5+g.blur/40);
         var gcx=cx, gcy=ty+TH*0.55;
         var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,gs);
         grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(g.op*alpha)+')');
@@ -200,16 +200,32 @@ function _initLogoGallery() {
         ctx.fillStyle=grd;
         ctx.fillRect(gcx-gs,gcy-gs,gs*2,gs*2);
 
-        // 2 — Kart + logo (rotation ile)
+        // 2 — Kart zemini + logo + box1_long.png OVERLAY (rotation ile)
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-        if(boxImg.complete&&boxImg.naturalWidth>0) ctx.drawImage(boxImg,tx,ty,TW,TH);
+
+        // 2a — Koyu kart zemini (yuvarlak köşeli)
+        var rr=16;
+        ctx.beginPath();
+        ctx.moveTo(tx+rr,ty); ctx.lineTo(tx+TW-rr,ty);
+        ctx.arcTo(tx+TW,ty,tx+TW,ty+rr,rr); ctx.lineTo(tx+TW,ty+TH-rr);
+        ctx.arcTo(tx+TW,ty+TH,tx+TW-rr,ty+TH,rr); ctx.lineTo(tx+rr,ty+TH);
+        ctx.arcTo(tx,ty+TH,tx,ty+TH-rr,rr); ctx.lineTo(tx,ty+rr);
+        ctx.arcTo(tx,ty,tx+rr,ty,rr); ctx.closePath();
+        ctx.fillStyle='rgba(18,18,24,0.92)';
+        ctx.fill();
+
+        // 2b — Logo (zemininin üstünde)
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
           var maxSz=TW*0.56, is=Math.min(maxSz/iw,maxSz/ih);
           ctx.drawImage(imgs[i],tx+(TW-iw*is)/2,ty+(TH-ih*is)/2,iw*is,ih*is);
         }
+
+        // 2c — box1_long.png: çerçeve overlay (en üste)
+        if(boxImg.complete&&boxImg.naturalWidth>0) ctx.drawImage(boxImg,tx,ty,TW,TH);
+
         ctx.restore();
       }
     }
