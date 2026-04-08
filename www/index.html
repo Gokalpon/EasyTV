@@ -685,10 +685,10 @@
 <script>
 (function(){
   var params=[
-    {id:'spread', label:'spread', min:0.2, max:3,  val:1.2,  unit:'',   step:0.05},
-    {id:'op',     label:'opacity',min:0,   max:1,  val:0.55, unit:'',   step:0.02},
+    {id:'blur', label:'blur',    min:0, max:40, val:16,  step:1},
+    {id:'op',   label:'opacity', min:0, max:1,  val:0.8, step:0.02},
   ];
-  window.BLG={spread:1.2, op:0.55};
+  window.BLG={blur:16, op:0.8};
   var rows=document.getElementById('gl-rows');
   params.forEach(function(p){
     var row=document.createElement('div');
@@ -705,7 +705,7 @@
       document.getElementById('gl-lbl-'+p.id).textContent=el.value;
     });
     var g=window.BLG;
-    document.getElementById('gl-out').textContent='BLG={spread:'+g.spread+',op:'+g.op+'}';
+    document.getElementById('gl-out').textContent='BLG={blur:'+g.blur+',op:'+g.op+'}';
   }
   rows.addEventListener('input',update);
   update();
