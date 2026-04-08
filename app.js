@@ -213,14 +213,19 @@ function _initLogoGallery() {
         if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
         var rgb=hexRgb(S[i][1]);
         var br=TW*(0.55+g.blur/50);
-        var gcx=pos.cx, gcy=pos.ty+TH*0.5+(g.oy||0);
-        var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,br);
+        var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
         var ga=g.op*pos.alpha;
+        // Elliptical glow matching card aspect ratio (TH/TW stretch)
+        ctx.save();
+        ctx.translate(gcx,gcy);
+        ctx.scale(1,TH/TW);
+        var grd=ctx.createRadialGradient(0,0,0,0,0,br);
         grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')');
         grd.addColorStop(0.5,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(ga*0.4)+')');
         grd.addColorStop(1,'rgba(0,0,0,0)');
         ctx.fillStyle=grd;
-        ctx.fillRect(gcx-br,gcy-br,br*2,br*2);
+        ctx.fillRect(-br,-br,br*2,br*2);
+        ctx.restore();
       }
     }
 
