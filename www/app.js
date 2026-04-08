@@ -185,15 +185,6 @@ function _initLogoGallery() {
 
   var H=cW/2, BEND=30, R=(H*H+BEND*BEND)/(2*BEND);
 
-  function drawRR(x,y,w,h,r){
-    ctx.beginPath();
-    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
-    ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
-    ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
-    ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
-    ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
-  }
-
   function getPos(i, pass, off) {
     var tx=( (cW-TOTAL)/2 )+i*STEP+pass*TOTAL-off;
     var cx=tx+TW/2, dx=cx-cW/2;
@@ -222,7 +213,7 @@ function _initLogoGallery() {
         if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
         var rgb=hexRgb(S[i][1]);
         var br=TW*(0.55+g.blur/50);
-        var gcx=pos.cx, gcy=pos.ty+TH*0.5;
+        var gcx=pos.cx, gcy=pos.ty+TH*0.5+(g.oy||0);
         var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,br);
         var ga=g.op*pos.alpha;
         grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')');
@@ -246,12 +237,12 @@ function _initLogoGallery() {
         ctx.rotate(rot);
         ctx.translate(-pos.cx, -(pos.ty+TH/2));
 
-        // Card base — medium-dark so box1_long.png frame blends naturally
-        drawRR(pos.tx, pos.ty, TW, TH, 14);
-        ctx.fillStyle='rgba(26,26,38,0.92)';
-        ctx.fill();
+        // box1_long.png AS the card (dark edges = frame, transparent center = glow shows through)
+        if(boxImg.complete&&boxImg.naturalWidth>0){
+          ctx.drawImage(boxImg, pos.tx, pos.ty, TW, TH);
+        }
 
-        // Logo centered, contain scaling
+        // Logo centered on top, contain scaling
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
           var iw=imgs[i].naturalWidth, ih=imgs[i].naturalHeight;
           var ms=TW*0.56, sc2=Math.min(ms/iw,ms/ih);
@@ -259,12 +250,6 @@ function _initLogoGallery() {
             pos.tx+(TW-iw*sc2)/2,
             pos.ty+(TH-ih*sc2)/2,
             iw*sc2, ih*sc2);
-        }
-
-        // box1_long.png overlay: transparent center shows logo, dark edges = card frame
-        if(boxImg.complete&&boxImg.naturalWidth>0){
-          ctx.globalAlpha=pos.alpha*0.85;
-          ctx.drawImage(boxImg, pos.tx, pos.ty, TW, TH);
         }
 
         ctx.restore();
