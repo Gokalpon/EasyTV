@@ -127,7 +127,7 @@ function _charReveal(el, baseDelay) {
   el.innerHTML = result;
 }
 
-// ── Circular Gallery — box1_long.png + logolar ──
+// ── Circular Gallery ──
 function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
@@ -135,15 +135,15 @@ function _initLogoGallery() {
   var S = [
     ['./assets/netflix_N.png','#E50914'],['./assets/youtube.png','#FF0000'],
     ['./assets/Disney+.png','#0ABFBC'],['./assets/prime video.png','#1A98FF'],
-    ['./assets/hbo.png','#3B1F6B'],['./assets/appleb.png','#f5f5f7'],
+    ['./assets/hbo.png','#6B2D8B'],['./assets/appleb.png','#e0e0e0'],
     ['./assets/Spotify.png','#1DB954'],['./assets/twitch.png','#9146FF'],
-    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#F9D100'],
+    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#FFD100'],
     ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
   ];
+  function hexRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
 
-  var N=S.length, TW=96, TH=130, GAP=14, BR=16, STEP=TW+GAP, TOTAL=N*STEP;
-  var PERSP=Math.round(TW*0.025);
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=188;
+  var N=S.length, TW=110, TH=171, GAP=14, STEP=TW+GAP, TOTAL=N*STEP;
+  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=228;
   el.style.height=cH+'px';
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
@@ -164,19 +164,8 @@ function _initLogoGallery() {
   cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
   cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
-  function trap(tx,ty,tw,th,r,p){
-    var br2=r*0.72;
-    ctx.beginPath();
-    ctx.moveTo(tx+r,ty); ctx.lineTo(tx+tw-r,ty);
-    ctx.arcTo(tx+tw,ty,tx+tw,ty+r,r);
-    ctx.lineTo(tx+tw-p,ty+th-br2);
-    ctx.arcTo(tx+tw-p,ty+th,tx+tw-p-br2,ty+th,br2);
-    ctx.lineTo(tx+p+br2,ty+th);
-    ctx.arcTo(tx+p,ty+th,tx+p,ty+th-br2,br2);
-    ctx.lineTo(tx,ty+r);
-    ctx.arcTo(tx,ty,tx+r,ty,r);
-    ctx.closePath();
-  }
+
+
   var H=cW/2, BEND=38, R=(H*H+BEND*BEND)/(2*BEND);
   function tick(){
     var intro=document.getElementById('introScreen');
@@ -186,6 +175,7 @@ function _initLogoGallery() {
     ctx.clearRect(0,0,cW,cH);
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var startX=(cW-TOTAL)/2;
+    var g=window.BLG||{spread:1.2,op:0.55};
     for(var pass=-1;pass<=1;pass++){
       for(var i=0;i<N;i++){
         var tx=startX+i*STEP+pass*TOTAL-off;
@@ -198,24 +188,27 @@ function _initLogoGallery() {
         var alpha=1-Math.max(0,(Math.abs(dx)/H-0.62)/0.26);
         alpha=Math.max(0,Math.min(1,alpha));
         if(alpha<=0) continue;
+        var rgb=hexRgb(S[i][1]);
+
+        // 1 — Backlight: radial gradient, rotasyondan bağımsız, kartın altında
+        var gr=TW*g.spread;
+        var gx=cx, gy=ty+TH*0.65;
+        var grd=ctx.createRadialGradient(gx,gy,0,gx,gy,gr);
+        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+g.op*alpha+')');
+        grd.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=grd;
+        ctx.fillRect(gx-gr,gy-gr,gr*2,gr*2);
+
+        // 2 — Kart + logo (rotation ile)
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-        // Kart dokusu
-        trap(tx,ty,TW,TH,BR,PERSP);
-        ctx.save();
-        ctx.clip();
-        if(boxImg.complete&&boxImg.naturalWidth>0){
-          ctx.drawImage(boxImg,tx,ty,TW,TH);
-        } else {
-          ctx.fillStyle='#1a1a2e'; ctx.fill();
-        }
-        // Logo
+        if(boxImg.complete&&boxImg.naturalWidth>0) ctx.drawImage(boxImg,tx,ty,TW,TH);
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
-          var sz=TW*0.62;
-          ctx.drawImage(imgs[i],tx+(TW-sz)/2,ty+(TH-sz)/2-4,sz,sz);
+          var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
+          var maxSz=TW*0.56, is=Math.min(maxSz/iw,maxSz/ih);
+          ctx.drawImage(imgs[i],tx+(TW-iw*is)/2,ty+(TH-ih*is)/2,iw*is,ih*is);
         }
-        ctx.restore();
         ctx.restore();
       }
     }
