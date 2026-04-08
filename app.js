@@ -132,27 +132,44 @@ function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
   el.dataset.init = '1';
-  var S = [
-    ['./assets/netflix_N.png','#E50914'],['./assets/youtube.png','#FF0000'],
-    ['./assets/Disney+.png','#0ABFBC'],['./assets/prime video.png','#1A98FF'],
-    ['./assets/hbo.png','#6B2D8B'],['./assets/appleb.png','#e0e0e0'],
-    ['./assets/Spotify.png','#1DB954'],['./assets/twitch.png','#9146FF'],
-    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#FFD100'],
-    ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
-  ];
-  function hexRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
 
-  var N=S.length, TW=110, TH=171, GAP=14, STEP=TW+GAP, TOTAL=N*STEP;
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=228;
+  var S = [
+    ['./assets/netflix_N.png','#E50914'],
+    ['./assets/youtube.png','#FF0000'],
+    ['./assets/Disney+.png','#0ABFBC'],
+    ['./assets/prime video.png','#1A98FF'],
+    ['./assets/hbo.png','#6B2D8B'],
+    ['./assets/appleb.png','#e0e0e0'],
+    ['./assets/Spotify.png','#1DB954'],
+    ['./assets/twitch.png','#9146FF'],
+    ['./assets/tvplus2.png','#FFD100'],
+    ['./assets/exxenb.png','#FFD100'],
+    ['./assets/bein.png','#6F2DA8'],
+    ['./assets/kickb.png','#53FC18']
+  ];
+
+  function hexRgb(h) {
+    return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+  }
+
+  // Card: 400:621 ratio. GAP=26 so cards don't appear stuck.
+  var TW=110, TH=171, GAP=26, STEP=TW+GAP, N=S.length, TOTAL=N*STEP;
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  var cW=el.offsetWidth||393, cH=244;
   el.style.height=cH+'px';
+
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cH*dpr;
   cv.style.cssText='width:100%;height:100%;position:absolute;top:0;left:0;touch-action:pan-x;user-select:none;';
   el.style.position='relative';
   el.appendChild(cv);
-  var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-  var boxImg=new Image(); boxImg.src='./assets/box1_long.png';
+  var ctx=cv.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  var boxImg=new Image();
+  boxImg.src='./assets/box1_long.png';
   var imgs=S.map(function(s){var i=new Image();i.src=s[0];return i;});
+
   var sc={cur:0,tgt:0}, dn=false, sx=0, ss=0, vel=0, lx=0;
   function lerp(a,b,t){return a+(b-a)*t;}
   function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;}
@@ -163,70 +180,97 @@ function _initLogoGallery() {
   cv.addEventListener('touchend',onUp);
   cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
-  cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
+  cv.addEventListener('mouseup',onUp);
+  cv.addEventListener('mouseleave',onUp);
 
+  var H=cW/2, BEND=30, R=(H*H+BEND*BEND)/(2*BEND);
 
-  var H=cW/2, BEND=38, R=(H*H+BEND*BEND)/(2*BEND);
+  function drawRR(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+    ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
+    ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+    ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
+    ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+  }
+
+  function getPos(i, pass, off) {
+    var tx=( (cW-TOTAL)/2 )+i*STEP+pass*TOTAL-off;
+    var cx=tx+TW/2, dx=cx-cW/2;
+    var eff=Math.min(Math.abs(dx),H);
+    var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
+    var ty=8+arc;
+    var alpha=1-Math.max(0,(Math.abs(dx)/H-0.60)/0.28);
+    alpha=Math.max(0,Math.min(1,alpha));
+    return {tx:tx,cx:cx,dx:dx,ty:ty,eff:eff,alpha:alpha};
+  }
+
   function tick(){
     var intro=document.getElementById('introScreen');
     if(!intro||intro.style.display==='none'){requestAnimationFrame(tick);return;}
     if(!dn) sc.tgt+=0.45;
     sc.cur=lerp(sc.cur,sc.tgt,0.065);
     ctx.clearRect(0,0,cW,cH);
-    var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
-    var startX=(cW-TOTAL)/2;
-    var g=window.BLG||{blur:20,op:0.7};
-    for(var pass=-1;pass<=1;pass++){
-      for(var i=0;i<N;i++){
-        var tx=startX+i*STEP+pass*TOTAL-off;
-        var cx=tx+TW/2, dx=cx-cW/2;
-        if(cx<-TW*2||cx>cW+TW*2) continue;
-        var eff=Math.min(Math.abs(dx),H);
-        var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-        var ty=6+arc;
-        var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*1.1;
-        var alpha=1-Math.max(0,(Math.abs(dx)/H-0.62)/0.26);
-        alpha=Math.max(0,Math.min(1,alpha));
-        if(alpha<=0) continue;
-        var rgb=hexRgb(S[i][1]);
 
-        // 1 — Backlight kutusu (kartın arkasında, rotasyonsuz)
-        var gs=TW*(0.5+g.blur/40);
-        var gcx=cx, gcy=ty+TH*0.55;
-        var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,gs);
-        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(g.op*alpha)+')');
-        grd.addColorStop(0.55,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(g.op*alpha*0.35)+')');
+    var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
+    var g=window.BLG||{blur:20,op:0.65};
+
+    // Pass 1: draw all backlights first (no rotation, behind all cards)
+    for(var p=-1;p<=1;p++){
+      for(var i=0;i<N;i++){
+        var pos=getPos(i,p,off);
+        if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
+        var rgb=hexRgb(S[i][1]);
+        var br=TW*(0.55+g.blur/50);
+        var gcx=pos.cx, gcy=pos.ty+TH*0.5;
+        var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,br);
+        var ga=g.op*pos.alpha;
+        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')');
+        grd.addColorStop(0.5,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(ga*0.4)+')');
         grd.addColorStop(1,'rgba(0,0,0,0)');
         ctx.fillStyle=grd;
-        ctx.fillRect(gcx-gs,gcy-gs,gs*2,gs*2);
+        ctx.fillRect(gcx-br,gcy-br,br*2,br*2);
+      }
+    }
 
-        // 2 — Kart zemini + logo + box1_long.png OVERLAY (rotation ile)
+    // Pass 2: draw all cards (base + logo + box1_long frame) with rotation
+    for(var p=-1;p<=1;p++){
+      for(var i=0;i<N;i++){
+        var pos=getPos(i,p,off);
+        if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
+        var rot=Math.sign(pos.dx)*Math.asin(Math.min(pos.eff/R,1))*0.75;
+
         ctx.save();
-        ctx.globalAlpha=alpha;
-        ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
+        ctx.globalAlpha=pos.alpha;
+        ctx.translate(pos.cx, pos.ty+TH/2);
+        ctx.rotate(rot);
+        ctx.translate(-pos.cx, -(pos.ty+TH/2));
 
-        // 2a — Koyu kart zemini (yuvarlak köşeli)
-        var rr=16;
-        ctx.beginPath();
-        ctx.moveTo(tx+rr,ty); ctx.lineTo(tx+TW-rr,ty);
-        ctx.arcTo(tx+TW,ty,tx+TW,ty+rr,rr); ctx.lineTo(tx+TW,ty+TH-rr);
-        ctx.arcTo(tx+TW,ty+TH,tx+TW-rr,ty+TH,rr); ctx.lineTo(tx+rr,ty+TH);
-        ctx.arcTo(tx,ty+TH,tx,ty+TH-rr,rr); ctx.lineTo(tx,ty+rr);
-        ctx.arcTo(tx,ty,tx+rr,ty,rr); ctx.closePath();
-        ctx.fillStyle='rgba(18,18,24,0.92)';
+        // Card base — medium-dark so box1_long.png frame blends naturally
+        drawRR(pos.tx, pos.ty, TW, TH, 14);
+        ctx.fillStyle='rgba(26,26,38,0.92)';
         ctx.fill();
 
-        // 2b — Logo (zemininin üstünde)
+        // Logo centered, contain scaling
         if(imgs[i].complete&&imgs[i].naturalWidth>0){
-          var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
-          var maxSz=TW*0.56, is=Math.min(maxSz/iw,maxSz/ih);
-          ctx.drawImage(imgs[i],tx+(TW-iw*is)/2,ty+(TH-ih*is)/2,iw*is,ih*is);
+          var iw=imgs[i].naturalWidth, ih=imgs[i].naturalHeight;
+          var ms=TW*0.56, sc2=Math.min(ms/iw,ms/ih);
+          ctx.drawImage(imgs[i],
+            pos.tx+(TW-iw*sc2)/2,
+            pos.ty+(TH-ih*sc2)/2,
+            iw*sc2, ih*sc2);
         }
 
+        // box1_long.png overlay: transparent center shows logo, dark edges = card frame
+        if(boxImg.complete&&boxImg.naturalWidth>0){
+          ctx.globalAlpha=pos.alpha*0.85;
+          ctx.drawImage(boxImg, pos.tx, pos.ty, TW, TH);
+        }
 
         ctx.restore();
       }
     }
+
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
