@@ -175,7 +175,7 @@ function _initLogoGallery() {
     ctx.clearRect(0,0,cW,cH);
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var startX=(cW-TOTAL)/2;
-    var g=window.BLG||{blur:16,op:0.8};
+    var g=window.BLG||{blur:20,op:0.7};
     for(var pass=-1;pass<=1;pass++){
       for(var i=0;i<N;i++){
         var tx=startX+i*STEP+pass*TOTAL-off;
@@ -190,7 +190,17 @@ function _initLogoGallery() {
         if(alpha<=0) continue;
         var rgb=hexRgb(S[i][1]);
 
-        // 1 — Kart + logo (rotation ile)
+        // 1 — Backlight kutusu (kartın arkasında, rotasyonsuz)
+        var gs=TW*(0.5+g.blur/40); // blur slider → yayılma boyutu
+        var gcx=cx, gcy=ty+TH*0.55;
+        var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,gs);
+        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(g.op*alpha)+')');
+        grd.addColorStop(0.55,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(g.op*alpha*0.35)+')');
+        grd.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=grd;
+        ctx.fillRect(gcx-gs,gcy-gs,gs*2,gs*2);
+
+        // 2 — Kart + logo (rotation ile)
         ctx.save();
         ctx.globalAlpha=alpha;
         ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
@@ -200,24 +210,6 @@ function _initLogoGallery() {
           var maxSz=TW*0.56, is=Math.min(maxSz/iw,maxSz/ih);
           ctx.drawImage(imgs[i],tx+(TW-iw*is)/2,ty+(TH-ih*is)/2,iw*is,ih*is);
         }
-
-        // 2 — Neon border frame glow (kartın üstünde, dışarı yayılır)
-        var rr=18;
-        ctx.beginPath();
-        ctx.moveTo(tx+rr,ty); ctx.lineTo(tx+TW-rr,ty);
-        ctx.arcTo(tx+TW,ty,tx+TW,ty+rr,rr);
-        ctx.lineTo(tx+TW,ty+TH-rr);
-        ctx.arcTo(tx+TW,ty+TH,tx+TW-rr,ty+TH,rr);
-        ctx.lineTo(tx+rr,ty+TH);
-        ctx.arcTo(tx,ty+TH,tx,ty+TH-rr,rr);
-        ctx.lineTo(tx,ty+rr);
-        ctx.arcTo(tx,ty,tx+rr,ty,rr);
-        ctx.closePath();
-        ctx.strokeStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+g.op+')';
-        ctx.lineWidth=2.5;
-        ctx.shadowColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',1)';
-        ctx.shadowBlur=g.blur;
-        ctx.stroke();
         ctx.restore();
       }
     }
