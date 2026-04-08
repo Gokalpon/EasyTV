@@ -223,8 +223,6 @@ function _initLogoGallery() {
           ctx.drawImage(imgs[i],tx+(TW-iw*is)/2,ty+(TH-ih*is)/2,iw*is,ih*is);
         }
 
-        // 2c — box1_long.png: çerçeve overlay (en üste)
-        if(boxImg.complete&&boxImg.naturalWidth>0) ctx.drawImage(boxImg,tx,ty,TW,TH);
 
         ctx.restore();
       }
