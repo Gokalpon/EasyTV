@@ -1,21 +1,13 @@
-const CACHE_NAME = 'easytv-static-v4';
-const ASSETS = [
-  './',
-  './index.html',
-  './style.css?v=20260404b',
-  './app.js?v=20260409a',
-  './error-handler.js?v=20260404b',
-  './premium-system.js?v=20260404b',
-  './dynamic-theme.js?v=20260404b',
+const CACHE_NAME = 'easytv-static-v5';
+const STATIC_ASSETS = [
   './akira-font.css',
   './raleway-font.css',
-  './manifest.webmanifest',
   './assets/EasyTVLogo.png'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).catch(() => Promise.resolve())
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS)).catch(() => Promise.resolve())
   );
   self.skipWaiting();
 });
@@ -29,6 +21,17 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+
+  // HTML ve JS dosyaları: her zaman ağdan al, cache'i bypass et
+  if (url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request, {cache: 'no-store'}).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Statik dosyalar (font, görsel): cache-first
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
