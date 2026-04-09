@@ -134,18 +134,18 @@ function _initLogoGallery() {
   el.dataset.init = '1';
 
   var S = [
-    ['./assets/netflix_N.png','#E50914'],
-    ['./assets/youtube.png','#FF0000'],
-    ['./assets/Disney+.png','#0ABFBC'],
-    ['./assets/prime video.png','#1A98FF'],
-    ['./assets/hbo.png','#6B2D8B'],
-    ['./assets/appleb.png','#e0e0e0'],
-    ['./assets/Spotify.png','#1DB954'],
-    ['./assets/twitch.png','#9146FF'],
-    ['./assets/tvplus2.png','#FFD100'],
-    ['./assets/exxenb.png','#FFD100'],
-    ['./assets/bein.png','#6F2DA8'],
-    ['./assets/kickb.png','#53FC18']
+    ['./assets/netflix_N.png','#E50914'],   // kırmızı
+    ['./assets/Disney+.png','#0ABFBC'],     // teal
+    ['./assets/twitch.png','#9146FF'],      // mor
+    ['./assets/youtube.png','#FF0000'],     // kırmızı
+    ['./assets/Spotify.png','#1DB954'],     // yeşil
+    ['./assets/hbo.png','#6B2D8B'],         // mor
+    ['./assets/tvplus2.png','#FFD100'],     // sarı
+    ['./assets/prime video.png','#1A98FF'], // mavi
+    ['./assets/bein.png','#6F2DA8'],        // mor
+    ['./assets/kickb.png','#53FC18'],       // yeşil
+    ['./assets/appleb.png','#e0e0e0'],      // gri
+    ['./assets/exxenb.png','#FFD100'],      // sarı
   ];
 
   function hexRgb(h) {
