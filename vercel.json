@@ -8,6 +8,15 @@
           "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:;"
         }
       ]
+    },
+    {
+      "source": "/app.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        }
+      ]
     }
   ]
 }
