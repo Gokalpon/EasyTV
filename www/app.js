@@ -218,7 +218,7 @@ function _initLogoGallery() {
     ctx.clearRect(0,0,cW,cvH);
 
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
-    var g=window.BLG||{blur:20,op:0.65,ox:0,oy:0,shape:0.5};
+    var g=window.BLG||{blur:10,op:0.5,ox:-10,oy:15,shape:0.1,gx:0.8,gy:0.85};
 
     // Pass 1: backlights — rotated with card, ctx.filter blur, adjustable size + shape
     for(var p=-1;p<=1;p++){
