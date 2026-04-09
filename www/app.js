@@ -203,10 +203,11 @@ function _initLogoGallery() {
     var cx=tx+TW/2, dx=cx-cW/2;
     var eff=Math.min(Math.abs(dx),H);
     var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-    var ty=8+OVER+arc; // shifted down by OVER to match canvas offset
+    var ty=8+OVER+arc;
+    var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*0.75;
     var alpha=1-Math.max(0,(Math.abs(dx)/H-0.60)/0.28);
     alpha=Math.max(0,Math.min(1,alpha));
-    return {tx:tx,cx:cx,dx:dx,ty:ty,eff:eff,alpha:alpha};
+    return {tx:tx,cx:cx,dx:dx,ty:ty,eff:eff,alpha:alpha,rot:rot};
   }
 
   function tick(){
@@ -219,19 +220,24 @@ function _initLogoGallery() {
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var g=window.BLG||{blur:20,op:0.65,ox:0,oy:0,shape:0.5};
 
-    // Pass 1: backlights — ctx.filter blur, shape = rect(0) to ellipse(1)
+    // Pass 1: backlights — rotated with card, ctx.filter blur, adjustable size + shape
     for(var p=-1;p<=1;p++){
       for(var i=0;i<N;i++){
         var pos=getPos(i,p,off);
         if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
         var rgb=hexRgb(S[i][1]);
+        var glowW=TW*(g.gx||1), glowH=TH*(g.gy||1);
         var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
         var ga=g.op*pos.alpha;
-        var shapeR=(g.shape||0)*Math.min(TW/2, TH/2);
+        var shapeR=(g.shape||0)*Math.min(glowW/2, glowH/2);
         ctx.save();
+        // rotate glow same as card
+        ctx.translate(pos.cx, pos.ty+TH/2);
+        ctx.rotate(pos.rot);
+        ctx.translate(-pos.cx, -(pos.ty+TH/2));
         ctx.filter='blur('+Math.max(2,g.blur)+'px)';
         ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')';
-        drawRR(gcx-TW/2, gcy-TH/2, TW, TH, shapeR);
+        drawRR(gcx-glowW/2, gcy-glowH/2, glowW, glowH, shapeR);
         ctx.fill();
         ctx.restore();
       }
@@ -242,12 +248,11 @@ function _initLogoGallery() {
       for(var i=0;i<N;i++){
         var pos=getPos(i,p,off);
         if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
-        var rot=Math.sign(pos.dx)*Math.asin(Math.min(pos.eff/R,1))*0.75;
 
         ctx.save();
         ctx.globalAlpha=pos.alpha;
         ctx.translate(pos.cx, pos.ty+TH/2);
-        ctx.rotate(rot);
+        ctx.rotate(pos.rot);
         ctx.translate(-pos.cx, -(pos.ty+TH/2));
 
         if(boxImg.complete&&boxImg.naturalWidth>0){
