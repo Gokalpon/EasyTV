@@ -1,9 +1,9 @@
-const CACHE_NAME = 'easytv-static-v3';
+const CACHE_NAME = 'easytv-static-v4';
 const ASSETS = [
   './',
   './index.html',
   './style.css?v=20260404b',
-  './app.js?v=20260404b',
+  './app.js?v=20260409a',
   './error-handler.js?v=20260404b',
   './premium-system.js?v=20260404b',
   './dynamic-theme.js?v=20260404b',
