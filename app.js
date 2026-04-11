@@ -220,7 +220,7 @@ function _initLogoGallery() {
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var g=window.BLG||{blur:10,op:0.5,ox:-10,oy:15,shape:0.1,gx:0.8,gy:0.85};
 
-    // Pass 1: backlights — rotated with card, ctx.filter blur, adjustable size + shape
+    // Pass 1: backlights — radial gradient (GPU-accelerated, works on iOS Safari)
     for(var p=-1;p<=1;p++){
       for(var i=0;i<N;i++){
         var pos=getPos(i,p,off);
@@ -229,16 +229,23 @@ function _initLogoGallery() {
         var glowW=TW*(g.gx||1), glowH=TH*(g.gy||1);
         var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
         var ga=g.op*pos.alpha;
-        var shapeR=(g.shape||0)*Math.min(glowW/2, glowH/2);
+        var br=Math.max(glowW,glowH)*(0.4+g.blur/80);
+        // shape: 0=tight/sharp center, 1=soft/wide spread
+        var midStop=0.2+(g.shape||0)*0.5;
         ctx.save();
-        // rotate glow same as card
         ctx.translate(pos.cx, pos.ty+TH/2);
         ctx.rotate(pos.rot);
         ctx.translate(-pos.cx, -(pos.ty+TH/2));
-        ctx.filter='blur('+Math.max(2,g.blur)+'px)';
-        ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')';
-        drawRR(gcx-glowW/2, gcy-glowH/2, glowW, glowH, shapeR);
-        ctx.fill();
+        // scale to match card aspect ratio
+        ctx.translate(gcx,gcy);
+        ctx.scale(glowW/glowH,1);
+        ctx.translate(-gcx,-gcy);
+        var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,br);
+        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')');
+        grd.addColorStop(midStop,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(ga*0.5)+')');
+        grd.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=grd;
+        ctx.fillRect(gcx-br,gcy-br,br*2,br*2);
         ctx.restore();
       }
     }
