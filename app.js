@@ -231,25 +231,33 @@ function _initLogoGallery() {
     var g=window.BLG||{blur:10,op:0.5,ox:-10,oy:15,shape:0.1,gx:0.8,gy:0.85};
 
     // CSS blur'u BLG.blur değerinden ayarla (sadece değer değişince güncelle)
-    var blurPx=(g.blur||10)+'px';
+    var blurPx=Math.max(2,g.blur||10)+'px';
     if(glowCv.dataset.blur!==blurPx){glowCv.style.filter='blur('+blurPx+')';glowCv.dataset.blur=blurPx;}
 
-    // Pass 1: backlights — glowCv'e BLG değerleriyle elips çiz, CSS blur yumuşatır
+    // Pass 1: backlights — orijinal gibi rounded rect, glowCtx üstünde (CSS blur iOS uyumlu)
     for(var p=-1;p<=1;p++){
       for(var i=0;i<N;i++){
         var pos=getPos(i,p,off);
         if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
         var rgb=hexRgb(S[i][1]);
-        var glowRx=TW*(g.gx||1)*0.5, glowRy=TH*(g.gy||1)*0.5;
+        var glowW=TW*(g.gx||1), glowH=TH*(g.gy||1);
         var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
+        var ga=g.op*pos.alpha;
+        var shapeR=(g.shape||0)*Math.min(glowW/2,glowH/2);
         glowCtx.save();
-        glowCtx.globalAlpha=g.op*pos.alpha;
-        glowCtx.fillStyle='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
-        glowCtx.translate(gcx,gcy);
+        glowCtx.translate(pos.cx,pos.ty+TH/2);
         glowCtx.rotate(pos.rot);
-        glowCtx.scale(1,glowRy/glowRx);
+        glowCtx.translate(-pos.cx,-(pos.ty+TH/2));
+        glowCtx.globalAlpha=ga;
+        glowCtx.fillStyle='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
+        // drawRR inline — orijinal şekil
+        var rx=gcx-glowW/2, ry=gcy-glowH/2, rr=Math.min(shapeR,glowW/2,glowH/2);
         glowCtx.beginPath();
-        glowCtx.arc(0,0,glowRx,0,Math.PI*2);
+        glowCtx.moveTo(rx+rr,ry); glowCtx.lineTo(rx+glowW-rr,ry);
+        glowCtx.arcTo(rx+glowW,ry,rx+glowW,ry+rr,rr); glowCtx.lineTo(rx+glowW,ry+glowH-rr);
+        glowCtx.arcTo(rx+glowW,ry+glowH,rx+glowW-rr,ry+glowH,rr); glowCtx.lineTo(rx+rr,ry+glowH);
+        glowCtx.arcTo(rx,ry+glowH,rx,ry+glowH-rr,rr); glowCtx.lineTo(rx,ry+rr);
+        glowCtx.arcTo(rx,ry,rx+rr,ry,rr); glowCtx.closePath();
         glowCtx.fill();
         glowCtx.restore();
       }
