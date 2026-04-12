@@ -10,16 +10,17 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>EasyTV</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="./assets/icon-1024.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/icon-180.png">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&family=Raleway:wght@700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="apple-touch-icon" href="./assets/icon-180.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&family=Raleway:wght@700&display=swap&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="raleway-font.css">
 <link rel="stylesheet" href="akira-font.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css?v=20260404c">
-<script src="error-handler.js?v=20260404b"></script>
-<script src="premium-system.js?v=20260404b"></script>
-<script src="dynamic-theme.js?v=20260404b"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<link rel="stylesheet" href="style.css?v=20260409b">
+<script src="error-handler.js?v=20260404b" defer></script>
+<script src="premium-system.js?v=20260404b" defer></script>
+<script src="dynamic-theme.js?v=20260404b" defer></script>
 </head>
 <body>
 <script>
@@ -58,7 +59,7 @@
 
   <!-- AUTH LOADING -->
   <div class="auth-loading" id="authLoading">
-    <img src="./assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
+    <img src="./assets/EasyTVLogo.webp" alt="EasyTV Logo" loading="lazy" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
     <div class="auth-spinner"></div>
   </div>
 
@@ -71,7 +72,7 @@
 
   <!-- Üst: Logo -->
   <div style="position:absolute;top:72px;left:0;right:0;display:flex;justify-content:center;z-index:1;animation:introFadeUp .7s .1s both;">
-    <img id="loginLogo" src="./assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:52px;width:auto;object-fit:contain;">
+    <img id="loginLogo" src="./assets/EasyTVLogo.webp" alt="EasyTV Logo" loading="lazy" style="height:52px;width:auto;object-fit:contain;">
   </div>
 
   <!-- Orta: Başlık -->
@@ -131,7 +132,7 @@
 
   <!-- LOGO -->
   <div id="introLogoWrap" style="position:absolute;top:max(env(safe-area-inset-top) + 12px, 8.5%);left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:1;">
-    <img src="./assets/EasyTVLogo.png" id="introLogoImg" style="height:57px;width:auto;object-fit:contain;display:none;">
+    <img src="./assets/EasyTVLogo.webp" id="introLogoImg" style="height:57px;width:auto;object-fit:contain;display:none;">
   </div>
 
   <!-- BAŞLIK + ALT YAZI -->
@@ -193,7 +194,7 @@
   </div>
 
   <div class="pin-screen" id="pinScreen" style="display:none;overflow:hidden;">
-    <div class="pin-logo" style="height:48px;"><img src="./assets/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
+    <div class="pin-logo" style="height:48px;"><img src="./assets/EasyTVLogo.webp" style="height:100%;width:auto;object-fit:contain;"></div>
     <p class="pin-greeting" id="pinGreeting">Hoş geldiniz</p>
     <p class="pin-hint" id="pinHint">PIN ile giriş yapın</p>
     <div class="pin-dots" id="pinDots">
@@ -240,7 +241,7 @@
 
     <div class="tab-panel active" id="tab-home">
       <div class="home-header">
-        <img src="./assets/EasyTVLogo.png" style="height:36px;width:auto;object-fit:contain;display:block;opacity:.95;">
+        <img src="./assets/EasyTVLogo.webp" style="height:36px;width:auto;object-fit:contain;display:block;opacity:.95;">
         <div class="add-btn" id="mainAddBtn" onclick="openAddModal()">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1v13M1 7.5h13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
         </div>

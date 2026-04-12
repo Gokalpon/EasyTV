@@ -1,8 +1,8 @@
-const CACHE_NAME = 'easytv-static-v5';
+const CACHE_NAME = 'easytv-static-v6';
 const STATIC_ASSETS = [
   './akira-font.css',
   './raleway-font.css',
-  './assets/EasyTVLogo.png'
+  './assets/EasyTVLogo.webp'
 ];
 
 self.addEventListener('install', event => {
