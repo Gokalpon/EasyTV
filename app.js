@@ -1102,7 +1102,7 @@ function buildServicePicker(){
     if(L&&L.html&&L.html.indexOf('<img')>=0){
       var useHtml=isDark&&L.htmlDark?(sel?L.htmlDark:L.html):L.html;
       var srcM=useHtml.match(/src="([^"]+)"/);
-      logoHtml=srcM?'<img src="'+srcM[1]+'">':'';
+      logoHtml=srcM?'<img src="'+srcM[1]+'" loading="lazy">':'';
     } else if(L&&L.html){
       var inlineHtml=isDark&&L.htmlDark?(sel?(L.htmlDark||L.html):L.html):L.html;
       logoHtml='<div class="sp-inline-logo">'+inlineHtml+'</div>';
