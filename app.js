@@ -170,11 +170,20 @@ function _initLogoGallery() {
 
   el.style.height=cH+'px';
   el.style.overflow='visible'; // allow glow to bleed outside div
+  el.style.position='relative';
 
+  // Glow canvas: CSS filter:blur() çalışır iOS Safari'de (ctx.filter ≠ CSS filter)
+  var glowCv=document.createElement('canvas');
+  glowCv.width=cW*dpr; glowCv.height=cvH*dpr;
+  glowCv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;pointer-events:none;filter:blur(26px);';
+  el.appendChild(glowCv);
+  var glowCtx=glowCv.getContext('2d');
+  glowCtx.scale(dpr,dpr);
+
+  // Kart canvas: blur yok, sadece görseller
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cvH*dpr;
   cv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;touch-action:pan-x;user-select:none;pointer-events:auto;';
-  el.style.position='relative';
   el.appendChild(cv);
   var ctx=cv.getContext('2d');
   ctx.scale(dpr,dpr);
@@ -216,37 +225,29 @@ function _initLogoGallery() {
     if(!dn) sc.tgt+=0.45;
     sc.cur=lerp(sc.cur,sc.tgt,0.065);
     ctx.clearRect(0,0,cW,cvH);
+    glowCtx.clearRect(0,0,cW,cvH);
 
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var g=window.BLG||{blur:10,op:0.5,ox:-10,oy:15,shape:0.1,gx:0.8,gy:0.85};
 
-    // Pass 1: backlights — radial gradient (GPU-accelerated, works on iOS Safari)
+    // Pass 1: backlights — glowCv'e düz elips çiz, CSS blur sürümü iOS'ta çalışır
     for(var p=-1;p<=1;p++){
       for(var i=0;i<N;i++){
         var pos=getPos(i,p,off);
         if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
         var rgb=hexRgb(S[i][1]);
-        var glowW=TW*(g.gx||1), glowH=TH*(g.gy||1);
+        var glowRx=TW*(g.gx||1)*0.55, glowRy=TH*(g.gy||1)*0.55;
         var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
-        var ga=g.op*pos.alpha;
-        var br=Math.max(glowW,glowH)*(0.4+g.blur/80);
-        // shape: 0=tight/sharp center, 1=soft/wide spread
-        var midStop=0.2+(g.shape||0)*0.5;
-        ctx.save();
-        ctx.translate(pos.cx, pos.ty+TH/2);
-        ctx.rotate(pos.rot);
-        ctx.translate(-pos.cx, -(pos.ty+TH/2));
-        // scale to match card aspect ratio
-        ctx.translate(gcx,gcy);
-        ctx.scale(glowW/glowH,1);
-        ctx.translate(-gcx,-gcy);
-        var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,br);
-        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')');
-        grd.addColorStop(midStop,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(ga*0.5)+')');
-        grd.addColorStop(1,'rgba(0,0,0,0)');
-        ctx.fillStyle=grd;
-        ctx.fillRect(gcx-br,gcy-br,br*2,br*2);
-        ctx.restore();
+        glowCtx.save();
+        glowCtx.globalAlpha=g.op*pos.alpha;
+        glowCtx.fillStyle='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
+        glowCtx.translate(gcx,gcy);
+        glowCtx.rotate(pos.rot);
+        glowCtx.scale(1,glowRy/glowRx);
+        glowCtx.beginPath();
+        glowCtx.arc(0,0,glowRx,0,Math.PI*2);
+        glowCtx.fill();
+        glowCtx.restore();
       }
     }
 
