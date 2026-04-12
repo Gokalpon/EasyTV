@@ -175,7 +175,7 @@ function _initLogoGallery() {
   // Glow canvas: CSS filter:blur() çalışır iOS Safari'de (ctx.filter ≠ CSS filter)
   var glowCv=document.createElement('canvas');
   glowCv.width=cW*dpr; glowCv.height=cvH*dpr;
-  glowCv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;pointer-events:none;filter:blur(26px);';
+  glowCv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;pointer-events:none;';
   el.appendChild(glowCv);
   var glowCtx=glowCv.getContext('2d');
   glowCtx.scale(dpr,dpr);
@@ -230,13 +230,17 @@ function _initLogoGallery() {
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var g=window.BLG||{blur:10,op:0.5,ox:-10,oy:15,shape:0.1,gx:0.8,gy:0.85};
 
-    // Pass 1: backlights — glowCv'e düz elips çiz, CSS blur sürümü iOS'ta çalışır
+    // CSS blur'u BLG.blur değerinden ayarla (sadece değer değişince güncelle)
+    var blurPx=(g.blur||10)+'px';
+    if(glowCv.dataset.blur!==blurPx){glowCv.style.filter='blur('+blurPx+')';glowCv.dataset.blur=blurPx;}
+
+    // Pass 1: backlights — glowCv'e BLG değerleriyle elips çiz, CSS blur yumuşatır
     for(var p=-1;p<=1;p++){
       for(var i=0;i<N;i++){
         var pos=getPos(i,p,off);
         if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
         var rgb=hexRgb(S[i][1]);
-        var glowRx=TW*(g.gx||1)*0.55, glowRy=TH*(g.gy||1)*0.55;
+        var glowRx=TW*(g.gx||1)*0.5, glowRy=TH*(g.gy||1)*0.5;
         var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
         glowCtx.save();
         glowCtx.globalAlpha=g.op*pos.alpha;
