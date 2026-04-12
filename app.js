@@ -1299,12 +1299,7 @@ function buildGrid() {
     tile.onclick = () => {
       showErrorToast('Bu hizmet kilitli. Premium’a geçin veya başka bir hizmeti kaldırın.', 'warning');
     };
-    // Giriş animasyonu
     tile.style.opacity = '0.5';
-    tile.style.transform = 'translateY(14px) scale(.95)';
-    tile.style.transition = `opacity .4s ease ${Math.min((i+active.length)*.07,.6)}s, transform .4s cubic-bezier(.34,1.2,.64,1) ${Math.min((i+active.length)*.07,.6)}s`;
-    tile.classList.add('skeleton');
-    setTimeout(() => { tile.style.opacity='0.5'; tile.style.transform=''; tile.classList.remove('skeleton'); }, Math.min((i+active.length)*70+300, 900));
     gridEl.appendChild(tile);
   });
 }
