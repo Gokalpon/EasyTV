@@ -256,7 +256,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 
 /* LOGO */
 .easytv-logo{display:inline-flex;align-items:baseline;user-select:none;line-height:1;}
-.logo-easy{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:400;color:rgba(255,255,255,.82);letter-spacing:.5px;}
+.logo-easy{font-family:'Space Grotesk','Inter',sans-serif;font-style:italic;font-weight:400;color:rgba(255,255,255,.82);letter-spacing:.5px;}
 .logo-tv{font-family:'Syne','Inter',-apple-system,sans-serif;font-weight:800;color:#fff;letter-spacing:-2px;margin-left:1px;}
 .lv-home .logo-easy{font-size:25px}.lv-home .logo-tv{font-size:27px}
 .lv-pin .logo-easy{font-size:20px}.lv-pin .logo-tv{font-size:22px}
