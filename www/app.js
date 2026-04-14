@@ -1,4 +1,4 @@
-﻿// ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // SUPABASE KURULUMU
 // ══════════════════════════════════════════════════
 // ⚠️ ÖNEMLİ: Supabase RLS politikalarını aktif edin!
@@ -1135,41 +1135,45 @@ function skipOnboard(){localStorage.setItem('easytv_setup_done','1');const onboa
 function buildServicePicker(){
   var g=document.getElementById('spGrid');
   if(!g) return;
-  g.innerHTML='';
+  // Sadece sel class toggle — ilk render sonrasi tam re-render yapma
+  if(g.children.length===POPULAR_SVCS.length){
+    POPULAR_SVCS.forEach(function(s,i){
+      var el=g.children[i];
+      if(el) el.classList.toggle('sel',obSelectedServices.includes(s.id));
+    });
+    return;
+  }
+  // Ilk render: DocumentFragment ile tek DOM yazimi
+  var frag=document.createDocumentFragment();
   POPULAR_SVCS.forEach(function(s){
     var L=LOGO[s.id]||null;
     var isDark=s.textDark||(L&&L.textDark);
     var sel=obSelectedServices.includes(s.id);
     var el=document.createElement('div');
     el.className='sp-item '+s.id+(sel?' sel':'');
-    if(s.rgb) el.style.setProperty('--sp-rgb', s.rgb);
-
+    if(s.rgb) el.style.setProperty('--sp-rgb',s.rgb);
     var logoHtml='';
     if(L&&L.html&&L.html.indexOf('<img')>=0){
       var useHtml=isDark&&L.htmlDark?(sel?L.htmlDark:L.html):L.html;
       var srcM=useHtml.match(/src="([^"]+)"/);
-      logoHtml=srcM?'<img src="'+srcM[1]+'">':'';
-    } else if(L&&L.html){
-      var inlineHtml=isDark&&L.htmlDark?(sel?(L.htmlDark||L.html):L.html):L.html;
-      logoHtml='<div class="sp-inline-logo">'+inlineHtml+'</div>';
-    } else {
+      logoHtml=srcM?'<img src="'+srcM[1]+'\" loading="lazy" decoding="async">':'';
+    }else if(L&&L.html){
+      logoHtml='<div class="sp-inline-logo">'+((isDark&&L.htmlDark)?(sel?(L.htmlDark||L.html):L.html):L.html)+'</div>';
+    }else{
       logoHtml='<span class="sp-text-logo">'+s.name.slice(0,2).toUpperCase()+'</span>';
     }
-
     var name=s.name.length>9?s.name.slice(0,8)+'…':s.name;
-
-    el.innerHTML='<div class="sp-logo-wrap">'+logoHtml+'</div>'
-      +'<div class="sp-name">'+name+'</div>';
-
-
+    el.innerHTML='<div class="sp-logo-wrap">'+logoHtml+'</div><div class="sp-name">'+name+'</div>';
     el.onclick=function(){
       var i2=obSelectedServices.indexOf(s.id);
       if(i2>=0) obSelectedServices.splice(i2,1);
       else obSelectedServices.push(s.id);
-      buildServicePicker();
+      el.classList.toggle('sel',obSelectedServices.includes(s.id));
     };
-    g.appendChild(el);
+    frag.appendChild(el);
   });
+  g.innerHTML='';
+  g.appendChild(frag);
 }
 function kp(n){
   if(pinVal.length>=4) return;
