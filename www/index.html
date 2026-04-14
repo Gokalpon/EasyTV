@@ -10,7 +10,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>EasyTV</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="./assets/EasyTVLogo.png">
+<link rel="apple-touch-icon" href="./assets/icon-1024.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/icon-180.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&family=Raleway:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="raleway-font.css">
 <link rel="stylesheet" href="akira-font.css">
@@ -129,21 +130,21 @@
   <div class="intro-glow2" style="position:absolute;pointer-events:none;"></div>
 
   <!-- LOGO -->
-  <div id="introLogoWrap" style="position:absolute;top:72px;left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:1;">
+  <div id="introLogoWrap" style="position:absolute;top:max(env(safe-area-inset-top) + 12px, 8.5%);left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:1;">
     <img src="./assets/EasyTVLogo.png" id="introLogoImg" style="height:57px;width:auto;object-fit:contain;display:none;">
   </div>
 
   <!-- BAŞLIK + ALT YAZI -->
-  <div style="position:absolute;top:164px;left:28px;right:28px;text-align:center;z-index:1;">
+  <div style="position:absolute;top:19%;left:28px;right:28px;text-align:center;z-index:1;">
     <div id="introTagline" style="font-family:'Akira', 'Space Grotesk', 'Inter', sans-serif;font-size:31px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.18;text-shadow:0 2px 24px rgba(130,80,255,.35);">Tüm servisleriniz<br>tek bir yerde.</div>
     <div id="introSub" style="font-size:14px;color:rgba(255,255,255,.38);line-height:1.5;margin-top:10px;letter-spacing:-.1px;">Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.</div>
   </div>
 
   <!-- SERVİS LOGO GALERİSİ -->
-  <div id="introLogoGallery" style="position:absolute;top:374px;left:0;right:0;height:228px;z-index:1;overflow:hidden;"></div>
+  <div id="introLogoGallery" style="position:absolute;top:44%;left:0;right:0;height:244px;z-index:1;overflow:visible;"></div>
 
   <!-- BUTONLAR -->
-  <div style="position:absolute;bottom:44px;left:28px;right:28px;z-index:1;animation:introSlideUp .7s .75s both;">
+  <div style="position:absolute;bottom:max(env(safe-area-inset-bottom) + 16px, 5%);left:28px;right:28px;z-index:1;animation:introSlideUp .7s .75s both;">
     <div style="display:flex;justify-content:center;margin-bottom:14px;position:relative;">
       <button id="introLangTrigger" onclick="toggleLangMenu()" style="background:none;border:none;cursor:pointer;font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.8px;display:flex;align-items:center;gap:5px;padding:6px 0;">
         <span id="introLangLabel">TR</span>
@@ -680,7 +681,7 @@
 </div>
 </div>
 
-<script src="app.js?v=20260404c"></script>
+<script src="app.js?v=20260409a"></script>
 
 
 </body>

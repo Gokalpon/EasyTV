@@ -132,27 +132,57 @@ function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
   if (!el || el.dataset.init) return;
   el.dataset.init = '1';
-  var S = [
-    ['./assets/netflix_N.png','#E50914'],['./assets/youtube.png','#FF0000'],
-    ['./assets/Disney+.png','#0ABFBC'],['./assets/prime video.png','#1A98FF'],
-    ['./assets/hbo.png','#6B2D8B'],['./assets/appleb.png','#e0e0e0'],
-    ['./assets/Spotify.png','#1DB954'],['./assets/twitch.png','#9146FF'],
-    ['./assets/tvplus2.png','#FFD100'],['./assets/exxenb.png','#FFD100'],
-    ['./assets/bein.png','#6F2DA8'],['./assets/kickb.png','#53FC18']
-  ];
-  function hexRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
 
-  var N=S.length, TW=110, TH=171, GAP=14, STEP=TW+GAP, TOTAL=N*STEP;
-  var dpr=Math.min(window.devicePixelRatio||1,2), cW=el.offsetWidth||393, cH=228;
+  var S = [
+    ['./assets/netflix_N.png','#E50914'],   // kırmızı
+    ['./assets/Disney+.png','#0ABFBC'],     // teal
+    ['./assets/twitch.png','#9146FF'],      // mor
+    ['./assets/youtube.png','#FF0000'],     // kırmızı
+    ['./assets/Spotify.png','#1DB954'],     // yeşil
+    ['./assets/hbo.png','#6B2D8B'],         // mor
+    ['./assets/tvplus2.png','#FFD100'],     // sarı
+    ['./assets/prime video.png','#1A98FF'], // mavi
+    ['./assets/bein.png','#6F2DA8'],        // mor
+    ['./assets/kickb.png','#53FC18'],       // yeşil
+    ['./assets/appleb.png','#e0e0e0'],      // gri
+    ['./assets/exxenb.png','#FFD100'],      // sarı
+  ];
+
+  function hexRgb(h) {
+    return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+  }
+
+  function drawRR(x,y,w,h,r) {
+    r = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+    ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
+    ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+    ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
+    ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+  }
+
+  var TW=110, TH=171, GAP=26, STEP=TW+GAP, N=S.length, TOTAL=N*STEP;
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  var cW=el.offsetWidth||393, cH=244;
+  // OVER: extra canvas space above/below so glow is never clipped
+  var OVER=90, cvH=cH+OVER*2;
+
   el.style.height=cH+'px';
+  el.style.overflow='visible'; // allow glow to bleed outside div
+
   var cv=document.createElement('canvas');
-  cv.width=cW*dpr; cv.height=cH*dpr;
-  cv.style.cssText='width:100%;height:100%;position:absolute;top:0;left:0;touch-action:pan-x;user-select:none;';
+  cv.width=cW*dpr; cv.height=cvH*dpr;
+  cv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;touch-action:pan-x;user-select:none;pointer-events:auto;';
   el.style.position='relative';
   el.appendChild(cv);
-  var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-  var boxImg=new Image(); boxImg.src='./assets/box1_long.png';
+  var ctx=cv.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  var boxImg=new Image();
+  boxImg.src='./assets/box1_long.png';
   var imgs=S.map(function(s){var i=new Image();i.src=s[0];return i;});
+
   var sc={cur:0,tgt:0}, dn=false, sx=0, ss=0, vel=0, lx=0;
   function lerp(a,b,t){return a+(b-a)*t;}
   function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;}
@@ -163,55 +193,91 @@ function _initLogoGallery() {
   cv.addEventListener('touchend',onUp);
   cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
   cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
-  cv.addEventListener('mouseup',onUp); cv.addEventListener('mouseleave',onUp);
+  cv.addEventListener('mouseup',onUp);
+  cv.addEventListener('mouseleave',onUp);
 
+  var H=cW/2, BEND=30, R=(H*H+BEND*BEND)/(2*BEND);
 
-  var H=cW/2, BEND=38, R=(H*H+BEND*BEND)/(2*BEND);
+  function getPos(i, pass, off) {
+    var tx=( (cW-TOTAL)/2 )+i*STEP+pass*TOTAL-off;
+    var cx=tx+TW/2, dx=cx-cW/2;
+    var eff=Math.min(Math.abs(dx),H);
+    var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
+    var ty=8+OVER+arc;
+    var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*0.75;
+    var alpha=1-Math.max(0,(Math.abs(dx)/H-0.60)/0.28);
+    alpha=Math.max(0,Math.min(1,alpha));
+    return {tx:tx,cx:cx,dx:dx,ty:ty,eff:eff,alpha:alpha,rot:rot};
+  }
+
   function tick(){
     var intro=document.getElementById('introScreen');
     if(!intro||intro.style.display==='none'){requestAnimationFrame(tick);return;}
     if(!dn) sc.tgt+=0.45;
     sc.cur=lerp(sc.cur,sc.tgt,0.065);
-    ctx.clearRect(0,0,cW,cH);
-    var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
-    var startX=(cW-TOTAL)/2;
-    var g=window.BLG||{spread:1.2,op:0.55};
-    for(var pass=-1;pass<=1;pass++){
-      for(var i=0;i<N;i++){
-        var tx=startX+i*STEP+pass*TOTAL-off;
-        var cx=tx+TW/2, dx=cx-cW/2;
-        if(cx<-TW*2||cx>cW+TW*2) continue;
-        var eff=Math.min(Math.abs(dx),H);
-        var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-        var ty=6+arc;
-        var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*1.1;
-        var alpha=1-Math.max(0,(Math.abs(dx)/H-0.62)/0.26);
-        alpha=Math.max(0,Math.min(1,alpha));
-        if(alpha<=0) continue;
-        var rgb=hexRgb(S[i][1]);
+    ctx.clearRect(0,0,cW,cvH);
 
-        // 1 — Backlight: radial gradient, rotasyondan bağımsız, kartın altında
-        var gr=TW*g.spread;
-        var gx=cx, gy=ty+TH*0.65;
-        var grd=ctx.createRadialGradient(gx,gy,0,gx,gy,gr);
-        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+g.op*alpha+')');
+    var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
+    var g=window.BLG||{blur:10,op:0.5,ox:-10,oy:15,shape:0.1,gx:0.8,gy:0.85};
+
+    // Pass 1: backlights — radial gradient (GPU-accelerated, works on iOS Safari)
+    for(var p=-1;p<=1;p++){
+      for(var i=0;i<N;i++){
+        var pos=getPos(i,p,off);
+        if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
+        var rgb=hexRgb(S[i][1]);
+        var glowW=TW*(g.gx||1), glowH=TH*(g.gy||1);
+        var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
+        var ga=g.op*pos.alpha;
+        var br=Math.max(glowW,glowH)*(0.4+g.blur/80);
+        // shape: 0=tight/sharp center, 1=soft/wide spread
+        var midStop=0.2+(g.shape||0)*0.5;
+        ctx.save();
+        ctx.translate(pos.cx, pos.ty+TH/2);
+        ctx.rotate(pos.rot);
+        ctx.translate(-pos.cx, -(pos.ty+TH/2));
+        // scale to match card aspect ratio
+        ctx.translate(gcx,gcy);
+        ctx.scale(glowW/glowH,1);
+        ctx.translate(-gcx,-gcy);
+        var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,br);
+        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')');
+        grd.addColorStop(midStop,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(ga*0.5)+')');
         grd.addColorStop(1,'rgba(0,0,0,0)');
         ctx.fillStyle=grd;
-        ctx.fillRect(gx-gr,gy-gr,gr*2,gr*2);
-
-        // 2 — Kart + logo (rotation ile)
-        ctx.save();
-        ctx.globalAlpha=alpha;
-        ctx.translate(cx,ty+TH/2); ctx.rotate(rot); ctx.translate(-cx,-(ty+TH/2));
-        if(boxImg.complete&&boxImg.naturalWidth>0) ctx.drawImage(boxImg,tx,ty,TW,TH);
-        if(imgs[i].complete&&imgs[i].naturalWidth>0){
-          var iw=imgs[i].naturalWidth,ih=imgs[i].naturalHeight;
-          var maxSz=TW*0.56, is=Math.min(maxSz/iw,maxSz/ih);
-          ctx.drawImage(imgs[i],tx+(TW-iw*is)/2,ty+(TH-ih*is)/2,iw*is,ih*is);
-        }
+        ctx.fillRect(gcx-br,gcy-br,br*2,br*2);
         ctx.restore();
       }
     }
+
+    // Pass 2: cards with rotation (box1_long.png + logo)
+    for(var p=-1;p<=1;p++){
+      for(var i=0;i<N;i++){
+        var pos=getPos(i,p,off);
+        if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
+
+        ctx.save();
+        ctx.globalAlpha=pos.alpha;
+        ctx.translate(pos.cx, pos.ty+TH/2);
+        ctx.rotate(pos.rot);
+        ctx.translate(-pos.cx, -(pos.ty+TH/2));
+
+        if(boxImg.complete&&boxImg.naturalWidth>0){
+          ctx.drawImage(boxImg, pos.tx, pos.ty, TW, TH);
+        }
+        if(imgs[i].complete&&imgs[i].naturalWidth>0){
+          var iw=imgs[i].naturalWidth, ih=imgs[i].naturalHeight;
+          var ms=TW*0.56, sc2=Math.min(ms/iw,ms/ih);
+          ctx.drawImage(imgs[i],
+            pos.tx+(TW-iw*sc2)/2,
+            pos.ty+(TH-ih*sc2)/2,
+            iw*sc2, ih*sc2);
+        }
+
+        ctx.restore();
+      }
+    }
+
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);

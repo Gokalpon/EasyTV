@@ -10,15 +10,20 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>EasyTV</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="./assets/EasyTVLogo.png">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Playfair+Display:ital@1&family=Raleway:wght@700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="./assets/EasyTVLogo.webp" as="image" type="image/webp">
+<link rel="preload" href="./assets/box1_long.webp" as="image" type="image/webp">
+<link rel="preload" href="./assets/tvplus.webp" as="image" type="image/webp">
+<link rel="apple-touch-icon" href="./assets/icon-180.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@200;300;800;900&family=Syne:wght@800&family=Raleway:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="raleway-font.css">
 <link rel="stylesheet" href="akira-font.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css?v=20260404c">
-<script src="error-handler.js?v=20260404b"></script>
-<script src="premium-system.js?v=20260404b"></script>
-<script src="dynamic-theme.js?v=20260404b"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<link rel="stylesheet" href="style.css?v=20260412a">
+<script src="error-handler.js?v=20260412a" defer></script>
+<script src="premium-system.js?v=20260412a" defer></script>
+<script src="dynamic-theme.js?v=20260412a" defer></script>
 </head>
 <body>
 <script>
@@ -57,7 +62,7 @@
 
   <!-- AUTH LOADING -->
   <div class="auth-loading" id="authLoading">
-    <img src="./assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
+    <img src="./assets/EasyTVLogo.webp" alt="EasyTV Logo" loading="lazy" style="height:48px;width:auto;object-fit:contain;margin-bottom:8px;opacity:.9;">
     <div class="auth-spinner"></div>
   </div>
 
@@ -70,7 +75,7 @@
 
   <!-- Üst: Logo -->
   <div style="position:absolute;top:72px;left:0;right:0;display:flex;justify-content:center;z-index:1;animation:introFadeUp .7s .1s both;">
-    <img id="loginLogo" src="./assets/EasyTVLogo.png" alt="EasyTV Logo" loading="lazy" style="height:52px;width:auto;object-fit:contain;">
+    <img id="loginLogo" src="./assets/EasyTVLogo.webp" alt="EasyTV Logo" loading="lazy" style="height:52px;width:auto;object-fit:contain;">
   </div>
 
   <!-- Orta: Başlık -->
@@ -129,21 +134,21 @@
   <div class="intro-glow2" style="position:absolute;pointer-events:none;"></div>
 
   <!-- LOGO -->
-  <div id="introLogoWrap" style="position:absolute;top:72px;left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:1;">
-    <img src="./assets/EasyTVLogo.png" id="introLogoImg" style="height:57px;width:auto;object-fit:contain;display:none;">
+  <div id="introLogoWrap" style="position:absolute;top:max(env(safe-area-inset-top) + 12px, 8.5%);left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:1;">
+    <img src="./assets/EasyTVLogo.webp" id="introLogoImg" style="height:57px;width:auto;object-fit:contain;">
   </div>
 
   <!-- BAŞLIK + ALT YAZI -->
-  <div style="position:absolute;top:164px;left:28px;right:28px;text-align:center;z-index:1;">
+  <div style="position:absolute;top:19%;left:28px;right:28px;text-align:center;z-index:1;">
     <div id="introTagline" style="font-family:'Akira', 'Space Grotesk', 'Inter', sans-serif;font-size:31px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.18;text-shadow:0 2px 24px rgba(130,80,255,.35);">Tüm servisleriniz<br>tek bir yerde.</div>
     <div id="introSub" style="font-size:14px;color:rgba(255,255,255,.38);line-height:1.5;margin-top:10px;letter-spacing:-.1px;">Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.</div>
   </div>
 
   <!-- SERVİS LOGO GALERİSİ -->
-  <div id="introLogoGallery" style="position:absolute;top:374px;left:0;right:0;height:228px;z-index:1;overflow:hidden;"></div>
+  <div id="introLogoGallery" style="position:absolute;top:44%;left:0;right:0;height:244px;z-index:1;overflow:visible;"></div>
 
   <!-- BUTONLAR -->
-  <div style="position:absolute;bottom:44px;left:28px;right:28px;z-index:1;animation:introSlideUp .7s .75s both;">
+  <div style="position:absolute;bottom:max(env(safe-area-inset-bottom) + 16px, 5%);left:28px;right:28px;z-index:1;animation:introSlideUp .7s .75s both;">
     <div style="display:flex;justify-content:center;margin-bottom:14px;position:relative;">
       <button id="introLangTrigger" onclick="toggleLangMenu()" style="background:none;border:none;cursor:pointer;font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.8px;display:flex;align-items:center;gap:5px;padding:6px 0;">
         <span id="introLangLabel">TR</span>
@@ -192,7 +197,7 @@
   </div>
 
   <div class="pin-screen" id="pinScreen" style="display:none;overflow:hidden;">
-    <div class="pin-logo" style="height:48px;"><img src="./assets/EasyTVLogo.png" style="height:100%;width:auto;object-fit:contain;"></div>
+    <div class="pin-logo" style="height:48px;"><img src="./assets/EasyTVLogo.webp" style="height:100%;width:auto;object-fit:contain;"></div>
     <p class="pin-greeting" id="pinGreeting">Hoş geldiniz</p>
     <p class="pin-hint" id="pinHint">PIN ile giriş yapın</p>
     <div class="pin-dots" id="pinDots">
@@ -239,7 +244,7 @@
 
     <div class="tab-panel active" id="tab-home">
       <div class="home-header">
-        <img src="./assets/EasyTVLogo.png" style="height:36px;width:auto;object-fit:contain;display:block;opacity:.95;">
+        <img src="./assets/EasyTVLogo.webp" style="height:36px;width:auto;object-fit:contain;display:block;opacity:.95;">
         <div class="add-btn" id="mainAddBtn" onclick="openAddModal()">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1v13M1 7.5h13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
@@ -670,48 +675,8 @@
 </div>
 </div>
 
-<script src="app.js?v=20260404c"></script>
+<script src="app.js?v=20260412a"></script>
 
-<!-- GALLERY TUNER — KALDIRILACAK -->
-<div id="gl-tuner" style="position:fixed;bottom:16px;right:16px;z-index:99999;background:rgba(0,0,0,.92);border:1px solid #333;border-radius:12px;padding:14px;width:220px;font-family:monospace;font-size:11px;color:#fff;">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-    <b style="color:#a78bfa;">✦ Gallery Glow</b>
-    <button onclick="document.getElementById('gl-tuner').style.display='none'" style="background:none;border:none;color:#888;cursor:pointer;font-size:14px;">✕</button>
-  </div>
-  <div id="gl-rows"></div>
-  <div style="margin-top:10px;background:#1a1a2e;border-radius:6px;padding:8px;color:#a78bfa;white-space:pre;font-size:10px;line-height:1.6;" id="gl-out"></div>
-  <button onclick="navigator.clipboard.writeText(document.getElementById('gl-out').textContent)" style="margin-top:8px;width:100%;background:#7c3aed;color:#fff;border:none;border-radius:6px;padding:6px;cursor:pointer;font-size:11px;">📋 Kopyala</button>
-</div>
-<script>
-(function(){
-  var params=[
-    {id:'spread', label:'spread', min:0.2, max:3,  val:1.2,  unit:'',   step:0.05},
-    {id:'op',     label:'opacity',min:0,   max:1,  val:0.55, unit:'',   step:0.02},
-  ];
-  window.BLG={spread:1.2, op:0.55};
-  var rows=document.getElementById('gl-rows');
-  params.forEach(function(p){
-    var row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:6px;margin-bottom:6px;';
-    row.innerHTML='<span style="width:52px;color:#888;">'+p.label+'</span>'
-      +'<input type="range" min="'+p.min+'" max="'+p.max+'" value="'+p.val+'" step="'+p.step+'" data-id="'+p.id+'" style="flex:1;accent-color:#7c3aed;">'
-      +'<span id="gl-lbl-'+p.id+'" style="width:38px;text-align:right;color:#fff;">'+p.val+'</span>';
-    rows.appendChild(row);
-  });
-  function update(){
-    params.forEach(function(p){
-      var el=document.querySelector('[data-id="'+p.id+'"]');
-      window.BLG[p.id]=parseFloat(el.value);
-      document.getElementById('gl-lbl-'+p.id).textContent=el.value;
-    });
-    var g=window.BLG;
-    document.getElementById('gl-out').textContent='BLG={spread:'+g.spread+',op:'+g.op+'}';
-  }
-  rows.addEventListener('input',update);
-  update();
-})();
-</script>
-<!-- /GALLERY TUNER -->
 
 </body>
 </html>
