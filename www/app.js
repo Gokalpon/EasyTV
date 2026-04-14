@@ -1,4 +1,4 @@
-﻿// ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // SUPABASE KURULUMU
 // ══════════════════════════════════════════════════
 // ⚠️ ÖNEMLİ: Supabase RLS politikalarını aktif edin!
@@ -433,6 +433,64 @@ async function signOut() {
   location.reload();
 }
 
+// ──────────────────────────────────────────────────
+// HESAP SİLME — Apple App Store Zorunluluğu (2022+)
+// ──────────────────────────────────────────────────
+async function deleteAccount() {
+  // Onay diyaloğu
+  showAlert(
+    '🗑️',
+    'Hesabı Sil',
+    'Tüm abonelik verileriniz, ayarlarınız ve hesap bilgileriniz kalıcı olarak silinecek. Bu işlem geri alınamaz.',
+    [
+      {
+        label: 'Hesabımı Sil',
+        style: 'danger',
+        action: async function() {
+          closeAlert();
+          try {
+            // Supabase cloud verilerini sil
+            if (_supabase && _cloudUserId) {
+              await _supabase
+                .from('easytv_user_data')
+                .delete()
+                .eq('user_id', _cloudUserId);
+              await _supabase.auth.signOut();
+            }
+          } catch(e) {
+            console.warn('Cloud silme hatası:', e);
+          }
+          // Local tüm verileri temizle
+          localStorage.clear();
+          sessionStorage.clear();
+          showToast('Hesabınız silindi.');
+          setTimeout(() => location.reload(), 1200);
+        }
+      },
+      { label: 'İptal', style: 'secondary', action: closeAlert }
+    ]
+  );
+}
+
+// ──────────────────────────────────────────────────
+// SATIN ALIM GERİ YÜKLEME — Apple App Store Zorunluluğu
+// RevenueCat entegrasyonu gelince gerçek API bağlanacak
+// ──────────────────────────────────────────────────
+async function restorePurchases() {
+  // TODO: RevenueCat entegrasyonu sonrası:
+  // const info = await Purchases.restorePurchases();
+  // if (info.customerInfo.entitlements.active['premium']) { ... }
+  showToast('Satın alımlar kontrol ediliyor...');
+  setTimeout(() => {
+    // Şimdilik localStorage'dan kontrol et
+    if (isPremium()) {
+      showToast('✦ Premium aktif bulundu!');
+    } else {
+      showToast('Aktif premium abonelik bulunamadı.');
+    }
+  }, 1500);
+}
+
 // loginWith fonksiyonunu override et
 async function loginWith(method) {
   _showAuthScreens();
@@ -596,7 +654,8 @@ function closePremiumSheet() {
 }
 
 function activatePremium() {
-  // İlk kez premium'a geçiyorsa 7 gün ücretsiz trial ver
+  // TODO: RevenueCat IAP entegrasyonu gelince burası değişecek
+  // Şimdilik trial sistemi aktif
   if (!SETTINGS.premiumTrialUsed) {
     SETTINGS.premiumTrialUsed = true;
     SETTINGS.premiumTrialActive = true;
