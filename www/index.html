@@ -112,16 +112,34 @@
       <span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </button>
 
-    <button class="cta-btn cta-btn-white" onclick="skipAuth()" style="font-size:17px;color:rgba(255,255,255,.82);">
+    <button class="cta-btn cta-btn-white" onclick="loginWith('email')" style="font-size:17px;color:rgba(255,255,255,.82);">
       <span class="cta-btn-label">
         <span class="cta-btn-icon"><svg width="14" height="14" viewBox="0 0 20 16" fill="none"><rect x="1" y="1" width="18" height="14" rx="3" stroke="rgba(255,255,255,.72)" stroke-width="1.5" fill="none"/><path d="M1 5h18" stroke="rgba(255,255,255,.72)" stroke-width="1.5"/></svg></span>
-        <span class="cta-btn-text">Maıl ile Giriş Yap</span>
+        <span class="cta-btn-text">Mail ile Giriş Yap</span>
       </span>
       <span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </button>
 
     <div onclick="skipAuth()" style="text-align:center;padding:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.22);font-weight:500;">Şimdilik atla</div>
 
+  </div>
+
+  <div id="emailAuthSheet" style="display:none;position:absolute;left:16px;right:16px;bottom:20px;z-index:20;background:rgba(18,19,24,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.4);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div id="emailAuthTitle" style="font-size:15px;font-weight:800;color:#fff;">Mail ile Giriş</div>
+      <button onclick="closeEmailAuth()" style="background:transparent;border:none;color:rgba(255,255,255,.65);font-size:18px;cursor:pointer;line-height:1;">×</button>
+    </div>
+    <div id="emailAuthNameWrap" style="display:none;margin-bottom:8px;">
+      <input id="emailAuthName" type="text" placeholder="Ad Soyad" autocomplete="name" style="width:100%;height:44px;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;outline:none;">
+    </div>
+    <div style="margin-bottom:8px;">
+      <input id="emailAuthEmail" type="email" placeholder="E-posta adresi" autocomplete="email" style="width:100%;height:44px;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;outline:none;">
+    </div>
+    <div style="margin-bottom:12px;">
+      <input id="emailAuthPassword" type="password" placeholder="Şifre (en az 6 karakter)" autocomplete="current-password" style="width:100%;height:44px;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;outline:none;">
+    </div>
+    <button id="emailAuthSubmitBtn" onclick="submitEmailAuth()" style="width:100%;height:44px;border:none;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#6d28d9);color:#fff;font-weight:800;cursor:pointer;">Giriş Yap</button>
+    <button id="emailAuthSwitchBtn" onclick="toggleEmailAuthMode()" style="width:100%;margin-top:8px;background:transparent;border:none;color:rgba(255,255,255,.65);font-size:12px;cursor:pointer;">Hesabın yok mu? Kayıt ol</button>
   </div>
 </div>
 

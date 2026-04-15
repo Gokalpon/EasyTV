@@ -10,6 +10,7 @@
 let CLOUD_SYNC_AVAILABLE = false;
 let currentUser = null;
 let _authInitStarted = false;
+let _emailAuthMode = 'signin';
 
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
@@ -363,6 +364,102 @@ function getOAuthRedirectUrl() {
   return cleanHref;
 }
 
+function setEmailAuthMode(mode) {
+  _emailAuthMode = mode === 'signup' ? 'signup' : 'signin';
+  const titleEl = document.getElementById('emailAuthTitle');
+  const submitBtn = document.getElementById('emailAuthSubmitBtn');
+  const switchBtn = document.getElementById('emailAuthSwitchBtn');
+  const nameWrap = document.getElementById('emailAuthNameWrap');
+  const passwordEl = document.getElementById('emailAuthPassword');
+
+  if (titleEl) titleEl.textContent = _emailAuthMode === 'signup' ? 'Mail ile Kayıt Ol' : 'Mail ile Giriş';
+  if (submitBtn) submitBtn.textContent = _emailAuthMode === 'signup' ? 'Kayıt Ol' : 'Giriş Yap';
+  if (switchBtn) switchBtn.textContent = _emailAuthMode === 'signup' ? 'Hesabın var mı? Giriş yap' : 'Hesabın yok mu? Kayıt ol';
+  if (nameWrap) nameWrap.style.display = _emailAuthMode === 'signup' ? 'block' : 'none';
+  if (passwordEl) passwordEl.autocomplete = _emailAuthMode === 'signup' ? 'new-password' : 'current-password';
+}
+
+function openEmailAuth(mode) {
+  const sheet = document.getElementById('emailAuthSheet');
+  if (!sheet) return;
+  setEmailAuthMode(mode || 'signin');
+  sheet.style.display = 'block';
+}
+
+function closeEmailAuth() {
+  const sheet = document.getElementById('emailAuthSheet');
+  if (sheet) sheet.style.display = 'none';
+}
+
+function toggleEmailAuthMode() {
+  setEmailAuthMode(_emailAuthMode === 'signup' ? 'signin' : 'signup');
+}
+
+async function submitEmailAuth() {
+  if (!_supabase) { showToast('Cloud bağlantısı yok'); return; }
+
+  const emailEl = document.getElementById('emailAuthEmail');
+  const passwordEl = document.getElementById('emailAuthPassword');
+  const nameEl = document.getElementById('emailAuthName');
+  const submitBtn = document.getElementById('emailAuthSubmitBtn');
+
+  const email = (emailEl && emailEl.value || '').trim();
+  const password = (passwordEl && passwordEl.value || '').trim();
+  const fullName = (nameEl && nameEl.value || '').trim();
+
+  if (!email || !password) {
+    showToast('E-posta ve şifre zorunlu');
+    return;
+  }
+  if (password.length < 6) {
+    showToast('Şifre en az 6 karakter olmalı');
+    return;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.7';
+  }
+
+  try {
+    if (_emailAuthMode === 'signup') {
+      const { data, error } = await _supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          emailRedirectTo: getOAuthRedirectUrl(),
+          data: { full_name: fullName || '' }
+        }
+      });
+      if (error) throw error;
+      if (data && data.session && data.user) {
+        closeEmailAuth();
+        await onAuthSuccess(data.user);
+      } else {
+        showToast('Kayıt tamamlandı. E-postanı doğrulayıp giriş yap.');
+        setEmailAuthMode('signin');
+      }
+    } else {
+      const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+      if (error) throw error;
+      if (data && data.user) {
+        closeEmailAuth();
+        await onAuthSuccess(data.user);
+      }
+    }
+  } catch (e) {
+    showToast((_emailAuthMode === 'signup' ? 'Kayıt' : 'Giriş') + ' başarısız: ' + (e.message || 'Bilinmeyen hata'));
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+    }
+  }
+}
+
 async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
   _showAuthScreens();
   if (!_supabase) { showToast('Cloud bağlantısı yok'); return; }
@@ -598,6 +695,8 @@ async function loginWith(method) {
     await loginWithGoogle();
   } else if (method === 'apple') {
     await loginWithApple();
+  } else if (method === 'email') {
+    openEmailAuth('signin');
   } else {
     // Atla — direkt onboarding
     const screen = document.getElementById('loginScreen');
@@ -669,8 +768,7 @@ function setIntroLang(lang){
 
 // intro → welcome geçişi
 function showSignupOptions() {
-  // Hesap oluştur - şimdilik skip gibi davran, ileride signup flow eklenecek
-  loginWith('skip');
+  openEmailAuth('signup');
 }
 function showWelcomeFromIntro() {
   const intro = document.getElementById('introScreen');
