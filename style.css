@@ -1441,6 +1441,55 @@ button{-webkit-tap-highlight-color:transparent;}
 .se-del-btn{padding:16px 18px;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.2);border-radius:20px;font-size:14px;font-weight:700;color:rgba(255,80,70,.9);cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;}
 .se-del-btn:active{transform:scale(.95);background:rgba(255,59,48,.2);}
 
+/* Minimal edit sheet refresh */
+#subEditModal .se-sheet{background:linear-gradient(180deg,#0f1020 0%,#090a14 100%);border:1px solid rgba(255,255,255,.06);border-bottom:none;height:82vh;}
+#subEditModal .se-header{padding:12px 18px 14px;border-bottom:1px solid rgba(255,255,255,.05);}
+#subEditModal .se-header-row{margin-top:10px;}
+#subEditModal .se-body{padding:16px 18px 8px;gap:16px;}
+#subEditModal .se-section{gap:7px;}
+#subEditModal .se-input{border-radius:15px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);}
+#subEditModal .se-input:focus{border-color:rgba(130,80,255,.55);box-shadow:0 0 0 3px rgba(130,80,255,.16);background:rgba(255,255,255,.07);}
+#subEditModal .se-chips button,
+#subEditModal .plan-user-pill,
+#subEditModal .plan-pay-opt{
+  min-height:40px;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  color:rgba(255,255,255,.72) !important;
+  box-shadow:none !important;
+  font-weight:700 !important;
+}
+#subEditModal .plan-pay-opt .plan-pay-opt-radio{display:none;}
+#subEditModal .se-chips button.active,
+#subEditModal .plan-user-pill.active,
+#subEditModal .plan-pay-opt.active{
+  background:linear-gradient(90deg,#8b5cf6,#7c3aed) !important;
+  border-color:rgba(189,147,255,.9) !important;
+  color:#fff !important;
+  box-shadow:0 0 0 1px rgba(189,147,255,.35),0 8px 20px rgba(124,58,237,.35) !important;
+}
+#subEditModal .se-chips button:active,
+#subEditModal .plan-user-pill:active,
+#subEditModal .plan-pay-opt:active{
+  transform:scale(.96);
+  filter:brightness(1.08);
+}
+#subEditModal .se-footer{padding:12px 18px 30px;background:rgba(9,10,20,.95);border-top:1px solid rgba(255,255,255,.05);}
+#subEditModal .se-save-btn{
+  background:linear-gradient(90deg,#8b5cf6,#7c3aed);
+  border:1px solid rgba(189,147,255,.65);
+  box-shadow:0 10px 26px rgba(124,58,237,.35);
+}
+#subEditModal .se-save-btn:active{background:linear-gradient(90deg,#7c3aed,#6d28d9);transform:scale(.97);}
+#subEditModal #sesDeleteBtn{
+  min-width:46px;
+  min-height:46px;
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.14);
+}
+
 /* ── PREMIUM ANİMASYONLAR ── */
 
 /* Sheet açılma: yukarı spring */

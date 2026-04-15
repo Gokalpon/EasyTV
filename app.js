@@ -2731,7 +2731,7 @@ function renderSubs(){
       cLogo=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;
     }
     card.innerHTML=`<div style="width:44px;height:44px;border-radius:13px;background:${s.color||'rgba(255,255,255,.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">${cLogo}</div><div style="flex:1;min-width:0;"><div class="sub-name">${s.name}</div><div class="sub-plan">${s.plan||'Standart'}</div>${badge}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;"><div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.5px;white-space:nowrap;">${s.price>0?formatPrice(s.price):'—'}</div><div style="font-size:11px;color:rgba(255,255,255,.33);margin-top:-2px;">${s.price>0?t('per_month'):''}</div><button onclick="event.stopPropagation();openSubEdit(${idx})" style="margin-top:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 13px;color:rgba(255,255,255,.75);font-size:12px;font-weight:600;cursor:pointer;">${t('edit_btn')}</button></div>`;
-    card.onclick=()=>openSheet(idx);
+    card.onclick=()=>openSubEdit(idx);
     list.appendChild(card);
   });
 }
