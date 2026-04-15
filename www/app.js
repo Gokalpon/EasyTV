@@ -50,21 +50,7 @@ function _showFallbackScreen() {
   if (loginScreen) loginScreen.style.display = 'none';
   if (onboardScreen) onboardScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'none';
-  // Onboarding tamamlandıysa intro'ya değil PIN/ana ekrana git
-  if (localStorage.getItem('easytv_setup_done') === '1') {
-    if (introScreen) introScreen.style.display = 'none';
-    if (SETTINGS && SETTINGS.usePin !== false && SETTINGS.pin) {
-      if (bottomNav) bottomNav.style.display = 'none';
-      if (pinScreen) pinScreen.style.display = 'flex';
-      _applyLogoReveal && _applyLogoReveal(pinScreen && pinScreen.querySelector('.pin-logo img'));
-      _charReveal(document.getElementById('pinGreeting'), 0.15);
-    } else {
-      if (pinScreen) pinScreen.style.display = 'none';
-      unlockApp();
-    }
-    return;
-  }
-  // Onboarding yapılmamış — intro göster
+  // Session yoksa kullanıcıyı her zaman giriş akışına getir.
   if (bottomNav) bottomNav.style.display = 'none';
   if (pinScreen) pinScreen.style.display = 'none';
   if (introScreen) introScreen.style.display = 'flex';
@@ -2978,7 +2964,4 @@ function initCtaGlow(){
   });
 }
 
-if (!localStorage.getItem('easytv_setup_done')) {
-  localStorage.setItem('easytv_setup_done', '1');
-}
 initCtaGlow();
