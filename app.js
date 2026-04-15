@@ -387,7 +387,7 @@ async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
   }
 
   try {
-    const { error } = await _supabase.auth.signInWithOAuth({
+    const { data, error } = await _supabase.auth.signInWithOAuth({
       provider: provider,
       options: {
         redirectTo: getOAuthRedirectUrl()
@@ -401,7 +401,16 @@ async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
         loginBtn.disabled = false;
       }
     }
-    // Başarılıysa sağlayıcının giriş sayfasına yönlenecek
+    // Bazı istemci sürümlerinde otomatik yönlendirme yapılmadığı için URL'i manuel aç.
+    if (data && data.url) {
+      window.location.assign(data.url);
+      return;
+    }
+    showToast(providerTitle + ' yönlendirmesi alınamadı');
+    if (loginBtn) {
+      loginBtn.style.opacity = '1';
+      loginBtn.disabled = false;
+    }
   } catch (e) {
     showToast(providerTitle + ' girişi başarısız');
     if (loginBtn) {
