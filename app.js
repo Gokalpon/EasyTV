@@ -16,8 +16,12 @@ const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
 let _supabase = null;
 try {
   const { createClient } = supabase;
-  // Supabase anahtarı JWT formatında olmalı (eyJ ile başlar)
-  if (SUPABASE_KEY && SUPABASE_KEY.startsWith('eyJ')) {
+  // Supabase anahtarı legacy JWT (eyJ...) veya yeni publishable (sb_publishable_...) olabilir.
+  const hasValidKeyFormat = !!SUPABASE_KEY && (
+    SUPABASE_KEY.startsWith('eyJ') ||
+    SUPABASE_KEY.startsWith('sb_publishable_')
+  );
+  if (hasValidKeyFormat) {
     _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     CLOUD_SYNC_AVAILABLE = true;
   } else {
@@ -331,7 +335,7 @@ async function initAuth() {
       return;
     }
 
-    // URL'de OAuth callback var mı? (Google yönlendirmesi)
+    // URL'de OAuth callback var mı? (Google/Apple yönlendirmesi)
     const hash = window.location.hash;
     const params = new URLSearchParams(window.location.search);
 
@@ -367,33 +371,54 @@ async function initAuth() {
   }
 }
 
-// Google ile giriş
-async function loginWithGoogle() {
+function getOAuthRedirectUrl() {
+  const cleanHref = window.location.href.split('?')[0].split('#')[0];
+  return cleanHref;
+}
+
+async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
   _showAuthScreens();
   if (!_supabase) { showToast('Cloud bağlantısı yok'); return; }
-  const googleLoginBtn = document.getElementById('googleLoginBtn');
-  if (googleLoginBtn) {
-    googleLoginBtn.style.opacity = '0.6';
-    googleLoginBtn.disabled = true;
+
+  const loginBtn = document.getElementById(buttonId);
+  if (loginBtn) {
+    loginBtn.style.opacity = '0.6';
+    loginBtn.disabled = true;
   }
-  
+
   try {
-  const { error } = await _supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: window.location.href.split('?')[0].split('#')[0]
+    const { error } = await _supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: {
+        redirectTo: getOAuthRedirectUrl()
+      }
+    });
+
+    if (error) {
+      showToast(providerTitle + ' girişi başarısız: ' + error.message);
+      if (loginBtn) {
+        loginBtn.style.opacity = '1';
+        loginBtn.disabled = false;
+      }
     }
-  });
-  
-  if (error) {
-    showToast('Google girişi başarısız: ' + error.message);
-    if (googleLoginBtn) {
-      googleLoginBtn.style.opacity = '1';
-      googleLoginBtn.disabled = false;
+    // Başarılıysa sağlayıcının giriş sayfasına yönlenecek
+  } catch (e) {
+    showToast(providerTitle + ' girişi başarısız');
+    if (loginBtn) {
+      loginBtn.style.opacity = '1';
+      loginBtn.disabled = false;
     }
   }
-  // Başarılıysa sayfa Google'a yönlenecek
-  } catch(e) { showToast('Google girişi başarısız'); }
+}
+
+// Google ile giriş
+async function loginWithGoogle() {
+  await loginWithOAuthProvider('google', 'googleLoginBtn', 'Google');
+}
+
+// Apple ile giriş
+async function loginWithApple() {
+  await loginWithOAuthProvider('apple', 'appleLoginBtn', 'Apple');
 }
 
 // Auth başarılı — uygulamayı başlat
@@ -518,8 +543,7 @@ async function loginWith(method) {
   if (method === 'google') {
     await loginWithGoogle();
   } else if (method === 'apple') {
-    // Apple Sign In (şimdilik skip gibi davranır)
-    showToast('Apple Sign In yakında...');
+    await loginWithApple();
   } else {
     // Atla — direkt onboarding
     const screen = document.getElementById('loginScreen');

@@ -77,6 +77,17 @@
   "author": "Gökalp Kılıç",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cap:copy": "npx cap copy",
+    "cap:sync": "npx cap sync",
+    "ios:sync": "npx cap sync ios",
+    "ios:open": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.3.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/ios": "^8.3.0"
   }
 }
