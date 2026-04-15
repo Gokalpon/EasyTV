@@ -1,4 +1,4 @@
-// ══════════════════════════════════════════════════
+﻿// ══════════════════════════════════════════════════
 // SUPABASE KURULUMU
 // ══════════════════════════════════════════════════
 // ⚠️ ÖNEMLİ: Supabase RLS politikalarını aktif edin!
@@ -1854,6 +1854,31 @@ function buildColorPicker(){const row=document.getElementById('colorRow');row.in
 
 function openAddModal(){
   buildPopularGrid();buildColorPicker();selectedPopular=null;const popularForm=document.getElementById('popularForm');const addModal=document.getElementById('addModal');if(popularForm)popularForm.style.display='none';if(addModal)addModal.classList.add('open');}
+
+function saveCustomService(){
+  var name=(document.getElementById('addName')?document.getElementById('addName').value:'').trim();
+  if(!name){showToast('Servis adi gerekli');return;}
+  var url=(document.getElementById('addUrl')?document.getElementById('addUrl').value:'').trim();
+  var email=(document.getElementById('addEmail')?document.getElementById('addEmail').value:'').trim();
+  var pwd=(document.getElementById('addPwd')?document.getElementById('addPwd').value:'').trim();
+  var priceRaw=(document.getElementById('addPrice')?document.getElementById('addPrice').value:'').replace(',','.');
+  var price=parseFloat(priceRaw)||0;
+  var d=new Date();d.setMonth(d.getMonth()+1);
+  var renew=(document.getElementById('addRenew')&&document.getElementById('addRenew').value)||d.toISOString().split('T')[0];
+  var selChip=document.querySelector('#colorRow .color-chip.sel');
+  var color=selChip&&selChip._color?selChip._color:'#00B0FF';
+  var favicon='';
+  if(url){var domain=url.replace(/^https?:\/\//,'').split('/')[0];favicon='https://www.google.com/s2/favicons?domain='+domain+'&sz=128';}
+  var id='custom_'+Date.now();
+  SVC.push({id:id,name:name,color:color,email:email,pwd:pwd,price:price,plan:'Ozel',renew:renew,favicon:favicon,_custom:true,_fullPrice:price,_userCount:1,_payMethod:'me'});
+  saveData();
+  if(typeof buildGrid==='function')buildGrid();
+  if(typeof renderSubs==='function')renderSubs();
+  closeAddModal();
+  showToast('+ '+name+' eklendi');
+  var ni=SVC.length-1;
+  setTimeout(function(){if(typeof tap==='function')tap(ni);},350);
+}
 let planModalSvc=null,planModalSelected=null;
 function openPlanModal(s){planModalSvc=s;planModalSelected=null;const L=LOGO[s.id]||null;let logoHtml='';if(L&&L.html&&L.html.includes('<img')){const iS=L.html.match(/src="([^"]+)"/)?.[ 1]||'';logoHtml=`<img src="${iS}" style="width:32px;height:32px;object-fit:contain;">`;}document.getElementById('planModalLogo').style.background=TILE_GRADIENTS[s.id]||s.color;document.getElementById('planModalLogo').innerHTML=logoHtml;document.getElementById('planModalName').textContent=s.name;const d=new Date();d.setMonth(d.getMonth()+1);document.getElementById('planRenewInput').value=d.toISOString().split('T')[0];const plans=getCountryPlans(s.id);const sym=getCountrySymbol();const list=document.getElementById('planList');list.innerHTML='';plans.forEach((p,i)=>{const el=document.createElement('div');el.className='plan-option'+(i===0?' selected':'');if(i===0)planModalSelected=p;el.innerHTML=`<div class="plan-option-left"><div class="plan-option-name">${p.name}</div><div style="font-size:13px;color:rgba(255,255,255,.45);">${p.price>0?sym+p.price.toFixed(2)+'/ay':'Ücretsiz'}</div></div><div class="plan-option-check">${i===0?'<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}</div>`;el.onclick=()=>{planModalSelected=p;list.querySelectorAll('.plan-option').forEach(o=>{o.classList.remove('selected');o.querySelector('.plan-option-check').innerHTML='';});el.classList.add('selected');el.querySelector('.plan-option-check').innerHTML='<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';};list.appendChild(el);});const btn=document.createElement('button');btn.className='plan-confirm-btn';btn.style.background='#fff';btn.style.color='#000';btn.textContent='Ekle';btn.onclick=confirmPlanAdd;list.appendChild(btn);document.getElementById('planModal').classList.add('open');}
 function closePlanModal(){const planModal=document.getElementById('planModal');if(planModal)planModal.classList.remove('open');planModalSvc=null;planModalSelected=null;}
