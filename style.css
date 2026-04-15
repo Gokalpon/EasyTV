@@ -567,6 +567,9 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .ob-key.premium-anim::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(130,80,255,.18) 0%,transparent 70%);animation:premiumBtnGlow 2.5s infinite alternate;pointer-events:none;z-index:0;}
 .ob-key-num{font-size:22px;font-weight:300;letter-spacing:-.5px;color:#fff;line-height:1;}
 .ob-key-sub{font-size:8px;letter-spacing:.8px;color:rgba(255,255,255,.3);margin-top:2px;text-transform:uppercase;}
+.ob-pin-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 0 0;width:100%;}
+.ob-pin-head{text-align:center;margin-bottom:28px;width:100%;}
+.onboard-pin-grid{display:grid !important;grid-template-columns:repeat(3,68px) !important;gap:14px !important;justify-content:center !important;width:100%;}
 .onboard-bottom{padding:16px 32px max(env(safe-area-inset-bottom) + 12px, 32px);display:flex;flex-direction:column;gap:10px;background:linear-gradient(0deg, #05050a 60%, transparent 100%);position:relative;z-index:10;}
 .onboard-skip{text-align:center;font-size:14px;font-weight:600;color:rgba(255,255,255,.25);cursor:pointer;padding:10px;transition:color .2s ease;}
 .onboard-skip:active{color:rgba(255,255,255,.5);}
