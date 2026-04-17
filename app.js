@@ -11,6 +11,7 @@ let CLOUD_SYNC_AVAILABLE = false;
 let currentUser = null;
 let _authInitStarted = false;
 let _emailAuthMode = 'signin';
+const EASYTV_LAST_USER_KEY = 'easytv_last_user_id';
 
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
@@ -299,19 +300,71 @@ function _showAuthScreens() {
   if (bottomNav) bottomNav.style.display = 'none';
 }
 
+function _cleanOAuthCallbackUrl() {
+  try {
+    const cleanUrl = window.location.href.split('#')[0].split('?')[0];
+    history.replaceState({}, document.title, cleanUrl);
+  } catch (e) {
+    console.warn('OAuth URL temizleme hatası:', e);
+  }
+}
+
+function _getHashParams() {
+  try {
+    const hash = String(window.location.hash || '').replace(/^#/, '');
+    return new URLSearchParams(hash);
+  } catch (_) {
+    return new URLSearchParams();
+  }
+}
+
+async function _applyOAuthCallbackSession() {
+  if (!_supabase) return null;
+  const params = new URLSearchParams(window.location.search);
+  const hashParams = _getHashParams();
+  const code = params.get('code');
+  const accessToken = hashParams.get('access_token');
+  const refreshToken = hashParams.get('refresh_token');
+
+  if (code && typeof _supabase.auth.exchangeCodeForSession === 'function') {
+    const { data, error } = await _supabase.auth.exchangeCodeForSession(code);
+    if (error) {
+      console.warn('OAuth code exchange hatası:', error);
+    } else if (data && data.session) {
+      _cleanOAuthCallbackUrl();
+      return data.session;
+    }
+  }
+
+  if (accessToken && refreshToken && typeof _supabase.auth.setSession === 'function') {
+    const { data, error } = await _supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
+    if (error) {
+      console.warn('OAuth token setSession hatası:', error);
+    } else if (data && data.session) {
+      _cleanOAuthCallbackUrl();
+      return data.session;
+    }
+  }
+
+  return null;
+}
+
 // Sayfa yüklenince auth durumunu kontrol et
 async function initAuth() {
   if (_authInitStarted) return;
   _authInitStarted = true;
-  // Güvenlik zamanlayıcı — 2 saniye içinde auth tamamlanmazsa yine de UI göster
+  // Güvenlik zamanlayıcı — auth tamamlanmazsa fallback göster
   let _authDone = false;
   const _safetyTimer = setTimeout(() => {
     if (!_authDone) {
-      console.warn('initAuth: 2s safety timeout — showing fallback screen');
+      console.warn('initAuth: safety timeout — showing fallback screen');
       _authDone = true;
       _showFallbackScreen();
     }
-  }, 2000);
+  }, 6000);
 
   try {
     // Supabase yoksa direkt intro/welcome göster
@@ -323,20 +376,29 @@ async function initAuth() {
     }
 
     // URL'de OAuth callback var mı? (Google/Apple yönlendirmesi)
-    const hash = window.location.hash;
+    const hash = window.location.hash || '';
     const params = new URLSearchParams(window.location.search);
 
     if (hash.includes('access_token') || params.get('code')) {
       const authLoading = document.getElementById('authLoading');
       if (authLoading) authLoading.style.display = 'flex';
-      const { data, error } = await _supabase.auth.getSession();
-      if (data && data.session) {
-        const cleanUrl = window.location.href.split('#')[0].split('?')[0];
-        history.replaceState({}, document.title, cleanUrl);
+      const callbackSession = await _applyOAuthCallbackSession();
+      if (callbackSession) {
         _authDone = true;
         clearTimeout(_safetyTimer);
-        onAuthSuccess(data.session.user);
+        onAuthSuccess(callbackSession.user);
         return;
+      }
+      for (let i = 0; i < 3; i++) {
+        const { data } = await _supabase.auth.getSession();
+        if (data && data.session) {
+          _cleanOAuthCallbackUrl();
+          _authDone = true;
+          clearTimeout(_safetyTimer);
+          onAuthSuccess(data.session.user);
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 180));
       }
     }
 
@@ -536,6 +598,15 @@ async function onAuthSuccess(user) {
   if (authLoading) authLoading.style.display = 'flex';
 
   if (user) {
+    const lastUserId = localStorage.getItem(EASYTV_LAST_USER_KEY);
+    if (lastUserId && lastUserId !== user.id) {
+      // Hesap değiştiyse eski kullanıcı verisini yeni oturuma taşımayalım.
+      SVC = [];
+      localStorage.removeItem('easytv_svc');
+      localStorage.removeItem('easytv_data_ts');
+    }
+    localStorage.setItem(EASYTV_LAST_USER_KEY, user.id);
+
     PROFILE.name = (user.user_metadata && user.user_metadata.full_name) || (user.email && user.email.split('@')[0]) || 'Kullanıcı';
     PROFILE.email = user.email || '';
     PROFILE.avatar = (user.user_metadata && user.user_metadata.avatar_url) || '';
@@ -3302,8 +3373,6 @@ try { renderProfile(); } catch(e) { console.error('renderProfile hatası:', e); 
 updateClock();
 setInterval(updateClock,1000);
 
-// Auth başlat
-initAuth();
 try { if (window.PaymentService && typeof window.PaymentService.init === 'function') { window.PaymentService.init(); } } catch(e) { console.warn('PaymentService init hatası:', e); }
 
 function updateClock(){
