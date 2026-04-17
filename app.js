@@ -713,9 +713,9 @@ function setIntroLang(lang){
     if(wlcOptEN) wlcOptEN.classList.toggle('selected',lang==='en');
     if(wlcTagline) wlcTagline.innerHTML=lang==='tr'?'Şifreleriniz güvende,<br>giriş tek dokunuşta.':'Passwords safe,<br>sign in with one tap.';
     if(wlcSub) wlcSub.textContent=lang==='tr'?'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.':'Store your TV subscriptions.\nSign in with QR in seconds.';
+  }
   if(wlcStartBtn) wlcStartBtn.textContent=lang==='tr'?'Başlayın':'Get Started';
   applyLang();
-}
 }
 
 // intro → welcome geçişi
@@ -1083,6 +1083,7 @@ function applyLang(){
   if($('title-profile'))  $('title-profile').textContent  = t('tab_profile_title');
   if($('title-settings')) $('title-settings').textContent = t('tab_settings_title');
   if($('subsSubtitle'))   $('subsSubtitle').textContent   = t('tab_subs_sub');
+  if($('subsTotalLbl'))   $('subsTotalLbl').textContent   = t('monthly_total');
   // Settings section başlıkları
   if($('lbl-security'))       $('lbl-security').textContent       = t('settings_security');
   if($('lbl-appearance'))     $('lbl-appearance').textContent     = t('settings_appearance');
@@ -1117,6 +1118,9 @@ function applyLang(){
   // Login/Auth metinleri
   if($('loginHeading')) $('loginHeading').innerHTML = t('login_heading');
   if($('loginSub')) $('loginSub').innerHTML = t('login_sub');
+  if($('introTagline')) $('introTagline').innerHTML = t('login_heading');
+  if($('introSub')) $('introSub').innerHTML = t('login_sub');
+  if($('introHint')) $('introHint').textContent = LANG==='tr' ? 'Zaten hesabınız var mı? Giriş yapın' : 'Already have an account? Sign in';
   if($('loginCreateBtnText')) $('loginCreateBtnText').textContent = t('login_create');
   if($('loginOrText')) $('loginOrText').textContent = t('login_or');
   if($('loginAppleBtnText')) $('loginAppleBtnText').textContent = t('login_apple');
@@ -1129,6 +1133,12 @@ function applyLang(){
   if($('emailAuthEmail')) $('emailAuthEmail').placeholder = LANG==='tr' ? 'E-posta adresi' : 'Email address';
   if($('emailAuthPassword')) $('emailAuthPassword').placeholder = LANG==='tr' ? 'Şifre (en az 6 karakter)' : 'Password (min 6 characters)';
   if($('emailAuthConfirmPassword')) $('emailAuthConfirmPassword').placeholder = LANG==='tr' ? 'Şifreyi tekrar yaz' : 'Confirm password';
+  if($('pinGreeting')) $('pinGreeting').textContent = LANG==='tr' ? 'Hoş geldiniz' : 'Welcome back';
+  if($('pinHint')) $('pinHint').textContent = LANG==='tr' ? 'PIN ile giriş yapın' : 'Sign in with PIN';
+  if($('pinDevicePassText')) $('pinDevicePassText').textContent = LANG==='tr' ? 'Telefon Şifresi' : 'Device Passcode';
+  if($('pinFaceIdText')) $('pinFaceIdText').textContent = LANG==='tr' ? 'Face ID ile giriş' : 'Sign in with Face ID';
+  if($('pinSkipBtn')) $('pinSkipBtn').textContent = LANG==='tr' ? 'Atla' : 'Skip';
+  if($('obSkipBtn')) $('obSkipBtn').textContent = LANG==='tr' ? 'Atla' : 'Skip';
   // Dil butonları aktif durumu
   document.querySelectorAll('.lang-btn').forEach(b=>{
     b.classList.toggle('lang-sel', b.dataset.lang === LANG);
@@ -1173,18 +1183,18 @@ function setPinChoice(val){
   setTimeout(function(){ tapped.style.transform='scale(1.01)'; setTimeout(function(){ tapped.style.transform=''; },200); },100);
 }
 let obStep=0;const obSteps=['services','pinChoice','pin','done'];let obSelectedServices=['netflix','youtube','disney','prime','hbo','apple'];let obNewPin='';
-function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const btnText=btn?btn.querySelector('.cta-btn-text'):null;const skip=document.querySelector('.onboard-skip');const setSkip=(v)=>{if(skip)skip.style.display=v;};content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){if(btnText)btnText.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">Adım 1 / 3</div><div class="onboard-title">Hangi servisleri<br>kullanıyorsun?</div><div class="onboard-sub">Hepsini sonra değiştirebilirsin.</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){if(btnText)btnText.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 4px;">
-<div class="onboard-step-lbl">Adım 2 / 3</div>
-<div class="onboard-title" style="margin-bottom:8px;">Güvenlik</div>
-<div class="onboard-sub" style="margin-bottom:28px;">Uygulamana PIN ile giriş yapmak ister misin?</div>
+function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const btnText=btn?btn.querySelector('.cta-btn-text'):null;const skip=document.querySelector('.onboard-skip');const tr=LANG==='tr';const setSkip=(v)=>{if(skip)skip.style.display=v;};if(skip)skip.textContent=tr?'Atla':'Skip';content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){if(btnText)btnText.textContent=tr?'Devam':'Continue';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">${tr?'Adım 1 / 3':'Step 1 / 3'}</div><div class="onboard-title">${tr?'Hangi servisleri<br>kullanıyorsun?':'Which services<br>do you use?'}</div><div class="onboard-sub">${tr?'Hepsini sonra değiştirebilirsin.':'You can change all of them later.'}</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){if(btnText)btnText.textContent=tr?'Devam':'Continue';setSkip('block');content.innerHTML=`<div style="padding:0 4px;">
+<div class="onboard-step-lbl">${tr?'Adım 2 / 3':'Step 2 / 3'}</div>
+<div class="onboard-title" style="margin-bottom:8px;">${tr?'Güvenlik':'Security'}</div>
+<div class="onboard-sub" style="margin-bottom:28px;">${tr?'Uygulamana PIN ile giriş yapmak ister misin?':'Do you want to use a PIN to unlock the app?'}</div>
 <div style="display:flex;flex-direction:column;gap:12px;">
   <div id="pin-yes" onclick="setPinChoice(true)" style="display:flex;align-items:center;gap:16px;padding:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;cursor:pointer;transition:all .2s cubic-bezier(.34,1.4,.64,1);">
     <div style="width:48px;height:48px;border-radius:14px;background:rgba(130,80,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#c084fc" stroke-width="1.8" fill="none"/><path d="M8 11V7a4 4 0 018 0v4" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="12" cy="16" r="1.5" fill="#c084fc"/></svg>
     </div>
     <div style="flex:1;">
-      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;">Evet, PIN kur</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.4;">Şifrelerini güvende tut</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;">${tr?'Evet, PIN kur':'Yes, set a PIN'}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.4;">${tr?'Şifrelerini güvende tut':'Keep your passwords secure'}</div>
     </div>
     <div id="pin-yes-check" style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;"></div>
   </div>
@@ -1193,16 +1203,16 @@ function renderOnboardStep(){const prog=document.getElementById('obProgress');pr
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="rgba(255,255,255,.4)" stroke-width="1.8" fill="none"/><path d="M5 11V7a4 4 0 018 0" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round" fill="none"/><line x1="19" y1="5" x2="5" y2="19" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round"/></svg>
     </div>
     <div style="flex:1;">
-      <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:3px;">Hayır, şimdilik atlıyorum</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.3);line-height:1.4;">Daha sonra ayarlardan açabilirsin</div>
+      <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:3px;">${tr?'Hayır, şimdilik atlıyorum':'No, skip for now'}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.3);line-height:1.4;">${tr?'Daha sonra ayarlardan açabilirsin':'You can enable it later in settings'}</div>
     </div>
     <div id="pin-no-check" style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;"></div>
   </div>
 </div>
-</div>`;}else if(obStep===2){btn.style.display='none';setSkip('none');if(SETTINGS.usePin===false){onboardNext();return;}const KL={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">PIN Oluştur</div><div class="onboard-sub" id="obPinSub">4 haneli giriş şifreni belirle.</div></div><div class="ob-pin-dots"><div class="ob-pin-dot" id="op0"></div><div class="ob-pin-dot" id="op1"></div><div class="ob-pin-dot" id="op2"></div><div class="ob-pin-dot" id="op3"></div></div><div class="onboard-pin-grid">${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`<button class="ob-key" onclick="obKp(${JSON.stringify(k)})">${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:k==='del'?`<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M8 1H20a2 2 0 012 2v10a2 2 0 01-2 2H8L2 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M12 5.5l5 5M17 5.5l-5 5" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>`:`<div><div class="ob-key-num">${k}</div>${KL[k]?`<div class="ob-key-sub">${KL[k]}</div>`:''}</div>`}</button>`).join('')}</div></div>`;obNewPin='';obPinStep=0;}else if(obStep>=3){btn.style.display='';setSkip('none');if(btnText)btnText.textContent='Başla';content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">Hazırsın!</div><div class="onboard-sub">EasyTV kurulumu tamamlandı.</div></div></div>`;}
+</div>`;}else if(obStep===2){btn.style.display='none';setSkip('none');if(SETTINGS.usePin===false){onboardNext();return;}const KL={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">${tr?'PIN Oluştur':'Create PIN'}</div><div class="onboard-sub" id="obPinSub">${tr?'4 haneli giriş şifreni belirle.':'Set your 4-digit login PIN.'}</div></div><div class="ob-pin-dots"><div class="ob-pin-dot" id="op0"></div><div class="ob-pin-dot" id="op1"></div><div class="ob-pin-dot" id="op2"></div><div class="ob-pin-dot" id="op3"></div></div><div class="onboard-pin-grid">${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`<button class="ob-key" onclick="obKp(${JSON.stringify(k)})">${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:k==='del'?`<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M8 1H20a2 2 0 012 2v10a2 2 0 01-2 2H8L2 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M12 5.5l5 5M17 5.5l-5 5" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>`:`<div><div class="ob-key-num">${k}</div>${KL[k]?`<div class="ob-key-sub">${KL[k]}</div>`:''}</div>`}</button>`).join('')}</div></div>`;obNewPin='';obPinStep=0;}else if(obStep>=3){btn.style.display='';setSkip('none');if(btnText)btnText.textContent=tr?'Başla':'Start';content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">${tr?'Hazırsın!':'You are ready!'}</div><div class="onboard-sub">${tr?'EasyTV kurulumu tamamlandı.':'EasyTV setup is complete.'}</div></div></div>`;}
 requestAnimationFrame(function(){var t=content.querySelector('.onboard-title');var s=content.querySelector('.onboard-sub');_charReveal(t,0.1);_charReveal(s,0.32);});}
 let obPinStep=0;
-function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent='PIN\'ini bir kez daha gir.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent='Eşleşmedi. Tekrar dene.';}}}}
+function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'PIN\'ini bir kez daha gir.':'Enter your PIN one more time.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'Eşleşmedi. Tekrar dene.':'PINs do not match. Try again.';}}}}
 function _obSlideNext(cb){const c=document.getElementById('obContent');c.style.animation='obSlideOut .25s cubic-bezier(.55,.06,.68,.19) both';c.addEventListener('animationend',function h(){c.removeEventListener('animationend',h);cb();},{once:true});}
 function onboardNext(){if(obStep===0){SVC=[];obSelectedServices.forEach(id=>{const svc=POPULAR_SVCS.find(s=>s.id===id);if(svc){const reg=SETTINGS.region||'tr';const pr=svc.prices?.[reg]||{amount:0,plan:''};const renewDate=new Date();renewDate.setMonth(renewDate.getMonth()+1);SVC.push({...svc,email:'',pwd:'',price:pr.amount,plan:pr.plan,renew:renewDate.toISOString().split('T')[0]});}});saveData();_obSlideNext(()=>{obStep++;renderOnboardStep();});return;}if(obStep===1){if(SETTINGS.usePin===false){_obSlideNext(()=>finishOnboard());}else{_obSlideNext(()=>{obStep++;renderOnboardStep();});}return;}if(obStep===2){_obSlideNext(()=>finishOnboard());return;}_obSlideNext(()=>{obStep++;renderOnboardStep();});}
 function finishOnboard(){
@@ -1594,8 +1604,8 @@ function unlockApp() {
   if (ps) ps.style.display = 'none';
   setTimeout(() => {
     if (ps) ps.classList.remove('out');
-    if (pinGreeting) pinGreeting.textContent = 'Hoş geldiniz';
-    if (pinHint) pinHint.textContent = 'PIN ile giriş yapın';
+    if (pinGreeting) pinGreeting.textContent = LANG==='tr' ? 'Hoş geldiniz' : 'Welcome back';
+    if (pinHint) pinHint.textContent = LANG==='tr' ? 'PIN ile giriş yapın' : 'Sign in with PIN';
     pinVal = ''; updatePinDots();
   }, 520);
   // Sekme geçişini switchTab ile yap — nav .active class doğru güncellensin
@@ -2713,7 +2723,7 @@ function renderSubs(){
   const dates=paid.filter(s=>s.renew).map(s=>({d:new Date(s.renew)})).sort((a,b)=>a.d-b.d);
   var nrEl=document.getElementById('nextRenew');
   if(nrEl)nrEl.textContent=dates.length?formatDate(dates[0].d):'—';
-  if(subsSubtitleEl)subsSubtitleEl.textContent=`${paid.length} aktif üyelik`;
+  if(subsSubtitleEl)subsSubtitleEl.textContent=LANG==='tr'?`${paid.length} aktif üyelik`:`${paid.length} active subscriptions`;
   if(!list)return;
   list.innerHTML='';
   if(SVC.length===0){
@@ -2767,7 +2777,7 @@ function renderSpendingChart(svc) {
     var el = document.getElementById('spendingChart');
     if (!el) return;
     if (!svc || svc.length === 0) {
-      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Henüz servis eklenmedi</div></div></div>';
+      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">'+(LANG==='tr'?'Henüz servis eklenmedi':'No services added yet')+'</div></div></div>';
       return;
     }
     var displayCode = SETTINGS.displayCurrency || 'TRY';
@@ -2806,7 +2816,7 @@ function renderSpendingChart(svc) {
         +'</div>';
     }).join('');
     el.innerHTML = '<div class="pie-chart-card">'
-      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">AYLIK HARCAMA</div>'
+      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">'+(LANG==='tr'?'AYLIK HARCAMA':'MONTHLY SPENDING')+'</div>'
       +'<div style="display:flex;align-items:center;gap:14px;">'
       +svg
       +'<div style="flex:1;display:flex;flex-direction:column;gap:7px;min-width:0;">'+legend+'</div>'

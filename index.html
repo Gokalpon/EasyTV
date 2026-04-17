@@ -244,11 +244,11 @@
     </div>
     <button class="pin-face-btn" onclick="deviceAuth()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="3" stroke="rgba(255,255,255,.5)" stroke-width="1.8"/><circle cx="12" cy="17" r="1.2" fill="rgba(255,255,255,.5)"/><path d="M9 7h6" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <span style="font-size:13px;color:rgba(255,255,255,.5);font-weight:600;">Telefon Şifresi</span>
+      <span id="pinDevicePassText" style="font-size:13px;color:rgba(255,255,255,.5);font-weight:600;">Telefon Şifresi</span>
     </button>
     <button class="pin-face-btn" onclick="faceId()">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6.5" r=".9" fill="currentColor"/><circle cx="10.5" cy="6.5" r=".9" fill="currentColor"/><path d="M5.5 10c.7 1.1 4.3 1.1 5 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      Face ID ile giriş
+      <span id="pinFaceIdText">Face ID ile giriş</span>
     </button>
     <button class="pin-face-btn" id="pinSkipBtn" onclick="skipPin()" style="margin-top:8px;font-size:13px;opacity:.5;">Atla</button>
   </div>
@@ -279,7 +279,7 @@
       <div class="tab-header"><div class="tab-title" id="title-subs">Üyelikler</div><div class="tab-sub" id="subsSubtitle">Aylık harcama özeti</div></div>
       <div class="subs-scroll">
         <div class="subs-summary">
-          <div><div class="subs-total-lbl">Aylık Toplam</div><div class="subs-total-val" id="totalMonthly">₺0</div></div>
+          <div><div class="subs-total-lbl" id="subsTotalLbl">Aylık Toplam</div><div class="subs-total-val" id="totalMonthly">₺0</div></div>
         </div>
         <div id="spendingChart" style="margin:0 0 16px;padding:0;"></div>
         <div id="subsList"></div>
