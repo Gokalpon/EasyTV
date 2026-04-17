@@ -1567,7 +1567,7 @@ button{-webkit-tap-highlight-color:transparent;}
 #subEditModal #sesDeleteBtn{
   min-width:78px;
   min-height:48px;
-  border-radius:14px;
+  border-radius:22px;
   background:#fff;
   color:#161726;
   border:1px solid rgba(255,255,255,.9);

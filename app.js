@@ -2046,7 +2046,33 @@ function confirmPlanAdd(){if(!planModalSvc||!planModalSelected)return;const s=pl
   }
   const svc={...s,email:'',pwd:'',price:myPrice,_fullPrice:p.price,_userCount:typeof _planUserCount!=='undefined'?_planUserCount:1,_payMethod:typeof _planPayMethod!=='undefined'?_planPayMethod:'me',plan:p.name,renew};if(existing>=0)SVC[existing]=svc;else SVC.push(svc);saveData();buildGrid();renderSubs&&renderSubs();closePlanModal();showToast('✓ '+s.name+' eklendi');const newIdx=existing>=0?existing:SVC.length-1;setTimeout(()=>tap(newIdx),350);}
 function closeAddModal(){const addModal=document.getElementById('addModal');if(addModal)addModal.classList.remove('open');selectedPopular=null;}
-function buildRemoveGrid(){const g=document.getElementById('removeGrid');g.innerHTML='';if(SVC.length===0){g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.3);font-size:13px;padding:20px;">Ekli servis yok</div>';return;}SVC.forEach((s,i)=>{const L=LOGO[s.id]||LOGO._custom;const div=document.createElement('div');div.style.cssText='position:relative;aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:1.5px solid rgba(255,90,80,.3);background:rgba(255,60,50,.06);';const logoHtml=L.html?`<div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`:`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0]}</span>`;div.innerHTML=`${logoHtml}<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.7);text-align:center;">${s.name}</div><div style="position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:rgba(255,59,48,.8);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;line-height:1;">×</div>`;div.onclick=()=>{const nm=s.name;SVC.splice(i,1);saveData();buildGrid();buildRemoveGrid();renderSubs&&renderSubs();showToast(`${nm} çıkarıldı`);};g.appendChild(div);});}
+function buildRemoveGrid(){
+  const g=document.getElementById('removeGrid');
+  g.innerHTML='';
+  if(SVC.length===0){
+    g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.3);font-size:13px;padding:20px;">Ekli servis yok</div>';
+    return;
+  }
+  SVC.forEach((s,i)=>{
+    const L=LOGO[s.id]||LOGO._custom;
+    const div=document.createElement('div');
+    div.style.cssText='position:relative;aspect-ratio:1;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:10px;';
+    const logoHtml=L.html
+      ?`<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`
+      :`<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;"><span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0]}</span></div>`;
+    div.innerHTML=`${logoHtml}<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.82);text-align:center;line-height:1.2;">${s.name}</div><div style="position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;background:#e53935;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;line-height:1;">×</div>`;
+    div.onclick=()=>{
+      const nm=s.name;
+      SVC.splice(i,1);
+      saveData();
+      buildGrid();
+      buildRemoveGrid();
+      renderSubs&&renderSubs();
+      showToast(`${nm} çıkarıldı`);
+    };
+    g.appendChild(div);
+  });
+}
 function buildPopularGrid(){var g=document.getElementById('popularGrid');g.innerHTML='';POPULAR_SVCS.forEach(function(s){var L=LOGO[s.id]||LOGO._custom;var el=document.createElement('div');el.className='popular-item';var logoHtml='';var isDark=s.textDark||L.textDark;if(L.html&&L.html.indexOf('<img')>=0){var useHtml=isDark&&L.htmlDark?L.htmlDark:L.html;var src=useHtml.match(/src="([^"]+)"/)&&useHtml.match(/src="([^"]+)"/)[1]||'';logoHtml='<img src="'+src+'" style="width:60%;height:60%;object-fit:contain;">';}else if(L.html){logoHtml='<div style="transform:scale(.7);transform-origin:center;">'+(isDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html)+'</div>';}else{logoHtml='<span style="font-size:18px;font-weight:800;color:'+(isDark?'#000':'#fff')+'">'+s.name[0]+'</span>';}el.innerHTML='<div class="popular-ico" style="background:'+s.color+';--ico-glow:'+s.color+';border:2px solid '+s.color+'">'+logoHtml+'</div><div class="popular-name">'+s.name+'</div>';el.onclick=function(){closeAddModal();openPlanModal(s);};g.appendChild(el);});}
 function formatDate(d){return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});}
 let seEditIdx=-1;
