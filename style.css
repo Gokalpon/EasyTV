@@ -483,7 +483,7 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 .popular-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:background .14s,border-color .14s;}
 .popular-item:active{background:rgba(255,255,255,.14);}
 .popular-item.selected{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12);}
-.popular-ico{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px var(--ico-glow,#888),0 0 24px var(--ico-glow,#888),inset 0 0 8px rgba(255,255,255,.15);}
+.popular-ico{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:none;}
 .popular-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.7);text-align:center;}
 .add-field{margin:0 16px 12px;}
 .add-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;padding-left:2px;}

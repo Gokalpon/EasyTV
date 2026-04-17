@@ -1985,6 +1985,53 @@ function switchAddTab(tab){currentAddTab=tab;['popular','custom','remove'].forEa
 
 const PRESET_COLORS=['#E50914','#FF6D00','#FFCA28','#00C853','#00B0FF','#7B2FBE','#EC407A','#546E7A','#ffffff'];
 function buildColorPicker(){const row=document.getElementById('colorRow');row.innerHTML='';let sel=PRESET_COLORS[4];PRESET_COLORS.forEach(c=>{const chip=document.createElement('div');chip.className='color-chip'+(c===sel?' sel':'');chip.style.background=c==='#ffffff'?'rgba(255,255,255,.9)':c;chip._color=c;chip.onclick=()=>{sel=c;document.querySelectorAll('.color-chip').forEach(ch=>ch.classList.remove('sel'));chip.classList.add('sel');};row.appendChild(chip);});}
+function normalizeWebUrl(raw){if(!raw)return'';let val=String(raw).trim();if(!val)return'';if(!/^https?:\/\//i.test(val))val='https://'+val;try{return new URL(val).toString();}catch(_){return'';}}
+function faviconForUrl(raw){const url=normalizeWebUrl(raw);if(!url)return'';return`https://www.google.com/s2/favicons?sz=128&domain_url=${encodeURIComponent(url)}`;}
+function fetchFavicon(){const urlInp=document.getElementById('addUrl');const prev=document.getElementById('faviconPreview');if(!urlInp||!prev)return;const fav=faviconForUrl(urlInp.value);if(!fav){prev.innerHTML='<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/></svg>';delete prev.dataset.favicon;return;}prev.innerHTML=`<img src="${fav}" style="width:18px;height:18px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none'">`;prev.dataset.favicon=fav;}
+function saveCustomService(){
+  const nameInp=document.getElementById('addName');
+  const urlInp=document.getElementById('addUrl');
+  const emailInp=document.getElementById('addEmail');
+  const pwdInp=document.getElementById('addPwd');
+  const priceInp=document.getElementById('addPrice');
+  const renewInp=document.getElementById('addRenew');
+  const name=(nameInp?.value||'').trim();
+  if(!name){showToast(LANG==='tr'?'Servis adı gerekli':'Service name is required');nameInp?.focus();return;}
+  if(SVC.length>=FREE_LIMIT&&!isPremium()){openPremiumSheet();return;}
+  const selectedChip=document.querySelector('#colorRow .color-chip.sel');
+  const color=(selectedChip&&selectedChip._color)||PRESET_COLORS[4];
+  const priceRaw=((priceInp?.value)||'').replace(/[^\d.,-]/g,'').replace(',', '.');
+  const parsed=parseFloat(priceRaw);
+  const fullPrice=Number.isFinite(parsed)&&parsed>0?parsed:0;
+  const webUrl=normalizeWebUrl(urlInp?.value||'');
+  const faviconUrl=faviconForUrl(urlInp?.value||'');
+  const renew=(renewInp?.value||'').trim()||null;
+  const countryCurrency=(COUNTRIES.find(c=>c.code===(SETTINGS.country||'tr'))||{}).currency||'TRY';
+  const svc={
+    id:`custom_${Date.now()}`,
+    name,
+    color,
+    email:(emailInp?.value||'').trim(),
+    pwd:(pwdInp?.value||'').trim(),
+    price:fullPrice,
+    _fullPrice:fullPrice,
+    _userCount:1,
+    _payMethod:'me',
+    priceCurrency:countryCurrency,
+    plan:LANG==='tr'?'Özel':'Custom',
+    renew,
+    url:webUrl,
+    faviconUrl
+  };
+  SVC.push(svc);
+  saveData();
+  buildGrid();
+  renderSubs&&renderSubs();
+  closeAddModal();
+  showToast(`✓ ${name} ${LANG==='tr'?'eklendi':'added'}`);
+}
+window.fetchFavicon=fetchFavicon;
+window.saveCustomService=saveCustomService;
 
 function openAddModal(){
   buildPopularGrid();buildColorPicker();selectedPopular=null;const popularForm=document.getElementById('popularForm');const addModal=document.getElementById('addModal');if(popularForm)popularForm.style.display='none';if(addModal)addModal.classList.add('open');}
