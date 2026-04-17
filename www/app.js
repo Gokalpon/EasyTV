@@ -16,6 +16,13 @@ const NATIVE_OAUTH_CALLBACK_URL = 'easytvhub://auth/callback';
 let _pendingOAuthCallbackUrl = '';
 let _nativeOAuthListenerBound = false;
 
+// Local geliştirmede cache kaynaklı "eski ekran" yanılsamasını engelle.
+if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function (regs) {
+    regs.forEach(function (reg) { reg.unregister(); });
+  }).catch(function () {});
+}
+
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
 let _supabase = null;
@@ -54,13 +61,15 @@ function _showFallbackScreen() {
   if (loginScreen) loginScreen.style.display = 'none';
   if (onboardScreen) onboardScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'none';
-  // Session yoksa kullanıcıyı her zaman giriş akışına getir.
+  // Session yoksa kullanıcıyı tek giriş kaynağı olan login ekranına getir.
   if (bottomNav) bottomNav.style.display = 'none';
   if (pinScreen) pinScreen.style.display = 'none';
-  if (introScreen) introScreen.style.display = 'flex';
-  _initFuzzyLogo();
-  _stabilizeIntroHero();
-  _initLogoGallery();
+  if (introScreen) introScreen.style.display = 'none';
+  if (loginScreen) {
+    loginScreen.style.display = 'flex';
+    _charReveal(document.getElementById('loginHeading'), 0.18);
+    _charReveal(document.getElementById('loginSub'), 0.46);
+  }
 }
 
 // ── FUZZY LOGO (EasyTV logosu için canvas glitch efekti) ──
