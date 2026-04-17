@@ -369,13 +369,17 @@ function setEmailAuthMode(mode) {
   const submitBtn = document.getElementById('emailAuthSubmitBtn');
   const switchBtn = document.getElementById('emailAuthSwitchBtn');
   const nameWrap = document.getElementById('emailAuthNameWrap');
+  const confirmWrap = document.getElementById('emailAuthConfirmWrap');
   const passwordEl = document.getElementById('emailAuthPassword');
+  const confirmEl = document.getElementById('emailAuthConfirmPassword');
 
   if (titleEl) titleEl.textContent = _emailAuthMode === 'signup' ? t('email_auth_signup_title') : t('email_auth_signin_title');
   if (submitBtn) submitBtn.textContent = _emailAuthMode === 'signup' ? t('email_auth_signup_btn') : t('email_auth_signin_btn');
   if (switchBtn) switchBtn.textContent = _emailAuthMode === 'signup' ? t('email_auth_switch_to_signin') : t('email_auth_switch_to_signup');
   if (nameWrap) nameWrap.style.display = _emailAuthMode === 'signup' ? 'block' : 'none';
+  if (confirmWrap) confirmWrap.style.display = _emailAuthMode === 'signup' ? 'block' : 'none';
   if (passwordEl) passwordEl.autocomplete = _emailAuthMode === 'signup' ? 'new-password' : 'current-password';
+  if (confirmEl) confirmEl.autocomplete = _emailAuthMode === 'signup' ? 'new-password' : 'off';
 }
 
 function openEmailAuth(mode) {
@@ -399,11 +403,13 @@ async function submitEmailAuth() {
 
   const emailEl = document.getElementById('emailAuthEmail');
   const passwordEl = document.getElementById('emailAuthPassword');
+  const confirmEl = document.getElementById('emailAuthConfirmPassword');
   const nameEl = document.getElementById('emailAuthName');
   const submitBtn = document.getElementById('emailAuthSubmitBtn');
 
   const email = (emailEl && emailEl.value || '').trim();
   const password = (passwordEl && passwordEl.value || '').trim();
+  const confirmPassword = (confirmEl && confirmEl.value || '').trim();
   const fullName = (nameEl && nameEl.value || '').trim();
 
   if (!email || !password) {
@@ -412,6 +418,10 @@ async function submitEmailAuth() {
   }
   if (password.length < 6) {
     showToast(t('email_auth_password_min'));
+    return;
+  }
+  if (_emailAuthMode === 'signup' && password !== confirmPassword) {
+    showToast(LANG==='tr' ? 'Şifreler eşleşmiyor' : 'Passwords do not match');
     return;
   }
 
@@ -1118,6 +1128,7 @@ function applyLang(){
   if($('emailAuthName')) $('emailAuthName').placeholder = LANG==='tr' ? 'Ad Soyad' : 'Full Name';
   if($('emailAuthEmail')) $('emailAuthEmail').placeholder = LANG==='tr' ? 'E-posta adresi' : 'Email address';
   if($('emailAuthPassword')) $('emailAuthPassword').placeholder = LANG==='tr' ? 'Şifre (en az 6 karakter)' : 'Password (min 6 characters)';
+  if($('emailAuthConfirmPassword')) $('emailAuthConfirmPassword').placeholder = LANG==='tr' ? 'Şifreyi tekrar yaz' : 'Confirm password';
   // Dil butonları aktif durumu
   document.querySelectorAll('.lang-btn').forEach(b=>{
     b.classList.toggle('lang-sel', b.dataset.lang === LANG);

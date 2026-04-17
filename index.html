@@ -128,22 +128,25 @@
 
   </div>
 
-  <div id="emailAuthSheet" style="display:none;position:absolute;left:16px;right:16px;bottom:20px;z-index:20;background:rgba(18,19,24,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.4);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-      <div id="emailAuthTitle" style="font-size:15px;font-weight:800;color:#fff;">Mail ile Giriş</div>
-      <button onclick="closeEmailAuth()" style="background:transparent;border:none;color:rgba(255,255,255,.65);font-size:18px;cursor:pointer;line-height:1;">×</button>
+  <div id="emailAuthSheet" class="email-auth-sheet" style="display:none;">
+    <div class="email-auth-head">
+      <div id="emailAuthTitle" class="email-auth-title">Mail ile Giriş</div>
+      <button onclick="closeEmailAuth()" class="email-auth-close" aria-label="Close">×</button>
     </div>
-    <div id="emailAuthNameWrap" style="display:none;margin-bottom:8px;">
-      <input id="emailAuthName" type="text" placeholder="Ad Soyad" autocomplete="name" style="width:100%;height:44px;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;outline:none;">
+    <div id="emailAuthNameWrap" class="email-auth-field" style="display:none;">
+      <input id="emailAuthName" type="text" placeholder="Ad Soyad" autocomplete="name" class="email-auth-input">
     </div>
-    <div style="margin-bottom:8px;">
-      <input id="emailAuthEmail" type="email" placeholder="E-posta adresi" autocomplete="email" style="width:100%;height:44px;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;outline:none;">
+    <div class="email-auth-field">
+      <input id="emailAuthEmail" type="email" placeholder="E-posta adresi" autocomplete="email" class="email-auth-input">
     </div>
-    <div style="margin-bottom:12px;">
-      <input id="emailAuthPassword" type="password" placeholder="Şifre (en az 6 karakter)" autocomplete="current-password" style="width:100%;height:44px;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;outline:none;">
+    <div class="email-auth-field">
+      <input id="emailAuthPassword" type="password" placeholder="Şifre (en az 6 karakter)" autocomplete="current-password" class="email-auth-input">
     </div>
-    <button id="emailAuthSubmitBtn" onclick="submitEmailAuth()" style="width:100%;height:44px;border:none;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#6d28d9);color:#fff;font-weight:800;cursor:pointer;">Giriş Yap</button>
-    <button id="emailAuthSwitchBtn" onclick="toggleEmailAuthMode()" style="width:100%;margin-top:8px;background:transparent;border:none;color:rgba(255,255,255,.65);font-size:12px;cursor:pointer;">Hesabın yok mu? Kayıt ol</button>
+    <div id="emailAuthConfirmWrap" class="email-auth-field" style="display:none;">
+      <input id="emailAuthConfirmPassword" type="password" placeholder="Şifreyi tekrar yaz" autocomplete="new-password" class="email-auth-input">
+    </div>
+    <button id="emailAuthSubmitBtn" onclick="submitEmailAuth()" class="email-auth-submit">Giriş Yap</button>
+    <button id="emailAuthSwitchBtn" onclick="toggleEmailAuthMode()" class="email-auth-switch">Hesabın yok mu? Kayıt ol</button>
   </div>
 </div>
 
