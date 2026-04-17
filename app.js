@@ -10,14 +10,19 @@
 let CLOUD_SYNC_AVAILABLE = false;
 let currentUser = null;
 let _authInitStarted = false;
+let _emailAuthMode = 'signin';
 
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
 let _supabase = null;
 try {
   const { createClient } = supabase;
-  // Supabase anahtarı JWT formatında olmalı (eyJ ile başlar)
-  if (SUPABASE_KEY && SUPABASE_KEY.startsWith('eyJ')) {
+  // Supabase anahtarı legacy JWT (eyJ...) veya yeni publishable (sb_publishable_...) olabilir.
+  const hasValidKeyFormat = !!SUPABASE_KEY && (
+    SUPABASE_KEY.startsWith('eyJ') ||
+    SUPABASE_KEY.startsWith('sb_publishable_')
+  );
+  if (hasValidKeyFormat) {
     _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     CLOUD_SYNC_AVAILABLE = true;
   } else {
@@ -45,21 +50,7 @@ function _showFallbackScreen() {
   if (loginScreen) loginScreen.style.display = 'none';
   if (onboardScreen) onboardScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'none';
-  // Onboarding tamamlandıysa intro'ya değil PIN/ana ekrana git
-  if (localStorage.getItem('easytv_setup_done') === '1') {
-    if (introScreen) introScreen.style.display = 'none';
-    if (SETTINGS && SETTINGS.usePin !== false && SETTINGS.pin) {
-      if (bottomNav) bottomNav.style.display = 'none';
-      if (pinScreen) pinScreen.style.display = 'flex';
-      _applyLogoReveal && _applyLogoReveal(pinScreen && pinScreen.querySelector('.pin-logo img'));
-      _charReveal(document.getElementById('pinGreeting'), 0.15);
-    } else {
-      if (pinScreen) pinScreen.style.display = 'none';
-      unlockApp();
-    }
-    return;
-  }
-  // Onboarding yapılmamış — intro göster
+  // Session yoksa kullanıcıyı her zaman giriş akışına getir.
   if (bottomNav) bottomNav.style.display = 'none';
   if (pinScreen) pinScreen.style.display = 'none';
   if (introScreen) introScreen.style.display = 'flex';
@@ -331,7 +322,7 @@ async function initAuth() {
       return;
     }
 
-    // URL'de OAuth callback var mı? (Google yönlendirmesi)
+    // URL'de OAuth callback var mı? (Google/Apple yönlendirmesi)
     const hash = window.location.hash;
     const params = new URLSearchParams(window.location.search);
 
@@ -367,33 +358,169 @@ async function initAuth() {
   }
 }
 
-// Google ile giriş
-async function loginWithGoogle() {
+function getOAuthRedirectUrl() {
+  const cleanHref = window.location.href.split('?')[0].split('#')[0];
+  return cleanHref;
+}
+
+function setEmailAuthMode(mode) {
+  _emailAuthMode = mode === 'signup' ? 'signup' : 'signin';
+  const titleEl = document.getElementById('emailAuthTitle');
+  const submitBtn = document.getElementById('emailAuthSubmitBtn');
+  const switchBtn = document.getElementById('emailAuthSwitchBtn');
+  const nameWrap = document.getElementById('emailAuthNameWrap');
+  const confirmWrap = document.getElementById('emailAuthConfirmWrap');
+  const passwordEl = document.getElementById('emailAuthPassword');
+  const confirmEl = document.getElementById('emailAuthConfirmPassword');
+
+  if (titleEl) titleEl.textContent = _emailAuthMode === 'signup' ? t('email_auth_signup_title') : t('email_auth_signin_title');
+  if (submitBtn) submitBtn.textContent = _emailAuthMode === 'signup' ? t('email_auth_signup_btn') : t('email_auth_signin_btn');
+  if (switchBtn) switchBtn.textContent = _emailAuthMode === 'signup' ? t('email_auth_switch_to_signin') : t('email_auth_switch_to_signup');
+  if (nameWrap) nameWrap.style.display = _emailAuthMode === 'signup' ? 'block' : 'none';
+  if (confirmWrap) confirmWrap.style.display = _emailAuthMode === 'signup' ? 'block' : 'none';
+  if (passwordEl) passwordEl.autocomplete = _emailAuthMode === 'signup' ? 'new-password' : 'current-password';
+  if (confirmEl) confirmEl.autocomplete = _emailAuthMode === 'signup' ? 'new-password' : 'off';
+}
+
+function openEmailAuth(mode) {
+  const sheet = document.getElementById('emailAuthSheet');
+  if (!sheet) return;
+  setEmailAuthMode(mode || 'signin');
+  sheet.style.display = 'block';
+}
+
+function closeEmailAuth() {
+  const sheet = document.getElementById('emailAuthSheet');
+  if (sheet) sheet.style.display = 'none';
+}
+
+function toggleEmailAuthMode() {
+  setEmailAuthMode(_emailAuthMode === 'signup' ? 'signin' : 'signup');
+}
+
+async function submitEmailAuth() {
+  if (!_supabase) { showToast('Cloud bağlantısı yok'); return; }
+
+  const emailEl = document.getElementById('emailAuthEmail');
+  const passwordEl = document.getElementById('emailAuthPassword');
+  const confirmEl = document.getElementById('emailAuthConfirmPassword');
+  const nameEl = document.getElementById('emailAuthName');
+  const submitBtn = document.getElementById('emailAuthSubmitBtn');
+
+  const email = (emailEl && emailEl.value || '').trim();
+  const password = (passwordEl && passwordEl.value || '').trim();
+  const confirmPassword = (confirmEl && confirmEl.value || '').trim();
+  const fullName = (nameEl && nameEl.value || '').trim();
+
+  if (!email || !password) {
+    showToast(t('email_auth_required'));
+    return;
+  }
+  if (password.length < 6) {
+    showToast(t('email_auth_password_min'));
+    return;
+  }
+  if (_emailAuthMode === 'signup' && password !== confirmPassword) {
+    showToast(LANG==='tr' ? 'Şifreler eşleşmiyor' : 'Passwords do not match');
+    return;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.7';
+  }
+
+  try {
+    if (_emailAuthMode === 'signup') {
+      const { data, error } = await _supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          emailRedirectTo: getOAuthRedirectUrl(),
+          data: { full_name: fullName || '' }
+        }
+      });
+      if (error) throw error;
+      if (data && data.session && data.user) {
+        closeEmailAuth();
+        await onAuthSuccess(data.user);
+      } else {
+        showToast(t('email_auth_signup_success_verify'));
+        setEmailAuthMode('signin');
+      }
+    } else {
+      const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+      if (error) throw error;
+      if (data && data.user) {
+        closeEmailAuth();
+        await onAuthSuccess(data.user);
+      }
+    }
+  } catch (e) {
+    showToast((_emailAuthMode === 'signup' ? t('email_auth_signup_btn') : t('email_auth_signin_btn')) + ' ' + t('email_auth_failed') + ': ' + (e.message || t('unknown_error')));
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+    }
+  }
+}
+
+async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
   _showAuthScreens();
   if (!_supabase) { showToast('Cloud bağlantısı yok'); return; }
-  const googleLoginBtn = document.getElementById('googleLoginBtn');
-  if (googleLoginBtn) {
-    googleLoginBtn.style.opacity = '0.6';
-    googleLoginBtn.disabled = true;
+
+  const loginBtn = document.getElementById(buttonId);
+  if (loginBtn) {
+    loginBtn.style.opacity = '0.6';
+    loginBtn.disabled = true;
   }
-  
+
   try {
-  const { error } = await _supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: window.location.href.split('?')[0].split('#')[0]
+    const { data, error } = await _supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: {
+        redirectTo: getOAuthRedirectUrl()
+      }
+    });
+
+    if (error) {
+      showToast(providerTitle + ' girişi başarısız: ' + error.message);
+      if (loginBtn) {
+        loginBtn.style.opacity = '1';
+        loginBtn.disabled = false;
+      }
     }
-  });
-  
-  if (error) {
-    showToast('Google girişi başarısız: ' + error.message);
-    if (googleLoginBtn) {
-      googleLoginBtn.style.opacity = '1';
-      googleLoginBtn.disabled = false;
+    // Bazı istemci sürümlerinde otomatik yönlendirme yapılmadığı için URL'i manuel aç.
+    if (data && data.url) {
+      window.location.assign(data.url);
+      return;
+    }
+    showToast(providerTitle + ' yönlendirmesi alınamadı');
+    if (loginBtn) {
+      loginBtn.style.opacity = '1';
+      loginBtn.disabled = false;
+    }
+  } catch (e) {
+    showToast(providerTitle + ' girişi başarısız');
+    if (loginBtn) {
+      loginBtn.style.opacity = '1';
+      loginBtn.disabled = false;
     }
   }
-  // Başarılıysa sayfa Google'a yönlenecek
-  } catch(e) { showToast('Google girişi başarısız'); }
+}
+
+// Google ile giriş
+async function loginWithGoogle() {
+  await loginWithOAuthProvider('google', 'googleLoginBtn', 'Google');
+}
+
+// Apple ile giriş
+async function loginWithApple() {
+  await loginWithOAuthProvider('apple', 'appleLoginBtn', 'Apple');
 }
 
 // Auth başarılı — uygulamayı başlat
@@ -518,8 +645,9 @@ async function loginWith(method) {
   if (method === 'google') {
     await loginWithGoogle();
   } else if (method === 'apple') {
-    // Apple Sign In (şimdilik skip gibi davranır)
-    showToast('Apple Sign In yakında...');
+    await loginWithApple();
+  } else if (method === 'email') {
+    openEmailAuth('signin');
   } else {
     // Atla — direkt onboarding
     const screen = document.getElementById('loginScreen');
@@ -585,14 +713,14 @@ function setIntroLang(lang){
     if(wlcOptEN) wlcOptEN.classList.toggle('selected',lang==='en');
     if(wlcTagline) wlcTagline.innerHTML=lang==='tr'?'Şifreleriniz güvende,<br>giriş tek dokunuşta.':'Passwords safe,<br>sign in with one tap.';
     if(wlcSub) wlcSub.textContent=lang==='tr'?'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.':'Store your TV subscriptions.\nSign in with QR in seconds.';
-    if(wlcStartBtn) wlcStartBtn.textContent=lang==='tr'?'Başlayın':'Get Started';
   }
+  if(wlcStartBtn) wlcStartBtn.textContent=lang==='tr'?'Başlayın':'Get Started';
+  applyLang();
 }
 
 // intro → welcome geçişi
 function showSignupOptions() {
-  // Hesap oluştur - şimdilik skip gibi davran, ileride signup flow eklenecek
-  loginWith('skip');
+  openEmailAuth('signup');
 }
 function showWelcomeFromIntro() {
   const intro = document.getElementById('introScreen');
@@ -915,7 +1043,7 @@ function toggleWlcRegion(){const trigger=document.getElementById('wlcRegionTrigg
 function buildWlcRegionList(q){const list=document.getElementById('wlcRegionList');if(!list)return;const cur=SETTINGS.country||'tr';const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.toLowerCase().includes(q.toLowerCase())):COUNTRIES;list.innerHTML='';filtered.forEach(c=>{const btn=document.createElement('button');btn.className='wlc-lang-option'+(c.code===cur?' selected':'');btn.innerHTML=`<span style="font-size:16px;margin-right:6px;">${c.flag}</span><span style="flex:1;text-align:left;">${c.name}</span><span style="font-size:11px;color:rgba(255,255,255,.3);margin-left:4px;">${c.symbol}</span>${c.code===cur?'<span style="margin-left:6px;color:#4cd964;font-size:14px;">✓</span>':''}`;btn.onclick=()=>wlcSetRegion(c.code,c.region,c.flag,c.name);list.appendChild(btn);});}
 function wlcSetRegion(code,region,flag,name){SETTINGS.country=code;SETTINGS.region=region;saveData();var trigger=document.getElementById('wlcRegionTrigger');if(trigger)trigger.classList.remove('open');var dropdown=document.getElementById('wlcRegionDropdown');if(dropdown)dropdown.classList.remove('open');var flagEl=document.getElementById('wlcRegionFlag');var labelEl=document.getElementById('wlcRegionLabel');if(flagEl)flagEl.textContent=flag;if(labelEl)labelEl.textContent=name.split(' ')[0];}
 function toggleWlcLang(){const trigger=document.getElementById('wlcLangTrigger');const dropdown=document.getElementById('wlcLangDropdown');const wrap=document.getElementById('wlcLangWrap');if(!trigger||!dropdown)return;const isOpen=dropdown.classList.contains('open');trigger.classList.toggle('open',!isOpen);dropdown.classList.toggle('open',!isOpen);if(!isOpen){setTimeout(()=>{document.addEventListener('click',function close(e){if(!wrap||!wrap.contains(e.target)){if(trigger)trigger.classList.remove('open');if(dropdown)dropdown.classList.remove('open');document.removeEventListener('click',close);}});},10);}}
-function wlcSetLang(lang){LANG=lang;const trigger=document.getElementById('wlcLangTrigger');const dropdown=document.getElementById('wlcLangDropdown');const flagEl=document.getElementById('wlcLangFlag');const labelEl=document.getElementById('wlcLangLabel');const optTR=document.getElementById('wlcOptTR');const optEN=document.getElementById('wlcOptEN');const tagline=document.getElementById('wlcTagline');const sub=document.getElementById('wlcSub');const startBtn=document.getElementById('wlcStartBtn');if(trigger)trigger.classList.remove('open');if(dropdown)dropdown.classList.remove('open');if(flagEl)flagEl.textContent=lang==='tr'?'🇹🇷':'🇬🇧';if(labelEl)labelEl.textContent=lang==='tr'?'Türkçe':'English';if(optTR)optTR.classList.toggle('selected',lang==='tr');if(optEN)optEN.classList.toggle('selected',lang==='en');if(tagline)tagline.innerHTML=lang==='tr'?'Şifreleriniz güvende,<br>giriş tek dokunuşta.':'Passwords safe,<br>sign in with one tap.';if(sub)sub.textContent=lang==='tr'?'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.':'Store your TV subscriptions.\nSign in with QR in seconds.';if(startBtn)startBtn.textContent=lang==='tr'?'Başlayın':'Get Started';}
+function wlcSetLang(lang){LANG=lang;localStorage.setItem('easytv_lang',lang);const trigger=document.getElementById('wlcLangTrigger');const dropdown=document.getElementById('wlcLangDropdown');const flagEl=document.getElementById('wlcLangFlag');const labelEl=document.getElementById('wlcLangLabel');const optTR=document.getElementById('wlcOptTR');const optEN=document.getElementById('wlcOptEN');const tagline=document.getElementById('wlcTagline');const sub=document.getElementById('wlcSub');const startBtn=document.getElementById('wlcStartBtn');if(trigger)trigger.classList.remove('open');if(dropdown)dropdown.classList.remove('open');if(flagEl)flagEl.textContent=lang==='tr'?'🇹🇷':'🇬🇧';if(labelEl)labelEl.textContent=lang==='tr'?'Türkçe':'English';if(optTR)optTR.classList.toggle('selected',lang==='tr');if(optEN)optEN.classList.toggle('selected',lang==='en');if(tagline)tagline.innerHTML=lang==='tr'?'Şifreleriniz güvende,<br>giriş tek dokunuşta.':'Passwords safe,<br>sign in with one tap.';if(sub)sub.textContent=lang==='tr'?'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.':'Store your TV subscriptions.\nSign in with QR in seconds.';if(startBtn)startBtn.textContent=lang==='tr'?'Başlayın':'Get Started';applyLang();}
 let LANG=localStorage.getItem('easytv_lang')||'tr';
 function t(key,...args){const s={tr:{nav_home:'Ana Sayfa',nav_subs:'Üyelikler',nav_profile:'Profil',nav_settings:'Ayarlar',no_subs:'Henüz servis eklenmedi',today_badge:'Bugün!',days_left:(n)=>`${n} gün kaldı`,free_badge:'Ücretsiz',per_month:'/ay',edit_btn:'Düzenle',monthly_total:'Aylık Toplam',spending_chart:'AYLIK HARCAMA',settings_security:'Güvenlik',settings_appearance:'Görünüm',settings_notifications:'Bildirimler',settings_lang:'Dil',tab_subs_title:'Üyelikler',tab_subs_sub:'Aylık harcama özeti',tab_profile_title:'Profil',tab_settings_title:'Ayarlar',share_full:'Ben ödüyorum 💳',share_equal:'Eşit bölüşüyoruz 🤝',share_free:'Başkası ödüyor 🎁',share_person_me:'Ben',share_solo:(p,s)=>`Tüm ücreti sen ödüyorsun: ${s}${p}/ay`,share_split:(per,s,total,n)=>`Sana düşen: ${s}${per}/ay (toplam ${s}${total} ÷ ${n} kişi)`,save_btn:'Kaydet',delete_sub:'Sil',sub_detail:'Üyelik Bilgileri',price_label:'AYLIK FİYAT',share_label:'PAYLAŞIM',share_who:'Kaç kişi kullanıyor?',share_how:'Ödeme şekli?',renew_date_field:'YENİLEME TARİHİ',email_field:'E-POSTA',password_field:'ŞİFRE',plan_field:'PLAN',
   tog_faceid:'Face ID / Touch ID',tog_faceid_desc:'Uygulama girişi için',
@@ -925,7 +1053,7 @@ function t(key,...args){const s={tr:{nav_home:'Ana Sayfa',nav_subs:'Üyelikler',
   tog_reminder:'Yenileme Hatırlatıcısı',tog_reminder_desc:'3 gün önce bildir',
   tog_pricechange:'Fiyat Değişikliği',tog_pricechange_desc:'Abonelik ücret artışı',lbl_region_section:'Bölge & Para Birimi',lbl_app_section:'Uygulama',region_label:'Ülke / Bölge',currency_label:'Gösterim Para Birimi',rates_label:'Kurları Güncelle',
   export_label:'Verilerimi Kaydet',import_label:'Verileri Geri Yükle',pin_change_label:'PIN Değiştir',
-  signout_label:'Çıkış Yap',delete_label:'Tüm Verileri Sil'},en:{nav_home:'Home',nav_subs:'Subscriptions',nav_profile:'Profile',nav_settings:'Settings',no_subs:'No services added yet',today_badge:'Today!',days_left:(n)=>`${n} days left`,free_badge:'Free',per_month:'/mo',edit_btn:'Edit',monthly_total:'Monthly Total',spending_chart:'MONTHLY SPENDING',settings_security:'Security',settings_appearance:'Appearance',settings_notifications:'Notifications',settings_lang:'Language',tab_subs_title:'Subscriptions',tab_subs_sub:'Monthly spending summary',tab_profile_title:'Profile',tab_settings_title:'Settings',share_full:'I pay 💳',share_equal:'Split equally 🤝',share_free:'Someone else pays 🎁',share_person_me:'Me',share_solo:(p,s)=>`You pay full: ${s}${p}/mo`,share_split:(per,s,total,n)=>`Your share: ${s}${per}/mo (${s}${total} ÷ ${n})`,save_btn:'Save',delete_sub:'Delete',sub_detail:'Subscription Details',price_label:'MONTHLY PRICE',share_label:'SHARING',share_who:'How many people?',share_how:'Payment method?',renew_date_field:'RENEWAL DATE',email_field:'EMAIL',password_field:'PASSWORD',plan_field:'PLAN',
+  signout_label:'Çıkış Yap',delete_label:'Tüm Verileri Sil',login_heading:'Tüm servisleriniz<br>tek bir yerde.',login_sub:'Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.',login_create:'Hesap Oluştur',login_or:'VEYA GİRİŞ YAP',login_apple:'Apple ile Giriş Yap',login_google:'Google ile Giriş Yap',login_email:'Mail ile Giriş Yap',login_skip:'Şimdilik atla',email_auth_signin_title:'Mail ile Giriş',email_auth_signup_title:'Mail ile Kayıt Ol',email_auth_signin_btn:'Giriş Yap',email_auth_signup_btn:'Kayıt Ol',email_auth_switch_to_signup:'Hesabın yok mu? Kayıt ol',email_auth_switch_to_signin:'Hesabın var mı? Giriş yap',email_auth_required:'E-posta ve şifre zorunlu',email_auth_password_min:'Şifre en az 6 karakter olmalı',email_auth_signup_success_verify:'Kayıt tamamlandı. E-postanı doğrulayıp giriş yap.',email_auth_failed:'başarısız',unknown_error:'Bilinmeyen hata'},en:{nav_home:'Home',nav_subs:'Subscriptions',nav_profile:'Profile',nav_settings:'Settings',no_subs:'No services added yet',today_badge:'Today!',days_left:(n)=>`${n} days left`,free_badge:'Free',per_month:'/mo',edit_btn:'Edit',monthly_total:'Monthly Total',spending_chart:'MONTHLY SPENDING',settings_security:'Security',settings_appearance:'Appearance',settings_notifications:'Notifications',settings_lang:'Language',tab_subs_title:'Subscriptions',tab_subs_sub:'Monthly spending summary',tab_profile_title:'Profile',tab_settings_title:'Settings',share_full:'I pay 💳',share_equal:'Split equally 🤝',share_free:'Someone else pays 🎁',share_person_me:'Me',share_solo:(p,s)=>`You pay full: ${s}${p}/mo`,share_split:(per,s,total,n)=>`Your share: ${s}${per}/mo (${s}${total} ÷ ${n})`,save_btn:'Save',delete_sub:'Delete',sub_detail:'Subscription Details',price_label:'MONTHLY PRICE',share_label:'SHARING',share_who:'How many people?',share_how:'Payment method?',renew_date_field:'RENEWAL DATE',email_field:'EMAIL',password_field:'PASSWORD',plan_field:'PLAN',
   tog_faceid:'Face ID / Touch ID',tog_faceid_desc:'For app login',
   tog_autolock:'Auto Lock',tog_autolock_desc:'Lock after 2 minutes',
   tog_qrrotate:'QR Auto Rotate',tog_qrrotate_desc:'New code every 30s',
@@ -933,7 +1061,7 @@ function t(key,...args){const s={tr:{nav_home:'Ana Sayfa',nav_subs:'Üyelikler',
   tog_reminder:'Renewal Reminder',tog_reminder_desc:'Notify 3 days before',
   tog_pricechange:'Price Change',tog_pricechange_desc:'Subscription price increase',lbl_region_section:'Region & Currency',lbl_app_section:'App',region_label:'Country / Region',currency_label:'Display Currency',rates_label:'Update Rates',
   export_label:'Export Data',import_label:'Restore Data',pin_change_label:'Change PIN',
-  signout_label:'Sign Out',delete_label:'Delete All Data'}}[LANG]||{};const val=s[key];return typeof val==='function'?val(...args):(val||key);}
+  signout_label:'Sign Out',delete_label:'Delete All Data',login_heading:'All your services<br>in one place.',login_sub:'Access everything quickly in one place.<br>Track your subscriptions and payments with ease.',login_create:'Create Account',login_or:'OR SIGN IN',login_apple:'Sign in with Apple',login_google:'Sign in with Google',login_email:'Sign in with Email',login_skip:'Skip for now',email_auth_signin_title:'Sign in with Email',email_auth_signup_title:'Create Account with Email',email_auth_signin_btn:'Sign In',email_auth_signup_btn:'Sign Up',email_auth_switch_to_signup:'Don\'t have an account? Sign up',email_auth_switch_to_signin:'Already have an account? Sign in',email_auth_required:'Email and password are required',email_auth_password_min:'Password must be at least 6 characters',email_auth_signup_success_verify:'Signup complete. Verify your email, then sign in.',email_auth_failed:'failed',unknown_error:'Unknown error'}}[LANG]||{};const val=s[key];return typeof val==='function'?val(...args):(val||key);}
 
 function cycleLang() {
   var next = LANG === 'tr' ? 'en' : 'tr';
@@ -955,6 +1083,7 @@ function applyLang(){
   if($('title-profile'))  $('title-profile').textContent  = t('tab_profile_title');
   if($('title-settings')) $('title-settings').textContent = t('tab_settings_title');
   if($('subsSubtitle'))   $('subsSubtitle').textContent   = t('tab_subs_sub');
+  if($('subsTotalLbl'))   $('subsTotalLbl').textContent   = t('monthly_total');
   // Settings section başlıkları
   if($('lbl-security'))       $('lbl-security').textContent       = t('settings_security');
   if($('lbl-appearance'))     $('lbl-appearance').textContent     = t('settings_appearance');
@@ -986,6 +1115,42 @@ function applyLang(){
     const val = t(el.dataset.i18n);
     if(val && val !== el.dataset.i18n) el.textContent = val;
   });
+  // Login/Auth metinleri
+  if($('loginHeading')) $('loginHeading').innerHTML = t('login_heading');
+  if($('loginSub')) $('loginSub').innerHTML = t('login_sub');
+  if($('introTagline')) $('introTagline').innerHTML = t('login_heading');
+  if($('introSub')) $('introSub').innerHTML = t('login_sub');
+  if($('introHint')) $('introHint').textContent = LANG==='tr' ? 'Zaten hesabınız var mı? Giriş yapın' : 'Already have an account? Sign in';
+  if($('loginCreateBtnText')) $('loginCreateBtnText').textContent = t('login_create');
+  if($('loginOrText')) $('loginOrText').textContent = t('login_or');
+  if($('loginAppleBtnText')) $('loginAppleBtnText').textContent = t('login_apple');
+  if($('loginGoogleBtnText')) $('loginGoogleBtnText').textContent = t('login_google');
+  if($('loginEmailBtnText')) $('loginEmailBtnText').textContent = t('login_email');
+  if($('loginSkipText')) $('loginSkipText').textContent = t('login_skip');
+  // Sub edit sheet labels
+  if($('seSubDetailLbl')) $('seSubDetailLbl').textContent = t('sub_detail');
+  if($('sePriceLbl')) $('sePriceLbl').textContent = t('price_label');
+  if($('sePlanLbl')) $('sePlanLbl').textContent = t('plan_field');
+  if($('seShareLbl')) $('seShareLbl').textContent = t('share_label');
+  if($('seShareWhoLbl')) $('seShareWhoLbl').textContent = t('share_who');
+  if($('seShareHowLbl')) $('seShareHowLbl').textContent = t('share_how');
+  if($('seRenewLbl')) $('seRenewLbl').textContent = t('renew_date_field');
+  if($('seEmailLbl')) $('seEmailLbl').textContent = t('email_field');
+  if($('sePwdLbl')) $('sePwdLbl').textContent = t('password_field');
+  if($('sesSaveBtn')) $('sesSaveBtn').textContent = t('save_btn');
+  if($('sesDeleteBtn')) $('sesDeleteBtn').textContent = t('delete_sub');
+  // Email auth sheet metinleri + placeholder
+  setEmailAuthMode(_emailAuthMode);
+  if($('emailAuthName')) $('emailAuthName').placeholder = LANG==='tr' ? 'Ad Soyad' : 'Full Name';
+  if($('emailAuthEmail')) $('emailAuthEmail').placeholder = LANG==='tr' ? 'E-posta adresi' : 'Email address';
+  if($('emailAuthPassword')) $('emailAuthPassword').placeholder = LANG==='tr' ? 'Şifre (en az 6 karakter)' : 'Password (min 6 characters)';
+  if($('emailAuthConfirmPassword')) $('emailAuthConfirmPassword').placeholder = LANG==='tr' ? 'Şifreyi tekrar yaz' : 'Confirm password';
+  if($('pinGreeting')) $('pinGreeting').textContent = LANG==='tr' ? 'Hoş geldiniz' : 'Welcome back';
+  if($('pinHint')) $('pinHint').textContent = LANG==='tr' ? 'PIN ile giriş yapın' : 'Sign in with PIN';
+  if($('pinDevicePassText')) $('pinDevicePassText').textContent = LANG==='tr' ? 'Telefon Şifresi' : 'Device Passcode';
+  if($('pinFaceIdText')) $('pinFaceIdText').textContent = LANG==='tr' ? 'Face ID ile giriş' : 'Sign in with Face ID';
+  if($('pinSkipBtn')) $('pinSkipBtn').textContent = LANG==='tr' ? 'Atla' : 'Skip';
+  if($('obSkipBtn')) $('obSkipBtn').textContent = LANG==='tr' ? 'Atla' : 'Skip';
   // Dil butonları aktif durumu
   document.querySelectorAll('.lang-btn').forEach(b=>{
     b.classList.toggle('lang-sel', b.dataset.lang === LANG);
@@ -996,6 +1161,30 @@ function applyLang(){
 function getRegion(){return REGION_DATA[SETTINGS.region||'tr']||REGION_DATA.tr;}
 function getCountryPlans(svcId){const countryCode=SETTINGS.country||'tr';const region=SETTINGS.region||'tr';const countryData=COUNTRY_PRICES[countryCode];if(countryData&&countryData[svcId]&&countryData[svcId].plans)return countryData[svcId].plans;const svcDef=POPULAR_SVCS.find(p=>p.id===svcId);if(svcDef&&svcDef.plans)return svcDef.plans[region]||svcDef.plans.tr||[];return[];}
 function getCountrySymbol(){const c=COUNTRIES.find(x=>x.code===(SETTINGS.country||'tr'));return c?c.symbol:'₺';}
+function localizePlanName(name){
+  if(LANG!=='en'||!name)return name||'';
+  const map={
+    'Reklamlı':'With Ads',
+    'Standart':'Standard',
+    'Aile':'Family',
+    'Bireysel':'Individual',
+    'Öğrenci':'Student',
+    'Reklamsız':'Ad-Free',
+    'Ücretsiz':'Free',
+    'Spor Paketi':'Sports Pack',
+    'Kanal Aboneliği':'Channel Subscription',
+    'Prime Üyelik':'Prime Membership',
+    'Aile Paylaşımı':'Family Sharing',
+    'Reklamlı HD':'HD with Ads',
+    'Reklamsız HD':'HD Ad-Free',
+    'Reklamsız 4K':'4K Ad-Free',
+    'Eğlence Paketi':'Entertainment Pack',
+    'Süper Paket':'Super Pack',
+    'Duo (2 kişi)':'Duo (2 people)',
+    'Aile (6 kişi)':'Family (6 people)'
+  };
+  return map[name]||name;
+}
 function updateRegionUI(){const code=SETTINGS.country||'tr';const country=COUNTRIES.find(c=>c.code===code);const desc=document.getElementById('regionDesc');if(desc)desc.textContent=country?country.name:'Türkiye';}
 function buildRegionPicker(){const cur=SETTINGS.country||'tr';const picker=document.getElementById('regionPicker');if(!picker)return;picker.innerHTML=`<input id="countrySearch" class="add-input" placeholder="🔍 Ülke ara..." type="text" style="margin-bottom:4px;" oninput="filterCountries(this.value)" autocomplete="off"><div id="countryList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;scrollbar-width:none;"></div>`;renderCountryList('',cur);setTimeout(()=>{const el=document.getElementById('countrySearch');if(el)el.focus();},100);}
 function filterCountries(q){renderCountryList(q,SETTINGS.country||'tr');}
@@ -1030,18 +1219,18 @@ function setPinChoice(val){
   setTimeout(function(){ tapped.style.transform='scale(1.01)'; setTimeout(function(){ tapped.style.transform=''; },200); },100);
 }
 let obStep=0;const obSteps=['services','pinChoice','pin','done'];let obSelectedServices=['netflix','youtube','disney','prime','hbo','apple'];let obNewPin='';
-function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const btnText=btn?btn.querySelector('.cta-btn-text'):null;const skip=document.querySelector('.onboard-skip');const setSkip=(v)=>{if(skip)skip.style.display=v;};content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){if(btnText)btnText.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">Adım 1 / 3</div><div class="onboard-title">Hangi servisleri<br>kullanıyorsun?</div><div class="onboard-sub">Hepsini sonra değiştirebilirsin.</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){if(btnText)btnText.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 4px;">
-<div class="onboard-step-lbl">Adım 2 / 3</div>
-<div class="onboard-title" style="margin-bottom:8px;">Güvenlik</div>
-<div class="onboard-sub" style="margin-bottom:28px;">Uygulamana PIN ile giriş yapmak ister misin?</div>
+function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const btnText=btn?btn.querySelector('.cta-btn-text'):null;const skip=document.querySelector('.onboard-skip');const tr=LANG==='tr';const setSkip=(v)=>{if(skip)skip.style.display=v;};if(skip)skip.textContent=tr?'Atla':'Skip';content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){if(btnText)btnText.textContent=tr?'Devam':'Continue';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">${tr?'Adım 1 / 3':'Step 1 / 3'}</div><div class="onboard-title">${tr?'Hangi servisleri<br>kullanıyorsun?':'Which services<br>do you use?'}</div><div class="onboard-sub">${tr?'Hepsini sonra değiştirebilirsin.':'You can change all of them later.'}</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){if(btnText)btnText.textContent=tr?'Devam':'Continue';setSkip('block');content.innerHTML=`<div style="padding:0 4px;">
+<div class="onboard-step-lbl">${tr?'Adım 2 / 3':'Step 2 / 3'}</div>
+<div class="onboard-title" style="margin-bottom:8px;">${tr?'Güvenlik':'Security'}</div>
+<div class="onboard-sub" style="margin-bottom:28px;">${tr?'Uygulamana PIN ile giriş yapmak ister misin?':'Do you want to use a PIN to unlock the app?'}</div>
 <div style="display:flex;flex-direction:column;gap:12px;">
   <div id="pin-yes" onclick="setPinChoice(true)" style="display:flex;align-items:center;gap:16px;padding:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;cursor:pointer;transition:all .2s cubic-bezier(.34,1.4,.64,1);">
     <div style="width:48px;height:48px;border-radius:14px;background:rgba(130,80,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#c084fc" stroke-width="1.8" fill="none"/><path d="M8 11V7a4 4 0 018 0v4" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="12" cy="16" r="1.5" fill="#c084fc"/></svg>
     </div>
     <div style="flex:1;">
-      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;">Evet, PIN kur</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.4;">Şifrelerini güvende tut</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;">${tr?'Evet, PIN kur':'Yes, set a PIN'}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.4;">${tr?'Şifrelerini güvende tut':'Keep your passwords secure'}</div>
     </div>
     <div id="pin-yes-check" style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;"></div>
   </div>
@@ -1050,16 +1239,16 @@ function renderOnboardStep(){const prog=document.getElementById('obProgress');pr
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="rgba(255,255,255,.4)" stroke-width="1.8" fill="none"/><path d="M5 11V7a4 4 0 018 0" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round" fill="none"/><line x1="19" y1="5" x2="5" y2="19" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round"/></svg>
     </div>
     <div style="flex:1;">
-      <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:3px;">Hayır, şimdilik atlıyorum</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.3);line-height:1.4;">Daha sonra ayarlardan açabilirsin</div>
+      <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:3px;">${tr?'Hayır, şimdilik atlıyorum':'No, skip for now'}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.3);line-height:1.4;">${tr?'Daha sonra ayarlardan açabilirsin':'You can enable it later in settings'}</div>
     </div>
     <div id="pin-no-check" style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;"></div>
   </div>
 </div>
-</div>`;}else if(obStep===2){btn.style.display='none';setSkip('none');if(SETTINGS.usePin===false){onboardNext();return;}const KL={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">PIN Oluştur</div><div class="onboard-sub" id="obPinSub">4 haneli giriş şifreni belirle.</div></div><div class="ob-pin-dots"><div class="ob-pin-dot" id="op0"></div><div class="ob-pin-dot" id="op1"></div><div class="ob-pin-dot" id="op2"></div><div class="ob-pin-dot" id="op3"></div></div><div class="onboard-pin-grid">${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`<button class="ob-key" onclick="obKp(${JSON.stringify(k)})">${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:k==='del'?`<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M8 1H20a2 2 0 012 2v10a2 2 0 01-2 2H8L2 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M12 5.5l5 5M17 5.5l-5 5" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>`:`<div><div class="ob-key-num">${k}</div>${KL[k]?`<div class="ob-key-sub">${KL[k]}</div>`:''}</div>`}</button>`).join('')}</div></div>`;obNewPin='';obPinStep=0;}else if(obStep>=3){btn.style.display='';setSkip('none');if(btnText)btnText.textContent='Başla';content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">Hazırsın!</div><div class="onboard-sub">EasyTV kurulumu tamamlandı.</div></div></div>`;}
+</div>`;}else if(obStep===2){btn.style.display='none';setSkip('none');if(SETTINGS.usePin===false){onboardNext();return;}const KL={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">${tr?'PIN Oluştur':'Create PIN'}</div><div class="onboard-sub" id="obPinSub">${tr?'4 haneli giriş şifreni belirle.':'Set your 4-digit login PIN.'}</div></div><div class="ob-pin-dots"><div class="ob-pin-dot" id="op0"></div><div class="ob-pin-dot" id="op1"></div><div class="ob-pin-dot" id="op2"></div><div class="ob-pin-dot" id="op3"></div></div><div class="onboard-pin-grid">${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`<button class="ob-key" onclick="obKp(${JSON.stringify(k)})">${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:k==='del'?`<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M8 1H20a2 2 0 012 2v10a2 2 0 01-2 2H8L2 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M12 5.5l5 5M17 5.5l-5 5" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>`:`<div><div class="ob-key-num">${k}</div>${KL[k]?`<div class="ob-key-sub">${KL[k]}</div>`:''}</div>`}</button>`).join('')}</div></div>`;obNewPin='';obPinStep=0;}else if(obStep>=3){btn.style.display='';setSkip('none');if(btnText)btnText.textContent=tr?'Başla':'Start';content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">${tr?'Hazırsın!':'You are ready!'}</div><div class="onboard-sub">${tr?'EasyTV kurulumu tamamlandı.':'EasyTV setup is complete.'}</div></div></div>`;}
 requestAnimationFrame(function(){var t=content.querySelector('.onboard-title');var s=content.querySelector('.onboard-sub');_charReveal(t,0.1);_charReveal(s,0.32);});}
 let obPinStep=0;
-function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent='PIN\'ini bir kez daha gir.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent='Eşleşmedi. Tekrar dene.';}}}}
+function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'PIN\'ini bir kez daha gir.':'Enter your PIN one more time.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'Eşleşmedi. Tekrar dene.':'PINs do not match. Try again.';}}}}
 function _obSlideNext(cb){const c=document.getElementById('obContent');c.style.animation='obSlideOut .25s cubic-bezier(.55,.06,.68,.19) both';c.addEventListener('animationend',function h(){c.removeEventListener('animationend',h);cb();},{once:true});}
 function onboardNext(){if(obStep===0){SVC=[];obSelectedServices.forEach(id=>{const svc=POPULAR_SVCS.find(s=>s.id===id);if(svc){const reg=SETTINGS.region||'tr';const pr=svc.prices?.[reg]||{amount:0,plan:''};const renewDate=new Date();renewDate.setMonth(renewDate.getMonth()+1);SVC.push({...svc,email:'',pwd:'',price:pr.amount,plan:pr.plan,renew:renewDate.toISOString().split('T')[0]});}});saveData();_obSlideNext(()=>{obStep++;renderOnboardStep();});return;}if(obStep===1){if(SETTINGS.usePin===false){_obSlideNext(()=>finishOnboard());}else{_obSlideNext(()=>{obStep++;renderOnboardStep();});}return;}if(obStep===2){_obSlideNext(()=>finishOnboard());return;}_obSlideNext(()=>{obStep++;renderOnboardStep();});}
 function finishOnboard(){
@@ -1451,8 +1640,8 @@ function unlockApp() {
   if (ps) ps.style.display = 'none';
   setTimeout(() => {
     if (ps) ps.classList.remove('out');
-    if (pinGreeting) pinGreeting.textContent = 'Hoş geldiniz';
-    if (pinHint) pinHint.textContent = 'PIN ile giriş yapın';
+    if (pinGreeting) pinGreeting.textContent = LANG==='tr' ? 'Hoş geldiniz' : 'Welcome back';
+    if (pinHint) pinHint.textContent = LANG==='tr' ? 'PIN ile giriş yapın' : 'Sign in with PIN';
     pinVal = ''; updatePinDots();
   }, 520);
   // Sekme geçişini switchTab ile yap — nav .active class doğru güncellensin
@@ -1796,6 +1985,53 @@ function switchAddTab(tab){currentAddTab=tab;['popular','custom','remove'].forEa
 
 const PRESET_COLORS=['#E50914','#FF6D00','#FFCA28','#00C853','#00B0FF','#7B2FBE','#EC407A','#546E7A','#ffffff'];
 function buildColorPicker(){const row=document.getElementById('colorRow');row.innerHTML='';let sel=PRESET_COLORS[4];PRESET_COLORS.forEach(c=>{const chip=document.createElement('div');chip.className='color-chip'+(c===sel?' sel':'');chip.style.background=c==='#ffffff'?'rgba(255,255,255,.9)':c;chip._color=c;chip.onclick=()=>{sel=c;document.querySelectorAll('.color-chip').forEach(ch=>ch.classList.remove('sel'));chip.classList.add('sel');};row.appendChild(chip);});}
+function normalizeWebUrl(raw){if(!raw)return'';let val=String(raw).trim();if(!val)return'';if(!/^https?:\/\//i.test(val))val='https://'+val;try{return new URL(val).toString();}catch(_){return'';}}
+function faviconForUrl(raw){const url=normalizeWebUrl(raw);if(!url)return'';return`https://www.google.com/s2/favicons?sz=128&domain_url=${encodeURIComponent(url)}`;}
+function fetchFavicon(){const urlInp=document.getElementById('addUrl');const prev=document.getElementById('faviconPreview');if(!urlInp||!prev)return;const fav=faviconForUrl(urlInp.value);if(!fav){prev.innerHTML='<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/></svg>';delete prev.dataset.favicon;return;}prev.innerHTML=`<img src="${fav}" style="width:18px;height:18px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none'">`;prev.dataset.favicon=fav;}
+function saveCustomService(){
+  const nameInp=document.getElementById('addName');
+  const urlInp=document.getElementById('addUrl');
+  const emailInp=document.getElementById('addEmail');
+  const pwdInp=document.getElementById('addPwd');
+  const priceInp=document.getElementById('addPrice');
+  const renewInp=document.getElementById('addRenew');
+  const name=(nameInp?.value||'').trim();
+  if(!name){showToast(LANG==='tr'?'Servis adı gerekli':'Service name is required');nameInp?.focus();return;}
+  if(SVC.length>=FREE_LIMIT&&!isPremium()){openPremiumSheet();return;}
+  const selectedChip=document.querySelector('#colorRow .color-chip.sel');
+  const color=(selectedChip&&selectedChip._color)||PRESET_COLORS[4];
+  const priceRaw=((priceInp?.value)||'').replace(/[^\d.,-]/g,'').replace(',', '.');
+  const parsed=parseFloat(priceRaw);
+  const fullPrice=Number.isFinite(parsed)&&parsed>0?parsed:0;
+  const webUrl=normalizeWebUrl(urlInp?.value||'');
+  const faviconUrl=faviconForUrl(urlInp?.value||'');
+  const renew=(renewInp?.value||'').trim()||null;
+  const countryCurrency=(COUNTRIES.find(c=>c.code===(SETTINGS.country||'tr'))||{}).currency||'TRY';
+  const svc={
+    id:`custom_${Date.now()}`,
+    name,
+    color,
+    email:(emailInp?.value||'').trim(),
+    pwd:(pwdInp?.value||'').trim(),
+    price:fullPrice,
+    _fullPrice:fullPrice,
+    _userCount:1,
+    _payMethod:'me',
+    priceCurrency:countryCurrency,
+    plan:LANG==='tr'?'Özel':'Custom',
+    renew,
+    url:webUrl,
+    faviconUrl
+  };
+  SVC.push(svc);
+  saveData();
+  buildGrid();
+  renderSubs&&renderSubs();
+  closeAddModal();
+  showToast(`✓ ${name} ${LANG==='tr'?'eklendi':'added'}`);
+}
+window.fetchFavicon=fetchFavicon;
+window.saveCustomService=saveCustomService;
 
 function openAddModal(){
   buildPopularGrid();buildColorPicker();selectedPopular=null;const popularForm=document.getElementById('popularForm');const addModal=document.getElementById('addModal');if(popularForm)popularForm.style.display='none';if(addModal)addModal.classList.add('open');}
@@ -1810,19 +2046,117 @@ function confirmPlanAdd(){if(!planModalSvc||!planModalSelected)return;const s=pl
   }
   const svc={...s,email:'',pwd:'',price:myPrice,_fullPrice:p.price,_userCount:typeof _planUserCount!=='undefined'?_planUserCount:1,_payMethod:typeof _planPayMethod!=='undefined'?_planPayMethod:'me',plan:p.name,renew};if(existing>=0)SVC[existing]=svc;else SVC.push(svc);saveData();buildGrid();renderSubs&&renderSubs();closePlanModal();showToast('✓ '+s.name+' eklendi');const newIdx=existing>=0?existing:SVC.length-1;setTimeout(()=>tap(newIdx),350);}
 function closeAddModal(){const addModal=document.getElementById('addModal');if(addModal)addModal.classList.remove('open');selectedPopular=null;}
-function buildRemoveGrid(){const g=document.getElementById('removeGrid');g.innerHTML='';if(SVC.length===0){g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.3);font-size:13px;padding:20px;">Ekli servis yok</div>';return;}SVC.forEach((s,i)=>{const L=LOGO[s.id]||LOGO._custom;const div=document.createElement('div');div.style.cssText='position:relative;aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:1.5px solid rgba(255,90,80,.3);background:rgba(255,60,50,.06);';const logoHtml=L.html?`<div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`:`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0]}</span>`;div.innerHTML=`${logoHtml}<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.7);text-align:center;">${s.name}</div><div style="position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:rgba(255,59,48,.8);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;line-height:1;">×</div>`;div.onclick=()=>{const nm=s.name;SVC.splice(i,1);saveData();buildGrid();buildRemoveGrid();renderSubs&&renderSubs();showToast(`${nm} çıkarıldı`);};g.appendChild(div);});}
+function buildRemoveGrid(){
+  const g=document.getElementById('removeGrid');
+  g.innerHTML='';
+  if(SVC.length===0){
+    g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.3);font-size:13px;padding:20px;">Ekli servis yok</div>';
+    return;
+  }
+  SVC.forEach((s,i)=>{
+    const L=LOGO[s.id]||LOGO._custom;
+    const div=document.createElement('div');
+    div.style.cssText='position:relative;aspect-ratio:1;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:10px;';
+    const logoHtml=L.html
+      ?`<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`
+      :`<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;"><span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0]}</span></div>`;
+    div.innerHTML=`${logoHtml}<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.82);text-align:center;line-height:1.2;">${s.name}</div><div style="position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;background:#e53935;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;line-height:1;">×</div>`;
+    div.onclick=()=>{
+      const nm=s.name;
+      SVC.splice(i,1);
+      saveData();
+      buildGrid();
+      buildRemoveGrid();
+      renderSubs&&renderSubs();
+      showToast(`${nm} çıkarıldı`);
+    };
+    g.appendChild(div);
+  });
+}
 function buildPopularGrid(){var g=document.getElementById('popularGrid');g.innerHTML='';POPULAR_SVCS.forEach(function(s){var L=LOGO[s.id]||LOGO._custom;var el=document.createElement('div');el.className='popular-item';var logoHtml='';var isDark=s.textDark||L.textDark;if(L.html&&L.html.indexOf('<img')>=0){var useHtml=isDark&&L.htmlDark?L.htmlDark:L.html;var src=useHtml.match(/src="([^"]+)"/)&&useHtml.match(/src="([^"]+)"/)[1]||'';logoHtml='<img src="'+src+'" style="width:60%;height:60%;object-fit:contain;">';}else if(L.html){logoHtml='<div style="transform:scale(.7);transform-origin:center;">'+(isDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html)+'</div>';}else{logoHtml='<span style="font-size:18px;font-weight:800;color:'+(isDark?'#000':'#fff')+'">'+s.name[0]+'</span>';}el.innerHTML='<div class="popular-ico" style="background:'+s.color+';--ico-glow:'+s.color+';border:2px solid '+s.color+'">'+logoHtml+'</div><div class="popular-name">'+s.name+'</div>';el.onclick=function(){closeAddModal();openPlanModal(s);};g.appendChild(el);});}
 function formatDate(d){return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});}
 let seEditIdx=-1;
-function openSubEdit(i){seEditIdx=i;const s=SVC[i];const L=LOGO[s.id]||{w:28,h:28,html:null};document.getElementById('seServiceName').textContent=s.name;const logoWrap=document.getElementById('seLogoWrap');logoWrap.style.background=s.color;if(L.html&&L.html.includes('<img')){const useHtml=(L.textDark||s.textDark)&&L.htmlDark?L.htmlDark:L.html;const src=useHtml.match(/src="([^"]+)"/)?.[1]||'';logoWrap.innerHTML=`<img src="${src}" style="width:28px;height:28px;object-fit:contain;">`;}else if(L.html){const sc=22/Math.max(L.w||22,L.h||22);logoWrap.innerHTML=`<div style="width:${Math.round((L.w||22)*sc)}px;height:${Math.round((L.h||22)*sc)}px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`;}else{logoWrap.innerHTML=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;}const saveBtn=document.getElementById('sesSaveBtn');saveBtn.style.background=TILE_GRADIENTS[s.id]||s.color||'rgba(255,255,255,.15)';saveBtn.style.color=(s.textDark||(LOGO[s.id]||{}).textDark)?'#000':'#fff';const chips=document.getElementById('sePlanChips');chips.innerHTML='';const oldWrap=document.getElementById('sePlanManualWrap');if(oldWrap)oldWrap.remove();const planRow=document.getElementById('sePlanRow');const planOpts=getCountryPlans(s.id);const sym=getCountrySymbol();if(planOpts.length>0){planRow.style.display='block';const isOther=!planOpts.find(p=>p.name===(s.plan||''));planOpts.forEach(p=>{const chip=document.createElement('button');const isSel=(s.plan||'')===p.name;chip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isSel?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isSel?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isSel?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;chip.textContent=p.name+' · '+sym+p.price.toFixed(0);chip.onclick=()=>{
-  // Press animasyonu
-  chip.style.transition='none';
-  chip.style.transform='scale(.93)';
-  chip.style.background='rgba(255,255,255,.35)';
-  void chip.offsetWidth;
-  chip.style.transition='all .18s';
-  chips.querySelectorAll('button').forEach(cc=>{cc.style.borderColor='rgba(255,255,255,.15)';cc.style.background='rgba(255,255,255,.04)';cc.style.color='rgba(255,255,255,.5)';cc.style.transform='';});
-  chip.style.borderColor='rgba(255,255,255,.6)';chip.style.background='rgba(255,255,255,.15)';chip.style.color='#fff';chip.style.transform='';document.getElementById('sePlan').value=p.name;document.getElementById('sePrice').value=p.price;const mw=document.getElementById('sePlanManualWrap');if(mw)mw.style.display='none';};chips.appendChild(chip);});const otherChip=document.createElement('button');otherChip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isOther?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isOther?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isOther?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;otherChip.textContent='Diğer';otherChip.onclick=()=>{chips.querySelectorAll('button').forEach(c=>{c.style.borderColor='rgba(255,255,255,.15)';c.style.background='rgba(255,255,255,.04)';c.style.color='rgba(255,255,255,.5)';});otherChip.style.borderColor='rgba(255,255,255,.6)';otherChip.style.background='rgba(255,255,255,.15)';otherChip.style.color='#fff';document.getElementById('sePlanManualWrap').style.display='block';document.getElementById('sePlan').value='';document.getElementById('sePrice').value='';};chips.appendChild(otherChip);const mw=document.createElement('div');mw.id='sePlanManualWrap';mw.style.cssText='display:'+(isOther?'flex':'none')+';flex-direction:column;gap:8px;margin-top:10px;';mw.innerHTML=`<input id="sePlanManualInput" class="add-input" type="text" placeholder="Plan adı..." value="${isOther?(s.plan||''):''}">`;chips.after(mw);document.getElementById('sePlanManualInput').oninput=()=>{document.getElementById('sePlan').value=document.getElementById('sePlanManualInput').value;};}else{planRow.style.display='none';}document.getElementById('seShareRow').style.display='none';document.getElementById('sePrice').value=s._fullPrice||s.fullPrice||s.price||'';document.getElementById('sePlan').value=s.plan||'';document.getElementById('seRenew').value=s.renew||'';document.getElementById('seEmail').value=s.email||'';document.getElementById('sePwd').value=s.pwd||'';document.getElementById('sePwd').type='password';renderSeUserPaySection(i,s);const m=document.getElementById('subEditModal');m.style.display='flex';requestAnimationFrame(()=>{document.getElementById('seModalSheet').style.transform='translateY(0)';});
+function openSubEdit(i){
+  seEditIdx=i;
+  const s=SVC[i];
+  const L=LOGO[s.id]||{w:28,h:28,html:null};
+  document.getElementById('seServiceName').textContent=s.name;
+  const logoWrap=document.getElementById('seLogoWrap');
+  logoWrap.style.background=s.color;
+  if(L.html&&L.html.includes('<img')){
+    const useHtml=(L.textDark||s.textDark)&&L.htmlDark?L.htmlDark:L.html;
+    const src=useHtml.match(/src="([^"]+)"/)?.[1]||'';
+    logoWrap.innerHTML=`<img src="${src}" style="width:28px;height:28px;object-fit:contain;">`;
+  }else if(L.html){
+    const sc=22/Math.max(L.w||22,L.h||22);
+    logoWrap.innerHTML=`<div style="width:${Math.round((L.w||22)*sc)}px;height:${Math.round((L.h||22)*sc)}px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`;
+  }else{
+    logoWrap.innerHTML=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;
+  }
+  const chips=document.getElementById('sePlanChips');
+  chips.innerHTML='';
+  const oldWrap=document.getElementById('sePlanManualWrap');
+  if(oldWrap)oldWrap.remove();
+  const planRow=document.getElementById('sePlanRow');
+  const planOpts=getCountryPlans(s.id);
+  const sym=getCountrySymbol();
+  if(planOpts.length>0){
+    planRow.style.display='block';
+    const selectedPlan=s.plan||'';
+    const isOther=!planOpts.find(p=>{
+      const localized=localizePlanName(p.name);
+      return selectedPlan===p.name||selectedPlan===localized;
+    });
+    planOpts.forEach(p=>{
+      const chip=document.createElement('button');
+      const localizedName=localizePlanName(p.name);
+      const isSel=selectedPlan===p.name||selectedPlan===localizedName;
+      chip.className='se-chip-btn'+(isSel?' active':'');
+      chip.textContent=localizedName+' · '+sym+p.price.toFixed(0);
+      chip.onclick=()=>{
+        chips.querySelectorAll('.se-chip-btn').forEach(cc=>cc.classList.remove('active'));
+        chip.classList.add('active');
+        document.getElementById('sePlan').value=localizedName;
+        document.getElementById('sePrice').value=p.price;
+        const mw=document.getElementById('sePlanManualWrap');
+        if(mw)mw.style.display='none';
+      };
+      chips.appendChild(chip);
+    });
+    const otherChip=document.createElement('button');
+    otherChip.className='se-chip-btn'+(isOther?' active':'');
+    otherChip.textContent=LANG==='tr'?'Diğer':'Other';
+    otherChip.onclick=()=>{
+      chips.querySelectorAll('.se-chip-btn').forEach(c=>c.classList.remove('active'));
+      otherChip.classList.add('active');
+      document.getElementById('sePlanManualWrap').style.display='block';
+      document.getElementById('sePlan').value='';
+      document.getElementById('sePrice').value='';
+    };
+    chips.appendChild(otherChip);
+    const mw=document.createElement('div');
+    mw.id='sePlanManualWrap';
+    mw.style.cssText='display:'+(isOther?'flex':'none')+';flex-direction:column;gap:8px;margin-top:10px;';
+    mw.innerHTML=`<input id="sePlanManualInput" class="add-input" type="text" placeholder="${LANG==='tr'?'Plan adı...':'Plan name...'}" value="${isOther?(s.plan||''):''}">`;
+    chips.after(mw);
+    document.getElementById('sePlanManualInput').oninput=()=>{
+      document.getElementById('sePlan').value=document.getElementById('sePlanManualInput').value;
+    };
+  }else{
+    planRow.style.display='none';
+  }
+  document.getElementById('seShareRow').style.display='none';
+  document.getElementById('sePrice').value=s._fullPrice||s.fullPrice||s.price||'';
+  document.getElementById('sePlan').value=s.plan||'';
+  document.getElementById('seRenew').value=s.renew||'';
+  document.getElementById('seEmail').value=s.email||'';
+  document.getElementById('sePwd').value=s.pwd||'';
+  document.getElementById('sePwd').type='password';
+  renderSeUserPaySection(i,s);
+  applyLang();
+  const m=document.getElementById('subEditModal');
+  m.style.display='flex';
+  requestAnimationFrame(()=>{document.getElementById('seModalSheet').style.transform='translateY(0)';});
   // Swipe-to-close
   const hdr=document.querySelector('.se-header');
   if(hdr&&!hdr._swipeAdded){hdr._swipeAdded=true;let sy=0;hdr.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});hdr.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-sy>60)closeSubEdit();},{passive:true});}
@@ -1857,7 +2191,7 @@ function renderSeUserPaySection(i,s){
     userChips.appendChild(btn);
   });
   payChips.innerHTML='';
-  [{method:'me',emoji:'💳',label:'Ben ödüyorum'},{method:'split',emoji:'🤝',label:'Eşit bölüşüyoruz'},{method:'other',emoji:'🎁',label:'Başkası ödüyor'}].forEach(opt=>{
+  [{method:'me',emoji:'💳',label:(LANG==='tr'?'Ben ödüyorum':'I pay')},{method:'split',emoji:'🤝',label:(LANG==='tr'?'Eşit bölüşüyoruz':'Split equally')},{method:'other',emoji:'🎁',label:(LANG==='tr'?'Başkası ödüyor':'Someone else pays')}].forEach(opt=>{
     const btn=document.createElement('button');
     btn.className='plan-pay-opt'+(opt.method===curPay?' active':'');
     btn.dataset.method=opt.method;
@@ -2570,7 +2904,7 @@ function renderSubs(){
   const dates=paid.filter(s=>s.renew).map(s=>({d:new Date(s.renew)})).sort((a,b)=>a.d-b.d);
   var nrEl=document.getElementById('nextRenew');
   if(nrEl)nrEl.textContent=dates.length?formatDate(dates[0].d):'—';
-  if(subsSubtitleEl)subsSubtitleEl.textContent=`${paid.length} aktif üyelik`;
+  if(subsSubtitleEl)subsSubtitleEl.textContent=LANG==='tr'?`${paid.length} aktif üyelik`:`${paid.length} active subscriptions`;
   if(!list)return;
   list.innerHTML='';
   if(SVC.length===0){
@@ -2614,7 +2948,7 @@ function renderSubs(){
       cLogo=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;
     }
     card.innerHTML=`<div style="width:44px;height:44px;border-radius:13px;background:${s.color||'rgba(255,255,255,.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">${cLogo}</div><div style="flex:1;min-width:0;"><div class="sub-name">${s.name}</div><div class="sub-plan">${s.plan||'Standart'}</div>${badge}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;"><div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.5px;white-space:nowrap;">${s.price>0?formatPrice(s.price):'—'}</div><div style="font-size:11px;color:rgba(255,255,255,.33);margin-top:-2px;">${s.price>0?t('per_month'):''}</div><button onclick="event.stopPropagation();openSubEdit(${idx})" style="margin-top:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 13px;color:rgba(255,255,255,.75);font-size:12px;font-weight:600;cursor:pointer;">${t('edit_btn')}</button></div>`;
-    card.onclick=()=>openSheet(idx);
+    card.onclick=()=>openSubEdit(idx);
     list.appendChild(card);
   });
 }
@@ -2624,7 +2958,7 @@ function renderSpendingChart(svc) {
     var el = document.getElementById('spendingChart');
     if (!el) return;
     if (!svc || svc.length === 0) {
-      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Henüz servis eklenmedi</div></div></div>';
+      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">'+(LANG==='tr'?'Henüz servis eklenmedi':'No services added yet')+'</div></div></div>';
       return;
     }
     var displayCode = SETTINGS.displayCurrency || 'TRY';
@@ -2663,7 +2997,7 @@ function renderSpendingChart(svc) {
         +'</div>';
     }).join('');
     el.innerHTML = '<div class="pie-chart-card">'
-      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">AYLIK HARCAMA</div>'
+      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">'+(LANG==='tr'?'AYLIK HARCAMA':'MONTHLY SPENDING')+'</div>'
       +'<div style="display:flex;align-items:center;gap:14px;">'
       +svg
       +'<div style="flex:1;display:flex;flex-direction:column;gap:7px;min-width:0;">'+legend+'</div>'
@@ -2767,7 +3101,4 @@ function initCtaGlow(){
   });
 }
 
-if (!localStorage.getItem('easytv_setup_done')) {
-  localStorage.setItem('easytv_setup_done', '1');
-}
 initCtaGlow();
