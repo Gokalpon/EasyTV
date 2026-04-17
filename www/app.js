@@ -12,6 +12,9 @@ let currentUser = null;
 let _authInitStarted = false;
 let _emailAuthMode = 'signin';
 const EASYTV_LAST_USER_KEY = 'easytv_last_user_id';
+const NATIVE_OAUTH_CALLBACK_URL = 'easytvhub://auth/callback';
+let _pendingOAuthCallbackUrl = '';
+let _nativeOAuthListenerBound = false;
 
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
@@ -300,6 +303,39 @@ function _showAuthScreens() {
   if (bottomNav) bottomNav.style.display = 'none';
 }
 
+function _isNativeCapacitorPlatform() {
+  try {
+    return !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+  } catch (_) {
+    return false;
+  }
+}
+
+function _parseOAuthCallbackUrl(rawUrl) {
+  const fallback = { params: new URLSearchParams(), hashParams: new URLSearchParams(), hasCallback: false };
+  if (!rawUrl) return fallback;
+  try {
+    const u = new URL(rawUrl);
+    const params = new URLSearchParams(u.search || '');
+    const hashParams = new URLSearchParams(String(u.hash || '').replace(/^#/, ''));
+    const hasCallback = !!(params.get('code') || hashParams.get('access_token'));
+    return { params, hashParams, hasCallback };
+  } catch (_) {
+    try {
+      const qIdx = rawUrl.indexOf('?');
+      const hIdx = rawUrl.indexOf('#');
+      const q = qIdx >= 0 ? rawUrl.slice(qIdx + 1, hIdx >= 0 ? hIdx : undefined) : '';
+      const h = hIdx >= 0 ? rawUrl.slice(hIdx + 1) : '';
+      const params = new URLSearchParams(q);
+      const hashParams = new URLSearchParams(h);
+      const hasCallback = !!(params.get('code') || hashParams.get('access_token'));
+      return { params, hashParams, hasCallback };
+    } catch (_) {
+      return fallback;
+    }
+  }
+}
+
 function _cleanOAuthCallbackUrl() {
   try {
     const cleanUrl = window.location.href.split('#')[0].split('?')[0];
@@ -320,8 +356,13 @@ function _getHashParams() {
 
 async function _applyOAuthCallbackSession() {
   if (!_supabase) return null;
-  const params = new URLSearchParams(window.location.search);
-  const hashParams = _getHashParams();
+  const rawUrl = arguments.length > 0 ? arguments[0] : '';
+  const parsed = rawUrl
+    ? _parseOAuthCallbackUrl(rawUrl)
+    : { params: new URLSearchParams(window.location.search), hashParams: _getHashParams(), hasCallback: false };
+  const params = parsed.params;
+  const hashParams = parsed.hashParams;
+  const shouldCleanBrowserUrl = !rawUrl;
   const code = params.get('code');
   const accessToken = hashParams.get('access_token');
   const refreshToken = hashParams.get('refresh_token');
@@ -331,7 +372,7 @@ async function _applyOAuthCallbackSession() {
     if (error) {
       console.warn('OAuth code exchange hatası:', error);
     } else if (data && data.session) {
-      _cleanOAuthCallbackUrl();
+      if (shouldCleanBrowserUrl) _cleanOAuthCallbackUrl();
       return data.session;
     }
   }
@@ -344,7 +385,7 @@ async function _applyOAuthCallbackSession() {
     if (error) {
       console.warn('OAuth token setSession hatası:', error);
     } else if (data && data.session) {
-      _cleanOAuthCallbackUrl();
+      if (shouldCleanBrowserUrl) _cleanOAuthCallbackUrl();
       return data.session;
     }
   }
@@ -352,10 +393,62 @@ async function _applyOAuthCallbackSession() {
   return null;
 }
 
+async function _processOAuthCallbackUrl(rawUrl) {
+  if (!_supabase || !rawUrl) return false;
+  const parsed = _parseOAuthCallbackUrl(rawUrl);
+  if (!parsed.hasCallback) return false;
+
+  const authLoading = document.getElementById('authLoading');
+  if (authLoading) authLoading.style.display = 'flex';
+
+  const callbackSession = await _applyOAuthCallbackSession(rawUrl);
+  if (callbackSession && callbackSession.user) {
+    _pendingOAuthCallbackUrl = '';
+    await onAuthSuccess(callbackSession.user);
+    return true;
+  }
+
+  for (let i = 0; i < 3; i++) {
+    const { data } = await _supabase.auth.getSession();
+    if (data && data.session && data.session.user) {
+      _pendingOAuthCallbackUrl = '';
+      await onAuthSuccess(data.session.user);
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 180));
+  }
+  return false;
+}
+
+function _bindNativeOAuthOpenListener() {
+  if (_nativeOAuthListenerBound || !_isNativeCapacitorPlatform()) return;
+  const appPlugin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+  if (!appPlugin || typeof appPlugin.addListener !== 'function') return;
+  _nativeOAuthListenerBound = true;
+
+  appPlugin.addListener('appUrlOpen', async function (data) {
+    try {
+      if (!data || !data.url) return;
+      _pendingOAuthCallbackUrl = data.url;
+      const ok = await _processOAuthCallbackUrl(data.url);
+      if (!ok) console.warn('appUrlOpen callback işlendi ama session alınamadı');
+    } catch (e) {
+      console.warn('appUrlOpen OAuth işleme hatası:', e);
+    }
+  });
+
+  if (typeof appPlugin.getLaunchUrl === 'function') {
+    appPlugin.getLaunchUrl().then(function (data) {
+      if (data && data.url) _pendingOAuthCallbackUrl = data.url;
+    }).catch(function () {});
+  }
+}
+
 // Sayfa yüklenince auth durumunu kontrol et
 async function initAuth() {
   if (_authInitStarted) return;
   _authInitStarted = true;
+  _bindNativeOAuthOpenListener();
   // Güvenlik zamanlayıcı — auth tamamlanmazsa fallback göster
   let _authDone = false;
   const _safetyTimer = setTimeout(() => {
@@ -378,11 +471,13 @@ async function initAuth() {
     // URL'de OAuth callback var mı? (Google/Apple yönlendirmesi)
     const hash = window.location.hash || '';
     const params = new URLSearchParams(window.location.search);
+    const pendingOAuthUrl = _pendingOAuthCallbackUrl;
 
-    if (hash.includes('access_token') || params.get('code')) {
+    if (pendingOAuthUrl || hash.includes('access_token') || params.get('code')) {
       const authLoading = document.getElementById('authLoading');
       if (authLoading) authLoading.style.display = 'flex';
-      const callbackSession = await _applyOAuthCallbackSession();
+      const callbackSession = await _applyOAuthCallbackSession(pendingOAuthUrl || '');
+      _pendingOAuthCallbackUrl = '';
       if (callbackSession) {
         _authDone = true;
         clearTimeout(_safetyTimer);
@@ -423,6 +518,7 @@ async function initAuth() {
 }
 
 function getOAuthRedirectUrl() {
+  if (_isNativeCapacitorPlatform()) return NATIVE_OAUTH_CALLBACK_URL;
   const cleanHref = window.location.href.split('?')[0].split('#')[0];
   return cleanHref;
 }

@@ -16,6 +16,19 @@
     ]
   };
 
+  function ok(extra) {
+    return Object.assign({ ok: true, source: state.provider }, extra || {});
+  }
+
+  function fail(code, message, extra) {
+    return Object.assign({
+      ok: false,
+      source: state.provider,
+      code: code || 'unknown_error',
+      message: message || 'Unknown payment error.'
+    }, extra || {});
+  }
+
   function normalizeProducts(products) {
     if (!Array.isArray(products)) return [];
     return products.map(function (p) {
@@ -81,20 +94,20 @@
     if (state.provider === 'native-bridge') {
       const bridge = window.Capacitor.Plugins.EasyTVPayments;
       if (!bridge || typeof bridge.purchase !== 'function') {
-        return { ok: false, code: 'bridge_missing', message: 'Payment bridge is missing.' };
+        return fail('bridge_missing', 'Payment bridge is missing.');
       }
       try {
         const r = await bridge.purchase({ productId: productId || defaultProductId() });
-        if (r && r.ok) return { ok: true, source: 'iap', productId: r.productId || productId, expiresAt: r.expiresAt || null };
-        return { ok: false, code: (r && r.code) || 'purchase_failed', message: (r && r.message) || 'Purchase failed.' };
+        if (r && r.ok) return ok({ source: 'iap', productId: r.productId || productId, expiresAt: r.expiresAt || null });
+        return fail((r && r.code) || 'purchase_failed', (r && r.message) || 'Purchase failed.');
       } catch (e) {
-        return { ok: false, code: 'purchase_error', message: e && e.message ? e.message : 'Purchase failed.' };
+        return fail('purchase_error', e && e.message ? e.message : 'Purchase failed.');
       }
     }
     if (state.provider === 'web-preview') {
-      return { ok: false, code: 'web_preview', message: 'Web preview supports mock only. Real purchase is iOS-native.' };
+      return fail('web_preview', 'Web preview supports mock only. Real purchase is iOS-native.');
     }
-    return { ok: false, code: 'native_unconfigured', message: 'Native payment bridge is not configured yet.' };
+    return fail('native_unconfigured', 'Native payment bridge is not configured yet.');
   }
 
   async function restorePurchases() {
@@ -102,22 +115,22 @@
     if (state.provider === 'native-bridge') {
       const bridge = window.Capacitor.Plugins.EasyTVPayments;
       if (!bridge || typeof bridge.restorePurchases !== 'function') {
-        return { ok: false, code: 'bridge_missing', message: 'Restore bridge is missing.' };
+        return fail('bridge_missing', 'Restore bridge is missing.');
       }
       try {
         const r = await bridge.restorePurchases();
-        if (r && r.ok) return { ok: true, source: 'iap' };
-        return { ok: false, code: (r && r.code) || 'restore_failed', message: (r && r.message) || 'Restore failed.' };
+        if (r && r.ok) return ok({ source: 'iap' });
+        return fail((r && r.code) || 'restore_failed', (r && r.message) || 'Restore failed.');
       } catch (e) {
-        return { ok: false, code: 'restore_error', message: e && e.message ? e.message : 'Restore failed.' };
+        return fail('restore_error', e && e.message ? e.message : 'Restore failed.');
       }
     }
     if (state.provider === 'web-preview') {
       const mock = readMockStatus();
-      if (mock && mock.active) return { ok: true, source: 'mock' };
-      return { ok: false, code: 'no_purchase', message: 'No purchases to restore in preview.' };
+      if (mock && mock.active) return ok({ source: 'mock' });
+      return fail('no_purchase', 'No purchases to restore in preview.');
     }
-    return { ok: false, code: 'native_unconfigured', message: 'Native payment bridge is not configured yet.' };
+    return fail('native_unconfigured', 'Native payment bridge is not configured yet.');
   }
 
   async function getSubscriptionStatus() {
