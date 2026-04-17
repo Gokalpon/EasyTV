@@ -546,6 +546,7 @@ async function onAuthSuccess(user) {
     saveData();
     const signedInEl = document.getElementById('signedInAs');
     if (signedInEl) signedInEl.textContent = user.email || '';
+    syncPremiumFromPayments();
   }
 
   if (authLoading) authLoading.style.display = 'none';
@@ -815,7 +816,7 @@ function closePremiumSheet() {
   setTimeout(() => { el.style.display = 'none'; }, 350);
 }
 
-function activatePremium() {
+function activatePremiumLegacy() {
   // İlk kez premium'a geçiyorsa 7 gün ücretsiz trial ver
   if (!SETTINGS.premiumTrialUsed) {
     SETTINGS.premiumTrialUsed = true;
@@ -830,6 +831,49 @@ function activatePremium() {
   saveData();
   closePremiumSheet();
   showToast('✦ Premium aktif! Sınırsız servis ekleyebilirsiniz.');
+  updatePremiumBadge();
+}
+
+async function syncPremiumFromPayments() {
+  if (!window.PaymentService || typeof window.PaymentService.getSubscriptionStatus !== 'function') return;
+  try {
+    const status = await window.PaymentService.getSubscriptionStatus();
+    if (!status || typeof status.active !== 'boolean') return;
+    SETTINGS.premium = !!status.active;
+    SETTINGS.premiumSource = status.source || SETTINGS.premiumSource || null;
+    SETTINGS.premiumProductId = status.productId || SETTINGS.premiumProductId || null;
+    SETTINGS.premiumExpiresAt = status.expiresAt || SETTINGS.premiumExpiresAt || null;
+    saveData();
+    updatePremiumBadge();
+  } catch (e) {
+    console.warn('Payment status sync hatası:', e);
+  }
+}
+
+async function activatePremium(productId) {
+  if (!window.PaymentService || typeof window.PaymentService.purchase !== 'function') {
+    activatePremiumLegacy();
+    return;
+  }
+  const chosenProductId = productId || (window.PaymentService.defaultProductId ? window.PaymentService.defaultProductId() : null);
+  if (!chosenProductId) {
+    showToast(LANG==='tr' ? 'Ödeme ürünü henüz tanımlı değil' : 'Payment product is not configured');
+    return;
+  }
+  const result = await window.PaymentService.purchase(chosenProductId);
+  if (!result || !result.ok) {
+    const msg = (result && result.message) || (LANG==='tr' ? 'Satın alma tamamlanamadı' : 'Purchase could not be completed');
+    showToast(msg);
+    return;
+  }
+  SETTINGS.premium = true;
+  SETTINGS.premiumSource = result.source || 'iap';
+  SETTINGS.premiumProductId = result.productId || chosenProductId;
+  SETTINGS.premiumExpiresAt = result.expiresAt || null;
+  SETTINGS.premiumTrialActive = false;
+  saveData();
+  closePremiumSheet();
+  showToast(LANG==='tr' ? '✦ Premium aktif edildi' : '✦ Premium activated');
   updatePremiumBadge();
 }
 
@@ -1670,6 +1714,7 @@ function unlockApp() {
   _decryptSVCInMemory().then(()=>{buildGrid();renderSubs&&renderSubs();});
   applySettings(); applyLang(); checkRenewals(); resetLockTimer();
   scheduleRenewalNotifs && scheduleRenewalNotifs();
+  syncPremiumFromPayments();
   // PIN skip butonunu sadece PIN kapalıysa göster
   const skipBtn = document.getElementById('pinSkipBtn');
   if(skipBtn) skipBtn.style.display = (SETTINGS.usePin === false) ? 'block' : 'none';
@@ -2299,7 +2344,19 @@ async function toggleSetting(key,el){
 function exportData(){const data={svc:SVC,profile:PROFILE,version:'4.0',exported:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`EasyTV_${new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}.json`;a.click();URL.revokeObjectURL(url);showToast('✓ Bilgiler kaydedildi');}
 function triggerImport(){const input=document.getElementById('importFile');if(input)input.click();}
 function importData(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);if(data.svc){SVC=data.svc;if(data.profile)PROFILE=data.profile;saveData();buildGrid();renderSubs();renderProfile();showToast('✓ Bilgiler geri yüklendi');}else{showToast('Bu dosya açılamadı');}}catch{showToast('Dosya açılamadı');}};reader.readAsText(file);e.target.value='';}
-function restorePurchases(){showToast(LANG==='tr'?'Satın almaları geri yükleme yakında':'Restore purchases coming soon');}
+async function restorePurchases(){
+  if (!window.PaymentService || typeof window.PaymentService.restorePurchases !== 'function') {
+    showToast(LANG==='tr'?'Geri yükleme sistemi henüz hazır değil':'Restore system is not ready yet');
+    return;
+  }
+  const result = await window.PaymentService.restorePurchases();
+  if (!result || !result.ok) {
+    showToast((result && result.message) || (LANG==='tr'?'Satın alma geri yüklenemedi':'Could not restore purchases'));
+    return;
+  }
+  await syncPremiumFromPayments();
+  showToast(LANG==='tr'?'Satın almalar geri yüklendi':'Purchases restored');
+}
 function deleteAccount(){showToast(LANG==='tr'?'Hesap silme yakında':'Account deletion coming soon');}
 function openRegionPicker(){let pickerEl=document.getElementById('regionPickerModal');if(!pickerEl){pickerEl=document.createElement('div');pickerEl.id='regionPickerModal';pickerEl.style.cssText='display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';pickerEl.innerHTML=`<div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:82%;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;"><div style="font-size:17px;font-weight:800;color:#fff;">Ülke / Bölge Seç</div><button onclick="closeRegionPickerModal()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div><div style="padding:0 16px 10px;"><input class="add-input" id="regionSearchInput" placeholder="🔍 Ülke ara..." oninput="renderRegionModalList(this.value)" style="margin:0;" autocomplete="off"></div><div id="regionPickerModalList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div></div>`;pickerEl.addEventListener('click',function(e){if(e.target===pickerEl)closeRegionPickerModal();});document.getElementById('phone').appendChild(pickerEl);}pickerEl.style.display='flex';setTimeout(()=>renderRegionModalList(''),30);}
 function closeRegionPickerModal(){const el=document.getElementById('regionPickerModal');if(el)el.style.display='none';}
@@ -3135,6 +3192,7 @@ setInterval(updateClock,1000);
 
 // Auth başlat
 initAuth();
+try { if (window.PaymentService && typeof window.PaymentService.init === 'function') { window.PaymentService.init(); } } catch(e) { console.warn('PaymentService init hatası:', e); }
 
 function updateClock(){
   const now=new Date();
