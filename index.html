@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="raleway-font.css">
 <link rel="stylesheet" href="akira-font.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css?v=20260412a">
+<link rel="stylesheet" href="style.css?v=20260418d">
 <script src="error-handler.js?v=20260412a" defer></script>
 <script src="premium-system.js?v=20260412a" defer></script>
 <script src="dynamic-theme.js?v=20260412a" defer></script>
@@ -150,41 +150,6 @@
   </div>
 </div>
 
-<div id="introScreen" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;flex-direction:column;overflow:hidden;">
-  <div class="intro-glow" style="position:absolute;pointer-events:none;"></div>
-  <div class="intro-glow2" style="position:absolute;pointer-events:none;"></div>
-
-  <!-- LOGO -->
-  <div id="introLogoWrap" style="position:absolute;top:max(env(safe-area-inset-top) + 12px, 8.5%);left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:1;">
-    <img src="./assets/EasyTVLogo.webp" id="introLogoImg" style="height:57px;width:auto;object-fit:contain;">
-  </div>
-
-  <!-- BAŞLIK + ALT YAZI -->
-  <div style="position:absolute;top:19%;left:28px;right:28px;text-align:center;z-index:1;">
-    <div id="introTagline" style="font-family:'Akira', 'Space Grotesk', 'Inter', sans-serif;font-size:31px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.18;text-shadow:0 2px 24px rgba(130,80,255,.35);">Tüm servisleriniz<br>tek bir yerde.</div>
-    <div id="introSub" style="font-size:14px;color:rgba(255,255,255,.38);line-height:1.5;margin-top:10px;letter-spacing:-.1px;">Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.</div>
-  </div>
-
-  <!-- SERVİS LOGO GALERİSİ -->
-  <div id="introLogoGallery" style="position:absolute;top:44%;left:0;right:0;height:244px;z-index:1;overflow:visible;"></div>
-
-  <!-- BUTONLAR -->
-  <div style="position:absolute;bottom:max(env(safe-area-inset-bottom) + 16px, 5%);left:28px;right:28px;z-index:1;animation:introSlideUp .7s .75s both;">
-    <div style="display:flex;justify-content:center;margin-bottom:14px;position:relative;">
-      <button id="introLangTrigger" onclick="toggleLangMenu()" style="background:none;border:none;cursor:pointer;font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.8px;display:flex;align-items:center;gap:5px;padding:6px 0;">
-        <span id="introLangLabel">TR</span>
-        <svg id="introLangChevron" width="7" height="4" viewBox="0 0 7 4" fill="none" style="transition:transform .2s;"><path d="M1 1l2.5 2 2.5-2" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div id="introLangMenu" style="display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(16,16,24,.96);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;min-width:80px;backdrop-filter:blur(24px);z-index:999;">
-        <button onclick="setIntroLang('tr')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:rgba(255,255,255,.85);font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:.6px;text-align:center;">TR</button>
-        <button onclick="setIntroLang('en')" style="display:block;width:100%;padding:10px 16px;background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:.6px;text-align:center;">EN</button>
-      </div>
-    </div>
-    <button class="intro-cta cta-btn cta-btn-white" id="introCta" onclick="showWelcomeFromIntro()"><span class="cta-btn-label"><span class="cta-btn-text">Başlayın</span></span><span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-    <div class="intro-hint" id="introHint" onclick="showWelcomeFromIntro()">Zaten hesabınız var mı? Giriş yapın</div>
-  </div>
-
-</div>
 <div class="welcome-screen" id="welcomeScreen" style="display:none;overflow:hidden;"></div>
 
   <div class="onboard-screen" id="onboardScreen" style="display:none;overflow:hidden;">
@@ -193,20 +158,20 @@
     <div class="onboard-bottom">
       <button class="onboard-btn cta-btn cta-btn-purple" id="obNextBtn" onclick="onboardNext()"><span class="cta-btn-label"><span class="cta-btn-text">Devam</span></span><span class="cta-btn-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         <style>
-          .onboard-btn, .intro-cta, .add-btn, .add-btn-abs, #appleLoginBtn, #googleLoginBtn {
+          .onboard-btn, .add-btn, .add-btn-abs, #appleLoginBtn, #googleLoginBtn {
             font-family: 'Raleway', 'Space Grotesk', 'Inter', sans-serif !important;
             font-size: 16px !important;
             font-weight: 700 !important;
             letter-spacing: .1px !important;
           }
-          .onboard-title, .intro-title, #introTagline, .welcome-title {
+          .onboard-title, .welcome-title {
             font-family: 'Akira', 'Space Grotesk', 'Inter', sans-serif !important;
             font-size: 28px !important;
             font-weight: 700 !important;
             letter-spacing: -0.5px !important;
             line-height: 1.18 !important;
           }
-          .onboard-sub, .intro-hint, #introSub {
+          .onboard-sub {
             font-size: 13px !important;
             color: rgba(255,255,255,.38) !important;
             line-height: 1.5 !important;
@@ -698,8 +663,8 @@
 </div>
 </div>
 
-<script src="payment-service.js?v=20260418b"></script>
-<script src="app.js?v=20260418b"></script>
+<script src="payment-service.js?v=20260418d"></script>
+<script src="app.js?v=20260418d"></script>
 
 
 </body>

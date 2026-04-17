@@ -45,50 +45,13 @@ function _showFallbackScreen() {
   const onboardScreen = document.getElementById('onboardScreen');
   const pinScreen = document.getElementById('pinScreen');
   const mainApp = document.getElementById('mainApp');
-  const introScreen = document.getElementById('introScreen');
   if (authLoading) authLoading.style.display = 'none';
   if (welcomeScreen) welcomeScreen.style.display = 'none';
-  if (loginScreen) loginScreen.style.display = 'none';
+  if (loginScreen) loginScreen.style.display = 'flex';
   if (onboardScreen) onboardScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'none';
-  // Session yoksa kullanıcıyı her zaman giriş akışına getir.
   if (bottomNav) bottomNav.style.display = 'none';
   if (pinScreen) pinScreen.style.display = 'none';
-  if (introScreen) introScreen.style.display = 'flex';
-  _initFuzzyLogo();
-  _stabilizeIntroHero();
-  _initLogoGallery();
-}
-
-// ── FUZZY LOGO (EasyTV logosu için canvas glitch efekti) ──
-function _initFuzzyLogo() {
-  var wrap = document.getElementById('introLogoWrap');
-  if (!wrap || wrap.dataset.fuzzy) return;
-  wrap.dataset.fuzzy = '1';
-  var img = document.getElementById('introLogoImg');
-  if (!img) return;
-  img.style.display = 'block';
-  img.style.opacity = '1';
-  img.style.transform = 'none';
-  img.style.filter = 'none';
-}
-
-function _stabilizeIntroHero() {
-  var ids = ['introLogoWrap', 'introLogoImg', 'introTagline', 'introSub'];
-  ids.forEach(function(id){
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.style.animation = 'none';
-    el.style.transition = 'none';
-    el.style.transform = 'none';
-    el.style.filter = 'none';
-    el.style.opacity = '1';
-    el.style.webkitFilter = 'none';
-    el.style.backdropFilter = 'none';
-    el.style.webkitBackdropFilter = 'none';
-  });
-  var img = document.getElementById('introLogoImg');
-  if (img) img.style.display = 'block';
 }
 
 // ── Char-by-char text reveal ──
@@ -117,175 +80,6 @@ function _charReveal(el, baseDelay) {
     }
   }
   el.innerHTML = result;
-}
-
-// ── Circular Gallery ──
-function _initLogoGallery() {
-  var el = document.getElementById('introLogoGallery');
-  if (!el || el.dataset.init) return;
-  el.dataset.init = '1';
-
-  var S = [
-    ['./assets/netflix_N.webp','#E50914'],   // kırmızı
-    ['./assets/Disney+.webp','#0ABFBC'],     // teal
-    ['./assets/twitch.webp','#9146FF'],      // mor
-    ['./assets/youtube.webp','#FF0000'],     // kırmızı
-    ['./assets/Spotify.webp','#1DB954'],     // yeşil
-    ['./assets/hbo.webp','#6B2D8B'],         // mor
-    ['./assets/tvplus2.webp','#FFD100'],     // sarı
-    ['./assets/prime video.webp','#1A98FF'], // mavi
-    ['./assets/bein.webp','#6F2DA8'],        // mor
-    ['./assets/kickb.webp','#53FC18'],       // yeşil
-    ['./assets/appleb.webp','#e0e0e0'],      // gri
-    ['./assets/exxenb.webp','#FFD100'],      // sarı
-  ];
-
-  function hexRgb(h) {
-    return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
-  }
-
-  function drawRR(x,y,w,h,r) {
-    r = Math.min(r, w/2, h/2);
-    ctx.beginPath();
-    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
-    ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
-    ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
-    ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
-    ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
-  }
-
-  var TW=110, TH=171, GAP=26, STEP=TW+GAP, N=S.length, TOTAL=N*STEP;
-  var dpr=Math.min(window.devicePixelRatio||1,2);
-  var cW=el.offsetWidth||393, cH=244;
-  // OVER: extra canvas space above/below so glow is never clipped
-  var OVER=90, cvH=cH+OVER*2;
-
-  el.style.height=cH+'px';
-  el.style.overflow='visible'; // allow glow to bleed outside div
-  el.style.position='relative';
-
-  // Glow canvas: CSS filter:blur() çalışır iOS Safari'de (ctx.filter ≠ CSS filter)
-  var glowCv=document.createElement('canvas');
-  glowCv.width=cW*dpr; glowCv.height=cvH*dpr;
-  glowCv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;pointer-events:none;';
-  el.appendChild(glowCv);
-  var glowCtx=glowCv.getContext('2d');
-  glowCtx.scale(dpr,dpr);
-
-  // Kart canvas: blur yok, sadece görseller
-  var cv=document.createElement('canvas');
-  cv.width=cW*dpr; cv.height=cvH*dpr;
-  cv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;touch-action:pan-x;user-select:none;pointer-events:auto;';
-  el.appendChild(cv);
-  var ctx=cv.getContext('2d');
-  ctx.scale(dpr,dpr);
-
-  var boxImg=new Image();
-  boxImg.src='./assets/box1_long.webp';
-  var imgs=S.map(function(s){var i=new Image();i.src=s[0];return i;});
-
-  var sc={cur:0,tgt:0}, dn=false, sx=0, ss=0, vel=0, lx=0;
-  function lerp(a,b,t){return a+(b-a)*t;}
-  function onDown(x){dn=true;sx=lx=x;ss=sc.tgt;vel=0;}
-  function onMove(x){if(!dn)return;vel=lx-x;lx=x;sc.tgt=ss+(sx-x);}
-  function onUp(){dn=false;sc.tgt+=vel*3.5;}
-  cv.addEventListener('touchstart',function(e){onDown(e.touches[0].clientX);},{passive:true});
-  cv.addEventListener('touchmove',function(e){onMove(e.touches[0].clientX);},{passive:true});
-  cv.addEventListener('touchend',onUp);
-  cv.addEventListener('mousedown',function(e){onDown(e.clientX);});
-  cv.addEventListener('mousemove',function(e){onMove(e.clientX);});
-  cv.addEventListener('mouseup',onUp);
-  cv.addEventListener('mouseleave',onUp);
-
-  var H=cW/2, BEND=30, R=(H*H+BEND*BEND)/(2*BEND);
-
-  function getPos(i, pass, off) {
-    var tx=( (cW-TOTAL)/2 )+i*STEP+pass*TOTAL-off;
-    var cx=tx+TW/2, dx=cx-cW/2;
-    var eff=Math.min(Math.abs(dx),H);
-    var arc=R-Math.sqrt(Math.max(0,R*R-eff*eff));
-    var ty=8+OVER+arc;
-    var rot=Math.sign(dx)*Math.asin(Math.min(eff/R,1))*0.75;
-    var alpha=1-Math.max(0,(Math.abs(dx)/H-0.60)/0.28);
-    alpha=Math.max(0,Math.min(1,alpha));
-    return {tx:tx,cx:cx,dx:dx,ty:ty,eff:eff,alpha:alpha,rot:rot};
-  }
-
-  function tick(){
-    var intro=document.getElementById('introScreen');
-    if(!intro||intro.style.display==='none'){requestAnimationFrame(tick);return;}
-    if(!dn) sc.tgt+=0.45;
-    sc.cur=lerp(sc.cur,sc.tgt,0.065);
-    ctx.clearRect(0,0,cW,cvH);
-    glowCtx.clearRect(0,0,cW,cvH);
-
-    var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
-    var g=window.BLG||{blur:10,op:0.5,ox:-10,oy:15,shape:0.1,gx:0.8,gy:0.85};
-
-    // CSS blur'u BLG.blur değerinden ayarla (sadece değer değişince güncelle)
-    var blurPx=Math.max(2,g.blur||10)+'px';
-    if(glowCv.dataset.blur!==blurPx){glowCv.style.filter='blur('+blurPx+')';glowCv.dataset.blur=blurPx;}
-
-    // Pass 1: backlights — orijinal gibi rounded rect, glowCtx üstünde (CSS blur iOS uyumlu)
-    for(var p=-1;p<=1;p++){
-      for(var i=0;i<N;i++){
-        var pos=getPos(i,p,off);
-        if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
-        var rgb=hexRgb(S[i][1]);
-        var glowW=TW*(g.gx||1), glowH=TH*(g.gy||1);
-        var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
-        var ga=g.op*pos.alpha;
-        var shapeR=(g.shape||0)*Math.min(glowW/2,glowH/2);
-        glowCtx.save();
-        glowCtx.translate(pos.cx,pos.ty+TH/2);
-        glowCtx.rotate(pos.rot);
-        glowCtx.translate(-pos.cx,-(pos.ty+TH/2));
-        glowCtx.globalAlpha=ga;
-        glowCtx.fillStyle='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
-        // drawRR inline — orijinal şekil
-        var rx=gcx-glowW/2, ry=gcy-glowH/2, rr=Math.min(shapeR,glowW/2,glowH/2);
-        glowCtx.beginPath();
-        glowCtx.moveTo(rx+rr,ry); glowCtx.lineTo(rx+glowW-rr,ry);
-        glowCtx.arcTo(rx+glowW,ry,rx+glowW,ry+rr,rr); glowCtx.lineTo(rx+glowW,ry+glowH-rr);
-        glowCtx.arcTo(rx+glowW,ry+glowH,rx+glowW-rr,ry+glowH,rr); glowCtx.lineTo(rx+rr,ry+glowH);
-        glowCtx.arcTo(rx,ry+glowH,rx,ry+glowH-rr,rr); glowCtx.lineTo(rx,ry+rr);
-        glowCtx.arcTo(rx,ry,rx+rr,ry,rr); glowCtx.closePath();
-        glowCtx.fill();
-        glowCtx.restore();
-      }
-    }
-
-    // Pass 2: cards with rotation (box1_long.png + logo)
-    for(var p=-1;p<=1;p++){
-      for(var i=0;i<N;i++){
-        var pos=getPos(i,p,off);
-        if(pos.cx<-TW*2||pos.cx>cW+TW*2||pos.alpha<=0) continue;
-
-        ctx.save();
-        ctx.globalAlpha=pos.alpha;
-        ctx.translate(pos.cx, pos.ty+TH/2);
-        ctx.rotate(pos.rot);
-        ctx.translate(-pos.cx, -(pos.ty+TH/2));
-
-        if(boxImg.complete&&boxImg.naturalWidth>0){
-          ctx.drawImage(boxImg, pos.tx, pos.ty, TW, TH);
-        }
-        if(imgs[i].complete&&imgs[i].naturalWidth>0){
-          var iw=imgs[i].naturalWidth, ih=imgs[i].naturalHeight;
-          var ms=TW*0.56, sc2=Math.min(ms/iw,ms/ih);
-          ctx.drawImage(imgs[i],
-            pos.tx+(TW-iw*sc2)/2,
-            pos.ty+(TH-ih*sc2)/2,
-            iw*sc2, ih*sc2);
-        }
-
-        ctx.restore();
-      }
-    }
-
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
 }
 
 function _applyLogoReveal(imgEl) {
@@ -753,74 +547,8 @@ function skipAuth() {
   loginWith('skip');
 }
 
-// Intro dil değiştirme
-function toggleLangMenu(){
-  const m=document.getElementById('introLangMenu');
-  const c=document.getElementById('introLangChevron');
-  if(!m||!c) return;
-  const open=m.style.display==='block';
-  m.style.display=open?'none':'block';
-  c.style.transform=open?'':'rotate(180deg)';
-}
-function setIntroLang(lang){
-  LANG=lang;
-  localStorage.setItem('easytv_lang',lang);
-  const lbl=document.getElementById('introLangLabel');
-  if(lbl) lbl.textContent=lang==='tr'?'TR':'EN';
-  const menu=document.getElementById('introLangMenu');
-  const chev=document.getElementById('introLangChevron');
-  const introTagline=document.getElementById('introTagline');
-  const introSub=document.getElementById('introSub');
-  const introHint=document.getElementById('introHint');
-  if(menu) menu.style.display='none';
-  if(chev) chev.style.transform='';
-  if(introTagline) introTagline.innerHTML=lang==='tr'?'Tüm servisleriniz<br>tek bir yerde.':'All your services<br>in one place.';
-  if(introSub) introSub.innerHTML=lang==='tr'?'Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.':'Access everything in one place.<br>Track your subscriptions and payments.';
-  const f1=document.getElementById('introFeat1');const f2=document.getElementById('introFeat2');const f3=document.getElementById('introFeat3');
-  const introCtaText=document.querySelector('#introCta .cta-btn-text');
-  if(f1)f1.textContent=lang==='tr'?'Otomatik yenileme takibi & hatırlatıcı':'Auto renewal tracking & reminders';
-  if(f2)f2.textContent=lang==='tr'?'Aylık harcama özeti ve analizi':'Monthly spending summary & analysis';
-  if(f3)f3.textContent=lang==='tr'?'PIN & Face ID ile güvenli giriş':'Secure login with PIN & Face ID';
-  if(introCtaText) introCtaText.textContent=lang==='tr'?'Başlayın':'Get Started';
-  if(introHint) introHint.textContent=lang==='tr'?'Zaten hesabınız var mı? Giriş yapın':'Already have an account? Sign in';
-  // Welcome sayfasını da senkronize et
-  const wlcLangFlag=document.getElementById('wlcLangFlag');
-  const wlcLangLabel=document.getElementById('wlcLangLabel');
-  const wlcOptTR=document.getElementById('wlcOptTR');
-  const wlcOptEN=document.getElementById('wlcOptEN');
-  const wlcTagline=document.getElementById('wlcTagline');
-  const wlcSub=document.getElementById('wlcSub');
-  const wlcStartBtn=document.getElementById('wlcStartBtn');
-  if(wlcLangFlag){
-    wlcLangFlag.textContent=lang==='tr'?'🇹🇷':'🇬🇧';
-    if(wlcLangLabel) wlcLangLabel.textContent=lang==='tr'?'Türkçe':'English';
-    if(wlcOptTR) wlcOptTR.classList.toggle('selected',lang==='tr');
-    if(wlcOptEN) wlcOptEN.classList.toggle('selected',lang==='en');
-    if(wlcTagline) wlcTagline.innerHTML=lang==='tr'?'Şifreleriniz güvende,<br>giriş tek dokunuşta.':'Passwords safe,<br>sign in with one tap.';
-    if(wlcSub) wlcSub.textContent=lang==='tr'?'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.':'Store your TV subscriptions.\nSign in with QR in seconds.';
-  }
-  if(wlcStartBtn) wlcStartBtn.textContent=lang==='tr'?'Başlayın':'Get Started';
-  applyLang();
-}
-
-// intro → welcome geçişi
 function showSignupOptions() {
   openEmailAuth('signup');
-}
-function showWelcomeFromIntro() {
-  const intro = document.getElementById('introScreen');
-  if(!intro) return;
-  intro.style.animation = 'screenSlideOut .3s cubic-bezier(.4,0,.2,1) both';
-  setTimeout(() => {
-    intro.style.display = 'none';
-    intro.style.animation = '';
-    const ls = document.getElementById('loginScreen');
-    if(!ls) return;
-    ls.style.display = 'flex';
-    ls.style.animation = 'screenSlideIn .38s cubic-bezier(.34,1.2,.64,1) both';
-    _charReveal(document.getElementById('loginHeading'), 0.18);
-    _charReveal(document.getElementById('loginSub'), 0.46);
-  }, 280);
 }
 
 // goToLogin override
@@ -1364,9 +1092,6 @@ function applyLang(){
   // Login/Auth metinleri
   if($('loginHeading')) $('loginHeading').innerHTML = t('login_heading');
   if($('loginSub')) $('loginSub').innerHTML = t('login_sub');
-  if($('introTagline')) $('introTagline').innerHTML = t('login_heading');
-  if($('introSub')) $('introSub').innerHTML = t('login_sub');
-  if($('introHint')) $('introHint').textContent = LANG==='tr' ? 'Zaten hesabınız var mı? Giriş yapın' : 'Already have an account? Sign in';
   if($('loginCreateBtnText')) $('loginCreateBtnText').textContent = t('login_create');
   if($('loginOrText')) $('loginOrText').textContent = t('login_or');
   if($('loginAppleBtnText')) $('loginAppleBtnText').textContent = t('login_apple');
@@ -3404,3 +3129,4 @@ function initCtaGlow(){
 }
 
 initCtaGlow();
+
