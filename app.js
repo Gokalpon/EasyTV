@@ -331,6 +331,8 @@ async function initAuth() {
       if (authLoading) authLoading.style.display = 'flex';
       const { data, error } = await _supabase.auth.getSession();
       if (data && data.session) {
+        const cleanUrl = window.location.href.split('#')[0].split('?')[0];
+        history.replaceState({}, document.title, cleanUrl);
         _authDone = true;
         clearTimeout(_safetyTimer);
         onAuthSuccess(data.session.user);
@@ -552,8 +554,19 @@ async function onAuthSuccess(user) {
   if (onboardScreen) onboardScreen.style.display = 'none';
   if (bottomNav) bottomNav.style.display = 'flex';
 
-  if (SETTINGS.usePin === false || !SETTINGS.pin) {
+  const hasPin = !!(SETTINGS.pin || SETTINGS.pinHash);
+  if (SETTINGS.usePin === false) {
     unlockApp();
+  } else if (!hasPin) {
+    const mainApp = document.getElementById('mainApp');
+    if (mainApp) mainApp.style.display = 'none';
+    if (pinScreen) pinScreen.style.display = 'none';
+    if (onboardScreen) {
+      onboardScreen.style.display = 'flex';
+      renderOnboardStep();
+    } else {
+      unlockApp();
+    }
   } else {
     if (pinScreen) {
       pinScreen.style.display = 'flex';
@@ -3040,7 +3053,7 @@ function selectPieSlice(idx) {
 }
 
 function openEditProfile(){
-  const modal=document.getElementById('profileEditModal');
+  const modal=document.getElementById('editModal');
   const editName=document.getElementById('editName');
   const editEmail=document.getElementById('editEmail');
   if(!modal)return;
@@ -3050,7 +3063,7 @@ function openEditProfile(){
 }
 
 function closeEditProfile(){
-  const modal=document.getElementById('profileEditModal');
+  const modal=document.getElementById('editModal');
   if(modal)modal.classList.remove('open');
 }
 
