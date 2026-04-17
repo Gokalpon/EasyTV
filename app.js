@@ -972,17 +972,24 @@ function updateMyCost(price, sym) {
 
 // unlockFromLock
 // unlockFromLock
-function unlockFromLock() {
-  // Show PIN/Face ID screen instead of unlocking directly
-  const lockEl = document.getElementById('lockScreen');
-  if (lockEl) { lockEl.style.opacity='0'; lockEl.style.transition='opacity .3s'; setTimeout(()=>lockEl.style.display='none',300); }
-  // Show PIN screen
+function _showPinUnlockScreen() {
+  const lockEl = document.getElementById('lockOverlay');
+  if (lockEl) {
+    lockEl.classList.remove('visible');
+    lockEl.style.opacity = '';
+    lockEl.style.transition = '';
+  }
   const pinScreen = document.getElementById('pinScreen');
   if (pinScreen) pinScreen.style.display = 'flex';
-  // Optionally reset PIN input state here if needed
-  // Hide main app until PIN/Face ID is successful
   const mainApp = document.getElementById('mainApp');
   if (mainApp) mainApp.style.display = 'none';
+}
+function unlockFromLock() {
+  if (SETTINGS.faceid) {
+    faceId(true);
+    return;
+  }
+  _showPinUnlockScreen();
 }
 
 const REGION_DATA = {
@@ -1015,7 +1022,7 @@ let pinVal='',pinMode='unlock',pinStep=0,tempPin='';
 let selectedPopular=null;
 function saveData(){try{localStorage.setItem('easytv_settings',JSON.stringify(SETTINGS));localStorage.setItem('easytv_profile',JSON.stringify(PROFILE));localStorage.setItem('easytv_pin',SETTINGS.pinHash||'');}catch(e){}_saveSVCEncrypted();}
 async function _saveSVCEncrypted(){try{const enc=await Promise.all(SVC.map(s=>encryptCreds(s)));localStorage.setItem('easytv_svc',JSON.stringify(enc));}catch(e){const stripped=SVC.map(s=>({...s,email:'',pwd:''}));try{localStorage.setItem('easytv_svc',JSON.stringify(stripped));}catch(e2){}}}
-function loadData(){try{const s=localStorage.getItem('easytv_svc');const st=localStorage.getItem('easytv_settings');const pr=localStorage.getItem('easytv_profile');if(s)SVC=JSON.parse(s);if(st)SETTINGS=JSON.parse(st);if(pr)PROFILE=JSON.parse(pr);if(!SETTINGS.pin)SETTINGS.pin='1111';if(!SETTINGS.autolock)SETTINGS.autolock=true;if(!SETTINGS.faceid)SETTINGS.faceid=true;if(!SETTINGS.qrrotate)SETTINGS.qrrotate=true;if(SETTINGS.remind1===undefined)SETTINGS.remind1=false;if(SETTINGS.remind3===undefined)SETTINGS.remind3=false;if(SETTINGS.remind7===undefined)SETTINGS.remind7=false;if(SETTINGS.premium===undefined)SETTINGS.premium=false;// eski localStorage premium key'ini temizle
+function loadData(){try{const s=localStorage.getItem('easytv_svc');const st=localStorage.getItem('easytv_settings');const pr=localStorage.getItem('easytv_profile');if(s)SVC=JSON.parse(s);if(st)SETTINGS=JSON.parse(st);if(pr)PROFILE=JSON.parse(pr);if(SETTINGS.pin===undefined && !SETTINGS.pinHash)SETTINGS.pin='1111';if(SETTINGS.autolock===undefined)SETTINGS.autolock=true;if(SETTINGS.faceid===undefined)SETTINGS.faceid=true;if(SETTINGS.qrrotate===undefined)SETTINGS.qrrotate=true;if(SETTINGS.remind1===undefined)SETTINGS.remind1=false;if(SETTINGS.remind3===undefined)SETTINGS.remind3=false;if(SETTINGS.remind7===undefined)SETTINGS.remind7=false;if(SETTINGS.premium===undefined)SETTINGS.premium=false;// eski localStorage premium key'ini temizle
 localStorage.removeItem('easytv_premium');}catch(e){SETTINGS={pin:'1111',autolock:true,faceid:true,qrrotate:true};}}
 let EXCHANGE_RATES={};let RATES_TIMESTAMP=0;
 try{const rc=localStorage.getItem('easytv_rates');const rt=localStorage.getItem('easytv_rates_ts');if(rc)EXCHANGE_RATES=JSON.parse(rc);if(rt)RATES_TIMESTAMP=parseInt(rt);}catch(e){}
@@ -1752,26 +1759,50 @@ document.addEventListener('touchstart', resetLockTimer);
 document.addEventListener('click', resetLockTimer);
 
 // ── Biyometrik / Cihaz PIN ──
-async function deviceAuth() {
-  // Web Authentication API (cihaz şifresi / PIN)
-  try {
-    if (window.PublicKeyCredential) {
-      showToast('Cihaz kilidini kullan');
-    } else {
-      showToast('Bu cihazda desteklenmiyor');
-    }
-  } catch(e) { showToast('Kimlik doğrulama başarısız'); }
-  // Şimdilik: direkt unlock (gerçek WebAuthn entegrasyonu gerekir)
-  unlockApp();
+function _toBase64Url(buf){const bytes=buf instanceof Uint8Array?buf:new Uint8Array(buf);let str='';for(let i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function _fromBase64Url(s){const b64=(s||'').replace(/-/g,'+').replace(/_/g,'/');const pad='='.repeat((4-b64.length%4)%4);const bin=atob(b64+pad);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out;}
+function _randomBytes(n){const out=new Uint8Array(n);crypto.getRandomValues(out);return out;}
+async function _isBiometricSupported(){try{if(!window.isSecureContext||!window.PublicKeyCredential)return false;if(typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable==='function'){return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();}return true;}catch(_){return false;}}
+async function _enrollBiometricCredential(){
+  if(!(await _isBiometricSupported())){showToast(LANG==='tr'?'Bu cihazda Face ID desteklenmiyor':'Face ID is not supported on this device');return false;}
+  try{
+    const userLabel=(PROFILE.email||PROFILE.name||'easytv-user').slice(0,64);
+    const userId=_randomBytes(32);
+    const cred=await navigator.credentials.create({publicKey:{challenge:_randomBytes(32),rp:{name:'EasyTV'},user:{id:userId,name:userLabel,displayName:PROFILE.name||userLabel},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},timeout:60000,attestation:'none'}});
+    if(!cred||!cred.rawId)return false;
+    SETTINGS.faceidCredentialId=_toBase64Url(cred.rawId);
+    saveData();
+    showToast(LANG==='tr'?'Face ID etkinleştirildi':'Face ID enabled');
+    return true;
+  }catch(e){
+    showToast(LANG==='tr'?'Face ID kaydı iptal edildi':'Face ID enrollment cancelled');
+    return false;
+  }
 }
-
-async function faceId() {
-  try {
-    if (window.PublicKeyCredential) {
-      showToast('Face ID / Touch ID kullanılıyor...');
-    }
-  } catch(e) { showToast('Biyometrik doğrulama başarısız'); }
-  unlockApp();
+async function _verifyBiometricCredential(){
+  if(!(await _isBiometricSupported()))return false;
+  if(!SETTINGS.faceidCredentialId)return _enrollBiometricCredential();
+  try{
+    const assertion=await navigator.credentials.get({publicKey:{challenge:_randomBytes(32),allowCredentials:[{type:'public-key',id:_fromBase64Url(SETTINGS.faceidCredentialId)}],userVerification:'required',timeout:60000}});
+    return !!assertion;
+  }catch(_){
+    return false;
+  }
+}
+async function deviceAuth(showPinOnFail=true){
+  const ok=await _verifyBiometricCredential();
+  if(ok){unlockApp();return true;}
+  showToast(LANG==='tr'?'Cihaz doğrulaması başarısız':'Device authentication failed');
+  if(showPinOnFail)_showPinUnlockScreen();
+  return false;
+}
+async function faceId(showPinOnFail=true){
+  if(!SETTINGS.faceid){showToast(LANG==='tr'?'Ayarlardan Face ID açılmalı':'Enable Face ID from settings');if(showPinOnFail)_showPinUnlockScreen();return false;}
+  const ok=await _verifyBiometricCredential();
+  if(ok){showToast(LANG==='tr'?'Face ID doğrulandı':'Face ID verified');unlockApp();return true;}
+  showToast(LANG==='tr'?'Face ID doğrulaması başarısız':'Face ID authentication failed');
+  if(showPinOnFail)_showPinUnlockScreen();
+  return false;
 }
 
 function skipPin() {
@@ -2247,7 +2278,24 @@ function renderProfile(){const paid=SVC.filter(s=>s.price>0);animateNumber(docum
   const signedInEl=document.getElementById('signedInAs');
   animateNumber(document.getElementById('statSaved'),sTot,sSym,'',2);if(profileName)profileName.textContent=PROFILE.name||'Kullanıcı';if(profileEmail)profileEmail.textContent=PROFILE.email||'';if(profileAvatar)profileAvatar.textContent=(PROFILE.name||'K')[0].toUpperCase();if(signedInEl)signedInEl.textContent=PROFILE.email||'';}
 function applySettings(){['faceid','autolock','qrrotate','colorblind','reminder','pricechange','remind1','remind3','remind7'].forEach(k=>{const tog=document.getElementById('tog-'+k);if(tog)tog.classList.toggle('on',!!SETTINGS[k]);});if(document.body)document.body.classList.toggle('colorblind',!!SETTINGS.colorblind);updateRegionUI();setTimeout(function(){try{updatePremiumBadge();}catch(e){console.error('updatePremiumBadge hatası:',e);}},100);}
-function toggleSetting(key,el){el.classList.toggle('on');SETTINGS[key]=el.classList.contains('on');saveData();if(key==='colorblind')document.body.classList.toggle('colorblind',SETTINGS.colorblind);if(key==='autolock'){if(SETTINGS.autolock)resetLockTimer();else clearTimeout(lockTimer);}showToast(SETTINGS[key]?'✓ Açık':'✓ Kapalı');}
+async function toggleSetting(key,el){
+  const next=!el.classList.contains('on');
+  el.classList.toggle('on',next);
+  SETTINGS[key]=next;
+  if(key==='faceid'&&next){
+    const enrolled=await _enrollBiometricCredential();
+    if(!enrolled){
+      SETTINGS.faceid=false;
+      el.classList.remove('on');
+      saveData();
+      return;
+    }
+  }
+  saveData();
+  if(key==='colorblind')document.body.classList.toggle('colorblind',SETTINGS.colorblind);
+  if(key==='autolock'){if(SETTINGS.autolock)resetLockTimer();else clearTimeout(lockTimer);}
+  showToast(SETTINGS[key]?'✓ Açık':'✓ Kapalı');
+}
 function exportData(){const data={svc:SVC,profile:PROFILE,version:'4.0',exported:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`EasyTV_${new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}.json`;a.click();URL.revokeObjectURL(url);showToast('✓ Bilgiler kaydedildi');}
 function triggerImport(){const input=document.getElementById('importFile');if(input)input.click();}
 function importData(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);if(data.svc){SVC=data.svc;if(data.profile)PROFILE=data.profile;saveData();buildGrid();renderSubs();renderProfile();showToast('✓ Bilgiler geri yüklendi');}else{showToast('Bu dosya açılamadı');}}catch{showToast('Dosya açılamadı');}};reader.readAsText(file);e.target.value='';}
@@ -2832,8 +2880,8 @@ function showInAppNotif(msg, color) {
 
 // toggleSetting'e bildirim izni ekle
 const _origToggleSetting = window.toggleSetting;
-window.toggleSetting = function(key, el) {
-  _origToggleSetting(key, el);
+window.toggleSetting = async function(key, el) {
+  await _origToggleSetting(key, el);
   if (key === 'reminder' && SETTINGS.reminder) {
     requestNotifPermission().then(granted => {
       if (!granted) showToast('Bildirim izni verilmedi');
