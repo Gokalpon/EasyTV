@@ -655,33 +655,35 @@
       <div class="premium-sheet-inner">
         <div class="premium-handle"></div>
         <div class="premium-badge">✦ EasyTV Premium</div>
-        <div class="premium-title">Sınırsız servis<br>ekle ve yönet.</div>
-        <div class="premium-sub">6 servisten fazlasını takip etmek için Premium gerekli.</div>
+        <div class="premium-title" id="premiumSheetTitle">Sınırsız servis<br>ekle ve yönet.</div>
+        <div class="premium-sub" id="premiumSheetSub">6 servisten fazlasını takip etmek için Premium gerekli.</div>
         <div class="premium-features">
           <div class="premium-feat-row">
             <div class="premium-feat-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2C5.5 2 3 4 3 6.5c0 1.5.8 2.8 2 3.5H4l1 4h6l1-4h-1c1.2-.7 2-2 2-3.5C13 4 10.5 2 8 2z" stroke="#c084fc" stroke-width="1.4" fill="none"/><path d="M6 2.5C4 3.5 3 5 3 6.5M10 2.5C12 3.5 13 5 13 6.5" stroke="#c084fc" stroke-width="1.2" stroke-linecap="round"/></svg></div>
-            <div class="premium-feat-txt">Sınırsız servis ekle</div>
+            <div class="premium-feat-txt" id="premiumFeatTxt1">Sınırsız servis ekle</div>
           </div>
           <div class="premium-feat-row">
             <div class="premium-feat-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="2.5" stroke="#c084fc" stroke-width="1.4"/><circle cx="10" cy="5" r="2.5" stroke="#c084fc" stroke-width="1.4"/><path d="M1 13c0-2.5 2-4 5-4M15 13c0-2.5-2-4-5-4M8 9c2.5 0 4.5 1.5 4.5 4" stroke="#c084fc" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-            <div class="premium-feat-txt">Kişi başı maliyet hesaplama</div>
+            <div class="premium-feat-txt" id="premiumFeatTxt2">Kişi başı maliyet hesaplama</div>
           </div>
           <div class="premium-feat-row">
             <div class="premium-feat-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="10" width="3" height="5" rx="1" fill="#c084fc" opacity=".7"/><rect x="6" y="6" width="3" height="9" rx="1" fill="#c084fc" opacity=".85"/><rect x="11" y="2" width="3" height="13" rx="1" fill="#c084fc"/></svg></div>
-            <div class="premium-feat-txt">Gelişmiş harcama analizi</div>
+            <div class="premium-feat-txt" id="premiumFeatTxt3">Gelişmiş harcama analizi</div>
           </div>
           <div class="premium-feat-row">
             <div class="premium-feat-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a5 5 0 015 5v3l1 2H2l1-2V7a5 5 0 015-5z" stroke="#c084fc" stroke-width="1.4" fill="none"/><path d="M6.5 13.5a1.5 1.5 0 003 0" stroke="#c084fc" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-            <div class="premium-feat-txt">Yenileme bildirimleri</div>
+            <div class="premium-feat-txt" id="premiumFeatTxt4">Yenileme bildirimleri</div>
           </div>
         </div>
         <div class="premium-price-box">
-          <div><div class="premium-price-val">₺49,99</div><div class="premium-price-per">aylık · istediğin zaman iptal</div></div>
-          <div class="premium-price-tag">Aylık</div>
+          <div><div class="premium-price-val" id="premiumPriceVal">₺49,99</div><div class="premium-price-per" id="premiumPricePer">aylık · istediğin zaman iptal</div></div>
+          <div class="premium-price-tag" id="premiumPriceTag">Aylık</div>
         </div>
-        <div class="premium-trial-cta"><span class="ptc-icon">🎁</span><span>1 hafta ücretsiz dene<br>istediğin zaman iptal et</span></div>
-        <button class="premium-buy-btn" onclick="activatePremium()">Premium'a Geç</button>
-        <button class="premium-skip-btn" onclick="closePremiumSheet()">Şimdilik atla</button>
+        <div class="premium-plan-options" id="premiumPlanOptions"></div>
+        <div class="premium-trial-cta"><span class="ptc-icon">🎁</span><span id="premiumTrialText">1 hafta ücretsiz dene<br>istediğin zaman iptal et</span></div>
+        <button class="premium-buy-btn" id="premiumBuyBtn" onclick="activatePremium()"><span id="premiumBuyBtnText">Premium'a Geç</span></button>
+        <button class="premium-restore-btn" id="premiumRestoreBtn" onclick="restorePurchases()">Satın Alımları Geri Yükle</button>
+        <button class="premium-skip-btn" id="premiumSkipBtn" onclick="closePremiumSheet()">Şimdilik atla</button>
       </div>
     </div>
   </div>
@@ -696,8 +698,8 @@
 </div>
 </div>
 
-<script src="payment-service.js?v=20260418a"></script>
-<script src="app.js?v=20260418a"></script>
+<script src="payment-service.js?v=20260418b"></script>
+<script src="app.js?v=20260418b"></script>
 
 
 </body>

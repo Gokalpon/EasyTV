@@ -797,14 +797,125 @@ function animateNumber(el, target, prefix, suffix, decimals) {
 // PREMIUM SİSTEMİ
 // ══════════════════════════════════════════════════
 const FREE_LIMIT = 6;
+const PREMIUM_FALLBACK_PRODUCTS = [
+  { id: 'easytv.premium.monthly', title: 'EasyTV Premium', price: '₺49,99', period: 'monthly' },
+  { id: 'easytv.premium.yearly', title: 'EasyTV Premium', price: '₺399,99', period: 'yearly' }
+];
+const PREMIUM_UI_STATE = {
+  products: [],
+  selectedProductId: null
+};
 
 function isPremium() {
   return SETTINGS.premium === true;
 }
 
+function isYearlyPremiumProductId(productId) {
+  return /year|annual|12m/i.test(String(productId || ''));
+}
+
+function normalizePremiumProduct(raw) {
+  if (!raw || !raw.id) return null;
+  const yearly = isYearlyPremiumProductId(raw.id);
+  return {
+    id: String(raw.id),
+    title: raw.title || 'EasyTV Premium',
+    price: raw.price || raw.displayPrice || (yearly ? '₺399,99' : '₺49,99'),
+    period: raw.period || raw.subscriptionPeriod || (yearly ? 'yearly' : 'monthly')
+  };
+}
+
+function premiumPlanLabel(product) {
+  const yearly = isYearlyPremiumProductId(product && product.id);
+  if (LANG === 'tr') return yearly ? 'Yıllık' : 'Aylık';
+  return yearly ? 'Yearly' : 'Monthly';
+}
+
+function premiumPeriodText(product) {
+  const yearly = isYearlyPremiumProductId(product && product.id);
+  if (LANG === 'tr') return yearly ? 'yıllık · istediğin zaman iptal' : 'aylık · istediğin zaman iptal';
+  return yearly ? 'yearly · cancel anytime' : 'monthly · cancel anytime';
+}
+
+function updatePremiumPriceCard(product) {
+  const priceVal = document.getElementById('premiumPriceVal');
+  const pricePer = document.getElementById('premiumPricePer');
+  const priceTag = document.getElementById('premiumPriceTag');
+  if (priceVal) priceVal.textContent = (product && product.price) ? product.price : '₺49,99';
+  if (pricePer) pricePer.textContent = premiumPeriodText(product || {});
+  if (priceTag) priceTag.textContent = premiumPlanLabel(product || {});
+}
+
+function renderPremiumPlanOptions() {
+  const wrap = document.getElementById('premiumPlanOptions');
+  if (!wrap) return;
+  const products = PREMIUM_UI_STATE.products || [];
+  if (!products.length) {
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = products.map((p) => {
+    const active = p.id === PREMIUM_UI_STATE.selectedProductId ? ' active' : '';
+    return `<button type="button" class="premium-plan-chip${active}" onclick="selectPremiumProduct('${p.id}')"><span>${premiumPlanLabel(p)}</span><strong>${p.price || ''}</strong></button>`;
+  }).join('');
+}
+
+function selectPremiumProduct(productId) {
+  const products = PREMIUM_UI_STATE.products || [];
+  const selected = products.find((p) => p.id === productId) || products[0];
+  if (!selected) return;
+  PREMIUM_UI_STATE.selectedProductId = selected.id;
+  updatePremiumPriceCard(selected);
+  renderPremiumPlanOptions();
+}
+
+function localizePremiumSheet() {
+  const tr = LANG === 'tr';
+  const el = (id) => document.getElementById(id);
+  if (el('premiumSheetTitle')) el('premiumSheetTitle').innerHTML = tr ? 'Sınırsız servis<br>ekle ve yönet.' : 'Add and manage<br>unlimited services.';
+  if (el('premiumSheetSub')) el('premiumSheetSub').textContent = tr ? '6 servisten fazlasını takip etmek için Premium gerekli.' : 'Premium is required to track more than 6 services.';
+  if (el('premiumFeatTxt1')) el('premiumFeatTxt1').textContent = tr ? 'Sınırsız servis ekle' : 'Add unlimited services';
+  if (el('premiumFeatTxt2')) el('premiumFeatTxt2').textContent = tr ? 'Kişi başı maliyet hesaplama' : 'Per-person cost calculation';
+  if (el('premiumFeatTxt3')) el('premiumFeatTxt3').textContent = tr ? 'Gelişmiş harcama analizi' : 'Advanced spending analytics';
+  if (el('premiumFeatTxt4')) el('premiumFeatTxt4').textContent = tr ? 'Yenileme bildirimleri' : 'Renewal reminders';
+  if (el('premiumTrialText')) el('premiumTrialText').innerHTML = tr ? '1 hafta ücretsiz dene<br>istediğin zaman iptal et' : 'Try free for 1 week<br>cancel anytime';
+  if (el('premiumBuyBtnText')) el('premiumBuyBtnText').textContent = tr ? "Premium'a Geç" : 'Go Premium';
+  if (el('premiumRestoreBtn')) el('premiumRestoreBtn').textContent = tr ? 'Satın Alımları Geri Yükle' : 'Restore Purchases';
+  if (el('premiumSkipBtn')) el('premiumSkipBtn').textContent = tr ? 'Şimdilik atla' : 'Skip for now';
+  renderPremiumPlanOptions();
+  const selected = (PREMIUM_UI_STATE.products || []).find((p) => p.id === PREMIUM_UI_STATE.selectedProductId) || PREMIUM_UI_STATE.products[0] || PREMIUM_FALLBACK_PRODUCTS[0];
+  updatePremiumPriceCard(selected);
+}
+
+async function refreshPremiumProducts() {
+  let products = [];
+  if (window.PaymentService && typeof window.PaymentService.getProducts === 'function') {
+    try {
+      const fetched = await window.PaymentService.getProducts();
+      products = Array.isArray(fetched) ? fetched.map(normalizePremiumProduct).filter(Boolean) : [];
+    } catch (e) {
+      console.warn('Premium products fetch hatası:', e);
+    }
+  }
+  if (!products.length) {
+    products = PREMIUM_FALLBACK_PRODUCTS.map((p) => normalizePremiumProduct(p)).filter(Boolean);
+  }
+  PREMIUM_UI_STATE.products = products;
+  let selectedId = PREMIUM_UI_STATE.selectedProductId;
+  if (!selectedId && SETTINGS && SETTINGS.premiumProductId) selectedId = SETTINGS.premiumProductId;
+  if (!selectedId && window.PaymentService && typeof window.PaymentService.defaultProductId === 'function') {
+    selectedId = window.PaymentService.defaultProductId();
+  }
+  if (!products.find((p) => p.id === selectedId)) selectedId = products[0] && products[0].id;
+  PREMIUM_UI_STATE.selectedProductId = selectedId || null;
+  localizePremiumSheet();
+}
+
 function openPremiumSheet() {
   const el = document.getElementById('premiumSheet');
   if (!el) return;
+  localizePremiumSheet();
+  refreshPremiumProducts();
   el.style.display = 'flex';
   requestAnimationFrame(() => el.classList.add('open'));
 }
@@ -855,7 +966,7 @@ async function activatePremium(productId) {
     activatePremiumLegacy();
     return;
   }
-  const chosenProductId = productId || (window.PaymentService.defaultProductId ? window.PaymentService.defaultProductId() : null);
+  const chosenProductId = productId || PREMIUM_UI_STATE.selectedProductId || (window.PaymentService.defaultProductId ? window.PaymentService.defaultProductId() : null);
   if (!chosenProductId) {
     showToast(LANG==='tr' ? 'Ödeme ürünü henüz tanımlı değil' : 'Payment product is not configured');
     return;
@@ -1215,6 +1326,7 @@ function applyLang(){
   if($('pinFaceIdText')) $('pinFaceIdText').textContent = LANG==='tr' ? 'Face ID ile giriş' : 'Sign in with Face ID';
   if($('pinSkipBtn')) $('pinSkipBtn').textContent = LANG==='tr' ? 'Atla' : 'Skip';
   if($('obSkipBtn')) $('obSkipBtn').textContent = LANG==='tr' ? 'Atla' : 'Skip';
+  localizePremiumSheet();
   // Dil butonları aktif durumu
   document.querySelectorAll('.lang-btn').forEach(b=>{
     b.classList.toggle('lang-sel', b.dataset.lang === LANG);

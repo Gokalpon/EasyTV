@@ -1,4 +1,4 @@
-// EasyTV Payment Service (Stage 1-2 scaffold)
+﻿// EasyTV Payment Service (Stage 1-2 scaffold)
 // NOTE: Real App Store IAP requires a native bridge plugin + backend verification.
 (function () {
   const PRODUCT_IDS = {
@@ -11,10 +11,24 @@
     initialized: false,
     provider: 'none',
     products: [
-      { id: PRODUCT_IDS.monthly, title: 'EasyTV Premium Monthly', price: '₺49,99' },
-      { id: PRODUCT_IDS.yearly, title: 'EasyTV Premium Yearly', price: '₺499,99' }
+      { id: PRODUCT_IDS.monthly, title: 'EasyTV Premium Monthly', price: '₺49,99', period: 'monthly' },
+      { id: PRODUCT_IDS.yearly, title: 'EasyTV Premium Yearly', price: '₺399,99', period: 'yearly' }
     ]
   };
+
+  function normalizeProducts(products) {
+    if (!Array.isArray(products)) return [];
+    return products.map(function (p) {
+      if (!p || !p.id) return null;
+      var yearly = /year|annual|12m/i.test(String(p.id));
+      return {
+        id: String(p.id),
+        title: p.title || p.localizedTitle || (yearly ? 'EasyTV Premium Yearly' : 'EasyTV Premium Monthly'),
+        price: p.price || p.localizedPrice || p.displayPrice || (yearly ? '₺399,99' : '₺49,99'),
+        period: p.period || p.subscriptionPeriod || (yearly ? 'yearly' : 'monthly')
+      };
+    }).filter(Boolean);
+  }
 
   function readMockStatus() {
     try {
@@ -39,7 +53,10 @@
       if (typeof nativeBridge.getProducts === 'function') {
         try {
           const r = await nativeBridge.getProducts({ productIds: Object.values(PRODUCT_IDS) });
-          if (r && Array.isArray(r.products) && r.products.length > 0) state.products = r.products;
+          if (r && Array.isArray(r.products) && r.products.length > 0) {
+            const normalized = normalizeProducts(r.products);
+            if (normalized.length > 0) state.products = normalized;
+          }
         } catch (_) {}
       }
     } else if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
@@ -52,7 +69,7 @@
 
   async function getProducts() {
     await init();
-    return state.products;
+    return normalizeProducts(state.products);
   }
 
   function defaultProductId() {
