@@ -1127,6 +1127,18 @@ function applyLang(){
   if($('loginGoogleBtnText')) $('loginGoogleBtnText').textContent = t('login_google');
   if($('loginEmailBtnText')) $('loginEmailBtnText').textContent = t('login_email');
   if($('loginSkipText')) $('loginSkipText').textContent = t('login_skip');
+  // Sub edit sheet labels
+  if($('seSubDetailLbl')) $('seSubDetailLbl').textContent = t('sub_detail');
+  if($('sePriceLbl')) $('sePriceLbl').textContent = t('price_label');
+  if($('sePlanLbl')) $('sePlanLbl').textContent = t('plan_field');
+  if($('seShareLbl')) $('seShareLbl').textContent = t('share_label');
+  if($('seShareWhoLbl')) $('seShareWhoLbl').textContent = t('share_who');
+  if($('seShareHowLbl')) $('seShareHowLbl').textContent = t('share_how');
+  if($('seRenewLbl')) $('seRenewLbl').textContent = t('renew_date_field');
+  if($('seEmailLbl')) $('seEmailLbl').textContent = t('email_field');
+  if($('sePwdLbl')) $('sePwdLbl').textContent = t('password_field');
+  if($('sesSaveBtn')) $('sesSaveBtn').textContent = t('save_btn');
+  if($('sesDeleteBtn')) $('sesDeleteBtn').textContent = t('delete_sub');
   // Email auth sheet metinleri + placeholder
   setEmailAuthMode(_emailAuthMode);
   if($('emailAuthName')) $('emailAuthName').placeholder = LANG==='tr' ? 'Ad Soyad' : 'Full Name';
@@ -1149,6 +1161,30 @@ function applyLang(){
 function getRegion(){return REGION_DATA[SETTINGS.region||'tr']||REGION_DATA.tr;}
 function getCountryPlans(svcId){const countryCode=SETTINGS.country||'tr';const region=SETTINGS.region||'tr';const countryData=COUNTRY_PRICES[countryCode];if(countryData&&countryData[svcId]&&countryData[svcId].plans)return countryData[svcId].plans;const svcDef=POPULAR_SVCS.find(p=>p.id===svcId);if(svcDef&&svcDef.plans)return svcDef.plans[region]||svcDef.plans.tr||[];return[];}
 function getCountrySymbol(){const c=COUNTRIES.find(x=>x.code===(SETTINGS.country||'tr'));return c?c.symbol:'₺';}
+function localizePlanName(name){
+  if(LANG!=='en'||!name)return name||'';
+  const map={
+    'Reklamlı':'With Ads',
+    'Standart':'Standard',
+    'Aile':'Family',
+    'Bireysel':'Individual',
+    'Öğrenci':'Student',
+    'Reklamsız':'Ad-Free',
+    'Ücretsiz':'Free',
+    'Spor Paketi':'Sports Pack',
+    'Kanal Aboneliği':'Channel Subscription',
+    'Prime Üyelik':'Prime Membership',
+    'Aile Paylaşımı':'Family Sharing',
+    'Reklamlı HD':'HD with Ads',
+    'Reklamsız HD':'HD Ad-Free',
+    'Reklamsız 4K':'4K Ad-Free',
+    'Eğlence Paketi':'Entertainment Pack',
+    'Süper Paket':'Super Pack',
+    'Duo (2 kişi)':'Duo (2 people)',
+    'Aile (6 kişi)':'Family (6 people)'
+  };
+  return map[name]||name;
+}
 function updateRegionUI(){const code=SETTINGS.country||'tr';const country=COUNTRIES.find(c=>c.code===code);const desc=document.getElementById('regionDesc');if(desc)desc.textContent=country?country.name:'Türkiye';}
 function buildRegionPicker(){const cur=SETTINGS.country||'tr';const picker=document.getElementById('regionPicker');if(!picker)return;picker.innerHTML=`<input id="countrySearch" class="add-input" placeholder="🔍 Ülke ara..." type="text" style="margin-bottom:4px;" oninput="filterCountries(this.value)" autocomplete="off"><div id="countryList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;scrollbar-width:none;"></div>`;renderCountryList('',cur);setTimeout(()=>{const el=document.getElementById('countrySearch');if(el)el.focus();},100);}
 function filterCountries(q){renderCountryList(q,SETTINGS.country||'tr');}
@@ -1967,15 +2003,87 @@ function buildRemoveGrid(){const g=document.getElementById('removeGrid');g.inner
 function buildPopularGrid(){var g=document.getElementById('popularGrid');g.innerHTML='';POPULAR_SVCS.forEach(function(s){var L=LOGO[s.id]||LOGO._custom;var el=document.createElement('div');el.className='popular-item';var logoHtml='';var isDark=s.textDark||L.textDark;if(L.html&&L.html.indexOf('<img')>=0){var useHtml=isDark&&L.htmlDark?L.htmlDark:L.html;var src=useHtml.match(/src="([^"]+)"/)&&useHtml.match(/src="([^"]+)"/)[1]||'';logoHtml='<img src="'+src+'" style="width:60%;height:60%;object-fit:contain;">';}else if(L.html){logoHtml='<div style="transform:scale(.7);transform-origin:center;">'+(isDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html)+'</div>';}else{logoHtml='<span style="font-size:18px;font-weight:800;color:'+(isDark?'#000':'#fff')+'">'+s.name[0]+'</span>';}el.innerHTML='<div class="popular-ico" style="background:'+s.color+';--ico-glow:'+s.color+';border:2px solid '+s.color+'">'+logoHtml+'</div><div class="popular-name">'+s.name+'</div>';el.onclick=function(){closeAddModal();openPlanModal(s);};g.appendChild(el);});}
 function formatDate(d){return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});}
 let seEditIdx=-1;
-function openSubEdit(i){seEditIdx=i;const s=SVC[i];const L=LOGO[s.id]||{w:28,h:28,html:null};document.getElementById('seServiceName').textContent=s.name;const logoWrap=document.getElementById('seLogoWrap');logoWrap.style.background=s.color;if(L.html&&L.html.includes('<img')){const useHtml=(L.textDark||s.textDark)&&L.htmlDark?L.htmlDark:L.html;const src=useHtml.match(/src="([^"]+)"/)?.[1]||'';logoWrap.innerHTML=`<img src="${src}" style="width:28px;height:28px;object-fit:contain;">`;}else if(L.html){const sc=22/Math.max(L.w||22,L.h||22);logoWrap.innerHTML=`<div style="width:${Math.round((L.w||22)*sc)}px;height:${Math.round((L.h||22)*sc)}px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`;}else{logoWrap.innerHTML=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;}const saveBtn=document.getElementById('sesSaveBtn');saveBtn.style.background=TILE_GRADIENTS[s.id]||s.color||'rgba(255,255,255,.15)';saveBtn.style.color=(s.textDark||(LOGO[s.id]||{}).textDark)?'#000':'#fff';const chips=document.getElementById('sePlanChips');chips.innerHTML='';const oldWrap=document.getElementById('sePlanManualWrap');if(oldWrap)oldWrap.remove();const planRow=document.getElementById('sePlanRow');const planOpts=getCountryPlans(s.id);const sym=getCountrySymbol();if(planOpts.length>0){planRow.style.display='block';const isOther=!planOpts.find(p=>p.name===(s.plan||''));planOpts.forEach(p=>{const chip=document.createElement('button');const isSel=(s.plan||'')===p.name;chip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isSel?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isSel?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isSel?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;chip.textContent=p.name+' · '+sym+p.price.toFixed(0);chip.onclick=()=>{
-  // Press animasyonu
-  chip.style.transition='none';
-  chip.style.transform='scale(.93)';
-  chip.style.background='rgba(255,255,255,.35)';
-  void chip.offsetWidth;
-  chip.style.transition='all .18s';
-  chips.querySelectorAll('button').forEach(cc=>{cc.style.borderColor='rgba(255,255,255,.15)';cc.style.background='rgba(255,255,255,.04)';cc.style.color='rgba(255,255,255,.5)';cc.style.transform='';});
-  chip.style.borderColor='rgba(255,255,255,.6)';chip.style.background='rgba(255,255,255,.15)';chip.style.color='#fff';chip.style.transform='';document.getElementById('sePlan').value=p.name;document.getElementById('sePrice').value=p.price;const mw=document.getElementById('sePlanManualWrap');if(mw)mw.style.display='none';};chips.appendChild(chip);});const otherChip=document.createElement('button');otherChip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isOther?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isOther?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isOther?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;otherChip.textContent='Diğer';otherChip.onclick=()=>{chips.querySelectorAll('button').forEach(c=>{c.style.borderColor='rgba(255,255,255,.15)';c.style.background='rgba(255,255,255,.04)';c.style.color='rgba(255,255,255,.5)';});otherChip.style.borderColor='rgba(255,255,255,.6)';otherChip.style.background='rgba(255,255,255,.15)';otherChip.style.color='#fff';document.getElementById('sePlanManualWrap').style.display='block';document.getElementById('sePlan').value='';document.getElementById('sePrice').value='';};chips.appendChild(otherChip);const mw=document.createElement('div');mw.id='sePlanManualWrap';mw.style.cssText='display:'+(isOther?'flex':'none')+';flex-direction:column;gap:8px;margin-top:10px;';mw.innerHTML=`<input id="sePlanManualInput" class="add-input" type="text" placeholder="Plan adı..." value="${isOther?(s.plan||''):''}">`;chips.after(mw);document.getElementById('sePlanManualInput').oninput=()=>{document.getElementById('sePlan').value=document.getElementById('sePlanManualInput').value;};}else{planRow.style.display='none';}document.getElementById('seShareRow').style.display='none';document.getElementById('sePrice').value=s._fullPrice||s.fullPrice||s.price||'';document.getElementById('sePlan').value=s.plan||'';document.getElementById('seRenew').value=s.renew||'';document.getElementById('seEmail').value=s.email||'';document.getElementById('sePwd').value=s.pwd||'';document.getElementById('sePwd').type='password';renderSeUserPaySection(i,s);const m=document.getElementById('subEditModal');m.style.display='flex';requestAnimationFrame(()=>{document.getElementById('seModalSheet').style.transform='translateY(0)';});
+function openSubEdit(i){
+  seEditIdx=i;
+  const s=SVC[i];
+  const L=LOGO[s.id]||{w:28,h:28,html:null};
+  document.getElementById('seServiceName').textContent=s.name;
+  const logoWrap=document.getElementById('seLogoWrap');
+  logoWrap.style.background=s.color;
+  if(L.html&&L.html.includes('<img')){
+    const useHtml=(L.textDark||s.textDark)&&L.htmlDark?L.htmlDark:L.html;
+    const src=useHtml.match(/src="([^"]+)"/)?.[1]||'';
+    logoWrap.innerHTML=`<img src="${src}" style="width:28px;height:28px;object-fit:contain;">`;
+  }else if(L.html){
+    const sc=22/Math.max(L.w||22,L.h||22);
+    logoWrap.innerHTML=`<div style="width:${Math.round((L.w||22)*sc)}px;height:${Math.round((L.h||22)*sc)}px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`;
+  }else{
+    logoWrap.innerHTML=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;
+  }
+  const chips=document.getElementById('sePlanChips');
+  chips.innerHTML='';
+  const oldWrap=document.getElementById('sePlanManualWrap');
+  if(oldWrap)oldWrap.remove();
+  const planRow=document.getElementById('sePlanRow');
+  const planOpts=getCountryPlans(s.id);
+  const sym=getCountrySymbol();
+  if(planOpts.length>0){
+    planRow.style.display='block';
+    const selectedPlan=s.plan||'';
+    const isOther=!planOpts.find(p=>{
+      const localized=localizePlanName(p.name);
+      return selectedPlan===p.name||selectedPlan===localized;
+    });
+    planOpts.forEach(p=>{
+      const chip=document.createElement('button');
+      const localizedName=localizePlanName(p.name);
+      const isSel=selectedPlan===p.name||selectedPlan===localizedName;
+      chip.className='se-chip-btn'+(isSel?' active':'');
+      chip.textContent=localizedName+' · '+sym+p.price.toFixed(0);
+      chip.onclick=()=>{
+        chips.querySelectorAll('.se-chip-btn').forEach(cc=>cc.classList.remove('active'));
+        chip.classList.add('active');
+        document.getElementById('sePlan').value=localizedName;
+        document.getElementById('sePrice').value=p.price;
+        const mw=document.getElementById('sePlanManualWrap');
+        if(mw)mw.style.display='none';
+      };
+      chips.appendChild(chip);
+    });
+    const otherChip=document.createElement('button');
+    otherChip.className='se-chip-btn'+(isOther?' active':'');
+    otherChip.textContent=LANG==='tr'?'Diğer':'Other';
+    otherChip.onclick=()=>{
+      chips.querySelectorAll('.se-chip-btn').forEach(c=>c.classList.remove('active'));
+      otherChip.classList.add('active');
+      document.getElementById('sePlanManualWrap').style.display='block';
+      document.getElementById('sePlan').value='';
+      document.getElementById('sePrice').value='';
+    };
+    chips.appendChild(otherChip);
+    const mw=document.createElement('div');
+    mw.id='sePlanManualWrap';
+    mw.style.cssText='display:'+(isOther?'flex':'none')+';flex-direction:column;gap:8px;margin-top:10px;';
+    mw.innerHTML=`<input id="sePlanManualInput" class="add-input" type="text" placeholder="${LANG==='tr'?'Plan adı...':'Plan name...'}" value="${isOther?(s.plan||''):''}">`;
+    chips.after(mw);
+    document.getElementById('sePlanManualInput').oninput=()=>{
+      document.getElementById('sePlan').value=document.getElementById('sePlanManualInput').value;
+    };
+  }else{
+    planRow.style.display='none';
+  }
+  document.getElementById('seShareRow').style.display='none';
+  document.getElementById('sePrice').value=s._fullPrice||s.fullPrice||s.price||'';
+  document.getElementById('sePlan').value=s.plan||'';
+  document.getElementById('seRenew').value=s.renew||'';
+  document.getElementById('seEmail').value=s.email||'';
+  document.getElementById('sePwd').value=s.pwd||'';
+  document.getElementById('sePwd').type='password';
+  renderSeUserPaySection(i,s);
+  applyLang();
+  const m=document.getElementById('subEditModal');
+  m.style.display='flex';
+  requestAnimationFrame(()=>{document.getElementById('seModalSheet').style.transform='translateY(0)';});
   // Swipe-to-close
   const hdr=document.querySelector('.se-header');
   if(hdr&&!hdr._swipeAdded){hdr._swipeAdded=true;let sy=0;hdr.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});hdr.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-sy>60)closeSubEdit();},{passive:true});}
@@ -2010,7 +2118,7 @@ function renderSeUserPaySection(i,s){
     userChips.appendChild(btn);
   });
   payChips.innerHTML='';
-  [{method:'me',emoji:'💳',label:'Ben ödüyorum'},{method:'split',emoji:'🤝',label:'Eşit bölüşüyoruz'},{method:'other',emoji:'🎁',label:'Başkası ödüyor'}].forEach(opt=>{
+  [{method:'me',emoji:'💳',label:(LANG==='tr'?'Ben ödüyorum':'I pay')},{method:'split',emoji:'🤝',label:(LANG==='tr'?'Eşit bölüşüyoruz':'Split equally')},{method:'other',emoji:'🎁',label:(LANG==='tr'?'Başkası ödüyor':'Someone else pays')}].forEach(opt=>{
     const btn=document.createElement('button');
     btn.className='plan-pay-opt'+(opt.method===curPay?' active':'');
     btn.dataset.method=opt.method;

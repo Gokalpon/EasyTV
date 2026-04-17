@@ -1470,16 +1470,17 @@ button{-webkit-tap-highlight-color:transparent;}
 /* Footer — sticky */
 .se-footer{flex-shrink:0;padding:14px 20px 36px;display:flex;gap:10px;border-top:1px solid rgba(255,255,255,.06);background:rgba(13,12,22,.97);}
 #sesDeleteBtn, .se-footer .se-delete-btn, .se-footer .delete-btn {
-  min-width: 54px;
-  min-height: 44px;
-  border-radius: 50%;
-  background: #fff;
-  color: #d00000;
+  min-width: 78px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #161726;
   font-size: 16px;
-  font-weight: 700;
-  border: none;
-  box-shadow: 0 0 0 0 rgba(130,80,255,0.18);
-  transition: background .16s, box-shadow .3s, transform .1s;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,.9);
+  box-shadow: none;
+  transition: background .16s, box-shadow .2s, transform .12s;
   position: relative;
   overflow: hidden;
 }
@@ -1494,10 +1495,10 @@ button{-webkit-tap-highlight-color:transparent;}
   letter-spacing: -0.2px;
 }
 #sesDeleteBtn:active, .se-footer .se-delete-btn:active, .se-footer .delete-btn:active {
-  background: #ffe5e5;
-  color: #d00000;
-  box-shadow: 0 0 16px 4px rgba(130,80,255,.18);
-  transform: scale(.92);
+  background: #f7f7ff;
+  color: #161726;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.85),0 0 0 1px rgba(166,123,255,.36);
+  transform: scale(.98);
 }
 #sesDeleteBtn.premium-anim::after, .se-footer .se-delete-btn.premium-anim::after, .se-footer .delete-btn.premium-anim::after {
   content: '';
@@ -1533,34 +1534,43 @@ button{-webkit-tap-highlight-color:transparent;}
   box-shadow:none !important;
   font-weight:700 !important;
 }
+#subEditModal .se-chip-btn{
+  padding:8px 14px;
+  font-size:13px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .16s cubic-bezier(.34,1.2,.64,1);
+}
 #subEditModal .plan-pay-opt .plan-pay-opt-radio{display:none;}
 #subEditModal .se-chips button.active,
 #subEditModal .plan-user-pill.active,
 #subEditModal .plan-pay-opt.active{
-  background:linear-gradient(90deg,#8b5cf6,#7c3aed) !important;
+  background:linear-gradient(90deg,#8b5cf6,#7c3aed,#6366f1) !important;
   border-color:rgba(189,147,255,.9) !important;
   color:#fff !important;
-  box-shadow:0 0 0 1px rgba(189,147,255,.35),0 8px 20px rgba(124,58,237,.35) !important;
+  box-shadow:0 0 0 1px rgba(189,147,255,.34),inset 0 1px 0 rgba(255,255,255,.32) !important;
 }
 #subEditModal .se-chips button:active,
 #subEditModal .plan-user-pill:active,
 #subEditModal .plan-pay-opt:active{
-  transform:scale(.96);
-  filter:brightness(1.08);
+  transform:scale(.98);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.36),0 0 0 1px rgba(166,123,255,.34) !important;
+  filter:brightness(1.04);
 }
 #subEditModal .se-footer{padding:12px 18px 30px;background:rgba(9,10,20,.95);border-top:1px solid rgba(255,255,255,.05);}
 #subEditModal .se-save-btn{
-  background:linear-gradient(90deg,#8b5cf6,#7c3aed);
-  border:1px solid rgba(189,147,255,.65);
-  box-shadow:0 10px 26px rgba(124,58,237,.35);
+  background:#e50914;
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:none;
 }
-#subEditModal .se-save-btn:active{background:linear-gradient(90deg,#7c3aed,#6d28d9);transform:scale(.97);}
+#subEditModal .se-save-btn:active{background:#c50812;transform:scale(.98);box-shadow:inset 0 1px 0 rgba(255,255,255,.36),0 0 0 1px rgba(166,123,255,.34);}
 #subEditModal #sesDeleteBtn{
-  min-width:46px;
-  min-height:46px;
-  background:rgba(255,255,255,.08);
-  color:rgba(255,255,255,.9);
-  border:1px solid rgba(255,255,255,.14);
+  min-width:78px;
+  min-height:48px;
+  border-radius:14px;
+  background:#fff;
+  color:#161726;
+  border:1px solid rgba(255,255,255,.9);
 }
 
 /* ── PREMIUM ANİMASYONLAR ── */

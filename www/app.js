@@ -126,7 +126,7 @@ function _initLogoGallery() {
 
   var S = [
     ['./assets/netflix_N.webp','#E50914'],   // kırmızı
-    ['./assets/Disney\+.webp','#0ABFBC'],     // teal
+    ['./assets/Disney+.webp','#0ABFBC'],     // teal
     ['./assets/twitch.webp','#9146FF'],      // mor
     ['./assets/youtube.webp','#FF0000'],     // kırmızı
     ['./assets/Spotify.webp','#1DB954'],     // yeşil
@@ -161,11 +161,20 @@ function _initLogoGallery() {
 
   el.style.height=cH+'px';
   el.style.overflow='visible'; // allow glow to bleed outside div
+  el.style.position='relative';
 
+  // Glow canvas: CSS filter:blur() çalışır iOS Safari'de (ctx.filter ≠ CSS filter)
+  var glowCv=document.createElement('canvas');
+  glowCv.width=cW*dpr; glowCv.height=cvH*dpr;
+  glowCv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;pointer-events:none;';
+  el.appendChild(glowCv);
+  var glowCtx=glowCv.getContext('2d');
+  glowCtx.scale(dpr,dpr);
+
+  // Kart canvas: blur yok, sadece görseller
   var cv=document.createElement('canvas');
   cv.width=cW*dpr; cv.height=cvH*dpr;
   cv.style.cssText='width:100%;height:'+cvH+'px;position:absolute;top:-'+OVER+'px;left:0;touch-action:pan-x;user-select:none;pointer-events:auto;';
-  el.style.position='relative';
   el.appendChild(cv);
   var ctx=cv.getContext('2d');
   ctx.scale(dpr,dpr);
@@ -207,11 +216,16 @@ function _initLogoGallery() {
     if(!dn) sc.tgt+=0.45;
     sc.cur=lerp(sc.cur,sc.tgt,0.065);
     ctx.clearRect(0,0,cW,cvH);
+    glowCtx.clearRect(0,0,cW,cvH);
 
     var off=((sc.cur%TOTAL)+TOTAL)%TOTAL;
     var g=window.BLG||{blur:10,op:0.5,ox:-10,oy:15,shape:0.1,gx:0.8,gy:0.85};
 
-    // Pass 1: backlights — radial gradient (GPU-accelerated, works on iOS Safari)
+    // CSS blur'u BLG.blur değerinden ayarla (sadece değer değişince güncelle)
+    var blurPx=Math.max(2,g.blur||10)+'px';
+    if(glowCv.dataset.blur!==blurPx){glowCv.style.filter='blur('+blurPx+')';glowCv.dataset.blur=blurPx;}
+
+    // Pass 1: backlights — orijinal gibi rounded rect, glowCtx üstünde (CSS blur iOS uyumlu)
     for(var p=-1;p<=1;p++){
       for(var i=0;i<N;i++){
         var pos=getPos(i,p,off);
@@ -220,24 +234,23 @@ function _initLogoGallery() {
         var glowW=TW*(g.gx||1), glowH=TH*(g.gy||1);
         var gcx=pos.cx+(g.ox||0), gcy=pos.ty+TH*0.5+(g.oy||0);
         var ga=g.op*pos.alpha;
-        var br=Math.max(glowW,glowH)*(0.4+g.blur/80);
-        // shape: 0=tight/sharp center, 1=soft/wide spread
-        var midStop=0.2+(g.shape||0)*0.5;
-        ctx.save();
-        ctx.translate(pos.cx, pos.ty+TH/2);
-        ctx.rotate(pos.rot);
-        ctx.translate(-pos.cx, -(pos.ty+TH/2));
-        // scale to match card aspect ratio
-        ctx.translate(gcx,gcy);
-        ctx.scale(glowW/glowH,1);
-        ctx.translate(-gcx,-gcy);
-        var grd=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,br);
-        grd.addColorStop(0,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+ga+')');
-        grd.addColorStop(midStop,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(ga*0.5)+')');
-        grd.addColorStop(1,'rgba(0,0,0,0)');
-        ctx.fillStyle=grd;
-        ctx.fillRect(gcx-br,gcy-br,br*2,br*2);
-        ctx.restore();
+        var shapeR=(g.shape||0)*Math.min(glowW/2,glowH/2);
+        glowCtx.save();
+        glowCtx.translate(pos.cx,pos.ty+TH/2);
+        glowCtx.rotate(pos.rot);
+        glowCtx.translate(-pos.cx,-(pos.ty+TH/2));
+        glowCtx.globalAlpha=ga;
+        glowCtx.fillStyle='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
+        // drawRR inline — orijinal şekil
+        var rx=gcx-glowW/2, ry=gcy-glowH/2, rr=Math.min(shapeR,glowW/2,glowH/2);
+        glowCtx.beginPath();
+        glowCtx.moveTo(rx+rr,ry); glowCtx.lineTo(rx+glowW-rr,ry);
+        glowCtx.arcTo(rx+glowW,ry,rx+glowW,ry+rr,rr); glowCtx.lineTo(rx+glowW,ry+glowH-rr);
+        glowCtx.arcTo(rx+glowW,ry+glowH,rx+glowW-rr,ry+glowH,rr); glowCtx.lineTo(rx+rr,ry+glowH);
+        glowCtx.arcTo(rx,ry+glowH,rx,ry+glowH-rr,rr); glowCtx.lineTo(rx,ry+rr);
+        glowCtx.arcTo(rx,ry,rx+rr,ry,rr); glowCtx.closePath();
+        glowCtx.fill();
+        glowCtx.restore();
       }
     }
 
@@ -626,64 +639,6 @@ async function signOut() {
   location.reload();
 }
 
-// ──────────────────────────────────────────────────
-// HESAP SİLME — Apple App Store Zorunluluğu (2022+)
-// ──────────────────────────────────────────────────
-async function deleteAccount() {
-  // Onay diyaloğu
-  showAlert(
-    '🗑️',
-    'Hesabı Sil',
-    'Tüm abonelik verileriniz, ayarlarınız ve hesap bilgileriniz kalıcı olarak silinecek. Bu işlem geri alınamaz.',
-    [
-      {
-        label: 'Hesabımı Sil',
-        style: 'danger',
-        action: async function() {
-          closeAlert();
-          try {
-            // Supabase cloud verilerini sil
-            if (_supabase && _cloudUserId) {
-              await _supabase
-                .from('easytv_user_data')
-                .delete()
-                .eq('user_id', _cloudUserId);
-              await _supabase.auth.signOut();
-            }
-          } catch(e) {
-            console.warn('Cloud silme hatası:', e);
-          }
-          // Local tüm verileri temizle
-          localStorage.clear();
-          sessionStorage.clear();
-          showToast('Hesabınız silindi.');
-          setTimeout(() => location.reload(), 1200);
-        }
-      },
-      { label: 'İptal', style: 'secondary', action: closeAlert }
-    ]
-  );
-}
-
-// ──────────────────────────────────────────────────
-// SATIN ALIM GERİ YÜKLEME — Apple App Store Zorunluluğu
-// RevenueCat entegrasyonu gelince gerçek API bağlanacak
-// ──────────────────────────────────────────────────
-async function restorePurchases() {
-  // TODO: RevenueCat entegrasyonu sonrası:
-  // const info = await Purchases.restorePurchases();
-  // if (info.customerInfo.entitlements.active['premium']) { ... }
-  showToast('Satın alımlar kontrol ediliyor...');
-  setTimeout(() => {
-    // Şimdilik localStorage'dan kontrol et
-    if (isPremium()) {
-      showToast('✦ Premium aktif bulundu!');
-    } else {
-      showToast('Aktif premium abonelik bulunamadı.');
-    }
-  }, 1500);
-}
-
 // loginWith fonksiyonunu override et
 async function loginWith(method) {
   _showAuthScreens();
@@ -758,8 +713,8 @@ function setIntroLang(lang){
     if(wlcOptEN) wlcOptEN.classList.toggle('selected',lang==='en');
     if(wlcTagline) wlcTagline.innerHTML=lang==='tr'?'Şifreleriniz güvende,<br>giriş tek dokunuşta.':'Passwords safe,<br>sign in with one tap.';
     if(wlcSub) wlcSub.textContent=lang==='tr'?'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.':'Store your TV subscriptions.\nSign in with QR in seconds.';
-    if(wlcStartBtn) wlcStartBtn.textContent=lang==='tr'?'Başlayın':'Get Started';
   }
+  if(wlcStartBtn) wlcStartBtn.textContent=lang==='tr'?'Başlayın':'Get Started';
   applyLang();
 }
 
@@ -848,8 +803,7 @@ function closePremiumSheet() {
 }
 
 function activatePremium() {
-  // TODO: RevenueCat IAP entegrasyonu gelince burası değişecek
-  // Şimdilik trial sistemi aktif
+  // İlk kez premium'a geçiyorsa 7 gün ücretsiz trial ver
   if (!SETTINGS.premiumTrialUsed) {
     SETTINGS.premiumTrialUsed = true;
     SETTINGS.premiumTrialActive = true;
@@ -1039,7 +993,7 @@ function filterLoginCountries(q){renderLoginCountries(q);}
 function selectLoginCountry(code,region){SETTINGS.country=code;SETTINGS.region=region;saveData();const c=COUNTRIES.find(x=>x.code===code);if(c)document.getElementById('selectedCountryLabel').textContent=c.name;document.getElementById('countryDropdown').style.display='none';updateRegionUI();}
 const CURRENCIES=[{code:'TRY',symbol:'₺',name:'Türk Lirası'},{code:'USD',symbol:'$',name:'Amerikan Doları'},{code:'EUR',symbol:'€',name:'Euro'},{code:'GBP',symbol:'£',name:'Sterlin'},{code:'JPY',symbol:'¥',name:'Japon Yeni'},{code:'CAD',symbol:'CA$',name:'Kanada Doları'},{code:'AUD',symbol:'A$',name:'Avustralya Doları'},{code:'CHF',symbol:'Fr',name:'İsviçre Frangı'},{code:'SEK',symbol:'kr',name:'İsveç Kronu'},{code:'NOK',symbol:'kr',name:'Norveç Kronu'},{code:'KRW',symbol:'₩',name:'Güney Kore Wonu'},{code:'INR',symbol:'₹',name:'Hindistan Rupisi'},{code:'BRL',symbol:'R$',name:'Brezilya Reali'},{code:'SGD',symbol:'S$',name:'Singapur Doları'},{code:'AED',symbol:'AED',name:'BAE Dirhemi'},{code:'SAR',symbol:'SAR',name:'Suudi Riyali'}];
 const POPULAR_SVCS=[{id:'netflix',name:'Netflix',color:'#E50914',rgb:'229,9,20',prices:{tr:{amount:219.99,plan:'Standart'},us:{amount:15.49,plan:'Standard'},eu:{amount:13.99,plan:'Standard'},as:{amount:13.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile Paylaşımı',price:269.99}]}},{id:'youtube',name:'YouTube',color:'#FF0000',rgb:'255,0,0',prices:{tr:{amount:109.99,plan:'Premium'},us:{amount:13.99,plan:'Premium'},eu:{amount:11.99,plan:'Premium'},as:{amount:11.99,plan:'Premium'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile (6 kişi)',price:179.99},{name:'Öğrenci',price:69.99}]}},{id:'disney',name:'Disney+',color:'#0ABFBC',rgb:'10,191,188',prices:{tr:{amount:149.99,plan:'Standart'},us:{amount:7.99,plan:'Basic'},eu:{amount:8.99,plan:'Standard'},as:{amount:8.99,plan:'Standard'}},plans:{tr:[{name:'Standart (Reklamlı)',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]}},{id:'prime',name:'Prime Video',color:'#1A98FF',rgb:'26,152,255',prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}},plans:{tr:[{name:'Prime Üyelik',price:129.99},{name:'Prime Video Kanal',price:49.99}]}},{id:'hbo',name:'HBO Max',color:'#3B1F6B',rgb:'59,31,107',prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate (4K)',price:249.99}]}},{id:'apple',name:'Apple TV+',color:'#ffffff',rgb:'255,255,255',textDark:true,prices:{tr:{amount:99.99,plan:'Aile'},us:{amount:9.99,plan:'Monthly'},eu:{amount:8.99,plan:'Monthly'},as:{amount:8.99,plan:'Monthly'}},plans:{tr:[{name:'Bireysel',price:49.99},{name:'Aile (6 kişi)',price:99.99}]}},{id:'twitch',name:'Twitch',color:'#9146FF',rgb:'145,70,255',prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Turbo',price:89.99},{name:'Kanal Aboneliği',price:49.99}]}},{id:'kick',name:'Kick',color:'#53FC18',rgb:'83,252,24',textDark:true,prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Kanal Aboneliği',price:49.99}]}},{id:'exxen',name:'EXXEN',color:'#F9D100',rgb:'249,209,0',textDark:true,prices:{tr:{amount:179.99,plan:'Reklamlı HD'},us:{amount:0,plan:'N/A'},eu:{amount:0,plan:'N/A'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Reklamlı HD',price:119.99},{name:'Reklamsız HD',price:179.99},{name:'Reklamsız 4K',price:239.99},{name:'Spor Paketi',price:349.99}]}},{id:'bein',name:'beIN Connect',color:'#6F2DA8',rgb:'111,45,168',prices:{tr:{amount:249.99,plan:'Spor Paketi'},us:{amount:0,plan:'N/A'},eu:{amount:19.99,plan:'Sports'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Eğlence Paketi',price:149.99},{name:'Spor Paketi',price:249.99},{name:'Süper Paket',price:349.99}]}},{id:'spotify',name:'Spotify',color:'#1DB954',rgb:'29,185,84',prices:{tr:{amount:79.99,plan:'Bireysel'},us:{amount:10.99,plan:'Individual'},eu:{amount:10.99,plan:'Individual'},as:{amount:10.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:79.99},{name:'Öğrenci',price:49.99},{name:'Duo (2 kişi)',price:129.99},{name:'Aile (6 kişi)',price:159.99}]}},{id:'tvplus',name:'Turkcell TV+',color:'#FFD100',rgb:'255,209,0',textDark:true,prices:{tr:{amount:109.99,plan:'Bireysel'},us:{amount:9.99,plan:'Individual'},eu:{amount:9.99,plan:'Individual'},as:{amount:9.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99}]}}];
-const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/netflix_N.webp" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/youtube.webp" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/Disney\+.webp" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/prime video.webp" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/hbo.webp" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/apple.webp" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/appleb.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/twitch.webp" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/kick.webp" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/kickb.webp" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/exxen.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/exxenb.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/bein.webp" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/Spotify.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/Spotifyb.webp" style="width:66px;height:66px;object-fit:contain;">`},tvplus:{w:66,h:66,html:`<img src="./assets/tvplus.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/tvplus2.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
+const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/netflix_N.webp" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/youtube.webp" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/Disney+.webp" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/prime video.webp" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/hbo.webp" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/apple.webp" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/appleb.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/twitch.webp" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/kick.webp" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/kickb.webp" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/exxen.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/exxenb.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/bein.webp" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/Spotify.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/Spotifyb.webp" style="width:66px;height:66px;object-fit:contain;">`},tvplus:{w:66,h:66,html:`<img src="./assets/tvplus.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/tvplus2.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
 let SVC=[],SETTINGS={},PROFILE={name:'Kullanıcı',email:'kullanici@icloud.com'};
 let active=-1,pwdShow=false;
 let qrRotateInterval=null,qrCountdown=null,qrSec=30,_qrSeed=Date.now();
@@ -1129,6 +1083,7 @@ function applyLang(){
   if($('title-profile'))  $('title-profile').textContent  = t('tab_profile_title');
   if($('title-settings')) $('title-settings').textContent = t('tab_settings_title');
   if($('subsSubtitle'))   $('subsSubtitle').textContent   = t('tab_subs_sub');
+  if($('subsTotalLbl'))   $('subsTotalLbl').textContent   = t('monthly_total');
   // Settings section başlıkları
   if($('lbl-security'))       $('lbl-security').textContent       = t('settings_security');
   if($('lbl-appearance'))     $('lbl-appearance').textContent     = t('settings_appearance');
@@ -1163,18 +1118,39 @@ function applyLang(){
   // Login/Auth metinleri
   if($('loginHeading')) $('loginHeading').innerHTML = t('login_heading');
   if($('loginSub')) $('loginSub').innerHTML = t('login_sub');
+  if($('introTagline')) $('introTagline').innerHTML = t('login_heading');
+  if($('introSub')) $('introSub').innerHTML = t('login_sub');
+  if($('introHint')) $('introHint').textContent = LANG==='tr' ? 'Zaten hesabınız var mı? Giriş yapın' : 'Already have an account? Sign in';
   if($('loginCreateBtnText')) $('loginCreateBtnText').textContent = t('login_create');
   if($('loginOrText')) $('loginOrText').textContent = t('login_or');
   if($('loginAppleBtnText')) $('loginAppleBtnText').textContent = t('login_apple');
   if($('loginGoogleBtnText')) $('loginGoogleBtnText').textContent = t('login_google');
   if($('loginEmailBtnText')) $('loginEmailBtnText').textContent = t('login_email');
   if($('loginSkipText')) $('loginSkipText').textContent = t('login_skip');
+  // Sub edit sheet labels
+  if($('seSubDetailLbl')) $('seSubDetailLbl').textContent = t('sub_detail');
+  if($('sePriceLbl')) $('sePriceLbl').textContent = t('price_label');
+  if($('sePlanLbl')) $('sePlanLbl').textContent = t('plan_field');
+  if($('seShareLbl')) $('seShareLbl').textContent = t('share_label');
+  if($('seShareWhoLbl')) $('seShareWhoLbl').textContent = t('share_who');
+  if($('seShareHowLbl')) $('seShareHowLbl').textContent = t('share_how');
+  if($('seRenewLbl')) $('seRenewLbl').textContent = t('renew_date_field');
+  if($('seEmailLbl')) $('seEmailLbl').textContent = t('email_field');
+  if($('sePwdLbl')) $('sePwdLbl').textContent = t('password_field');
+  if($('sesSaveBtn')) $('sesSaveBtn').textContent = t('save_btn');
+  if($('sesDeleteBtn')) $('sesDeleteBtn').textContent = t('delete_sub');
   // Email auth sheet metinleri + placeholder
   setEmailAuthMode(_emailAuthMode);
   if($('emailAuthName')) $('emailAuthName').placeholder = LANG==='tr' ? 'Ad Soyad' : 'Full Name';
   if($('emailAuthEmail')) $('emailAuthEmail').placeholder = LANG==='tr' ? 'E-posta adresi' : 'Email address';
   if($('emailAuthPassword')) $('emailAuthPassword').placeholder = LANG==='tr' ? 'Şifre (en az 6 karakter)' : 'Password (min 6 characters)';
   if($('emailAuthConfirmPassword')) $('emailAuthConfirmPassword').placeholder = LANG==='tr' ? 'Şifreyi tekrar yaz' : 'Confirm password';
+  if($('pinGreeting')) $('pinGreeting').textContent = LANG==='tr' ? 'Hoş geldiniz' : 'Welcome back';
+  if($('pinHint')) $('pinHint').textContent = LANG==='tr' ? 'PIN ile giriş yapın' : 'Sign in with PIN';
+  if($('pinDevicePassText')) $('pinDevicePassText').textContent = LANG==='tr' ? 'Telefon Şifresi' : 'Device Passcode';
+  if($('pinFaceIdText')) $('pinFaceIdText').textContent = LANG==='tr' ? 'Face ID ile giriş' : 'Sign in with Face ID';
+  if($('pinSkipBtn')) $('pinSkipBtn').textContent = LANG==='tr' ? 'Atla' : 'Skip';
+  if($('obSkipBtn')) $('obSkipBtn').textContent = LANG==='tr' ? 'Atla' : 'Skip';
   // Dil butonları aktif durumu
   document.querySelectorAll('.lang-btn').forEach(b=>{
     b.classList.toggle('lang-sel', b.dataset.lang === LANG);
@@ -1185,6 +1161,30 @@ function applyLang(){
 function getRegion(){return REGION_DATA[SETTINGS.region||'tr']||REGION_DATA.tr;}
 function getCountryPlans(svcId){const countryCode=SETTINGS.country||'tr';const region=SETTINGS.region||'tr';const countryData=COUNTRY_PRICES[countryCode];if(countryData&&countryData[svcId]&&countryData[svcId].plans)return countryData[svcId].plans;const svcDef=POPULAR_SVCS.find(p=>p.id===svcId);if(svcDef&&svcDef.plans)return svcDef.plans[region]||svcDef.plans.tr||[];return[];}
 function getCountrySymbol(){const c=COUNTRIES.find(x=>x.code===(SETTINGS.country||'tr'));return c?c.symbol:'₺';}
+function localizePlanName(name){
+  if(LANG!=='en'||!name)return name||'';
+  const map={
+    'Reklamlı':'With Ads',
+    'Standart':'Standard',
+    'Aile':'Family',
+    'Bireysel':'Individual',
+    'Öğrenci':'Student',
+    'Reklamsız':'Ad-Free',
+    'Ücretsiz':'Free',
+    'Spor Paketi':'Sports Pack',
+    'Kanal Aboneliği':'Channel Subscription',
+    'Prime Üyelik':'Prime Membership',
+    'Aile Paylaşımı':'Family Sharing',
+    'Reklamlı HD':'HD with Ads',
+    'Reklamsız HD':'HD Ad-Free',
+    'Reklamsız 4K':'4K Ad-Free',
+    'Eğlence Paketi':'Entertainment Pack',
+    'Süper Paket':'Super Pack',
+    'Duo (2 kişi)':'Duo (2 people)',
+    'Aile (6 kişi)':'Family (6 people)'
+  };
+  return map[name]||name;
+}
 function updateRegionUI(){const code=SETTINGS.country||'tr';const country=COUNTRIES.find(c=>c.code===code);const desc=document.getElementById('regionDesc');if(desc)desc.textContent=country?country.name:'Türkiye';}
 function buildRegionPicker(){const cur=SETTINGS.country||'tr';const picker=document.getElementById('regionPicker');if(!picker)return;picker.innerHTML=`<input id="countrySearch" class="add-input" placeholder="🔍 Ülke ara..." type="text" style="margin-bottom:4px;" oninput="filterCountries(this.value)" autocomplete="off"><div id="countryList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;scrollbar-width:none;"></div>`;renderCountryList('',cur);setTimeout(()=>{const el=document.getElementById('countrySearch');if(el)el.focus();},100);}
 function filterCountries(q){renderCountryList(q,SETTINGS.country||'tr');}
@@ -1219,18 +1219,18 @@ function setPinChoice(val){
   setTimeout(function(){ tapped.style.transform='scale(1.01)'; setTimeout(function(){ tapped.style.transform=''; },200); },100);
 }
 let obStep=0;const obSteps=['services','pinChoice','pin','done'];let obSelectedServices=['netflix','youtube','disney','prime','hbo','apple'];let obNewPin='';
-function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const btnText=btn?btn.querySelector('.cta-btn-text'):null;const skip=document.querySelector('.onboard-skip');const setSkip=(v)=>{if(skip)skip.style.display=v;};content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){if(btnText)btnText.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">Adım 1 / 3</div><div class="onboard-title">Hangi servisleri<br>kullanıyorsun?</div><div class="onboard-sub">Hepsini sonra değiştirebilirsin.</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){if(btnText)btnText.textContent='Devam';setSkip('block');content.innerHTML=`<div style="padding:0 4px;">
-<div class="onboard-step-lbl">Adım 2 / 3</div>
-<div class="onboard-title" style="margin-bottom:8px;">Güvenlik</div>
-<div class="onboard-sub" style="margin-bottom:28px;">Uygulamana PIN ile giriş yapmak ister misin?</div>
+function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const btnText=btn?btn.querySelector('.cta-btn-text'):null;const skip=document.querySelector('.onboard-skip');const tr=LANG==='tr';const setSkip=(v)=>{if(skip)skip.style.display=v;};if(skip)skip.textContent=tr?'Atla':'Skip';content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){if(btnText)btnText.textContent=tr?'Devam':'Continue';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">${tr?'Adım 1 / 3':'Step 1 / 3'}</div><div class="onboard-title">${tr?'Hangi servisleri<br>kullanıyorsun?':'Which services<br>do you use?'}</div><div class="onboard-sub">${tr?'Hepsini sonra değiştirebilirsin.':'You can change all of them later.'}</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){if(btnText)btnText.textContent=tr?'Devam':'Continue';setSkip('block');content.innerHTML=`<div style="padding:0 4px;">
+<div class="onboard-step-lbl">${tr?'Adım 2 / 3':'Step 2 / 3'}</div>
+<div class="onboard-title" style="margin-bottom:8px;">${tr?'Güvenlik':'Security'}</div>
+<div class="onboard-sub" style="margin-bottom:28px;">${tr?'Uygulamana PIN ile giriş yapmak ister misin?':'Do you want to use a PIN to unlock the app?'}</div>
 <div style="display:flex;flex-direction:column;gap:12px;">
   <div id="pin-yes" onclick="setPinChoice(true)" style="display:flex;align-items:center;gap:16px;padding:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;cursor:pointer;transition:all .2s cubic-bezier(.34,1.4,.64,1);">
     <div style="width:48px;height:48px;border-radius:14px;background:rgba(130,80,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#c084fc" stroke-width="1.8" fill="none"/><path d="M8 11V7a4 4 0 018 0v4" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="12" cy="16" r="1.5" fill="#c084fc"/></svg>
     </div>
     <div style="flex:1;">
-      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;">Evet, PIN kur</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.4;">Şifrelerini güvende tut</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;">${tr?'Evet, PIN kur':'Yes, set a PIN'}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.4;">${tr?'Şifrelerini güvende tut':'Keep your passwords secure'}</div>
     </div>
     <div id="pin-yes-check" style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;"></div>
   </div>
@@ -1239,16 +1239,16 @@ function renderOnboardStep(){const prog=document.getElementById('obProgress');pr
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="rgba(255,255,255,.4)" stroke-width="1.8" fill="none"/><path d="M5 11V7a4 4 0 018 0" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round" fill="none"/><line x1="19" y1="5" x2="5" y2="19" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round"/></svg>
     </div>
     <div style="flex:1;">
-      <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:3px;">Hayır, şimdilik atlıyorum</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.3);line-height:1.4;">Daha sonra ayarlardan açabilirsin</div>
+      <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:3px;">${tr?'Hayır, şimdilik atlıyorum':'No, skip for now'}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.3);line-height:1.4;">${tr?'Daha sonra ayarlardan açabilirsin':'You can enable it later in settings'}</div>
     </div>
     <div id="pin-no-check" style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;"></div>
   </div>
 </div>
-</div>`;}else if(obStep===2){btn.style.display='none';setSkip('none');if(SETTINGS.usePin===false){onboardNext();return;}const KL={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">PIN Oluştur</div><div class="onboard-sub" id="obPinSub">4 haneli giriş şifreni belirle.</div></div><div class="ob-pin-dots"><div class="ob-pin-dot" id="op0"></div><div class="ob-pin-dot" id="op1"></div><div class="ob-pin-dot" id="op2"></div><div class="ob-pin-dot" id="op3"></div></div><div class="onboard-pin-grid">${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`<button class="ob-key" onclick="obKp(${JSON.stringify(k)})">${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:k==='del'?`<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M8 1H20a2 2 0 012 2v10a2 2 0 01-2 2H8L2 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M12 5.5l5 5M17 5.5l-5 5" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>`:`<div><div class="ob-key-num">${k}</div>${KL[k]?`<div class="ob-key-sub">${KL[k]}</div>`:''}</div>`}</button>`).join('')}</div></div>`;obNewPin='';obPinStep=0;}else if(obStep>=3){btn.style.display='';setSkip('none');if(btnText)btnText.textContent='Başla';content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">Hazırsın!</div><div class="onboard-sub">EasyTV kurulumu tamamlandı.</div></div></div>`;}
+</div>`;}else if(obStep===2){btn.style.display='none';setSkip('none');if(SETTINGS.usePin===false){onboardNext();return;}const KL={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">${tr?'PIN Oluştur':'Create PIN'}</div><div class="onboard-sub" id="obPinSub">${tr?'4 haneli giriş şifreni belirle.':'Set your 4-digit login PIN.'}</div></div><div class="ob-pin-dots"><div class="ob-pin-dot" id="op0"></div><div class="ob-pin-dot" id="op1"></div><div class="ob-pin-dot" id="op2"></div><div class="ob-pin-dot" id="op3"></div></div><div class="onboard-pin-grid">${[1,2,3,4,5,6,7,8,9,'face',0,'del'].map(k=>`<button class="ob-key" onclick="obKp(${JSON.stringify(k)})">${k==='face'?`<svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M3 8V5a2 2 0 012-2h3M23 8V5a2 2 0 00-2-2h-3M3 18v3a2 2 0 002 2h3M23 18v3a2 2 0 01-2 2h-3" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>`:k==='del'?`<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M8 1H20a2 2 0 012 2v10a2 2 0 01-2 2H8L2 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="none"/><path d="M12 5.5l5 5M17 5.5l-5 5" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>`:`<div><div class="ob-key-num">${k}</div>${KL[k]?`<div class="ob-key-sub">${KL[k]}</div>`:''}</div>`}</button>`).join('')}</div></div>`;obNewPin='';obPinStep=0;}else if(obStep>=3){btn.style.display='';setSkip('none');if(btnText)btnText.textContent=tr?'Başla':'Start';content.innerHTML=`<div class="ob-pin-wrap"><div class="ob-pin-head"><div class="onboard-title">${tr?'Hazırsın!':'You are ready!'}</div><div class="onboard-sub">${tr?'EasyTV kurulumu tamamlandı.':'EasyTV setup is complete.'}</div></div></div>`;}
 requestAnimationFrame(function(){var t=content.querySelector('.onboard-title');var s=content.querySelector('.onboard-sub');_charReveal(t,0.1);_charReveal(s,0.32);});}
 let obPinStep=0;
-function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent='PIN\'ini bir kez daha gir.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent='Eşleşmedi. Tekrar dene.';}}}}
+function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'PIN\'ini bir kez daha gir.':'Enter your PIN one more time.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'Eşleşmedi. Tekrar dene.':'PINs do not match. Try again.';}}}}
 function _obSlideNext(cb){const c=document.getElementById('obContent');c.style.animation='obSlideOut .25s cubic-bezier(.55,.06,.68,.19) both';c.addEventListener('animationend',function h(){c.removeEventListener('animationend',h);cb();},{once:true});}
 function onboardNext(){if(obStep===0){SVC=[];obSelectedServices.forEach(id=>{const svc=POPULAR_SVCS.find(s=>s.id===id);if(svc){const reg=SETTINGS.region||'tr';const pr=svc.prices?.[reg]||{amount:0,plan:''};const renewDate=new Date();renewDate.setMonth(renewDate.getMonth()+1);SVC.push({...svc,email:'',pwd:'',price:pr.amount,plan:pr.plan,renew:renewDate.toISOString().split('T')[0]});}});saveData();_obSlideNext(()=>{obStep++;renderOnboardStep();});return;}if(obStep===1){if(SETTINGS.usePin===false){_obSlideNext(()=>finishOnboard());}else{_obSlideNext(()=>{obStep++;renderOnboardStep();});}return;}if(obStep===2){_obSlideNext(()=>finishOnboard());return;}_obSlideNext(()=>{obStep++;renderOnboardStep();});}
 function finishOnboard(){
@@ -1278,45 +1278,41 @@ function skipOnboard(){localStorage.setItem('easytv_setup_done','1');const onboa
 function buildServicePicker(){
   var g=document.getElementById('spGrid');
   if(!g) return;
-  // Sadece sel class toggle — ilk render sonrasi tam re-render yapma
-  if(g.children.length===POPULAR_SVCS.length){
-    POPULAR_SVCS.forEach(function(s,i){
-      var el=g.children[i];
-      if(el) el.classList.toggle('sel',obSelectedServices.includes(s.id));
-    });
-    return;
-  }
-  // Ilk render: DocumentFragment ile tek DOM yazimi
-  var frag=document.createDocumentFragment();
+  g.innerHTML='';
   POPULAR_SVCS.forEach(function(s){
     var L=LOGO[s.id]||null;
     var isDark=s.textDark||(L&&L.textDark);
     var sel=obSelectedServices.includes(s.id);
     var el=document.createElement('div');
     el.className='sp-item '+s.id+(sel?' sel':'');
-    if(s.rgb) el.style.setProperty('--sp-rgb',s.rgb);
+    if(s.rgb) el.style.setProperty('--sp-rgb', s.rgb);
+
     var logoHtml='';
     if(L&&L.html&&L.html.indexOf('<img')>=0){
       var useHtml=isDark&&L.htmlDark?(sel?L.htmlDark:L.html):L.html;
       var srcM=useHtml.match(/src="([^"]+)"/);
-      logoHtml=srcM?'<img src="'+srcM[1]+'\" loading="lazy" decoding="async">':'';
-    }else if(L&&L.html){
-      logoHtml='<div class="sp-inline-logo">'+((isDark&&L.htmlDark)?(sel?(L.htmlDark||L.html):L.html):L.html)+'</div>';
-    }else{
+      logoHtml=srcM?'<img src="'+srcM[1]+'" loading="lazy">':'';
+    } else if(L&&L.html){
+      var inlineHtml=isDark&&L.htmlDark?(sel?(L.htmlDark||L.html):L.html):L.html;
+      logoHtml='<div class="sp-inline-logo">'+inlineHtml+'</div>';
+    } else {
       logoHtml='<span class="sp-text-logo">'+s.name.slice(0,2).toUpperCase()+'</span>';
     }
+
     var name=s.name.length>9?s.name.slice(0,8)+'…':s.name;
-    el.innerHTML='<div class="sp-logo-wrap">'+logoHtml+'</div><div class="sp-name">'+name+'</div>';
+
+    el.innerHTML='<div class="sp-logo-wrap">'+logoHtml+'</div>'
+      +'<div class="sp-name">'+name+'</div>';
+
+
     el.onclick=function(){
       var i2=obSelectedServices.indexOf(s.id);
       if(i2>=0) obSelectedServices.splice(i2,1);
       else obSelectedServices.push(s.id);
-      el.classList.toggle('sel',obSelectedServices.includes(s.id));
+      buildServicePicker();
     };
-    frag.appendChild(el);
+    g.appendChild(el);
   });
-  g.innerHTML='';
-  g.appendChild(frag);
 }
 function kp(n){
   if(pinVal.length>=4) return;
@@ -1492,12 +1488,7 @@ function buildGrid() {
     tile.onclick = () => {
       showErrorToast('Bu hizmet kilitli. Premium’a geçin veya başka bir hizmeti kaldırın.', 'warning');
     };
-    // Giriş animasyonu
     tile.style.opacity = '0.5';
-    tile.style.transform = 'translateY(14px) scale(.95)';
-    tile.style.transition = `opacity .4s ease ${Math.min((i+active.length)*.07,.6)}s, transform .4s cubic-bezier(.34,1.2,.64,1) ${Math.min((i+active.length)*.07,.6)}s`;
-    tile.classList.add('skeleton');
-    setTimeout(() => { tile.style.opacity='0.5'; tile.style.transform=''; tile.classList.remove('skeleton'); }, Math.min((i+active.length)*70+300, 900));
     gridEl.appendChild(tile);
   });
 }
@@ -1649,8 +1640,8 @@ function unlockApp() {
   if (ps) ps.style.display = 'none';
   setTimeout(() => {
     if (ps) ps.classList.remove('out');
-    if (pinGreeting) pinGreeting.textContent = 'Hoş geldiniz';
-    if (pinHint) pinHint.textContent = 'PIN ile giriş yapın';
+    if (pinGreeting) pinGreeting.textContent = LANG==='tr' ? 'Hoş geldiniz' : 'Welcome back';
+    if (pinHint) pinHint.textContent = LANG==='tr' ? 'PIN ile giriş yapın' : 'Sign in with PIN';
     pinVal = ''; updatePinDots();
   }, 520);
   // Sekme geçişini switchTab ile yap — nav .active class doğru güncellensin
@@ -1997,31 +1988,6 @@ function buildColorPicker(){const row=document.getElementById('colorRow');row.in
 
 function openAddModal(){
   buildPopularGrid();buildColorPicker();selectedPopular=null;const popularForm=document.getElementById('popularForm');const addModal=document.getElementById('addModal');if(popularForm)popularForm.style.display='none';if(addModal)addModal.classList.add('open');}
-
-function saveCustomService(){
-  var name=(document.getElementById('addName')?document.getElementById('addName').value:'').trim();
-  if(!name){showToast('Servis adi gerekli');return;}
-  var url=(document.getElementById('addUrl')?document.getElementById('addUrl').value:'').trim();
-  var email=(document.getElementById('addEmail')?document.getElementById('addEmail').value:'').trim();
-  var pwd=(document.getElementById('addPwd')?document.getElementById('addPwd').value:'').trim();
-  var priceRaw=(document.getElementById('addPrice')?document.getElementById('addPrice').value:'').replace(',','.');
-  var price=parseFloat(priceRaw)||0;
-  var d=new Date();d.setMonth(d.getMonth()+1);
-  var renew=(document.getElementById('addRenew')&&document.getElementById('addRenew').value)||d.toISOString().split('T')[0];
-  var selChip=document.querySelector('#colorRow .color-chip.sel');
-  var color=selChip&&selChip._color?selChip._color:'#00B0FF';
-  var favicon='';
-  if(url){var domain=url.replace(/^https?:\/\//,'').split('/')[0];favicon='https://www.google.com/s2/favicons?domain='+domain+'&sz=128';}
-  var id='custom_'+Date.now();
-  SVC.push({id:id,name:name,color:color,email:email,pwd:pwd,price:price,plan:'Ozel',renew:renew,favicon:favicon,_custom:true,_fullPrice:price,_userCount:1,_payMethod:'me'});
-  saveData();
-  if(typeof buildGrid==='function')buildGrid();
-  if(typeof renderSubs==='function')renderSubs();
-  closeAddModal();
-  showToast('+ '+name+' eklendi');
-  var ni=SVC.length-1;
-  setTimeout(function(){if(typeof tap==='function')tap(ni);},350);
-}
 let planModalSvc=null,planModalSelected=null;
 function openPlanModal(s){planModalSvc=s;planModalSelected=null;const L=LOGO[s.id]||null;let logoHtml='';if(L&&L.html&&L.html.includes('<img')){const iS=L.html.match(/src="([^"]+)"/)?.[ 1]||'';logoHtml=`<img src="${iS}" style="width:32px;height:32px;object-fit:contain;">`;}document.getElementById('planModalLogo').style.background=TILE_GRADIENTS[s.id]||s.color;document.getElementById('planModalLogo').innerHTML=logoHtml;document.getElementById('planModalName').textContent=s.name;const d=new Date();d.setMonth(d.getMonth()+1);document.getElementById('planRenewInput').value=d.toISOString().split('T')[0];const plans=getCountryPlans(s.id);const sym=getCountrySymbol();const list=document.getElementById('planList');list.innerHTML='';plans.forEach((p,i)=>{const el=document.createElement('div');el.className='plan-option'+(i===0?' selected':'');if(i===0)planModalSelected=p;el.innerHTML=`<div class="plan-option-left"><div class="plan-option-name">${p.name}</div><div style="font-size:13px;color:rgba(255,255,255,.45);">${p.price>0?sym+p.price.toFixed(2)+'/ay':'Ücretsiz'}</div></div><div class="plan-option-check">${i===0?'<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}</div>`;el.onclick=()=>{planModalSelected=p;list.querySelectorAll('.plan-option').forEach(o=>{o.classList.remove('selected');o.querySelector('.plan-option-check').innerHTML='';});el.classList.add('selected');el.querySelector('.plan-option-check').innerHTML='<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';};list.appendChild(el);});const btn=document.createElement('button');btn.className='plan-confirm-btn';btn.style.background='#fff';btn.style.color='#000';btn.textContent='Ekle';btn.onclick=confirmPlanAdd;list.appendChild(btn);document.getElementById('planModal').classList.add('open');}
 function closePlanModal(){const planModal=document.getElementById('planModal');if(planModal)planModal.classList.remove('open');planModalSvc=null;planModalSelected=null;}
@@ -2037,15 +2003,87 @@ function buildRemoveGrid(){const g=document.getElementById('removeGrid');g.inner
 function buildPopularGrid(){var g=document.getElementById('popularGrid');g.innerHTML='';POPULAR_SVCS.forEach(function(s){var L=LOGO[s.id]||LOGO._custom;var el=document.createElement('div');el.className='popular-item';var logoHtml='';var isDark=s.textDark||L.textDark;if(L.html&&L.html.indexOf('<img')>=0){var useHtml=isDark&&L.htmlDark?L.htmlDark:L.html;var src=useHtml.match(/src="([^"]+)"/)&&useHtml.match(/src="([^"]+)"/)[1]||'';logoHtml='<img src="'+src+'" style="width:60%;height:60%;object-fit:contain;">';}else if(L.html){logoHtml='<div style="transform:scale(.7);transform-origin:center;">'+(isDark?(L.htmlDark||L.html.replace(/fill="white"/g,'fill="black"')):L.html)+'</div>';}else{logoHtml='<span style="font-size:18px;font-weight:800;color:'+(isDark?'#000':'#fff')+'">'+s.name[0]+'</span>';}el.innerHTML='<div class="popular-ico" style="background:'+s.color+';--ico-glow:'+s.color+';border:2px solid '+s.color+'">'+logoHtml+'</div><div class="popular-name">'+s.name+'</div>';el.onclick=function(){closeAddModal();openPlanModal(s);};g.appendChild(el);});}
 function formatDate(d){return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});}
 let seEditIdx=-1;
-function openSubEdit(i){seEditIdx=i;const s=SVC[i];const L=LOGO[s.id]||{w:28,h:28,html:null};document.getElementById('seServiceName').textContent=s.name;const logoWrap=document.getElementById('seLogoWrap');logoWrap.style.background=s.color;if(L.html&&L.html.includes('<img')){const useHtml=(L.textDark||s.textDark)&&L.htmlDark?L.htmlDark:L.html;const src=useHtml.match(/src="([^"]+)"/)?.[1]||'';logoWrap.innerHTML=`<img src="${src}" style="width:28px;height:28px;object-fit:contain;">`;}else if(L.html){const sc=22/Math.max(L.w||22,L.h||22);logoWrap.innerHTML=`<div style="width:${Math.round((L.w||22)*sc)}px;height:${Math.round((L.h||22)*sc)}px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`;}else{logoWrap.innerHTML=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;}const saveBtn=document.getElementById('sesSaveBtn');saveBtn.style.background=TILE_GRADIENTS[s.id]||s.color||'rgba(255,255,255,.15)';saveBtn.style.color=(s.textDark||(LOGO[s.id]||{}).textDark)?'#000':'#fff';const chips=document.getElementById('sePlanChips');chips.innerHTML='';const oldWrap=document.getElementById('sePlanManualWrap');if(oldWrap)oldWrap.remove();const planRow=document.getElementById('sePlanRow');const planOpts=getCountryPlans(s.id);const sym=getCountrySymbol();if(planOpts.length>0){planRow.style.display='block';const isOther=!planOpts.find(p=>p.name===(s.plan||''));planOpts.forEach(p=>{const chip=document.createElement('button');const isSel=(s.plan||'')===p.name;chip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isSel?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isSel?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isSel?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;chip.textContent=p.name+' · '+sym+p.price.toFixed(0);chip.onclick=()=>{
-  // Press animasyonu
-  chip.style.transition='none';
-  chip.style.transform='scale(.93)';
-  chip.style.background='rgba(255,255,255,.35)';
-  void chip.offsetWidth;
-  chip.style.transition='all .18s';
-  chips.querySelectorAll('button').forEach(cc=>{cc.style.borderColor='rgba(255,255,255,.15)';cc.style.background='rgba(255,255,255,.04)';cc.style.color='rgba(255,255,255,.5)';cc.style.transform='';});
-  chip.style.borderColor='rgba(255,255,255,.6)';chip.style.background='rgba(255,255,255,.15)';chip.style.color='#fff';chip.style.transform='';document.getElementById('sePlan').value=p.name;document.getElementById('sePrice').value=p.price;const mw=document.getElementById('sePlanManualWrap');if(mw)mw.style.display='none';};chips.appendChild(chip);});const otherChip=document.createElement('button');otherChip.style.cssText=`padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid ${isOther?'rgba(255,255,255,.6)':'rgba(255,255,255,.15)'};background:${isOther?'rgba(255,255,255,.15)':'rgba(255,255,255,.04)'};color:${isOther?'#fff':'rgba(255,255,255,.5)'};transition:all .15s;white-space:nowrap;`;otherChip.textContent='Diğer';otherChip.onclick=()=>{chips.querySelectorAll('button').forEach(c=>{c.style.borderColor='rgba(255,255,255,.15)';c.style.background='rgba(255,255,255,.04)';c.style.color='rgba(255,255,255,.5)';});otherChip.style.borderColor='rgba(255,255,255,.6)';otherChip.style.background='rgba(255,255,255,.15)';otherChip.style.color='#fff';document.getElementById('sePlanManualWrap').style.display='block';document.getElementById('sePlan').value='';document.getElementById('sePrice').value='';};chips.appendChild(otherChip);const mw=document.createElement('div');mw.id='sePlanManualWrap';mw.style.cssText='display:'+(isOther?'flex':'none')+';flex-direction:column;gap:8px;margin-top:10px;';mw.innerHTML=`<input id="sePlanManualInput" class="add-input" type="text" placeholder="Plan adı..." value="${isOther?(s.plan||''):''}">`;chips.after(mw);document.getElementById('sePlanManualInput').oninput=()=>{document.getElementById('sePlan').value=document.getElementById('sePlanManualInput').value;};}else{planRow.style.display='none';}document.getElementById('seShareRow').style.display='none';document.getElementById('sePrice').value=s._fullPrice||s.fullPrice||s.price||'';document.getElementById('sePlan').value=s.plan||'';document.getElementById('seRenew').value=s.renew||'';document.getElementById('seEmail').value=s.email||'';document.getElementById('sePwd').value=s.pwd||'';document.getElementById('sePwd').type='password';renderSeUserPaySection(i,s);const m=document.getElementById('subEditModal');m.style.display='flex';requestAnimationFrame(()=>{document.getElementById('seModalSheet').style.transform='translateY(0)';});
+function openSubEdit(i){
+  seEditIdx=i;
+  const s=SVC[i];
+  const L=LOGO[s.id]||{w:28,h:28,html:null};
+  document.getElementById('seServiceName').textContent=s.name;
+  const logoWrap=document.getElementById('seLogoWrap');
+  logoWrap.style.background=s.color;
+  if(L.html&&L.html.includes('<img')){
+    const useHtml=(L.textDark||s.textDark)&&L.htmlDark?L.htmlDark:L.html;
+    const src=useHtml.match(/src="([^"]+)"/)?.[1]||'';
+    logoWrap.innerHTML=`<img src="${src}" style="width:28px;height:28px;object-fit:contain;">`;
+  }else if(L.html){
+    const sc=22/Math.max(L.w||22,L.h||22);
+    logoWrap.innerHTML=`<div style="width:${Math.round((L.w||22)*sc)}px;height:${Math.round((L.h||22)*sc)}px;display:flex;align-items:center;justify-content:center;">${L.html}</div>`;
+  }else{
+    logoWrap.innerHTML=`<span style="font-size:22px;font-weight:800;color:#fff;">${(s.name||'?')[0].toUpperCase()}</span>`;
+  }
+  const chips=document.getElementById('sePlanChips');
+  chips.innerHTML='';
+  const oldWrap=document.getElementById('sePlanManualWrap');
+  if(oldWrap)oldWrap.remove();
+  const planRow=document.getElementById('sePlanRow');
+  const planOpts=getCountryPlans(s.id);
+  const sym=getCountrySymbol();
+  if(planOpts.length>0){
+    planRow.style.display='block';
+    const selectedPlan=s.plan||'';
+    const isOther=!planOpts.find(p=>{
+      const localized=localizePlanName(p.name);
+      return selectedPlan===p.name||selectedPlan===localized;
+    });
+    planOpts.forEach(p=>{
+      const chip=document.createElement('button');
+      const localizedName=localizePlanName(p.name);
+      const isSel=selectedPlan===p.name||selectedPlan===localizedName;
+      chip.className='se-chip-btn'+(isSel?' active':'');
+      chip.textContent=localizedName+' · '+sym+p.price.toFixed(0);
+      chip.onclick=()=>{
+        chips.querySelectorAll('.se-chip-btn').forEach(cc=>cc.classList.remove('active'));
+        chip.classList.add('active');
+        document.getElementById('sePlan').value=localizedName;
+        document.getElementById('sePrice').value=p.price;
+        const mw=document.getElementById('sePlanManualWrap');
+        if(mw)mw.style.display='none';
+      };
+      chips.appendChild(chip);
+    });
+    const otherChip=document.createElement('button');
+    otherChip.className='se-chip-btn'+(isOther?' active':'');
+    otherChip.textContent=LANG==='tr'?'Diğer':'Other';
+    otherChip.onclick=()=>{
+      chips.querySelectorAll('.se-chip-btn').forEach(c=>c.classList.remove('active'));
+      otherChip.classList.add('active');
+      document.getElementById('sePlanManualWrap').style.display='block';
+      document.getElementById('sePlan').value='';
+      document.getElementById('sePrice').value='';
+    };
+    chips.appendChild(otherChip);
+    const mw=document.createElement('div');
+    mw.id='sePlanManualWrap';
+    mw.style.cssText='display:'+(isOther?'flex':'none')+';flex-direction:column;gap:8px;margin-top:10px;';
+    mw.innerHTML=`<input id="sePlanManualInput" class="add-input" type="text" placeholder="${LANG==='tr'?'Plan adı...':'Plan name...'}" value="${isOther?(s.plan||''):''}">`;
+    chips.after(mw);
+    document.getElementById('sePlanManualInput').oninput=()=>{
+      document.getElementById('sePlan').value=document.getElementById('sePlanManualInput').value;
+    };
+  }else{
+    planRow.style.display='none';
+  }
+  document.getElementById('seShareRow').style.display='none';
+  document.getElementById('sePrice').value=s._fullPrice||s.fullPrice||s.price||'';
+  document.getElementById('sePlan').value=s.plan||'';
+  document.getElementById('seRenew').value=s.renew||'';
+  document.getElementById('seEmail').value=s.email||'';
+  document.getElementById('sePwd').value=s.pwd||'';
+  document.getElementById('sePwd').type='password';
+  renderSeUserPaySection(i,s);
+  applyLang();
+  const m=document.getElementById('subEditModal');
+  m.style.display='flex';
+  requestAnimationFrame(()=>{document.getElementById('seModalSheet').style.transform='translateY(0)';});
   // Swipe-to-close
   const hdr=document.querySelector('.se-header');
   if(hdr&&!hdr._swipeAdded){hdr._swipeAdded=true;let sy=0;hdr.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});hdr.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-sy>60)closeSubEdit();},{passive:true});}
@@ -2080,7 +2118,7 @@ function renderSeUserPaySection(i,s){
     userChips.appendChild(btn);
   });
   payChips.innerHTML='';
-  [{method:'me',emoji:'💳',label:'Ben ödüyorum'},{method:'split',emoji:'🤝',label:'Eşit bölüşüyoruz'},{method:'other',emoji:'🎁',label:'Başkası ödüyor'}].forEach(opt=>{
+  [{method:'me',emoji:'💳',label:(LANG==='tr'?'Ben ödüyorum':'I pay')},{method:'split',emoji:'🤝',label:(LANG==='tr'?'Eşit bölüşüyoruz':'Split equally')},{method:'other',emoji:'🎁',label:(LANG==='tr'?'Başkası ödüyor':'Someone else pays')}].forEach(opt=>{
     const btn=document.createElement('button');
     btn.className='plan-pay-opt'+(opt.method===curPay?' active':'');
     btn.dataset.method=opt.method;
@@ -2793,7 +2831,7 @@ function renderSubs(){
   const dates=paid.filter(s=>s.renew).map(s=>({d:new Date(s.renew)})).sort((a,b)=>a.d-b.d);
   var nrEl=document.getElementById('nextRenew');
   if(nrEl)nrEl.textContent=dates.length?formatDate(dates[0].d):'—';
-  if(subsSubtitleEl)subsSubtitleEl.textContent=`${paid.length} aktif üyelik`;
+  if(subsSubtitleEl)subsSubtitleEl.textContent=LANG==='tr'?`${paid.length} aktif üyelik`:`${paid.length} active subscriptions`;
   if(!list)return;
   list.innerHTML='';
   if(SVC.length===0){
@@ -2847,7 +2885,7 @@ function renderSpendingChart(svc) {
     var el = document.getElementById('spendingChart');
     if (!el) return;
     if (!svc || svc.length === 0) {
-      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">Henüz servis eklenmedi</div></div></div>';
+      el.innerHTML = '<div class="pie-chart-card"><div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;opacity:.2;">📊</div><div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:12px;">'+(LANG==='tr'?'Henüz servis eklenmedi':'No services added yet')+'</div></div></div>';
       return;
     }
     var displayCode = SETTINGS.displayCurrency || 'TRY';
@@ -2886,7 +2924,7 @@ function renderSpendingChart(svc) {
         +'</div>';
     }).join('');
     el.innerHTML = '<div class="pie-chart-card">'
-      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">AYLIK HARCAMA</div>'
+      +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">'+(LANG==='tr'?'AYLIK HARCAMA':'MONTHLY SPENDING')+'</div>'
       +'<div style="display:flex;align-items:center;gap:14px;">'
       +svg
       +'<div style="flex:1;display:flex;flex-direction:column;gap:7px;min-width:0;">'+legend+'</div>'
