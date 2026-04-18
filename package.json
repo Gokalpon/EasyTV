@@ -78,6 +78,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "qa:smoke": "node scripts/smoke-local.js",
     "cap:copy": "npx cap copy",
     "cap:sync": "npx cap sync",
     "ios:sync": "npx cap sync ios",
@@ -88,6 +89,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^8.3.0",
-    "@capacitor/ios": "^8.3.0"
+    "@capacitor/ios": "^8.3.0",
+    "playwright": "^1.59.1"
   }
 }
