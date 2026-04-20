@@ -48,6 +48,7 @@ try {
 
 // authLoading'i kaldır ve uygun ekranı göster
 function _showFallbackScreen() {
+  currentUser = null;
   const authLoading = document.getElementById('authLoading');
   const bottomNav = document.getElementById('bottomNav');
   const welcomeScreen = document.getElementById('welcomeScreen');
@@ -61,15 +62,54 @@ function _showFallbackScreen() {
   if (loginScreen) loginScreen.style.display = 'none';
   if (onboardScreen) onboardScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'none';
-  // Session yoksa kullanıcıyı tek giriş kaynağı olan login ekranına getir.
+  // Session yoksa intro-first akışını göster.
   if (bottomNav) bottomNav.style.display = 'none';
   if (pinScreen) pinScreen.style.display = 'none';
-  if (introScreen) introScreen.style.display = 'none';
-  if (loginScreen) {
+  if (introScreen) {
+    introScreen.style.display = 'flex';
+    introScreen.style.opacity = '1';
+    _initFuzzyLogo();
+    _stabilizeIntroHero();
+    _initLogoGallery();
+  } else if (loginScreen) {
     loginScreen.style.display = 'flex';
     _charReveal(document.getElementById('loginHeading'), 0.18);
     _charReveal(document.getElementById('loginSub'), 0.46);
   }
+  updateAuthMenuAction();
+}
+
+function _openLoginFromSettings() {
+  const authLoading = document.getElementById('authLoading');
+  const introScreen = document.getElementById('introScreen');
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  const onboardScreen = document.getElementById('onboardScreen');
+  const pinScreen = document.getElementById('pinScreen');
+  const mainApp = document.getElementById('mainApp');
+  const loginScreen = document.getElementById('loginScreen');
+  const bottomNav = document.getElementById('bottomNav');
+  if (authLoading) authLoading.style.display = 'none';
+  if (introScreen) introScreen.style.display = 'none';
+  if (welcomeScreen) welcomeScreen.style.display = 'none';
+  if (onboardScreen) onboardScreen.style.display = 'none';
+  if (pinScreen) pinScreen.style.display = 'none';
+  if (mainApp) mainApp.style.display = 'none';
+  if (bottomNav) bottomNav.style.display = 'none';
+  if (loginScreen) {
+    loginScreen.style.display = 'flex';
+    loginScreen.style.opacity = '1';
+    _charReveal(document.getElementById('loginHeading'), 0.18);
+    _charReveal(document.getElementById('loginSub'), 0.46);
+  }
+  updateAuthMenuAction();
+}
+
+function updateAuthMenuAction() {
+  const lbl = document.getElementById('signOutLbl');
+  const desc = document.getElementById('signedInAs');
+  const loggedIn = !!(currentUser && (currentUser.email || currentUser.id));
+  if (lbl) lbl.textContent = loggedIn ? (LANG==='tr' ? 'Çıkış Yap' : 'Sign Out') : (LANG==='tr' ? 'Giriş Yap' : 'Sign In');
+  if (desc) desc.textContent = loggedIn ? (currentUser.email || '—') : (LANG==='tr' ? 'Hesabınla giriş yap' : 'Sign in to your account');
 }
 
 // ── FUZZY LOGO (EasyTV logosu için canvas glitch efekti) ──
@@ -703,6 +743,7 @@ async function onAuthSuccess(user) {
   if (authLoading) authLoading.style.display = 'flex';
 
   if (user) {
+    currentUser = user;
     const lastUserId = localStorage.getItem(EASYTV_LAST_USER_KEY);
     if (lastUserId && lastUserId !== user.id) {
       // Hesap değiştiyse eski kullanıcı verisini yeni oturuma taşımayalım.
@@ -724,6 +765,7 @@ async function onAuthSuccess(user) {
     if (signedInEl) signedInEl.textContent = user.email || '';
     syncPremiumFromPayments();
   }
+  updateAuthMenuAction();
 
   if (authLoading) authLoading.style.display = 'none';
   if (welcomeScreen) welcomeScreen.style.display = 'none';
@@ -824,7 +866,23 @@ function _wrapSaveData() {
 
 // Çıkış yap
 async function signOut() {
+  if (!_supabase) {
+    _openLoginFromSettings();
+    return;
+  }
+  try {
+    const sessionRes = await _supabase.auth.getSession();
+    const session = sessionRes && sessionRes.data ? sessionRes.data.session : null;
+    if (!session || !session.user) {
+      _openLoginFromSettings();
+      return;
+    }
+  } catch (_) {
+    _openLoginFromSettings();
+    return;
+  }
   try { if (_supabase) await _supabase.auth.signOut(); } catch(e) {}
+  currentUser = null;
   localStorage.clear();
   location.reload();
 }
@@ -1362,8 +1420,8 @@ loadData();
 const COUNTRIES=[{code:'tr',flag:'🇹🇷',name:'Türkiye',region:'tr',currency:'TRY',symbol:'₺'},{code:'de',flag:'🇩🇪',name:'Almanya',region:'eu',currency:'EUR',symbol:'€'},{code:'at',flag:'🇦🇹',name:'Avusturya',region:'eu',currency:'EUR',symbol:'€'},{code:'fr',flag:'🇫🇷',name:'Fransa',region:'eu',currency:'EUR',symbol:'€'},{code:'gb',flag:'🇬🇧',name:'Birleşik Krallık',region:'eu',currency:'GBP',symbol:'£'},{code:'us',flag:'🇺🇸',name:'Amerika Birleşik Devletleri',region:'us',currency:'USD',symbol:'$'},{code:'ca',flag:'🇨🇦',name:'Kanada',region:'us',currency:'CAD',symbol:'CA$'},{code:'jp',flag:'🇯🇵',name:'Japonya',region:'as',currency:'JPY',symbol:'¥'},{code:'kr',flag:'🇰🇷',name:'Güney Kore',region:'as',currency:'KRW',symbol:'₩'},{code:'au',flag:'🇦🇺',name:'Avustralya',region:'as',currency:'AUD',symbol:'A$'},{code:'in',flag:'🇮🇳',name:'Hindistan',region:'as',currency:'INR',symbol:'₹'},{code:'br',flag:'🇧🇷',name:'Brezilya',region:'us',currency:'BRL',symbol:'R$'},{code:'ae',flag:'🇦🇪',name:'Birleşik Arap Emirlikleri',region:'as',currency:'AED',symbol:'AED'},{code:'sa',flag:'🇸🇦',name:'Suudi Arabistan',region:'as',currency:'SAR',symbol:'SAR'},{code:'sg',flag:'🇸🇬',name:'Singapur',region:'as',currency:'SGD',symbol:'S$'}];
 const COUNTRY_CURRENCY={};COUNTRIES.forEach(c=>{COUNTRY_CURRENCY[c.code]=c.currency;});
 const COUNTRY_PRICES={tr:{netflix:{plans:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile',price:269.99}]},youtube:{plans:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99},{name:'Öğrenci',price:69.99}]},spotify:{plans:[{name:'Bireysel',price:79.99},{name:'Duo',price:129.99},{name:'Aile',price:159.99},{name:'Öğrenci',price:49.99}]},disney:{plans:[{name:'Reklamlı',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]},hbo:{plans:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate',price:249.99}]},apple:{plans:[{name:'Bireysel',price:49.99},{name:'Aile',price:99.99}]}},us:{netflix:{plans:[{name:'Standard w/ Ads',price:6.99},{name:'Standard',price:15.49},{name:'Premium',price:22.99}]},youtube:{plans:[{name:'Individual',price:13.99},{name:'Family',price:22.99},{name:'Student',price:7.99}]},spotify:{plans:[{name:'Individual',price:11.99},{name:'Duo',price:16.99},{name:'Family',price:19.99},{name:'Student',price:5.99}]},disney:{plans:[{name:'Basic w/ Ads',price:7.99},{name:'Standard',price:13.99}]},hbo:{plans:[{name:'With Ads',price:9.99},{name:'Ad-Free',price:15.99},{name:'Ultimate',price:19.99}]},apple:{plans:[{name:'Individual',price:9.99},{name:'Family',price:16.99}]}}};
-async function fetchExchangeRates(force=false){const now=Date.now();if(!force&&EXCHANGE_RATES.USD&&(now-RATES_TIMESTAMP)<24*3600*1000){updateRateUI();return;}const descEl=document.getElementById('rateLastUpdate');if(descEl)descEl.textContent='Güncelleniyor...';try{const res=await fetch('https://open.er-api.com/v6/latest/TRY');const data=await res.json();if(data.rates){EXCHANGE_RATES=data.rates;RATES_TIMESTAMP=now;localStorage.setItem('easytv_rates',JSON.stringify(EXCHANGE_RATES));localStorage.setItem('easytv_rates_ts',String(now));updateRateUI();showToast('✓ Kurlar güncellendi');}}catch(e){if(descEl)descEl.textContent='Güncelleme başarısız';}}
-function updateRateUI(){const descEl=document.getElementById('rateLastUpdate');const curDescEl=document.getElementById('currencyDesc');if(RATES_TIMESTAMP>0&&descEl){const d=new Date(RATES_TIMESTAMP);descEl.textContent=`Son güncelleme: ${d.toLocaleDateString('tr-TR')} ${d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}`;}const curCode=SETTINGS.displayCurrency||'TRY';const cur=CURRENCIES.find(c=>c.code===curCode)||CURRENCIES[0];if(curDescEl)curDescEl.textContent=`${cur.name} (${cur.symbol})`;}
+async function fetchExchangeRates(force=false){const now=Date.now();if(!force&&EXCHANGE_RATES.USD&&(now-RATES_TIMESTAMP)<24*3600*1000){updateRateUI();return;}const descEl=document.getElementById('rateLastUpdate');if(descEl)descEl.textContent=LANG==='tr'?'Güncelleniyor...':'Updating...';try{const res=await fetch('https://open.er-api.com/v6/latest/TRY');const data=await res.json();if(data.rates){EXCHANGE_RATES=data.rates;RATES_TIMESTAMP=now;localStorage.setItem('easytv_rates',JSON.stringify(EXCHANGE_RATES));localStorage.setItem('easytv_rates_ts',String(now));updateRateUI();showToast(LANG==='tr'?'✓ Kurlar güncellendi':'✓ Rates updated');}}catch(e){if(descEl)descEl.textContent=LANG==='tr'?'Güncelleme başarısız':'Update failed';}}
+function updateRateUI(){const descEl=document.getElementById('rateLastUpdate');const curDescEl=document.getElementById('currencyDesc');if(RATES_TIMESTAMP>0&&descEl){const d=new Date(RATES_TIMESTAMP);const locale=LANG==='tr'?'tr-TR':'en-US';const label=LANG==='tr'?'Son güncelleme':'Last update';descEl.textContent=`${label}: ${d.toLocaleDateString(locale)} ${d.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'})}`;}const curCode=SETTINGS.displayCurrency||'TRY';const cur=CURRENCIES.find(c=>c.code===curCode)||CURRENCIES[0];if(curDescEl)curDescEl.textContent=`${cur.name} (${cur.symbol})`;}
 function convertPrice(priceVal, sourceCurrency){
   // priceVal: number, sourceCurrency: 'TRY'|'USD'|... (yoksa TRY varsay)
   const src = sourceCurrency || 'TRY';
@@ -1387,9 +1445,9 @@ function formatPrice(priceVal, sourceCurrency){
   return symbol + value.toFixed(2);
 }
 function renderCurrencyList(q){const curCode=SETTINGS.displayCurrency||'TRY';const filtered=q?CURRENCIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.toLowerCase().includes(q.toLowerCase())||c.symbol.toLowerCase().includes(q.toLowerCase())):CURRENCIES;const list=document.getElementById('currencyPickerList');if(!list)return;list.innerHTML=filtered.map(c=>`<div onclick="selectCurrency('${c.code}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 18px;font-size:14px;font-weight:600;color:${c.code===curCode?'#fff':'rgba(255,255,255,.65)'};cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);"><span><span style="font-weight:800;color:rgba(255,255,255,.9);min-width:36px;display:inline-block;">${c.symbol}</span>&nbsp;${c.name} <span style="font-size:12px;color:rgba(255,255,255,.3);">${c.code}</span></span>${c.code===curCode?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>`).join('');}
-function openCurrencyPicker(){let pickerEl=document.getElementById('currencyPickerModal');if(!pickerEl){pickerEl=document.createElement('div');pickerEl.id='currencyPickerModal';pickerEl.style.cssText='display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';pickerEl.innerHTML=`<div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:80%;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;"><div style="font-size:17px;font-weight:800;color:#fff;">Para Birimi Seç</div><button onclick="closeCurrencyPicker()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div><div style="padding:0 16px 10px;"><input class="add-input" id="currencySearchInput" placeholder="🔍 Para birimi ara..." oninput="renderCurrencyList(this.value)" style="margin:0;" autocomplete="off"></div><div id="currencyPickerList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div></div>`;pickerEl.addEventListener('click',function(e){if(e.target===pickerEl)closeCurrencyPicker();});document.getElementById('phone').appendChild(pickerEl);}pickerEl.style.display='flex';setTimeout(()=>renderCurrencyList(''),30);}
+function openCurrencyPicker(){let pickerEl=document.getElementById('currencyPickerModal');if(!pickerEl){const title=LANG==='tr'?'Para Birimi Seç':'Select Currency';const searchPh=LANG==='tr'?'🔍 Para birimi ara...':'🔍 Search currency...';pickerEl=document.createElement('div');pickerEl.id='currencyPickerModal';pickerEl.style.cssText='display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';pickerEl.innerHTML=`<div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:80%;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;"><div style="font-size:17px;font-weight:800;color:#fff;">${title}</div><button onclick="closeCurrencyPicker()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div><div style="padding:0 16px 10px;"><input class="add-input" id="currencySearchInput" placeholder="${searchPh}" oninput="renderCurrencyList(this.value)" style="margin:0;" autocomplete="off"></div><div id="currencyPickerList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div></div>`;pickerEl.addEventListener('click',function(e){if(e.target===pickerEl)closeCurrencyPicker();});document.getElementById('phone').appendChild(pickerEl);}pickerEl.style.display='flex';setTimeout(()=>renderCurrencyList(''),30);}
 function closeCurrencyPicker(){const el=document.getElementById('currencyPickerModal');if(el)el.style.display='none';}
-function selectCurrency(code){SETTINGS.displayCurrency=code;saveData();closeCurrencyPicker();updateRateUI();renderSubs();showToast('✓ Para birimi değiştirildi');}
+function selectCurrency(code){SETTINGS.displayCurrency=code;saveData();closeCurrencyPicker();updateRateUI();renderSubs();showToast(LANG==='tr'?'✓ Para birimi değiştirildi':'✓ Currency updated');}
 function toggleWlcRegion(){const trigger=document.getElementById('wlcRegionTrigger');const dropdown=document.getElementById('wlcRegionDropdown');const isOpen=dropdown.classList.contains('open');trigger.classList.toggle('open',!isOpen);dropdown.classList.toggle('open',!isOpen);if(!isOpen){buildWlcRegionList('');setTimeout(()=>{const s=document.getElementById('wlcRegionSearch');if(s){s.value='';s.focus();}document.addEventListener('click',function close(e){const wrap=document.getElementById('wlcRegionWrap');if(wrap&&!wrap.contains(e.target)){const trig=document.getElementById('wlcRegionTrigger');if(trig)trig.classList.remove('open');const drop=document.getElementById('wlcRegionDropdown');if(drop)drop.classList.remove('open');document.removeEventListener('click',close);}});},50);}}
 function buildWlcRegionList(q){const list=document.getElementById('wlcRegionList');if(!list)return;const cur=SETTINGS.country||'tr';const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.toLowerCase().includes(q.toLowerCase())):COUNTRIES;list.innerHTML='';filtered.forEach(c=>{const btn=document.createElement('button');btn.className='wlc-lang-option'+(c.code===cur?' selected':'');btn.innerHTML=`<span style="font-size:16px;margin-right:6px;">${c.flag}</span><span style="flex:1;text-align:left;">${c.name}</span><span style="font-size:11px;color:rgba(255,255,255,.3);margin-left:4px;">${c.symbol}</span>${c.code===cur?'<span style="margin-left:6px;color:#4cd964;font-size:14px;">✓</span>':''}`;btn.onclick=()=>wlcSetRegion(c.code,c.region,c.flag,c.name);list.appendChild(btn);});}
 function wlcSetRegion(code,region,flag,name){SETTINGS.country=code;SETTINGS.region=region;saveData();var trigger=document.getElementById('wlcRegionTrigger');if(trigger)trigger.classList.remove('open');var dropdown=document.getElementById('wlcRegionDropdown');if(dropdown)dropdown.classList.remove('open');var flagEl=document.getElementById('wlcRegionFlag');var labelEl=document.getElementById('wlcRegionLabel');if(flagEl)flagEl.textContent=flag;if(labelEl)labelEl.textContent=name.split(' ')[0];}
@@ -1442,6 +1500,17 @@ function applyLang(){
   if($('lbl-lang'))           $('lbl-lang').textContent           = t('settings_lang');
   if($('lbl-region-section')) $('lbl-region-section').textContent = t('lbl_region_section') || (LANG==='tr'?'Bölge & Para Birimi':'Region & Currency');
   if($('lbl-app-section'))    $('lbl-app-section').textContent    = t('lbl_app_section')    || (LANG==='tr'?'Uygulama':'App');
+  if($('lbl-premium-section')) $('lbl-premium-section').textContent = LANG==='tr' ? 'Premium' : 'Premium';
+  if($('lbl-account-section')) $('lbl-account-section').textContent = LANG==='tr' ? 'Hesap' : 'Account';
+  if($('premiumMenuLbl')) $('premiumMenuLbl').textContent = 'EasyTV Premium';
+  if($('premiumStatusDesc') && !isPremium()) $('premiumStatusDesc').textContent = LANG==='tr' ? 'Sınırsız abonelik ekle' : 'Add unlimited subscriptions';
+  if($('exportDataLbl')) $('exportDataLbl').textContent = LANG==='tr' ? 'Verilerimi Kaydet' : 'Export My Data';
+  if($('exportDataDesc')) $('exportDataDesc').textContent = LANG==='tr' ? 'Bilgilerini telefona indir' : 'Download your data';
+  if($('importDataLbl')) $('importDataLbl').textContent = LANG==='tr' ? 'Verileri Geri Yükle' : 'Restore Data';
+  if($('importDataDesc')) $('importDataDesc').textContent = LANG==='tr' ? 'Kaydedilen bilgileri aç' : 'Load backup data';
+  if($('pinChangeLbl')) $('pinChangeLbl').textContent = LANG==='tr' ? 'PIN Değiştir' : 'Change PIN';
+  if($('pinChangeDesc')) $('pinChangeDesc').textContent = LANG==='tr' ? 'Giriş şifreni güncelle' : 'Update your login PIN';
+  updateAuthMenuAction();
   // Toggle satır etiketleri — toggle switch ID'sinden closest ile bul
   const togMap = {
     'tog-faceid':     ['tog_faceid','tog_faceid_desc'],
@@ -1478,6 +1547,26 @@ function applyLang(){
   if($('loginGoogleBtnText')) $('loginGoogleBtnText').textContent = t('login_google');
   if($('loginEmailBtnText')) $('loginEmailBtnText').textContent = t('login_email');
   if($('loginSkipText')) $('loginSkipText').textContent = t('login_skip');
+  if($('addModalTitle')) $('addModalTitle').textContent = LANG==='tr' ? 'Servis Ekle' : 'Add Service';
+  if($('tab-popular')) $('tab-popular').textContent = LANG==='tr' ? 'Popüler' : 'Popular';
+  if($('tab-custom')) $('tab-custom').textContent = LANG==='tr' ? 'Özel' : 'Custom';
+  if($('tab-remove')) $('tab-remove').textContent = LANG==='tr' ? 'Çıkar' : 'Remove';
+  if($('addNameLbl')) $('addNameLbl').textContent = LANG==='tr' ? 'Servis Adı' : 'Service Name';
+  if($('addWebsiteLbl')) $('addWebsiteLbl').textContent = LANG==='tr' ? 'Web Sitesi (logo için)' : 'Website (for logo)';
+  if($('addEmailLbl')) $('addEmailLbl').textContent = LANG==='tr' ? 'E-Posta / Kullanıcı Adı' : 'Email / Username';
+  if($('addPwdLbl')) $('addPwdLbl').textContent = LANG==='tr' ? 'Şifre' : 'Password';
+  if($('addPriceLbl')) $('addPriceLbl').textContent = LANG==='tr' ? 'Aylık Ücret (opsiyonel)' : 'Monthly Price (optional)';
+  if($('addRenewLbl')) $('addRenewLbl').textContent = LANG==='tr' ? 'Yenileme Tarihi' : 'Renewal Date';
+  if($('addColorLbl')) $('addColorLbl').textContent = LANG==='tr' ? 'Renk' : 'Color';
+  if($('addSaveBtn')) $('addSaveBtn').textContent = LANG==='tr' ? 'Kaydet' : 'Save';
+  if($('removeHint')) $('removeHint').textContent = LANG==='tr' ? 'Çıkarmak istediğin servise dokun' : 'Tap the service you want to remove';
+  if($('planSelectLbl')) $('planSelectLbl').textContent = LANG==='tr' ? 'Plan seçin' : 'Select a plan';
+  if($('planPriceHint')) $('planPriceHint').textContent = LANG==='tr' ? 'Fiyatlar güncel olmayabilir.' : 'Prices may not be up to date.';
+  if($('planRenewMiniLbl')) $('planRenewMiniLbl').innerHTML = LANG==='tr' ? 'Yenileme<br>tarihi' : 'Renewal<br>date';
+  if($('editProfileTitle')) $('editProfileTitle').textContent = LANG==='tr' ? 'Profili Düzenle' : 'Edit Profile';
+  if($('editNameLbl')) $('editNameLbl').textContent = LANG==='tr' ? 'Ad Soyad' : 'Full Name';
+  if($('editEmailLbl')) $('editEmailLbl').textContent = LANG==='tr' ? 'E-Posta' : 'Email';
+  if($('editProfileSaveBtn')) $('editProfileSaveBtn').textContent = LANG==='tr' ? 'Kaydet' : 'Save';
   // Sub edit sheet labels
   if($('seSubDetailLbl')) $('seSubDetailLbl').textContent = t('sub_detail');
   if($('sePriceLbl')) $('sePriceLbl').textContent = t('price_label');
@@ -1496,6 +1585,13 @@ function applyLang(){
   if($('emailAuthEmail')) $('emailAuthEmail').placeholder = LANG==='tr' ? 'E-posta adresi' : 'Email address';
   if($('emailAuthPassword')) $('emailAuthPassword').placeholder = LANG==='tr' ? 'Şifre (en az 6 karakter)' : 'Password (min 6 characters)';
   if($('emailAuthConfirmPassword')) $('emailAuthConfirmPassword').placeholder = LANG==='tr' ? 'Şifreyi tekrar yaz' : 'Confirm password';
+  if($('addName')) $('addName').placeholder = LANG==='tr' ? 'Netflix, Spotify...' : 'Netflix, Spotify...';
+  if($('addUrl')) $('addUrl').placeholder = LANG==='tr' ? 'netflix.com' : 'netflix.com';
+  if($('addEmail')) $('addEmail').placeholder = LANG==='tr' ? 'ornek@email.com' : 'name@email.com';
+  if($('addPrice')) $('addPrice').placeholder = LANG==='tr' ? '₺79,90' : '$9.99';
+  if($('seEmail')) $('seEmail').placeholder = LANG==='tr' ? 'ornek@mail.com' : 'name@mail.com';
+  if($('editName')) $('editName').placeholder = LANG==='tr' ? 'Adınız' : 'Your name';
+  if($('editEmail')) $('editEmail').placeholder = LANG==='tr' ? 'email@ornek.com' : 'email@example.com';
   if($('pinGreeting')) $('pinGreeting').textContent = LANG==='tr' ? 'Hoş geldiniz' : 'Welcome back';
   if($('pinHint')) $('pinHint').textContent = LANG==='tr' ? 'PIN ile giriş yapın' : 'Sign in with PIN';
   if($('pinDevicePassText')) $('pinDevicePassText').textContent = LANG==='tr' ? 'Telefon Şifresi' : 'Device Passcode';
@@ -1537,8 +1633,8 @@ function localizePlanName(name){
   };
   return map[name]||name;
 }
-function updateRegionUI(){const code=SETTINGS.country||'tr';const country=COUNTRIES.find(c=>c.code===code);const desc=document.getElementById('regionDesc');if(desc)desc.textContent=country?country.name:'Türkiye';}
-function buildRegionPicker(){const cur=SETTINGS.country||'tr';const picker=document.getElementById('regionPicker');if(!picker)return;picker.innerHTML=`<input id="countrySearch" class="add-input" placeholder="🔍 Ülke ara..." type="text" style="margin-bottom:4px;" oninput="filterCountries(this.value)" autocomplete="off"><div id="countryList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;scrollbar-width:none;"></div>`;renderCountryList('',cur);setTimeout(()=>{const el=document.getElementById('countrySearch');if(el)el.focus();},100);}
+function updateRegionUI(){const code=SETTINGS.country||'tr';const country=COUNTRIES.find(c=>c.code===code);const desc=document.getElementById('regionDesc');if(desc)desc.textContent=country?country.name:(LANG==='tr'?'Türkiye':'Turkey');}
+function buildRegionPicker(){const cur=SETTINGS.country||'tr';const picker=document.getElementById('regionPicker');if(!picker)return;picker.innerHTML=`<input id="countrySearch" class="add-input" placeholder="${LANG==='tr'?'🔍 Ülke ara...':'🔍 Search country...'}" type="text" style="margin-bottom:4px;" oninput="filterCountries(this.value)" autocomplete="off"><div id="countryList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;scrollbar-width:none;"></div>`;renderCountryList('',cur);setTimeout(()=>{const el=document.getElementById('countrySearch');if(el)el.focus();},100);}
 function filterCountries(q){renderCountryList(q,SETTINGS.country||'tr');}
 function renderCountryList(q,cur){const list=document.getElementById('countryList');if(!list)return;const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.includes(q.toLowerCase())):COUNTRIES;list.innerHTML=filtered.map(c=>`<div class="region-item${c.code===cur?' region-sel':''}" onclick="selectCountry('${c.code}','${c.region}')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;line-height:1;">${c.flag}</span><div><div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.75)'};">${c.name}</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div></div></div>${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>`).join('');}
 function selectCountry(code,region){SETTINGS.country=code;SETTINGS.region=region;saveData();renderCountryList('',code);updateRegionUI();}
@@ -1763,9 +1859,9 @@ function buildGrid() {
     gridEl.style.display = 'flex';
     gridEl.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;width:100%;">
       <div style="opacity:.2;animation:emptyBob 3s ease-in-out infinite;"><svg width="56" height="48" viewBox="0 0 56 48" fill="none"><rect x="1" y="1" width="54" height="36" rx="5" stroke="white" stroke-width="2"/><path d="M18 37v6M38 37v6M12 43h32" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
-      <div style="font-size:17px;font-weight:700;color:rgba(255,255,255,.45);text-align:center;">Henüz servis yok</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.25);text-align:center;line-height:1.6;">Sağ üstteki + butonuna<br>basarak ekleyebilirsin</div>
-      <button onclick="openAddModal()" style="margin-top:8px;padding:13px 28px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);border-radius:14px;color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .2s;"><span style="margin-right:4px;">+</span> Servis Ekle</button></div>`;
+      <div style="font-size:17px;font-weight:700;color:rgba(255,255,255,.45);text-align:center;">${LANG==='tr'?'Henüz servis yok':'No services yet'}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.25);text-align:center;line-height:1.6;">${LANG==='tr'?'Sağ üstteki + butonuna<br>basarak ekleyebilirsin':'Use the + button on top right<br>to add your first service'}</div>
+      <button onclick="openAddModal()" style="margin-top:8px;padding:13px 28px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);border-radius:14px;color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .2s;"><span style="margin-right:4px;">+</span> ${LANG==='tr'?'Servis Ekle':'Add Service'}</button></div>`;
     return;
   }
   gridEl.style.display = '';
@@ -2352,7 +2448,7 @@ function doCopy(btn,f){
   }
 }
 function openDeepLink(){if(active<0)return;const s=SVC[active];const reg=getRegion();const deepLink=reg.deep[s.id];const storeLink=reg.store[s.id];if(deepLink){showToast(`${s.name} açılıyor...`);const iframe=document.createElement('iframe');iframe.style.display='none';document.body.appendChild(iframe);iframe.src=deepLink;setTimeout(()=>{document.body.removeChild(iframe);if(storeLink)window.open(storeLink,'_blank');},1500);}else if(storeLink){showToast(`App Store'a yönlendiriliyor...`);window.open(storeLink,'_blank');}else{showToast('Bu bölgede mevcut değil');}}
-function shareCredentials(){if(active<0)return;const s=SVC[active];const txt=`${s.name}\nKullanıcı: ${s.email}\nŞifre: ${s.pwd}`;if(navigator.share){navigator.share({title:`${s.name} Hesap Bilgileri`,text:txt});}else{navigator.clipboard.writeText(txt).then(()=>showToast('✓ Panoya kopyalandı'));}}
+function shareCredentials(){if(active<0)return;const s=SVC[active];const txt=LANG==='tr'?`${s.name}\nKullanıcı: ${s.email}\nŞifre: ${s.pwd}`:`${s.name}\nUsername: ${s.email}\nPassword: ${s.pwd}`;if(navigator.share){navigator.share({title:LANG==='tr'?`${s.name} Hesap Bilgileri`:`${s.name} Account Details`,text:txt});}else{navigator.clipboard.writeText(txt).then(()=>showToast(LANG==='tr'?'✓ Panoya kopyalandı':'✓ Copied to clipboard'));}}
 function genQRSvg(seed){const s=Math.sin(seed*7.3+1.1);let cells='';for(let r=0;r<21;r++){for(let c=0;c<21;c++){const inCorner=(r<7&&c<7)||(r<7&&c>13)||(r>13&&c<7);let fill=0;if(inCorner){if(r===0||r===6||c===0||c===6)fill=1;else if(r>=2&&r<=4&&c>=2&&c<=4)fill=1;}else{fill=Math.sin((r+seed)*(c+1)*2.7+s*10)>0.1?1:0;}if(fill)cells+=`<rect x="${c*8+1}" y="${r*8+1}" width="7" height="7" rx="1"/>`;}}return`<svg width="168" height="168" viewBox="0 0 169 169" fill="white">${cells}</svg>`;}
 function openQR(){if(active<0)return;const s=SVC[active];const qrSvcName=document.getElementById('qrSvcName');const qrCodeArea=document.getElementById('qrCodeArea');const qrOv=document.getElementById('qrOv');if(!qrSvcName||!qrCodeArea||!qrOv)return;qrSvcName.textContent=s.name+' — Otomatik Giriş';clearInterval(qrRotateInterval);clearInterval(qrCountdown);qrSec=30;qrCodeArea.innerHTML=genQRSvg(_qrSeed%1000);updateQRTimer();if(SETTINGS.qrrotate){qrRotateInterval=setInterval(()=>{_qrSeed=Date.now();if(qrCodeArea)qrCodeArea.innerHTML=genQRSvg(_qrSeed%1000);},30000);qrCountdown=setInterval(()=>{qrSec--;if(qrSec<=0)qrSec=30;updateQRTimer();},1000);}qrOv.classList.add('open');}
 function closeQR(){const qrOv=document.getElementById('qrOv');if(qrOv)qrOv.classList.remove('open');clearInterval(qrRotateInterval);clearInterval(qrCountdown);closeSheet();}
@@ -2609,7 +2705,7 @@ function renderProfile(){const paid=SVC.filter(s=>s.price>0);animateNumber(docum
   const profileEmail=document.getElementById('profileEmail');
   const profileAvatar=document.getElementById('profileAvatar');
   const signedInEl=document.getElementById('signedInAs');
-  animateNumber(document.getElementById('statSaved'),sTot,sSym,'',2);if(profileName)profileName.textContent=PROFILE.name||'Kullanıcı';if(profileEmail)profileEmail.textContent=PROFILE.email||'';if(profileAvatar)profileAvatar.textContent=(PROFILE.name||'K')[0].toUpperCase();if(signedInEl)signedInEl.textContent=PROFILE.email||'';}
+  animateNumber(document.getElementById('statSaved'),sTot,sSym,'',2);if(profileName)profileName.textContent=PROFILE.name||'Kullanıcı';if(profileEmail)profileEmail.textContent=PROFILE.email||'';if(profileAvatar)profileAvatar.textContent=(PROFILE.name||'K')[0].toUpperCase();if(signedInEl)signedInEl.textContent=PROFILE.email||'';updateAuthMenuAction();}
 function applySettings(){['faceid','autolock','qrrotate','colorblind','reminder','pricechange','remind1','remind3','remind7'].forEach(k=>{const tog=document.getElementById('tog-'+k);if(tog)tog.classList.toggle('on',!!SETTINGS[k]);});if(document.body)document.body.classList.toggle('colorblind',!!SETTINGS.colorblind);updateRegionUI();setTimeout(function(){try{updatePremiumBadge();}catch(e){console.error('updatePremiumBadge hatası:',e);}},100);}
 async function toggleSetting(key,el){
   const next=!el.classList.contains('on');
@@ -2645,13 +2741,89 @@ async function restorePurchases(){
   await syncPremiumFromPayments();
   showToast(LANG==='tr'?'Satın almalar geri yüklendi':'Purchases restored');
 }
-function deleteAccount(){showToast(LANG==='tr'?'Hesap silme yakında':'Account deletion coming soon');}
-function openRegionPicker(){let pickerEl=document.getElementById('regionPickerModal');if(!pickerEl){pickerEl=document.createElement('div');pickerEl.id='regionPickerModal';pickerEl.style.cssText='display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';pickerEl.innerHTML=`<div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:82%;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;"><div style="font-size:17px;font-weight:800;color:#fff;">Ülke / Bölge Seç</div><button onclick="closeRegionPickerModal()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div><div style="padding:0 16px 10px;"><input class="add-input" id="regionSearchInput" placeholder="🔍 Ülke ara..." oninput="renderRegionModalList(this.value)" style="margin:0;" autocomplete="off"></div><div id="regionPickerModalList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div></div>`;pickerEl.addEventListener('click',function(e){if(e.target===pickerEl)closeRegionPickerModal();});document.getElementById('phone').appendChild(pickerEl);}pickerEl.style.display='flex';setTimeout(()=>renderRegionModalList(''),30);}
+function _clearLocalAccountData(){
+  try{
+    localStorage.removeItem('easytv_svc');
+    localStorage.removeItem('easytv_settings');
+    localStorage.removeItem('easytv_profile');
+    localStorage.removeItem('easytv_pin');
+    localStorage.removeItem('easytv_data_ts');
+    localStorage.removeItem(EASYTV_LAST_USER_KEY);
+    localStorage.removeItem('easytv_iap_mock_status');
+  }catch(e){
+    console.warn('Local account data clear hatası:', e);
+  }
+}
+async function deleteAccount(){
+  const title = LANG==='tr' ? 'Hesabı Kalıcı Sil' : 'Delete Account Permanently';
+  const msg = LANG==='tr'
+    ? 'Hesabın, cloud verilerin ve cihazdaki kayıtların kalıcı olarak silinecek. Bu işlem geri alınamaz.'
+    : 'Your account, cloud data, and on-device records will be permanently deleted. This action cannot be undone.';
+  showAlert('⛔', title, msg, [
+    { label: LANG==='tr' ? 'Evet, Hesabımı Sil' : 'Yes, delete my account', style: 'danger', action: async ()=>{
+      closeAlert();
+      try{
+        if(!_supabase){
+          _clearLocalAccountData();
+          SVC=[];
+          PROFILE={name:'Kullanıcı',email:'',avatar:'',bio:''};
+          SETTINGS=DEFAULT_SETTINGS();
+          saveData();
+          showToast(LANG==='tr'?'Hesap verileri temizlendi':'Account data cleared');
+          setTimeout(()=>location.reload(),900);
+          return;
+        }
+        const sessionRes = await _supabase.auth.getSession();
+        const session = sessionRes && sessionRes.data ? sessionRes.data.session : null;
+        if(!session || !session.user || !session.user.id){
+          showToast(LANG==='tr'?'Önce giriş yapmalısın':'Please sign in first');
+          _openLoginFromSettings();
+          return;
+        }
+        const userId = session.user.id;
+        const delRes = await _supabase.from('easytv_user_data').delete().eq('user_id', userId);
+        if(delRes && delRes.error){
+          console.warn('Cloud account data delete hatası:', delRes.error);
+          showToast(LANG==='tr'?'Cloud verileri silinemedi':'Could not delete cloud data');
+          return;
+        }
+        try{
+          const endpoint = (SETTINGS && SETTINGS.accountDeleteEndpoint) || window.EASYTV_DELETE_ACCOUNT_ENDPOINT;
+          if(endpoint){
+            await fetch(endpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + session.access_token
+              },
+              body: JSON.stringify({ userId: userId })
+            });
+          }
+        }catch(e){
+          console.warn('Account delete endpoint çağrısı başarısız:', e);
+        }
+        try{ await _supabase.auth.signOut(); }catch(e){ console.warn('Signout hatası:', e); }
+        _clearLocalAccountData();
+        SVC=[];
+        PROFILE={name:'Kullanıcı',email:'',avatar:'',bio:''};
+        SETTINGS=DEFAULT_SETTINGS();
+        saveData();
+        showToast(LANG==='tr'?'Hesap kalıcı olarak silindi':'Account permanently deleted');
+        setTimeout(()=>location.reload(),1000);
+      }catch(e){
+        console.error('deleteAccount hatası:', e);
+        showToast(LANG==='tr'?'Hesap silme sırasında hata oluştu':'Account deletion failed');
+      }
+    }},
+    { label: LANG==='tr'?'Vazgeç':'Cancel', style:'secondary', action: closeAlert }
+  ]);
+}
+function openRegionPicker(){let pickerEl=document.getElementById('regionPickerModal');if(!pickerEl){const title=LANG==='tr'?'Ülke / Bölge Seç':'Select Country / Region';const searchPh=LANG==='tr'?'🔍 Ülke ara...':'🔍 Search country...';pickerEl=document.createElement('div');pickerEl.id='regionPickerModal';pickerEl.style.cssText='display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';pickerEl.innerHTML=`<div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:82%;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;"><div style="font-size:17px;font-weight:800;color:#fff;">${title}</div><button onclick="closeRegionPickerModal()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div><div style="padding:0 16px 10px;"><input class="add-input" id="regionSearchInput" placeholder="${searchPh}" oninput="renderRegionModalList(this.value)" style="margin:0;" autocomplete="off"></div><div id="regionPickerModalList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div></div>`;pickerEl.addEventListener('click',function(e){if(e.target===pickerEl)closeRegionPickerModal();});document.getElementById('phone').appendChild(pickerEl);}pickerEl.style.display='flex';setTimeout(()=>renderRegionModalList(''),30);}
 function closeRegionPickerModal(){const el=document.getElementById('regionPickerModal');if(el)el.style.display='none';}
-function renderRegionModalList(q){const list=document.getElementById('regionPickerModalList');if(!list)return;const cur=SETTINGS.country||'tr';const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.includes(q.toLowerCase())):COUNTRIES;list.innerHTML='';filtered.forEach(c=>{const el=document.createElement('div');el.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:13px 20px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);';el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">${c.flag}</span><div><div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.8)'};">${c.name}</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div></div></div>${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}`;el.onclick=()=>{SETTINGS.country=c.code;SETTINGS.region=c.region;saveData();updateRegionUI();closeRegionPickerModal();showToast('✓ Ülke güncellendi: '+c.name);};list.appendChild(el);});}
+function renderRegionModalList(q){const list=document.getElementById('regionPickerModalList');if(!list)return;const cur=SETTINGS.country||'tr';const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.includes(q.toLowerCase())):COUNTRIES;list.innerHTML='';filtered.forEach(c=>{const el=document.createElement('div');el.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:13px 20px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);';el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">${c.flag}</span><div><div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.8)'};">${c.name}</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div></div></div>${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}`;el.onclick=()=>{SETTINGS.country=c.code;SETTINGS.region=c.region;saveData();updateRegionUI();closeRegionPickerModal();showToast((LANG==='tr'?'✓ Ülke güncellendi: ':'✓ Country updated: ')+c.name);};list.appendChild(el);});}
 function showAlert(icon,title,msg,actions){const alertIcon=document.getElementById('alertIcon');const alertTitle=document.getElementById('alertTitle');const alertMsg=document.getElementById('alertMsg');const actEl=document.getElementById('alertActions');const alertModal=document.getElementById('alertModal');if(!alertIcon||!alertTitle||!alertMsg||!actEl||!alertModal)return;alertIcon.textContent=icon;alertTitle.textContent=title;alertMsg.textContent=msg;actEl.innerHTML='';actions.forEach(a=>{const btn=document.createElement('button');btn.className=`alert-btn ${a.style||'secondary'}`;btn.textContent=a.label;btn.onclick=a.action;actEl.appendChild(btn);});alertModal.classList.add('open');}
 function closeAlert(){const alertModal=document.getElementById('alertModal');if(alertModal)alertModal.classList.remove('open');}
-function confirmDeleteAll(){showAlert('⚠️','Tüm Verileri Sil','Tüm servisler ve şifreler kalıcı olarak silinecek. Bu işlem geri alınamaz.',[{label:'Evet, Sil',style:'danger',action:()=>{SVC=[];localStorage.clear();saveData();buildGrid();renderSubs();renderProfile();closeAlert();showToast('Tüm veriler silindi');setTimeout(()=>location.reload(),1000);}},{label:'İptal',style:'secondary',action:closeAlert}]);}
+function confirmDeleteAll(){showAlert('⚠️',LANG==='tr'?'Tüm Verileri Sil':'Delete All Data',LANG==='tr'?'Tüm servisler ve şifreler kalıcı olarak silinecek. Bu işlem geri alınamaz.':'All services and passwords will be permanently deleted. This action cannot be undone.',[{label:LANG==='tr'?'Evet, Sil':'Yes, delete',style:'danger',action:()=>{SVC=[];localStorage.clear();saveData();buildGrid();renderSubs();renderProfile();closeAlert();showToast(LANG==='tr'?'Tüm veriler silindi':'All data deleted');setTimeout(()=>location.reload(),1000);}},{label:LANG==='tr'?'İptal':'Cancel',style:'secondary',action:closeAlert}]);}
 function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function fitPhone(){
   var s = Math.min(window.innerWidth/393, window.innerHeight/852, 1);
@@ -2754,7 +2926,7 @@ async function fetchAIPrices(force = false) {
 
   // Ayarlar sayfasında durum göster
   const rateRow = document.getElementById('rateLastUpdate');
-  if (rateRow) rateRow.textContent = '🤖 AI fiyatları güncelleniyor...';
+  if (rateRow) rateRow.textContent = LANG==='tr' ? '🤖 AI fiyatları güncelleniyor...' : '🤖 Updating AI prices...';
 
   const serviceList = POPULAR_SVCS.map(s => s.name).join(', ');
 
