@@ -1,4 +1,345 @@
 {
-  "version": 1,
-  "bugs": []
+    "version":  1,
+    "bugs":  [
+                 {
+                     "id":  "bug-013",
+                     "timestamp":  "2026-04-17T23:56:17.0570428+03:00",
+                     "error_message":  "Fonksiyon kapsam taramasÄ±nda www/index.html iÃ§indeki restorePurchases() ve deleteAccount() onclick Ã§aÄŸrÄ±larÄ± tanÄ±msÄ±z bulundu.",
+                     "file":  "www/index.html, www/app.js, app.js",
+                     "root_cause":  "www/index.html menÃ¼ Ã¶ÄŸeleri iÃ§in handlerlar eklenmiÅŸ ancak app.js/www/app.js iÃ§inde fonksiyon implementasyonu bÄ±rakÄ±lmamÄ±ÅŸ.",
+                     "fix":  "restorePurchases ve deleteAccount fonksiyonlarÄ± gÃ¼venli placeholder olarak app.js ve www/app.js dosyalarÄ±na eklendi; onclick handler coverage tekrar 55/55 doÄŸrulandÄ±.",
+                     "tags":  [
+                                  "runtime",
+                                  "onclick",
+                                  "handler-coverage",
+                                  "qa"
+                              ],
+                     "related_bugs":  [
+                                          "bug-012"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-17T23:56:17.0635852+03:00"
+                 },
+                 {
+                     "id":  "bug-014",
+                     "timestamp":  "2026-04-18T00:06:43.1121277+03:00",
+                     "error_message":  "KullanÄ±cÄ± raporu: Face ID butonu var ama gerÃ§ek doÄŸrulama yapmÄ±yor; ayrÄ±ca giriÅŸ sonrasÄ± kullanÄ±cÄ± tarafÄ±nda akÄ±ÅŸ sorunlarÄ± ve yanlÄ±ÅŸ ekran atlama gÃ¶rÃ¼lÃ¼yor.",
+                     "file":  "app.js, www/app.js",
+                     "root_cause":  "faceId/deviceAuth fonksiyonlarÄ± placeholder olarak doÄŸrudan unlockApp Ã§aÄŸÄ±rÄ±yordu; lock ekranÄ± yanlÄ±ÅŸ id (lockScreen) kullanÄ±yordu; settings defaultlarÄ± !kontrolÃ¼ ile false deÄŸerleri bozup tekrar true yapÄ±yordu.",
+                     "fix":  "WebAuthn tabanlÄ± platform biyometrik kayÄ±t/doÄŸrulama eklendi; unlockFromLock lockOverlay ve pin fallback akÄ±ÅŸÄ±na alÄ±ndÄ±; loadData defaultlarÄ± undefined kontrollerine Ã§evrildi; toggleSetting async uyumlu hale getirildi.",
+                     "tags":  [
+                                  "auth",
+                                  "faceid",
+                                  "webauthn",
+                                  "lock-flow",
+                                  "settings-defaults"
+                              ],
+                     "related_bugs":  [
+                                          "bug-013"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-18T00:06:43.1165740+03:00"
+                 },
+                 {
+                     "id":  "bug-015",
+                     "timestamp":  "2026-04-18T00:26:49.7297073+03:00",
+                     "error_message":  "\rg komutu PowerShell ortamÄ±nda \u0027EriÅŸim engellendi\u0027 hatasÄ± verdi, kod taramasÄ± kesildi.",
+                     "file":  "local tooling (shell)",
+                     "root_cause":  "Bu oturumda rg.exe eriÅŸim/izin kÄ±sÄ±tÄ± nedeniyle Ã§alÄ±ÅŸmadÄ±.",
+                     "fix":  "Metin taramasÄ± Select-String ile yedeklenerek devam edildi; geliÅŸtirme akÄ±ÅŸÄ± bloklanmadÄ±.",
+                     "tags":  [
+                                  "tooling",
+                                  "search",
+                                  "powershell",
+                                  "workaround"
+                              ],
+                     "related_bugs":  [
+                                          "bug-014"
+                                      ],
+                     "occurrences":  2,
+                     "last_seen":  "2026-04-18T02:26:06.1151627+03:00"
+                 },
+                 {
+                     "id":  "bug-016",
+                     "timestamp":  "2026-04-18T00:35:32.6537479+03:00",
+                     "error_message":  "KullanÄ±cÄ± raporu: Google ile giriÅŸ sonrasÄ± uygulama eski intro haline dÃ¶nÃ¼yor ve eski/local veriler yeni oturuma karÄ±ÅŸÄ±yor.",
+                     "file":  "app.js, www/app.js",
+                     "root_cause":  "OAuth callbackte sadece getSession akÄ±ÅŸÄ±na gÃ¼veniliyordu (hash/code her zaman anÄ±nda session Ã¼retmÃ¼yor) ve local kullanÄ±cÄ± verisi hesap deÄŸiÅŸiminde temizlenmiyordu; ayrÄ±ca initAuth iki kez Ã§aÄŸrÄ±lÄ±yordu.",
+                     "fix":  "OAuth callback iÃ§in exchangeCodeForSession + setSession fallback eklendi, callback URL temizleme ve kÄ±sa retry kondu; initAuth tek Ã§aÄŸrÄ±ya indirildi; kullanÄ±cÄ± deÄŸiÅŸiminde easytv_svc/easytv_data_ts temizlenerek veri izolasyonu saÄŸlandÄ±.",
+                     "tags":  [
+                                  "auth",
+                                  "oauth",
+                                  "google-login",
+                                  "session",
+                                  "legacy-conflict",
+                                  "data-isolation"
+                              ],
+                     "related_bugs":  [
+                                          "bug-014"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-18T00:35:32.6568940+03:00"
+                 },
+                 {
+                     "id":  "bug-017",
+                     "timestamp":  "2026-04-18T00:47:16.1886060+03:00",
+                     "error_message":  "Kullanici raporu: Google login sonrasi eski intro ekrani aciliyor.",
+                     "file":  "app.js, index.html, style.css, www/app.js, www/index.html, www/style.css",
+                     "root_cause":  "Legacy introScreen katmani ve bagli JS/CSS akisinda kalmisti; fallback introya dusuyordu.",
+                     "fix":  "introScreen HTML silindi, intro ile ilgili JS cagrilari/fonksiyonlari kaldirildi, fallback loginScreen yapildi, introya ozel CSS temizlendi ve www kopyalari senkronlandi.",
+                     "tags":  [
+                                  "auth",
+                                  "ui-flow",
+                                  "legacy-cleanup",
+                                  "google-login",
+                                  "intro-screen"
+                              ],
+                     "related_bugs":  [
+                                          "bug-016"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-18T00:47:16.1930164+03:00"
+                 },
+                 {
+                     "id":  "bug-018",
+                     "timestamp":  "2026-04-17T22:28:35.548Z",
+                     "error_message":  "Kullan?c? raporu: Uygulama bozuldu, as?l kullan?lan ekran kayboldu; Google giri?te eski/istenmeyen ekran ak??lar? g?r?l?yor.",
+                     "file":  "app.js, index.html, style.css, www/app.js, www/index.html, www/style.css",
+                     "root_cause":  "Legacy welcome/wlc ak??? kodda kalm??t? (bo? welcomeScreen hedefleri + kullan?lmayan wlc fonksiyonlar?) ve root/www HTML drifti farkl? ortamlarda farkl? ekran davran??? ?retiyordu.",
+                     "fix":  "welcomeScreen DOM ve JS referanslar? kald?r?ld?, goToLogin loginScreen odakl? g?venli fallbacke ?evrildi, legacy wlc fonksiyonlar? temizlendi, null-guard eksikleri kapat?ld?, root ve www dosyalar? birebir senkronland?.",
+                     "tags":  [
+                                  "auth",
+                                  "ui-flow",
+                                  "legacy-cleanup",
+                                  "google-login",
+                                  "runtime-guard",
+                                  "drift-sync"
+                              ],
+                     "related_bugs":  [
+                                          "bug-016",
+                                          "bug-017"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-17T22:28:35.548Z"
+                 },
+                 {
+                     "id":  "bug-019",
+                     "timestamp":  "2026-04-17T22:29:05.749Z",
+                     "error_message":  "Bak?m s?ras?nda .wolf/buglog.json parse edilirken BOM nedeniyle JSON.parse hatas? olu?tu.",
+                     "file":  ".wolf/buglog.json",
+                     "root_cause":  "Dosya UTF-8 BOM ile kaydedilmi?ti; do?rudan parse ?a?r?s? BOM karakterini temizlemedi.",
+                     "fix":  "Buglog g?ncelleme scriptlerinde parse ?ncesi BOM strip (replace(/^\\uFEFF/, \"\")) eklendi.",
+                     "tags":  [
+                                  "tooling",
+                                  "json",
+                                  "bom",
+                                  "maintenance"
+                              ],
+                     "related_bugs":  [
+                                          "bug-015"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-17T22:29:05.749Z"
+                 },
+                 {
+                     "id":  "bug-020",
+                     "timestamp":  "2026-04-17T23:04:51.660Z",
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-17T23:04:51.660Z",
+                     "error_message":  "iOS native OAuth d?n??lerinde callback URL app i?inde i?lenmedi?i i?in login ak??? tutars?z kal?yordu.",
+                     "file":  "app.js, www/app.js, ios/App/App/Info.plist",
+                     "root_cause":  "OAuth d?n??? yaln?z window.location hash/query ?zerinden okunuyordu; Capacitor appUrlOpen deeplink olay?n? dinleyen bir handler yoktu ve native redirect URL sabit de?ildi.",
+                     "fix":  "Native redirect URL easytvhub://auth/callback olarak standardize edildi, appUrlOpen listener + pending callback i?leme eklendi, Info.plist URL scheme tan?mland?.",
+                     "tags":  [
+                                  "ios",
+                                  "auth",
+                                  "oauth",
+                                  "deeplink",
+                                  "capacitor"
+                              ],
+                     "related_bugs":  [
+                                          "bug-016",
+                                          "bug-017"
+                                      ]
+                 },
+                 {
+                     "id":  "bug-021",
+                     "timestamp":  "2026-04-17T23:04:51.660Z",
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-17T23:04:51.660Z",
+                     "error_message":  "iOS App public bundle (ios/App/App/public) ile www webDir aras?nda drift riski tespit edildi.",
+                     "file":  "ios/App/App/public/*, www/*",
+                     "root_cause":  "Capacitor iOS host, g?ncel web dosyalar?yla d?zenli senkronlanmad???nda iOS taraf? eski ak??lar? ?al??t?rabiliyor.",
+                     "fix":  "www kaynaklar? yeniden senkronland? (npx cap copy) ve iOS stabilizasyon raporuna release-gate olarak hash/sync kontrol? eklendi.",
+                     "tags":  [
+                                  "ios",
+                                  "capacitor",
+                                  "sync",
+                                  "release"
+                              ],
+                     "related_bugs":  [
+                                          "bug-018"
+                                      ]
+                 },
+                 {
+                     "id":  "bug-022",
+                     "timestamp":  "2026-04-18T02:25:54.0833937+03:00",
+                     "error_message":  "Kullanýcý raporu: Google login sonrasý uygulama tekrar eski intro/welcome akýþýna düþüyor.",
+                     "file":  "app.js, www/app.js",
+                     "root_cause":  "Auth fallback (_showFallbackScreen) session yokken login yerine introScreen açýyordu; eski intro kodu durduðu için hatalý geri dönüþ görünüyordu.",
+                     "fix":  "Fallback akýþý loginScreen merkezli olacak þekilde düzeltildi; introScreen artýk fallbackte zorunlu olarak gizleniyor ve login heading/sub render tetikleniyor.",
+                     "tags":  [
+                                  "auth",
+                                  "google-login",
+                                  "fallback",
+                                  "legacy-intro"
+                              ],
+                     "related_bugs":  [
+                                          "bug-016",
+                                          "bug-017",
+                                          "bug-018"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-18T02:25:54.0833937+03:00"
+                 },
+                 {
+                     "id":  "bug-023",
+                     "timestamp":  "2026-04-18T02:27:18.5946116+03:00",
+                     "error_message":  "Kullanýcý semptomu: localhost testinde eski giriþ ekraný geri geliyor gibi görünüyor.",
+                     "file":  "app.js, www/app.js",
+                     "root_cause":  "Service worker cache nedeniyle eski bundle bazen yeniden yüklenebiliyor ve güncel auth fallback davranýþýný gölgeleyebiliyor.",
+                     "fix":  "localhost/127.0.0.1 ortamýnda service worker kayýtlarý uygulama baþýnda otomatik unregister edilerek stale cache etkisi kaldýrýldý.",
+                     "tags":  [
+                                  "cache",
+                                  "service-worker",
+                                  "localhost",
+                                  "auth-ui"
+                              ],
+                     "related_bugs":  [
+                                          "bug-022",
+                                          "bug-018"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-18T02:27:18.5946116+03:00"
+                 },
+                 {
+                     "id":  "bug-024",
+                     "timestamp":  "2026-04-18T21:53:33.3226381+03:00",
+                     "error_message":  "Playwright smoke run sýrasýnda localhost:3000 için ERR_CONNECTION_REFUSED alýndý.",
+                     "file":  "local runtime (dev server)",
+                     "root_cause":  "Test öncesi local static server çalýþmýyordu.",
+                     "fix":  "Geçici python static server 3000 portunda baþlatýlýp smoke test yeniden çalýþtýrýldý ve PASS alýndý.",
+                     "tags":  [
+                                  "qa",
+                                  "playwright",
+                                  "runtime",
+                                  "localhost"
+                              ],
+                     "related_bugs":  [
+                                          "bug-015"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-18T21:53:33.3226381+03:00"
+                 },
+                 {
+                     "id":  "bug-025",
+                     "timestamp":  "2026-04-18T22:05:21.0821031+03:00",
+                     "error_message":  "QA otomasyon kurulumunda Playwright modülü/binary eksikliði ve localhost server kapalýyken smoke test baþlangýç hatalarý alýndý.",
+                     "file":  "scripts/smoke-local.js, local runtime",
+                     "root_cause":  "Test altyapýsý repo içinde kalýcý deðildi; playwright devDependency ve otomatik static server akýþý yoktu.",
+                     "fix":  "Kalýcý smoke scripti eklendi (scripts/smoke-local.js), package.json qa:smoke komutu ve playwright devDependency tanýmlandý; script serverý kendi baþlatýp kapatýyor.",
+                     "tags":  [
+                                  "qa",
+                                  "playwright",
+                                  "automation",
+                                  "stability"
+                              ],
+                     "related_bugs":  [
+                                          "bug-015",
+                                          "bug-025"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-18T22:05:21.0821031+03:00"
+                 },
+                 {
+                     "id":  "bug-026",
+                     "timestamp":  "2026-04-20T04:07:09.1314280+03:00",
+                     "error_message":  "Kullanýcý raporu: EN dilinde birçok yerde hardcoded Türkçe metin kalýyor.",
+                     "file":  "app.js, index.html, www/app.js, www/index.html",
+                     "root_cause":  "Bazý metinler applyLang kapsamýna alýnmamýþ ve dinamik oluþturulan picker/uyarý metinleri doðrudan TR string ile yazýlmýþ.",
+                     "fix":  "Eksik metinler için index/www içine hedef id eklendi; applyLang kapsamý geniþletildi; currency/region picker, rate toasts, delete-confirm, empty-state, shareCredentials ve ilgili placeholderlar LANG bazlý yapýldý; root/www senkronlandý.",
+                     "tags":  [
+                                  "i18n",
+                                  "localization",
+                                  "english",
+                                  "ui-text"
+                              ],
+                     "related_bugs":  [
+                                          "bug-018"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-20T04:07:09.1314280+03:00"
+                 },
+                 {
+                     "id":  "bug-026",
+                     "timestamp":  "2026-04-20T04:17:59.6780777+03:00",
+                     "error_message":  "App Store haz?rl?k kontrol?nde hesap silme fonksiyonu placeholderd? (\"yak?nda\"); uygulama i?inden ger?ek hesap silme ak??? yoktu.",
+                     "file":  "app.js, www/app.js, index.html, www/index.html",
+                     "root_cause":  "Ayarlar men?s?ndeki silme aksiyonu confirmDeleteAll/placeholder ak???nda kalm??, cloud hesap verisi silme ve oturum kapatma zinciri uygulanmam??t?.",
+                     "fix":  "deleteAccount ak??? eklendi: kullan?c? onay? sonras? easytv_user_data delete, iste?e ba?l? delete endpoint ?a?r?s?, signOut ve local hesap verisi temizli?i; men? ??esi deleteAccount fonksiyonuna ba?land?.",
+                     "tags":  [
+                                  "appstore",
+                                  "account-deletion",
+                                  "auth",
+                                  "supabase",
+                                  "settings-menu"
+                              ],
+                     "related_bugs":  [
+                                          "bug-013"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-20T04:17:59.6830073+03:00"
+                 },
+                 {
+                     "id":  "bug-027",
+                     "timestamp":  "2026-04-20T04:26:40.8325406+03:00",
+                     "error_message":  "Kullan?c? raporu: giri? sayfas? beklenen ak??tan farkl? g?r?n?yor ve ayarlarda giri? yapmadan hesap silme denemesinde y?nlendirici giri? CTA bulunmuyor.",
+                     "file":  "app.js, www/app.js",
+                     "root_cause":  "Fallback auth ak??? login ekran?na zorlanm??t?; ayr?ca hesap men?s? etiketi/aksiyonu oturum yokken de ??k?? semanti?inde kal?yordu.",
+                     "fix":  "Fallback intro-first ak??a al?nd?; settings i?in _openLoginFromSettings ve updateAuthMenuAction eklendi; oturum yokken men? \"Giri? Yap\" g?steriyor ve deleteAccount no-session durumunda login ekran?na y?nlendiriyor.",
+                     "tags":  [
+                                  "auth-flow",
+                                  "settings",
+                                  "account-delete",
+                                  "login-cta",
+                                  "ui-regression"
+                              ],
+                     "related_bugs":  [
+                                          "bug-026",
+                                          "bug-022"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-20T04:26:40.8392789+03:00"
+                 },
+                 {
+                     "id":  "bug-028",
+                     "timestamp":  "2026-04-20T04:39:34.3282053+03:00",
+                     "error_message":  "Kullan?c? raporu: giri? sayfas?ndaki kartlar g?r?nm?yor.",
+                     "file":  "app.js, www/app.js",
+                     "root_cause":  "intro kart galerisi init fonksiyonu (_initLogoGallery) fallback ekran g?steriminde tetiklenmiyordu; intro a??ld???nda kart canvaslar? olu?madan kal?yordu.",
+                     "fix":  "_showFallbackScreen i?inde intro g?sterilirken _initFuzzyLogo + _stabilizeIntroHero + _initLogoGallery ?a?r?lar? eklendi (root/www).",
+                     "tags":  [
+                                  "intro",
+                                  "login-ui",
+                                  "gallery",
+                                  "canvas",
+                                  "regression"
+                              ],
+                     "related_bugs":  [
+                                          "bug-027"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-20T04:39:34.3327160+03:00"
+                 }
+             ]
 }
