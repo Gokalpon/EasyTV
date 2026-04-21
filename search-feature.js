@@ -25,7 +25,7 @@ function initSearchBar() {
       <input 
         id="searchBar" 
         type="text" 
-        placeholder="Ara..." 
+        placeholder="${t('search_placeholder')}" 
         style="
           width:100%;
           background:rgba(255,255,255,.08);
@@ -148,8 +148,8 @@ function renderFilteredSubs(filtered) {
     list.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;">
         <div style="font-size:48px;opacity:.3;">🔍</div>
-        <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,.5);">Sonuç bulunamadı</div>
-        <div style="font-size:13px;color:rgba(255,255,255,.3);">Farklı bir arama deneyin</div>
+        <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,.5);">${t('search_no_results')}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.3);">${t('search_try_again')}</div>
       </div>
     `;
     return;
@@ -189,7 +189,7 @@ function toggleFilterMenu() {
   `;
   
   menu.innerHTML = `
-    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);padding:8px 10px;letter-spacing:.5px;">KATEGORİ</div>
+    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);padding:8px 10px;letter-spacing:.5px;">${t('search_cat')}</div>
     ${['all', 'streaming', 'music', 'gaming', 'other'].map(cat => `
       <div 
         onclick="selectFilter('${cat}')" 
@@ -206,11 +206,11 @@ function toggleFilterMenu() {
         onmouseover="this.style.background='rgba(255,255,255,.08)'"
         onmouseout="this.style.background='${filterCategory === cat ? 'rgba(130,80,255,.2)' : 'transparent'}'"
       >
-        ${cat === 'all' ? 'Tümü' : cat === 'streaming' ? 'Streaming' : cat === 'music' ? 'Müzik' : cat === 'gaming' ? 'Oyun' : 'Diğer'}
+        ${t('search_cat_' + cat)}
       </div>
     `).join('')}
     <div style="height:1px;background:rgba(255,255,255,.08);margin:8px 0;"></div>
-    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);padding:8px 10px;letter-spacing:.5px;">SIRALAMA</div>
+    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);padding:8px 10px;letter-spacing:.5px;">${t('search_sort')}</div>
     ${['name', 'price', 'date'].map(sort => `
       <div 
         onclick="selectSort('${sort}')" 
@@ -227,7 +227,7 @@ function toggleFilterMenu() {
         onmouseover="this.style.background='rgba(255,255,255,.08)'"
         onmouseout="this.style.background='${sortBy === sort ? 'rgba(130,80,255,.2)' : 'transparent'}'"
       >
-        ${sort === 'name' ? 'İsim' : sort === 'price' ? 'Fiyat' : 'Tarih'}
+        ${t('search_sort_' + sort)}
       </div>
     `).join('')}
   `;

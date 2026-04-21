@@ -78,6 +78,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build:sync": "node scripts/build-sync.js",
+    "build": "npm run build:sync && npm run cap:sync",
+    "dev": "npm run build:sync",
     "qa:smoke": "node scripts/smoke-local.js",
     "cap:copy": "npx cap copy",
     "cap:sync": "npx cap sync",

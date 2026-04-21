@@ -1,4 +1,4 @@
-﻿// ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // SUPABASE KURULUMU
 // ══════════════════════════════════════════════════
 // ⚠️ ÖNEMLİ: Supabase RLS politikalarını aktif edin!
@@ -608,73 +608,85 @@ function toggleEmailAuthMode() {
 }
 
 async function submitEmailAuth() {
-  if (!_supabase) { showToast('Cloud bağlantısı yok'); return; }
-
-  const emailEl = document.getElementById('emailAuthEmail');
-  const passwordEl = document.getElementById('emailAuthPassword');
-  const confirmEl = document.getElementById('emailAuthConfirmPassword');
-  const nameEl = document.getElementById('emailAuthName');
-  const submitBtn = document.getElementById('emailAuthSubmitBtn');
-
-  const email = (emailEl && emailEl.value || '').trim();
-  const password = (passwordEl && passwordEl.value || '').trim();
-  const confirmPassword = (confirmEl && confirmEl.value || '').trim();
-  const fullName = (nameEl && nameEl.value || '').trim();
+  const email = (document.getElementById('emailAuthEmail')?.value || '').trim().toLowerCase();
+  const password = document.getElementById('emailAuthPassword')?.value || '';
+  const confirmPassword = (document.getElementById('emailAuthConfirmPassword')?.value || '').trim();
 
   if (!email || !password) {
     showToast(t('email_auth_required'));
     return;
   }
-  if (password.length < 6) {
-    showToast(t('email_auth_password_min'));
-    return;
-  }
-  if (_emailAuthMode === 'signup' && password !== confirmPassword) {
-    showToast(LANG==='tr' ? 'Şifreler eşleşmiyor' : 'Passwords do not match');
-    return;
+
+  // Şifre Standardı: Test kolaylığı için en az 6 karakter (Release öncesi sıkılaştırılabilir)
+  const passRegex = /^.{6,}$/;
+  if (_emailAuthMode === 'signup') {
+    if (!passRegex.test(password)) {
+      showAlert('🔑', 
+        LANG==='tr' ? 'Zayıf Şifre' : 'Weak Password', 
+        LANG==='tr' 
+          ? 'Şifreniz en az 6 karakter olmalıdır.' 
+          : 'Password must be at least 6 characters.',
+        [{ label: 'Tamam', action: closeAlert }]
+      );
+      return;
+    }
+    if (password !== confirmPassword) {
+      showAlert('🔑', LANG==='tr' ? 'Şifre Hatası' : 'Password Error', 
+        LANG==='tr' ? 'Şifreler birbiriyle eşleşmiyor.' : 'Passwords do not match.',
+        [{ label: 'Tamam', action: closeAlert }]
+      );
+      return;
+    }
+    if (!confirmPassword && _emailAuthMode === 'signup') {
+       showToast(LANG==='tr' ? 'Lütfen şifrenizi onaylayın' : 'Please confirm your password');
+       return;
+    }
   }
 
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.style.opacity = '0.7';
-  }
-
+  const authLoading = document.getElementById('authLoading');
+  if (authLoading) authLoading.style.display = 'flex';
+  
   try {
-    if (_emailAuthMode === 'signup') {
-      const { data, error } = await _supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          emailRedirectTo: getOAuthRedirectUrl(),
-          data: { full_name: fullName || '' }
-        }
-      });
+    if (_emailAuthMode === 'signin') {
+      const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      if (data && data.session && data.user) {
-        closeEmailAuth();
-        await onAuthSuccess(data.user);
-      } else {
-        showToast(t('email_auth_signup_success_verify'));
-        setEmailAuthMode('signin');
-      }
+      onAuthSuccess(data.user);
     } else {
-      const { data, error } = await _supabase.auth.signInWithPassword({
-        email: email,
-        password: password
+      const { data, error } = await _supabase.auth.signUp({ 
+        email, 
+        password,
+        options: { data: { full_name: document.getElementById('emailAuthName')?.value || '' } }
       });
       if (error) throw error;
-      if (data && data.user) {
-        closeEmailAuth();
-        await onAuthSuccess(data.user);
-      }
+      showAlert('✉️', LANG==='tr'?'E-posta Doğrulama':'Email Verification', t('email_auth_signup_success_verify'), [{ label: 'Tamam', action: () => { closeAlert(); toggleEmailAuthMode('signin'); } }]);
     }
   } catch (e) {
-    showToast((_emailAuthMode === 'signup' ? t('email_auth_signup_btn') : t('email_auth_signin_btn')) + ' ' + t('email_auth_failed') + ': ' + (e.message || t('unknown_error')));
+    console.error('Auth Submit Error:', e);
+    const msg = e.message || t('unknown_error');
+    showAlert('❌', LANG==='tr' ? 'Auth Hatası' : 'Auth Error', msg, [{ label: 'Tamam', action: closeAlert }]);
   } finally {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.style.opacity = '1';
+    if (authLoading) authLoading.style.display = 'none';
+  }
+}
+
+async function loginWithDemo() {
+  if (authLoading) authLoading.style.display = 'flex';
+  try {
+    // Demo hesabı ile hızlı giriş (Varsa giriş yapar yoksa hata verir ama demo için bypass eklenebilir)
+    const demoEmail = 'demo@easytv.app';
+    const demoPass = 'Demo123!';
+    const { data, error } = await _supabase.auth.signInWithPassword({ email: demoEmail, password: demoPass });
+    if (error) {
+      // Eğer demo hesabı yoksa veya giriş başarısızsa, sanki kayıtlıymış gibi devam et (Mock data local mod)
+      showToast(LANG==='tr'?'Demo moduna geçiliyor...':'Entering demo mode...');
+      onAuthSuccess({ id: 'demo-user', email: 'demo@easytv.app' });
+    } else {
+      onAuthSuccess(data.user);
     }
+  } catch(e) {
+    onAuthSuccess({ id: 'demo-user', email: 'demo@easytv.app' });
+  } finally {
+    if (authLoading) authLoading.style.display = 'none';
   }
 }
 
@@ -896,6 +908,8 @@ async function loginWith(method) {
     await loginWithApple();
   } else if (method === 'email') {
     openEmailAuth('signin');
+  } else if (method === 'demo') {
+    await loginWithDemo();
   } else {
     // Atla — direkt onboarding
     const screen = document.getElementById('loginScreen');
@@ -940,71 +954,53 @@ function setIntroLang(lang){
   if(introTagline) introTagline.innerHTML=lang==='tr'?'Tüm servisleriniz<br>tek bir yerde.':'All your services<br>in one place.';
   if(introSub) introSub.innerHTML=lang==='tr'?'Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.':'Access everything in one place.<br>Track your subscriptions and payments.';
   const f1=document.getElementById('introFeat1');const f2=document.getElementById('introFeat2');const f3=document.getElementById('introFeat3');
-  const introCtaText=document.querySelector('#introCta .cta-btn-text');
   if(f1)f1.textContent=lang==='tr'?'Otomatik yenileme takibi & hatırlatıcı':'Auto renewal tracking & reminders';
   if(f2)f2.textContent=lang==='tr'?'Aylık harcama özeti ve analizi':'Monthly spending summary & analysis';
   if(f3)f3.textContent=lang==='tr'?'PIN & Face ID ile güvenli giriş':'Secure login with PIN & Face ID';
-  if(introCtaText) introCtaText.textContent=lang==='tr'?'Başlayın':'Get Started';
   if(introHint) introHint.textContent=lang==='tr'?'Zaten hesabınız var mı? Giriş yapın':'Already have an account? Sign in';
-  // Welcome sayfasını da senkronize et
-  const wlcLangFlag=document.getElementById('wlcLangFlag');
-  const wlcLangLabel=document.getElementById('wlcLangLabel');
-  const wlcOptTR=document.getElementById('wlcOptTR');
-  const wlcOptEN=document.getElementById('wlcOptEN');
-  const wlcTagline=document.getElementById('wlcTagline');
-  const wlcSub=document.getElementById('wlcSub');
-  const wlcStartBtn=document.getElementById('wlcStartBtn');
-  if(wlcLangFlag){
-    wlcLangFlag.textContent=lang==='tr'?'🇹🇷':'🇬🇧';
-    if(wlcLangLabel) wlcLangLabel.textContent=lang==='tr'?'Türkçe':'English';
-    if(wlcOptTR) wlcOptTR.classList.toggle('selected',lang==='tr');
-    if(wlcOptEN) wlcOptEN.classList.toggle('selected',lang==='en');
-    if(wlcTagline) wlcTagline.innerHTML=lang==='tr'?'Şifreleriniz güvende,<br>giriş tek dokunuşta.':'Passwords safe,<br>sign in with one tap.';
-    if(wlcSub) wlcSub.textContent=lang==='tr'?'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.':'Store your TV subscriptions.\nSign in with QR in seconds.';
-  }
-  if(wlcStartBtn) wlcStartBtn.textContent=lang==='tr'?'Başlayın':'Get Started';
   applyLang();
 }
 
 // intro → welcome geçişi
+function _showLoginFromIntro(mode) {
+  const intro = document.getElementById('introScreen');
+  const login = document.getElementById('loginScreen');
+  if (intro && intro.style.display !== 'none') {
+    intro.style.animation = 'screenSlideOut .3s cubic-bezier(.4,1.2,.64,1) both';
+    setTimeout(() => {
+      intro.classList.add('out');
+      intro.style.display = 'none';
+      if (login) {
+        login.style.display = 'flex';
+        login.style.animation = 'screenSlideIn .38s cubic-bezier(.34,1.4,.64,1) both';
+        _charReveal(document.getElementById('loginHeading'), 0.18);
+        _charReveal(document.getElementById('loginSub'), 0.46);
+        // Otomatik form açılmasın, sadece mod verilmişse aç
+        if (mode === 'signup') {
+          setTimeout(() => showSignupOptions(), 500);
+        } else if (mode === 'signin') {
+          setTimeout(() => showSigninOptions(), 500);
+        }
+      }
+    }, 300);
+  } else {
+    if (login) login.style.display = 'flex';
+    if (mode === 'signup') showSignupOptions();
+    else if (mode === 'signin') showSigninOptions();
+  }
+}
+
 function showSignupOptions() {
   openEmailAuth('signup');
 }
-function showWelcomeFromIntro() {
-  const intro = document.getElementById('introScreen');
-  if(!intro) return;
-  intro.style.animation = 'screenSlideOut .3s cubic-bezier(.4,0,.2,1) both';
-  setTimeout(() => {
-    intro.style.display = 'none';
-    intro.style.animation = '';
-    const ls = document.getElementById('loginScreen');
-    if(!ls) return;
-    ls.style.display = 'flex';
-    ls.style.animation = 'screenSlideIn .38s cubic-bezier(.34,1.2,.64,1) both';
-    _charReveal(document.getElementById('loginHeading'), 0.18);
-    _charReveal(document.getElementById('loginSub'), 0.46);
-  }, 280);
+
+function showSigninOptions() {
+  openEmailAuth('signin');
 }
 
-// goToLogin override
-function goToLogin() {
-  const ws = document.getElementById('welcomeScreen');
-  if(!ws) return;
-  ws.classList.add('out');
-  setTimeout(() => {
-    ws.style.display = 'none';
-    const ls = document.getElementById('loginScreen');
-    if(!ls) return;
-    ls.style.display = 'flex';
-    ls.style.opacity = '0';
-    ls.style.transition = 'opacity .4s cubic-bezier(.4,0,.2,1)';
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      ls.style.opacity = '1';
-      _charReveal(document.getElementById('loginHeading'), 0.18);
-      _charReveal(document.getElementById('loginSub'), 0.46);
-    }));
-  }, 420);
-}
+
+
+
 
 function animateNumber(el, target, prefix, suffix, decimals) {
   if(!el) return;
@@ -1041,8 +1037,10 @@ const PREMIUM_UI_STATE = {
 };
 
 function isPremium() {
-  return SETTINGS.premium === true;
+  return SETTINGS.premium === true || SETTINGS.premiumTrialActive === true;
 }
+function getActiveSubs() { return isPremium() ? SVC : SVC.slice(0, FREE_LIMIT); }
+function getLockedSubs() { return isPremium() ? [] : SVC.slice(FREE_LIMIT); }
 
 function isYearlyPremiumProductId(productId) {
   return /year|annual|12m/i.test(String(productId || ''));
@@ -1411,7 +1409,7 @@ let pinVal='',pinMode='unlock',pinStep=0,tempPin='';
 let selectedPopular=null;
 function saveData(){try{localStorage.setItem('easytv_settings',JSON.stringify(SETTINGS));localStorage.setItem('easytv_profile',JSON.stringify(PROFILE));localStorage.setItem('easytv_pin',SETTINGS.pinHash||'');}catch(e){}_saveSVCEncrypted();}
 async function _saveSVCEncrypted(){try{const enc=await Promise.all(SVC.map(s=>encryptCreds(s)));localStorage.setItem('easytv_svc',JSON.stringify(enc));}catch(e){const stripped=SVC.map(s=>({...s,email:'',pwd:''}));try{localStorage.setItem('easytv_svc',JSON.stringify(stripped));}catch(e2){}}}
-function loadData(){try{const s=localStorage.getItem('easytv_svc');const st=localStorage.getItem('easytv_settings');const pr=localStorage.getItem('easytv_profile');if(s)SVC=JSON.parse(s);if(st)SETTINGS=JSON.parse(st);if(pr)PROFILE=JSON.parse(pr);if(SETTINGS.pin===undefined && !SETTINGS.pinHash)SETTINGS.pin='1111';if(SETTINGS.autolock===undefined)SETTINGS.autolock=true;if(SETTINGS.faceid===undefined)SETTINGS.faceid=true;if(SETTINGS.qrrotate===undefined)SETTINGS.qrrotate=true;if(SETTINGS.remind1===undefined)SETTINGS.remind1=false;if(SETTINGS.remind3===undefined)SETTINGS.remind3=false;if(SETTINGS.remind7===undefined)SETTINGS.remind7=false;if(SETTINGS.premium===undefined)SETTINGS.premium=false;// eski localStorage premium key'ini temizle
+function loadData(){try{const s=localStorage.getItem('easytv_svc');const st=localStorage.getItem('easytv_settings');const pr=localStorage.getItem('easytv_profile');if(s)SVC=JSON.parse(s);if(st)SETTINGS=JSON.parse(st);if(pr)PROFILE=JSON.parse(pr);if(SETTINGS.pin===undefined && !SETTINGS.pinHash)SETTINGS.pin='1111';if(SETTINGS.autolock===undefined)SETTINGS.autolock=true;if(SETTINGS.faceid===undefined)SETTINGS.faceid=true;if(SETTINGS.qrrotate===undefined)SETTINGS.qrrotate=true;if(SETTINGS.remind1===undefined)SETTINGS.remind1=false;if(SETTINGS.remind3===undefined)SETTINGS.remind3=false;if(SETTINGS.remind7===undefined)SETTINGS.remind7=false;if(SETTINGS.premium===undefined)SETTINGS.premium=false;if(SETTINGS.premiumTrialUsed===undefined)SETTINGS.premiumTrialUsed=false;if(SETTINGS.premiumTrialActive===undefined)SETTINGS.premiumTrialActive=false;if(SETTINGS.premiumTrialEndDate===undefined)SETTINGS.premiumTrialEndDate=null;// eski localStorage premium key'ini temizle
 localStorage.removeItem('easytv_premium');}catch(e){SETTINGS={pin:'1111',autolock:true,faceid:true,qrrotate:true};}}
 let EXCHANGE_RATES={};let RATES_TIMESTAMP=0;
 try{const rc=localStorage.getItem('easytv_rates');const rt=localStorage.getItem('easytv_rates_ts');if(rc)EXCHANGE_RATES=JSON.parse(rc);if(rt)RATES_TIMESTAMP=parseInt(rt);}catch(e){}
@@ -1448,29 +1446,139 @@ function renderCurrencyList(q){const curCode=SETTINGS.displayCurrency||'TRY';con
 function openCurrencyPicker(){let pickerEl=document.getElementById('currencyPickerModal');if(!pickerEl){const title=LANG==='tr'?'Para Birimi Seç':'Select Currency';const searchPh=LANG==='tr'?'🔍 Para birimi ara...':'🔍 Search currency...';pickerEl=document.createElement('div');pickerEl.id='currencyPickerModal';pickerEl.style.cssText='display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';pickerEl.innerHTML=`<div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:80%;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;"><div style="font-size:17px;font-weight:800;color:#fff;">${title}</div><button onclick="closeCurrencyPicker()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div><div style="padding:0 16px 10px;"><input class="add-input" id="currencySearchInput" placeholder="${searchPh}" oninput="renderCurrencyList(this.value)" style="margin:0;" autocomplete="off"></div><div id="currencyPickerList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div></div>`;pickerEl.addEventListener('click',function(e){if(e.target===pickerEl)closeCurrencyPicker();});document.getElementById('phone').appendChild(pickerEl);}pickerEl.style.display='flex';setTimeout(()=>renderCurrencyList(''),30);}
 function closeCurrencyPicker(){const el=document.getElementById('currencyPickerModal');if(el)el.style.display='none';}
 function selectCurrency(code){SETTINGS.displayCurrency=code;saveData();closeCurrencyPicker();updateRateUI();renderSubs();showToast(LANG==='tr'?'✓ Para birimi değiştirildi':'✓ Currency updated');}
-function toggleWlcRegion(){const trigger=document.getElementById('wlcRegionTrigger');const dropdown=document.getElementById('wlcRegionDropdown');const isOpen=dropdown.classList.contains('open');trigger.classList.toggle('open',!isOpen);dropdown.classList.toggle('open',!isOpen);if(!isOpen){buildWlcRegionList('');setTimeout(()=>{const s=document.getElementById('wlcRegionSearch');if(s){s.value='';s.focus();}document.addEventListener('click',function close(e){const wrap=document.getElementById('wlcRegionWrap');if(wrap&&!wrap.contains(e.target)){const trig=document.getElementById('wlcRegionTrigger');if(trig)trig.classList.remove('open');const drop=document.getElementById('wlcRegionDropdown');if(drop)drop.classList.remove('open');document.removeEventListener('click',close);}});},50);}}
-function buildWlcRegionList(q){const list=document.getElementById('wlcRegionList');if(!list)return;const cur=SETTINGS.country||'tr';const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.toLowerCase().includes(q.toLowerCase())):COUNTRIES;list.innerHTML='';filtered.forEach(c=>{const btn=document.createElement('button');btn.className='wlc-lang-option'+(c.code===cur?' selected':'');btn.innerHTML=`<span style="font-size:16px;margin-right:6px;">${c.flag}</span><span style="flex:1;text-align:left;">${c.name}</span><span style="font-size:11px;color:rgba(255,255,255,.3);margin-left:4px;">${c.symbol}</span>${c.code===cur?'<span style="margin-left:6px;color:#4cd964;font-size:14px;">✓</span>':''}`;btn.onclick=()=>wlcSetRegion(c.code,c.region,c.flag,c.name);list.appendChild(btn);});}
-function wlcSetRegion(code,region,flag,name){SETTINGS.country=code;SETTINGS.region=region;saveData();var trigger=document.getElementById('wlcRegionTrigger');if(trigger)trigger.classList.remove('open');var dropdown=document.getElementById('wlcRegionDropdown');if(dropdown)dropdown.classList.remove('open');var flagEl=document.getElementById('wlcRegionFlag');var labelEl=document.getElementById('wlcRegionLabel');if(flagEl)flagEl.textContent=flag;if(labelEl)labelEl.textContent=name.split(' ')[0];}
-function toggleWlcLang(){const trigger=document.getElementById('wlcLangTrigger');const dropdown=document.getElementById('wlcLangDropdown');const wrap=document.getElementById('wlcLangWrap');if(!trigger||!dropdown)return;const isOpen=dropdown.classList.contains('open');trigger.classList.toggle('open',!isOpen);dropdown.classList.toggle('open',!isOpen);if(!isOpen){setTimeout(()=>{document.addEventListener('click',function close(e){if(!wrap||!wrap.contains(e.target)){if(trigger)trigger.classList.remove('open');if(dropdown)dropdown.classList.remove('open');document.removeEventListener('click',close);}});},10);}}
-function wlcSetLang(lang){LANG=lang;localStorage.setItem('easytv_lang',lang);const trigger=document.getElementById('wlcLangTrigger');const dropdown=document.getElementById('wlcLangDropdown');const flagEl=document.getElementById('wlcLangFlag');const labelEl=document.getElementById('wlcLangLabel');const optTR=document.getElementById('wlcOptTR');const optEN=document.getElementById('wlcOptEN');const tagline=document.getElementById('wlcTagline');const sub=document.getElementById('wlcSub');const startBtn=document.getElementById('wlcStartBtn');if(trigger)trigger.classList.remove('open');if(dropdown)dropdown.classList.remove('open');if(flagEl)flagEl.textContent=lang==='tr'?'🇹🇷':'🇬🇧';if(labelEl)labelEl.textContent=lang==='tr'?'Türkçe':'English';if(optTR)optTR.classList.toggle('selected',lang==='tr');if(optEN)optEN.classList.toggle('selected',lang==='en');if(tagline)tagline.innerHTML=lang==='tr'?'Şifreleriniz güvende,<br>giriş tek dokunuşta.':'Passwords safe,<br>sign in with one tap.';if(sub)sub.textContent=lang==='tr'?'TV aboneliklerinizi saklayın.\nQR ile saniyeler içinde oturum açın.':'Store your TV subscriptions.\nSign in with QR in seconds.';if(startBtn)startBtn.textContent=lang==='tr'?'Başlayın':'Get Started';applyLang();}
 let LANG=localStorage.getItem('easytv_lang')||'tr';
-function t(key,...args){const s={tr:{nav_home:'Ana Sayfa',nav_subs:'Üyelikler',nav_profile:'Profil',nav_settings:'Ayarlar',no_subs:'Henüz servis eklenmedi',today_badge:'Bugün!',days_left:(n)=>`${n} gün kaldı`,free_badge:'Ücretsiz',per_month:'/ay',edit_btn:'Düzenle',monthly_total:'Aylık Toplam',spending_chart:'AYLIK HARCAMA',settings_security:'Güvenlik',settings_appearance:'Görünüm',settings_notifications:'Bildirimler',settings_lang:'Dil',tab_subs_title:'Üyelikler',tab_subs_sub:'Aylık harcama özeti',tab_profile_title:'Profil',tab_settings_title:'Ayarlar',share_full:'Ben ödüyorum 💳',share_equal:'Eşit bölüşüyoruz 🤝',share_free:'Başkası ödüyor 🎁',share_person_me:'Ben',share_solo:(p,s)=>`Tüm ücreti sen ödüyorsun: ${s}${p}/ay`,share_split:(per,s,total,n)=>`Sana düşen: ${s}${per}/ay (toplam ${s}${total} ÷ ${n} kişi)`,save_btn:'Kaydet',delete_sub:'Sil',sub_detail:'Üyelik Bilgileri',price_label:'AYLIK FİYAT',share_label:'PAYLAŞIM',share_who:'Kaç kişi kullanıyor?',share_how:'Ödeme şekli?',renew_date_field:'YENİLEME TARİHİ',email_field:'E-POSTA',password_field:'ŞİFRE',plan_field:'PLAN',
-  tog_faceid:'Face ID / Touch ID',tog_faceid_desc:'Uygulama girişi için',
-  tog_autolock:'Otomatik Kilit',tog_autolock_desc:'2 dakika sonra kilitle',
-  tog_qrrotate:'QR Otomatik Döndür',tog_qrrotate_desc:'Her 30 sn yeni kod',
-  tog_colorblind:'Renk Körü Modu',tog_colorblind_desc:'Kırmızı-yeşil körlüğü desteği',
-  tog_reminder:'Yenileme Hatırlatıcısı',tog_reminder_desc:'3 gün önce bildir',
-  tog_pricechange:'Fiyat Değişikliği',tog_pricechange_desc:'Abonelik ücret artışı',lbl_region_section:'Bölge & Para Birimi',lbl_app_section:'Uygulama',region_label:'Ülke / Bölge',currency_label:'Gösterim Para Birimi',rates_label:'Kurları Güncelle',
-  export_label:'Verilerimi Kaydet',import_label:'Verileri Geri Yükle',pin_change_label:'PIN Değiştir',
-  signout_label:'Çıkış Yap',delete_label:'Tüm Verileri Sil',login_heading:'Tüm servisleriniz<br>tek bir yerde.',login_sub:'Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.',login_create:'Hesap Oluştur',login_or:'VEYA GİRİŞ YAP',login_apple:'Apple ile Giriş Yap',login_google:'Google ile Giriş Yap',login_email:'Mail ile Giriş Yap',login_skip:'Şimdilik atla',email_auth_signin_title:'Mail ile Giriş',email_auth_signup_title:'Mail ile Kayıt Ol',email_auth_signin_btn:'Giriş Yap',email_auth_signup_btn:'Kayıt Ol',email_auth_switch_to_signup:'Hesabın yok mu? Kayıt ol',email_auth_switch_to_signin:'Hesabın var mı? Giriş yap',email_auth_required:'E-posta ve şifre zorunlu',email_auth_password_min:'Şifre en az 6 karakter olmalı',email_auth_signup_success_verify:'Kayıt tamamlandı. E-postanı doğrulayıp giriş yap.',email_auth_failed:'başarısız',unknown_error:'Bilinmeyen hata'},en:{nav_home:'Home',nav_subs:'Subscriptions',nav_profile:'Profile',nav_settings:'Settings',no_subs:'No services added yet',today_badge:'Today!',days_left:(n)=>`${n} days left`,free_badge:'Free',per_month:'/mo',edit_btn:'Edit',monthly_total:'Monthly Total',spending_chart:'MONTHLY SPENDING',settings_security:'Security',settings_appearance:'Appearance',settings_notifications:'Notifications',settings_lang:'Language',tab_subs_title:'Subscriptions',tab_subs_sub:'Monthly spending summary',tab_profile_title:'Profile',tab_settings_title:'Settings',share_full:'I pay 💳',share_equal:'Split equally 🤝',share_free:'Someone else pays 🎁',share_person_me:'Me',share_solo:(p,s)=>`You pay full: ${s}${p}/mo`,share_split:(per,s,total,n)=>`Your share: ${s}${per}/mo (${s}${total} ÷ ${n})`,save_btn:'Save',delete_sub:'Delete',sub_detail:'Subscription Details',price_label:'MONTHLY PRICE',share_label:'SHARING',share_who:'How many people?',share_how:'Payment method?',renew_date_field:'RENEWAL DATE',email_field:'EMAIL',password_field:'PASSWORD',plan_field:'PLAN',
-  tog_faceid:'Face ID / Touch ID',tog_faceid_desc:'For app login',
-  tog_autolock:'Auto Lock',tog_autolock_desc:'Lock after 2 minutes',
-  tog_qrrotate:'QR Auto Rotate',tog_qrrotate_desc:'New code every 30s',
-  tog_colorblind:'Color Blind Mode',tog_colorblind_desc:'Red-green blindness support',
-  tog_reminder:'Renewal Reminder',tog_reminder_desc:'Notify 3 days before',
-  tog_pricechange:'Price Change',tog_pricechange_desc:'Subscription price increase',lbl_region_section:'Region & Currency',lbl_app_section:'App',region_label:'Country / Region',currency_label:'Display Currency',rates_label:'Update Rates',
-  export_label:'Export Data',import_label:'Restore Data',pin_change_label:'Change PIN',
-  signout_label:'Sign Out',delete_label:'Delete All Data',login_heading:'All your services<br>in one place.',login_sub:'Access everything quickly in one place.<br>Track your subscriptions and payments with ease.',login_create:'Create Account',login_or:'OR SIGN IN',login_apple:'Sign in with Apple',login_google:'Sign in with Google',login_email:'Sign in with Email',login_skip:'Skip for now',email_auth_signin_title:'Sign in with Email',email_auth_signup_title:'Create Account with Email',email_auth_signin_btn:'Sign In',email_auth_signup_btn:'Sign Up',email_auth_switch_to_signup:'Don\'t have an account? Sign up',email_auth_switch_to_signin:'Already have an account? Sign in',email_auth_required:'Email and password are required',email_auth_password_min:'Password must be at least 6 characters',email_auth_signup_success_verify:'Signup complete. Verify your email, then sign in.',email_auth_failed:'failed',unknown_error:'Unknown error'}}[LANG]||{};const val=s[key];return typeof val==='function'?val(...args):(val||key);}
+function t(key,...args){
+  const dict = {
+    tr:{
+      nav_home:'Ana Sayfa',nav_subs:'Üyelikler',nav_profile:'Profil',nav_settings:'Ayarlar',
+      no_subs:'Henüz servis eklenmedi',today_badge:'Bugün!',days_left:(n)=>`${n} gün kaldı`,
+      free_badge:'Ücretsiz',per_month:'/ay',edit_btn:'Düzenle',monthly_total:'Aylık Toplam',
+      spending_chart:'AYLIK HARCAMA',settings_security:'Güvenlik',settings_appearance:'Görünüm',
+      settings_notifications:'Bildirimler',settings_lang:'Dil',tab_subs_title:'Üyelikler',
+      tab_subs_sub:'Aylık harcama özeti',tab_profile_title:'Profil',tab_settings_title:'Ayarlar',
+      share_full:'Ben ödüyorum 💳',share_equal:'Eşit bölüşüyoruz 🤝',share_free:'Başkası ödüyor 🎁',
+      share_person_me:'Ben',share_solo:(p,s)=>`Tüm ücreti sen ödüyorsun: ${s}${p}/ay`,
+      share_split:(per,s,total,n)=>`Sana düşen: ${s}${per}/ay (toplam ${s}${total} ÷ ${n} kişi)`,
+      save_btn:'Kaydet',delete_sub:'Sil',sub_detail:'Üyelik Bilgileri',
+      price_label:'AYLIK FİYAT',share_label:'PAYLAŞIM',share_who:'Kaç kişi kullanıyor?',share_how:'Ödeme şekli?',
+      renew_date_field:'YENİLEME TARİHİ',email_field:'E-POSTA',password_field:'ŞİFRE',plan_field:'PLAN',
+      tog_faceid:'Face ID / Touch ID',tog_faceid_desc:'Uygulama girişi için',
+      tog_autolock:'Otomatik Kilit',tog_autolock_desc:'2 dakika sonra kilitle',
+      tog_qrrotate:'QR Otomatik Döndür',tog_qrrotate_desc:'Her 30 sn yeni kod',
+      tog_colorblind:'Renk Körü Modu',tog_colorblind_desc:'Kırmızı-yeşil körlüğü desteği',
+      tog_reminder:'Yenileme Hatırlatıcısı',tog_reminder_desc:'3 gün önce bildir',
+      tog_pricechange:'Fiyat Değişikliği',tog_pricechange_desc:'Abonelik ücret artışı',
+      lbl_region_section:'Bölge & Para Birimi',lbl_app_section:'Uygulama',
+      region_label:'Ülke / Bölge',currency_label:'Gösterim Para Birimi',rates_label:'Kurları Güncelle',
+      export_label:'Verilerimi Kaydet',import_label:'Verileri Geri Yükle',pin_change_label:'PIN Değiştir',
+      signout_label:'Çıkış Yap',delete_label:'Tüm Verileri Sil',
+      login_heading:'Tüm servisleriniz<br>tek bir yerde.',
+      login_sub:'Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.',
+      login_create:'Hesap Oluştur',login_or:'VEYA GİRİŞ YAP',
+      login_apple:'Apple ile Giriş Yap',login_google:'Google ile Giriş Yap',login_email:'Mail ile Giriş Yap',
+      login_skip:'Şimdilik atla',intro_hint:'Zaten hesabınız var mı? Giriş yapın',
+      email_auth_signin_title:'Mail ile Giriş',email_auth_signup_title:'Mail ile Kayıt Ol',
+      email_auth_signin_btn:'Giriş Yap',email_auth_signup_btn:'Kayıt Ol',
+      email_auth_switch_to_signup:'Hesabın yok mu? Kayıt ol',
+      email_auth_switch_to_signin:'Hesabın var mı? Giriş yap',
+      email_auth_required:'E-posta ve şifre zorunlu',
+      email_auth_password_min:'Şifre en az 6 karakter olmalı',
+      email_auth_signup_success_verify:'Kayıt tamamlandı. E-postanı doğrulayıp giriş yap.',
+      email_auth_failed:'başarısız',unknown_error:'Bilinmeyen hata',
+      email_auth_signup_title:'Hesap Oluştur',email_auth_signin_title:'Mail ile Giriş',
+      email_auth_signup_btn:'Kayıt Ol',email_auth_signin_btn:'Giriş Yap',
+      email_auth_switch_to_signin:'Hesabın var mı? Giriş yap',email_auth_switch_to_signup:'Hesabın yok mu? Kayıt ol',
+      email_auth_required:'Lütfen tüm alanları doldurun.',
+      email_auth_signup_success_verify:'Doğrulama bağlantısı e-postanıza gönderildi. Lütfen gelen kutunuzu kontrol edin.',
+      add_service:'Servis Ekle',tab_popular:'Popüler',tab_custom:'Özel',tab_remove:'Çıkar',
+      add_name:'Servis Adı',add_website:'Web Sitesi (logo için)',
+      add_email:'E-Posta / Kullanıcı Adı',add_pwd:'Şifre',
+      add_price:'Aylık Ücret (opsiyonel)',add_renew:'Yenileme Tarihi',
+      add_color:'Renk',save:'Kaydet',remove_hint:'Çıkarmak istediğin servise dokun',
+      plan_select:'Plan seçin',price_hint:'Fiyatlar güncel olmayabilir.',
+      renew_mini:'Yenileme<br>tarihi',edit_profile:'Profili Düzenle',
+      full_name:'Ad Soyad',email:'E-Posta',weak_password_title:'Zayıf Şifre',
+      weak_password_msg:'Şifreniz en az 6 karakter olmalıdır.',
+      passwords_mismatch:'Şifreler eşleşmiyor',
+      email_auth_verify_title:'E-posta Doğrulama',
+      export_data:'Verilerimi Kaydet',export_desc:'Bilgilerini telefona indir',
+      import_data:'Verileri Geri Yükle',import_desc:'Kaydedilen bilgileri aç',
+      pin_change:'PIN Değiştir',pin_change_desc:'Giriş şifreni güncelle',
+      unlimited_subs:'Sınırsız abonelik ekle',
+      no_subs_title:'Henüz servis yok',
+      no_subs_hint:'Sağ üstteki + butonuna basarak ekleyebilirsin',
+      premium_trial_text:'1 hafta ücretsiz dene<br>istediğin zaman iptal et',
+      search_placeholder:'Ara...',search_no_results:'Sonuç bulunamadı',
+      search_try_again:'Farklı bir arama deneyin',search_cat:'KATEGORİ',search_sort:'SIRALA',
+      search_cat_all:'Hepsi',search_cat_streaming:'Streaming',search_cat_music:'Müzik',
+      search_cat_gaming:'Oyun',search_cat_other:'Diğer',
+      search_sort_name:'İsim',search_sort_price:'Fiyat',search_sort_date:'Tarih'
+    },
+    en:{
+      nav_home:'Home',nav_subs:'Subscriptions',nav_profile:'Profile',nav_settings:'Settings',
+      no_subs:'No services added yet',today_badge:'Today!',days_left:(n)=>`${n} days left`,
+      free_badge:'Free',per_month:'/mo',edit_btn:'Edit',monthly_total:'Monthly Total',
+      spending_chart:'MONTHLY SPENDING',settings_security:'Security',settings_appearance:'Appearance',
+      settings_notifications:'Notifications',settings_lang:'Language',tab_subs_title:'Subscriptions',
+      tab_subs_sub:'Monthly spending summary',tab_profile_title:'Profile',tab_settings_title:'Settings',
+      share_full:'I pay 💳',share_equal:'Split equally 🤝',share_free:'Someone else pays 🎁',
+      share_person_me:'Me',share_solo:(p,s)=>`You pay full: ${s}${p}/mo`,
+      share_split:(per,s,total,n)=>`Your share: ${s}${per}/mo (${s}${total} ÷ ${n})`,
+      save_btn:'Save',delete_sub:'Delete',sub_detail:'Subscription Details',
+      price_label:'MONTHLY PRICE',share_label:'SHARING',share_who:'How many people?',share_how:'Payment method?',
+      renew_date_field:'RENEWAL DATE',email_field:'EMAIL',password_field:'PASSWORD',plan_field:'PLAN',
+      tog_faceid:'Face ID / Touch ID',tog_faceid_desc:'For app login',
+      tog_autolock:'Auto Lock',tog_autolock_desc:'Lock after 2 minutes',
+      tog_qrrotate:'QR Auto Rotate',tog_qrrotate_desc:'New code every 30s',
+      tog_colorblind:'Color Blind Mode',tog_colorblind_desc:'Red-green blindness support',
+      tog_reminder:'Renewal Reminder',tog_reminder_desc:'Notify 3 days before',
+      tog_pricechange:'Price Change',tog_pricechange_desc:'Subscription price increase',
+      lbl_region_section:'Region & Currency',lbl_app_section:'App',
+      region_label:'Country / Region',currency_label:'Display Currency',rates_label:'Update Rates',
+      export_label:'Export Data',import_label:'Restore Data',pin_change_label:'Change PIN',
+      signout_label:'Sign Out',delete_label:'Delete All Data',
+      login_heading:'All your services<br>in one place.',
+      login_sub:'Access everything quickly in one place.<br>Track your subscriptions and payments with ease.',
+      login_create:'Create Account',login_or:'OR SIGN IN',
+      login_apple:'Sign in with Apple',login_google:'Sign in with Google',login_email:'Sign in with Email',
+      login_skip:'Skip for now',intro_hint:'Already have an account? Sign in',
+      email_auth_signin_title:'Sign in with Email',email_auth_signup_title:'Create Account with Email',
+      email_auth_signin_btn:'Sign In',email_auth_signup_btn:'Sign Up',
+      email_auth_switch_to_signup:"Don't have an account? Sign up",
+      email_auth_switch_to_signin:'Already have an account? Sign in',
+      email_auth_required:'Email and password are required',
+      email_auth_password_min:'Password must be at least 6 characters',
+      email_auth_signup_success_verify:'Signup complete. Verify your email, then sign in.',
+      email_auth_failed:'failed',unknown_error:'Unknown error',
+      email_auth_signup_title:'Create Account',email_auth_signin_title:'Sign In with Mail',
+      email_auth_signup_btn:'Sign Up',email_auth_signin_btn:'Sign In',
+      email_auth_switch_to_signin:'Already have an account? Sign in',email_auth_switch_to_signup:'Don\'t have an account? Sign up',
+      email_auth_required:'Please fill all fields.',
+      email_auth_signup_success_verify:'Verification link sent to your email. Please check your inbox.',
+      add_service:'Add Service',tab_popular:'Popular',tab_custom:'Custom',tab_remove:'Remove',
+      add_name:'Service Name',add_website:'Website (for logo)',
+      add_email:'Email / Username',add_pwd:'Password',
+      add_price:'Monthly Price (optional)',add_renew:'Renewal Date',
+      add_color:'Color',save:'Save',remove_hint:'Tap the service you want to remove',
+      plan_select:'Select a plan',price_hint:'Prices may not be up to date.',
+      renew_mini:'Renewal<br>date',edit_profile:'Edit Profile',
+      full_name:'Full Name',email:'Email',weak_password_title:'Weak Password',
+      weak_password_msg:'Password must be at least 6 characters.',
+      passwords_mismatch:'Passwords do not match',
+      email_auth_verify_title:'Email Verification',
+      export_data:'Export My Data',export_desc:'Download your data',
+      import_data:'Restore Data',import_desc:'Load backup data',
+      pin_change:'Change PIN',pin_change_desc:'Update your login PIN',
+      unlimited_subs:'Add unlimited subscriptions'
+    }
+  };
+  const s = dict[LANG] || dict.en;
+  let val=s[key];
+  let res=typeof val==='function'?val(...args):(val||key);
+  if(LANG==='en' && typeof res==='string'){ res=res.replace(/İ/g,'I'); }
+  return res;
+}
+
 
 function cycleLang() {
   var next = LANG === 'tr' ? 'en' : 'tr';
@@ -1540,33 +1648,45 @@ function applyLang(){
   if($('loginSub')) $('loginSub').innerHTML = t('login_sub');
   if($('introTagline')) $('introTagline').innerHTML = t('login_heading');
   if($('introSub')) $('introSub').innerHTML = t('login_sub');
-  if($('introHint')) $('introHint').textContent = LANG==='tr' ? 'Zaten hesabınız var mı? Giriş yapın' : 'Already have an account? Sign in';
+  if($('introHint')) $('introHint').textContent = t('intro_hint');
   if($('loginCreateBtnText')) $('loginCreateBtnText').textContent = t('login_create');
   if($('loginOrText')) $('loginOrText').textContent = t('login_or');
   if($('loginAppleBtnText')) $('loginAppleBtnText').textContent = t('login_apple');
   if($('loginGoogleBtnText')) $('loginGoogleBtnText').textContent = t('login_google');
   if($('loginEmailBtnText')) $('loginEmailBtnText').textContent = t('login_email');
   if($('loginSkipText')) $('loginSkipText').textContent = t('login_skip');
-  if($('addModalTitle')) $('addModalTitle').textContent = LANG==='tr' ? 'Servis Ekle' : 'Add Service';
-  if($('tab-popular')) $('tab-popular').textContent = LANG==='tr' ? 'Popüler' : 'Popular';
-  if($('tab-custom')) $('tab-custom').textContent = LANG==='tr' ? 'Özel' : 'Custom';
-  if($('tab-remove')) $('tab-remove').textContent = LANG==='tr' ? 'Çıkar' : 'Remove';
-  if($('addNameLbl')) $('addNameLbl').textContent = LANG==='tr' ? 'Servis Adı' : 'Service Name';
-  if($('addWebsiteLbl')) $('addWebsiteLbl').textContent = LANG==='tr' ? 'Web Sitesi (logo için)' : 'Website (for logo)';
-  if($('addEmailLbl')) $('addEmailLbl').textContent = LANG==='tr' ? 'E-Posta / Kullanıcı Adı' : 'Email / Username';
-  if($('addPwdLbl')) $('addPwdLbl').textContent = LANG==='tr' ? 'Şifre' : 'Password';
-  if($('addPriceLbl')) $('addPriceLbl').textContent = LANG==='tr' ? 'Aylık Ücret (opsiyonel)' : 'Monthly Price (optional)';
-  if($('addRenewLbl')) $('addRenewLbl').textContent = LANG==='tr' ? 'Yenileme Tarihi' : 'Renewal Date';
-  if($('addColorLbl')) $('addColorLbl').textContent = LANG==='tr' ? 'Renk' : 'Color';
-  if($('addSaveBtn')) $('addSaveBtn').textContent = LANG==='tr' ? 'Kaydet' : 'Save';
-  if($('removeHint')) $('removeHint').textContent = LANG==='tr' ? 'Çıkarmak istediğin servise dokun' : 'Tap the service you want to remove';
-  if($('planSelectLbl')) $('planSelectLbl').textContent = LANG==='tr' ? 'Plan seçin' : 'Select a plan';
-  if($('planPriceHint')) $('planPriceHint').textContent = LANG==='tr' ? 'Fiyatlar güncel olmayabilir.' : 'Prices may not be up to date.';
-  if($('planRenewMiniLbl')) $('planRenewMiniLbl').innerHTML = LANG==='tr' ? 'Yenileme<br>tarihi' : 'Renewal<br>date';
-  if($('editProfileTitle')) $('editProfileTitle').textContent = LANG==='tr' ? 'Profili Düzenle' : 'Edit Profile';
-  if($('editNameLbl')) $('editNameLbl').textContent = LANG==='tr' ? 'Ad Soyad' : 'Full Name';
-  if($('editEmailLbl')) $('editEmailLbl').textContent = LANG==='tr' ? 'E-Posta' : 'Email';
-  if($('editProfileSaveBtn')) $('editProfileSaveBtn').textContent = LANG==='tr' ? 'Kaydet' : 'Save';
+  if($('lbl-premium-section')) $('lbl-premium-section').textContent = 'Premium';
+  if($('lbl-account-section')) $('lbl-account-section').textContent = t('tab_profile_title');
+  if($('premiumMenuLbl')) $('premiumMenuLbl').textContent = 'EasyTV Premium';
+  if($('premiumStatusDesc')) $('premiumStatusDesc').textContent = isPremium() ? '' : t('unlimited_subs');
+  if($('premiumTrialText')) $('premiumTrialText').innerHTML = t('premium_trial_text');
+  if($('exportDataLbl')) $('exportDataLbl').textContent = t('export_data');
+  if($('exportDataDesc')) $('exportDataDesc').textContent = t('export_desc');
+  if($('importDataLbl')) $('importDataLbl').textContent = t('import_data');
+  if($('importDataDesc')) $('importDataDesc').textContent = t('import_desc');
+  if($('pinChangeLbl')) $('pinChangeLbl').textContent = t('pin_change');
+  if($('pinChangeDesc')) $('pinChangeDesc').textContent = t('pin_change_desc');
+
+  if($('addModalTitle')) $('addModalTitle').textContent = t('add_service');
+  if($('tab-popular')) $('tab-popular').textContent = t('tab_popular');
+  if($('tab-custom')) $('tab-custom').textContent = t('tab_custom');
+  if($('tab-remove')) $('tab-remove').textContent = t('tab_remove');
+  if($('addNameLbl')) $('addNameLbl').textContent = t('add_name');
+  if($('addWebsiteLbl')) $('addWebsiteLbl').textContent = t('add_website');
+  if($('addEmailLbl')) $('addEmailLbl').textContent = t('add_email');
+  if($('addPwdLbl')) $('addPwdLbl').textContent = t('add_pwd');
+  if($('addPriceLbl')) $('addPriceLbl').textContent = t('add_price');
+  if($('addRenewLbl')) $('addRenewLbl').textContent = t('add_renew');
+  if($('addColorLbl')) $('addColorLbl').textContent = t('add_color');
+  if($('addSaveBtn')) $('addSaveBtn').textContent = t('save');
+  if($('removeHint')) $('removeHint').textContent = t('remove_hint');
+  if($('planSelectLbl')) $('planSelectLbl').textContent = t('plan_select');
+  if($('planPriceHint')) $('planPriceHint').textContent = t('price_hint');
+  if($('planRenewMiniLbl')) $('planRenewMiniLbl').innerHTML = t('renew_mini');
+  if($('editProfileTitle')) $('editProfileTitle').textContent = t('edit_profile');
+  if($('editNameLbl')) $('editNameLbl').textContent = t('full_name');
+  if($('editEmailLbl')) $('editEmailLbl').textContent = t('email');
+  if($('editProfileSaveBtn')) $('editProfileSaveBtn').textContent = t('save');
   // Sub edit sheet labels
   if($('seSubDetailLbl')) $('seSubDetailLbl').textContent = t('sub_detail');
   if($('sePriceLbl')) $('sePriceLbl').textContent = t('price_label');
@@ -1860,14 +1980,14 @@ function buildGrid() {
     gridEl.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;width:100%;">
       <div style="opacity:.2;animation:emptyBob 3s ease-in-out infinite;"><svg width="56" height="48" viewBox="0 0 56 48" fill="none"><rect x="1" y="1" width="54" height="36" rx="5" stroke="white" stroke-width="2"/><path d="M18 37v6M38 37v6M12 43h32" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
       <div style="font-size:17px;font-weight:700;color:rgba(255,255,255,.45);text-align:center;">${LANG==='tr'?'Henüz servis yok':'No services yet'}</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.25);text-align:center;line-height:1.6;">${LANG==='tr'?'Sağ üstteki + butonuna<br>basarak ekleyebilirsin':'Use the + button on top right<br>to add your first service'}</div>
-      <button onclick="openAddModal()" style="margin-top:8px;padding:13px 28px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);border-radius:14px;color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .2s;"><span style="margin-right:4px;">+</span> ${LANG==='tr'?'Servis Ekle':'Add Service'}</button></div>`;
+      <div style="font-size:13px;color:rgba(255,255,255,.25);text-align:center;line-height:1.6;">${t('no_subs_hint')||'Servis Ekle'}</div>
+      <button onclick="openAddModal()" style="margin-top:8px;padding:13px 28px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);border-radius:14px;color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .2s;"><span style="margin-right:4px;">+</span> ${t('add_service')}</button></div>`;
     return;
   }
   gridEl.style.display = '';
   const BOX_IMG = './assets/box2.webp';
-  const active = isPremium() ? SVC : SVC.slice(0, FREE_LIMIT);
-  const locked = isPremium() ? [] : SVC.slice(FREE_LIMIT);
+  const active = getActiveSubs();
+  const locked = getLockedSubs();
   // Render active services (normal)
   active.forEach((s, i) => {
     const tile = document.createElement('div');
@@ -2447,7 +2567,35 @@ function doCopy(btn,f){
     const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-9999px;opacity:0;';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);doAnim();
   }
 }
-function openDeepLink(){if(active<0)return;const s=SVC[active];const reg=getRegion();const deepLink=reg.deep[s.id];const storeLink=reg.store[s.id];if(deepLink){showToast(`${s.name} açılıyor...`);const iframe=document.createElement('iframe');iframe.style.display='none';document.body.appendChild(iframe);iframe.src=deepLink;setTimeout(()=>{document.body.removeChild(iframe);if(storeLink)window.open(storeLink,'_blank');},1500);}else if(storeLink){showToast(`App Store'a yönlendiriliyor...`);window.open(storeLink,'_blank');}else{showToast('Bu bölgede mevcut değil');}}
+function openDeepLink() {
+  if (active < 0) return;
+  const s = SVC[active];
+  const reg = getRegion();
+  const sKey = s.id.toLowerCase();
+  
+  const deepLink = (reg.deep && reg.deep[sKey]) || null;
+  const storeLink = (reg.store && reg.store[sKey]) || null;
+
+  if (deepLink) {
+    showToast(t('nav_home') === 'Home' ? `${s.name} opening...` : `${s.name} açılıyor...`);
+    
+    // Güçlü Deep Link Yönlendirmesi
+    const start = Date.now();
+    window.location.href = deepLink;
+    
+    // 1.5 sn içinde uygulama açılmazsa Store'a yönlendir (Fallback)
+    setTimeout(() => {
+      if (Date.now() - start < 2000) {
+        if (storeLink) window.open(storeLink, '_blank');
+      }
+    }, 1500);
+  } else if (storeLink) {
+    showToast(t('nav_home') === 'Home' ? 'Redirecting to Store...' : 'Mağazaya yönlendiriliyor...');
+    window.open(storeLink, '_blank');
+  } else {
+    showToast(LANG==='tr' ? 'Bu bölgede link mevcut değil' : 'Link not available in this region');
+  }
+}
 function shareCredentials(){if(active<0)return;const s=SVC[active];const txt=LANG==='tr'?`${s.name}\nKullanıcı: ${s.email}\nŞifre: ${s.pwd}`:`${s.name}\nUsername: ${s.email}\nPassword: ${s.pwd}`;if(navigator.share){navigator.share({title:LANG==='tr'?`${s.name} Hesap Bilgileri`:`${s.name} Account Details`,text:txt});}else{navigator.clipboard.writeText(txt).then(()=>showToast(LANG==='tr'?'✓ Panoya kopyalandı':'✓ Copied to clipboard'));}}
 function genQRSvg(seed){const s=Math.sin(seed*7.3+1.1);let cells='';for(let r=0;r<21;r++){for(let c=0;c<21;c++){const inCorner=(r<7&&c<7)||(r<7&&c>13)||(r>13&&c<7);let fill=0;if(inCorner){if(r===0||r===6||c===0||c===6)fill=1;else if(r>=2&&r<=4&&c>=2&&c<=4)fill=1;}else{fill=Math.sin((r+seed)*(c+1)*2.7+s*10)>0.1?1:0;}if(fill)cells+=`<rect x="${c*8+1}" y="${r*8+1}" width="7" height="7" rx="1"/>`;}}return`<svg width="168" height="168" viewBox="0 0 169 169" fill="white">${cells}</svg>`;}
 function openQR(){if(active<0)return;const s=SVC[active];const qrSvcName=document.getElementById('qrSvcName');const qrCodeArea=document.getElementById('qrCodeArea');const qrOv=document.getElementById('qrOv');if(!qrSvcName||!qrCodeArea||!qrOv)return;qrSvcName.textContent=s.name+' — Otomatik Giriş';clearInterval(qrRotateInterval);clearInterval(qrCountdown);qrSec=30;qrCodeArea.innerHTML=genQRSvg(_qrSeed%1000);updateQRTimer();if(SETTINGS.qrrotate){qrRotateInterval=setInterval(()=>{_qrSeed=Date.now();if(qrCodeArea)qrCodeArea.innerHTML=genQRSvg(_qrSeed%1000);},30000);qrCountdown=setInterval(()=>{qrSec--;if(qrSec<=0)qrSec=30;updateQRTimer();},1000);}qrOv.classList.add('open');}
@@ -2824,7 +2972,7 @@ function renderRegionModalList(q){const list=document.getElementById('regionPick
 function showAlert(icon,title,msg,actions){const alertIcon=document.getElementById('alertIcon');const alertTitle=document.getElementById('alertTitle');const alertMsg=document.getElementById('alertMsg');const actEl=document.getElementById('alertActions');const alertModal=document.getElementById('alertModal');if(!alertIcon||!alertTitle||!alertMsg||!actEl||!alertModal)return;alertIcon.textContent=icon;alertTitle.textContent=title;alertMsg.textContent=msg;actEl.innerHTML='';actions.forEach(a=>{const btn=document.createElement('button');btn.className=`alert-btn ${a.style||'secondary'}`;btn.textContent=a.label;btn.onclick=a.action;actEl.appendChild(btn);});alertModal.classList.add('open');}
 function closeAlert(){const alertModal=document.getElementById('alertModal');if(alertModal)alertModal.classList.remove('open');}
 function confirmDeleteAll(){showAlert('⚠️',LANG==='tr'?'Tüm Verileri Sil':'Delete All Data',LANG==='tr'?'Tüm servisler ve şifreler kalıcı olarak silinecek. Bu işlem geri alınamaz.':'All services and passwords will be permanently deleted. This action cannot be undone.',[{label:LANG==='tr'?'Evet, Sil':'Yes, delete',style:'danger',action:()=>{SVC=[];localStorage.clear();saveData();buildGrid();renderSubs();renderProfile();closeAlert();showToast(LANG==='tr'?'Tüm veriler silindi':'All data deleted');setTimeout(()=>location.reload(),1000);}},{label:LANG==='tr'?'İptal':'Cancel',style:'secondary',action:closeAlert}]);}
-function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function showToast(m,type='success'){if(typeof showErrorToast==='function'){showErrorToast(m,type,4000);}else{console.log('Toast:',m);}}
 function fitPhone(){
   var s = Math.min(window.innerWidth/393, window.innerHeight/852, 1);
   var ph = document.getElementById('phone');
