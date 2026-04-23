@@ -57,7 +57,9 @@ public class EasyTVPaymentsPlugin: CAPPlugin, CAPBridgedPlugin {
                         "ok": true,
                         "source": "iap",
                         "productId": transaction.productID,
-                        "expiresAt": expiresAt as Any
+                        "expiresAt": expiresAt as Any,
+                        "transactionId": String(transaction.id),
+                        "originalTransactionId": String(transaction.originalID)
                     ])
                 case .userCancelled:
                     call.resolve(failResult(code: "user_cancelled", message: "Purchase cancelled by user."))
@@ -82,7 +84,9 @@ public class EasyTVPaymentsPlugin: CAPPlugin, CAPBridgedPlugin {
                         "ok": true,
                         "source": "iap",
                         "productId": status.productId as Any,
-                        "expiresAt": status.expiresAt as Any
+                        "expiresAt": status.expiresAt as Any,
+                        "transactionId": status.transactionId as Any,
+                        "originalTransactionId": status.originalTransactionId as Any
                     ])
                 } else {
                     call.resolve(failResult(code: "no_purchase", message: "No active purchases found."))
@@ -100,7 +104,9 @@ public class EasyTVPaymentsPlugin: CAPPlugin, CAPBridgedPlugin {
                 "active": status.active,
                 "source": "iap",
                 "productId": status.productId as Any,
-                "expiresAt": status.expiresAt as Any
+                "expiresAt": status.expiresAt as Any,
+                "transactionId": status.transactionId as Any,
+                "originalTransactionId": status.originalTransactionId as Any
             ])
         }
     }
@@ -154,9 +160,9 @@ public class EasyTVPaymentsPlugin: CAPPlugin, CAPBridgedPlugin {
         }
     }
 
-    private func resolveStatus() async -> (active: Bool, productId: String?, expiresAt: String?) {
+    private func resolveStatus() async -> (active: Bool, productId: String?, expiresAt: String?, transactionId: String?, originalTransactionId: String?) {
         let allowed = Set(defaultProductIds)
-        var activeTransactions: [(productId: String, expiresAt: Date?)] = []
+        var activeTransactions: [(productId: String, expiresAt: Date?, transactionId: UInt64, originalTransactionId: UInt64)] = []
         let now = Date()
 
         for await entitlement in Transaction.currentEntitlements {
@@ -164,11 +170,11 @@ public class EasyTVPaymentsPlugin: CAPPlugin, CAPBridgedPlugin {
             guard allowed.contains(transaction.productID) else { continue }
             guard transaction.revocationDate == nil else { continue }
             if let expiration = transaction.expirationDate, expiration <= now { continue }
-            activeTransactions.append((transaction.productID, transaction.expirationDate))
+            activeTransactions.append((transaction.productID, transaction.expirationDate, transaction.id, transaction.originalID))
         }
 
         guard !activeTransactions.isEmpty else {
-            return (false, nil, nil)
+            return (false, nil, nil, nil, nil)
         }
 
         let best = activeTransactions.max { lhs, rhs in
@@ -177,7 +183,13 @@ public class EasyTVPaymentsPlugin: CAPPlugin, CAPBridgedPlugin {
             return lhsDate < rhsDate
         }
 
-        return (true, best?.productId, isoDate(best?.expiresAt))
+        return (
+            true,
+            best?.productId,
+            isoDate(best?.expiresAt),
+            best.map { String($0.transactionId) },
+            best.map { String($0.originalTransactionId) }
+        )
     }
 
     private func isoDate(_ date: Date?) -> String? {

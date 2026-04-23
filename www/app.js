@@ -1,4 +1,4 @@
-// ══════════════════════════════════════════════════
+﻿// ══════════════════════════════════════════════════
 // SUPABASE KURULUMU
 // ══════════════════════════════════════════════════
 // ⚠️ ÖNEMLİ: Supabase RLS politikalarını aktif edin!
@@ -15,9 +15,13 @@ const EASYTV_LAST_USER_KEY = 'easytv_last_user_id';
 const NATIVE_OAUTH_CALLBACK_URL = 'easytvhub://auth/callback';
 let _pendingOAuthCallbackUrl = '';
 let _nativeOAuthListenerBound = false;
+const IS_DESKTOP_APP = !!(
+  (window.easytvDesktop && window.easytvDesktop.isDesktop) ||
+  (typeof navigator !== 'undefined' && /Electron/i.test(navigator.userAgent || ''))
+);
 
 // Local geliştirmede cache kaynaklı "eski ekran" yanılsamasını engelle.
-if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') && 'serviceWorker' in navigator) {
+if ((IS_DESKTOP_APP || location.hostname === 'localhost' || location.hostname === '127.0.0.1') && 'serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(function (regs) {
     regs.forEach(function (reg) { reg.unregister(); });
   }).catch(function () {});
@@ -25,6 +29,7 @@ if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') && 
 
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
+const IAP_VERIFY_ENDPOINT_DEFAULT = `${SUPABASE_URL}/functions/v1/verify-ios-subscription`;
 let _supabase = null;
 try {
   const { createClient } = supabase;
@@ -68,11 +73,13 @@ function _showFallbackScreen() {
   if (introScreen) {
     introScreen.style.display = 'flex';
     introScreen.style.opacity = '1';
-    _initFuzzyLogo();
-    _stabilizeIntroHero();
-    _initLogoGallery();
+    try { _initFuzzyLogo(); } catch(_) {}
+    try { _stabilizeIntroHero(); } catch(_) {}
+    try { _initLogoGallery(); } catch(_) {}
+    try { applyLang(); } catch(_) {}
   } else if (loginScreen) {
     loginScreen.style.display = 'flex';
+    loginScreen.style.opacity = '1';
     _charReveal(document.getElementById('loginHeading'), 0.18);
     _charReveal(document.getElementById('loginSub'), 0.46);
   }
@@ -509,6 +516,13 @@ async function initAuth() {
   }, 6000);
 
   try {
+    if (IS_DESKTOP_APP) {
+      _authDone = true;
+      clearTimeout(_safetyTimer);
+      _showFallbackScreen();
+      return;
+    }
+
     // Supabase yoksa direkt intro/welcome göster
     if (!_supabase) {
       _authDone = true;
@@ -647,6 +661,12 @@ async function submitEmailAuth() {
   if (authLoading) authLoading.style.display = 'flex';
   
   try {
+    if (!_supabase) {
+      throw new Error(LANG === 'tr'
+        ? 'Cloud bağlantısı yok. Lütfen internet bağlantınızı kontrol edin.'
+        : 'Cloud connection is unavailable. Please check your internet connection.');
+    }
+
     if (_emailAuthMode === 'signin') {
       const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -657,8 +677,35 @@ async function submitEmailAuth() {
         password,
         options: { data: { full_name: document.getElementById('emailAuthName')?.value || '' } }
       });
-      if (error) throw error;
-      showAlert('✉️', LANG==='tr'?'E-posta Doğrulama':'Email Verification', t('email_auth_signup_success_verify'), [{ label: 'Tamam', action: () => { closeAlert(); toggleEmailAuthMode('signin'); } }]);
+      if (error) {
+        const msg = (error.message || '').toLowerCase();
+        const alreadyExists =
+          msg.includes('already registered') ||
+          msg.includes('already exists') ||
+          msg.includes('already been registered');
+        if (alreadyExists) {
+          const signInRes = await _supabase.auth.signInWithPassword({ email, password });
+          if (signInRes && !signInRes.error && signInRes.data && signInRes.data.user) {
+            closeEmailAuth();
+            onAuthSuccess(signInRes.data.user);
+            return;
+          }
+        }
+        throw error;
+      }
+
+      if (data && data.session && data.user) {
+        closeEmailAuth();
+        onAuthSuccess(data.user);
+        return;
+      }
+
+      showAlert(
+        '✉️',
+        LANG==='tr'?'E-posta Doğrulama':'Email Verification',
+        t('email_auth_signup_success_verify'),
+        [{ label: 'Tamam', action: () => { closeAlert(); setEmailAuthMode('signin'); } }]
+      );
     }
   } catch (e) {
     console.error('Auth Submit Error:', e);
@@ -691,6 +738,12 @@ async function loginWithDemo() {
 }
 
 async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
+  if (IS_DESKTOP_APP) {
+    showToast((LANG === 'tr' ? 'Desktop sürümünde ' : 'In desktop version ') + providerTitle + (LANG === 'tr' ? ' ile giriş geçici olarak kapalı. Mail ile giriş yapın.' : ' login is temporarily disabled. Use email login.'));
+    openEmailAuth('signin');
+    return;
+  }
+
   _showAuthScreens();
   if (!_supabase) { showToast('Cloud bağlantısı yok'); return; }
 
@@ -1177,15 +1230,85 @@ function activatePremiumLegacy() {
   updatePremiumBadge();
 }
 
+function _getIapVerifyEndpoint() {
+  if (SETTINGS && SETTINGS.iapVerifyEndpoint) return SETTINGS.iapVerifyEndpoint;
+  if (window.EASYTV_IAP_VERIFY_ENDPOINT) return window.EASYTV_IAP_VERIFY_ENDPOINT;
+  return IAP_VERIFY_ENDPOINT_DEFAULT;
+}
+
+async function _verifyIapServerSide(meta, silent) {
+  if (!_supabase || !CLOUD_SYNC_AVAILABLE) {
+    return { ok: false, message: 'Cloud sync kapalı' };
+  }
+
+  const transactionId = meta && meta.transactionId ? String(meta.transactionId) : '';
+  const productId = meta && meta.productId ? String(meta.productId) : '';
+  if (!transactionId || !productId) {
+    return { ok: false, message: 'Eksik transaction/product bilgisi' };
+  }
+
+  const sessionRes = await _supabase.auth.getSession();
+  const session = sessionRes && sessionRes.data ? sessionRes.data.session : null;
+  if (!session || !session.access_token) {
+    return { ok: false, message: 'Oturum bulunamadı' };
+  }
+
+  const endpoint = _getIapVerifyEndpoint();
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + session.access_token
+    },
+    body: JSON.stringify({
+      transactionId: transactionId,
+      originalTransactionId: meta.originalTransactionId || null,
+      productId: productId,
+      source: meta.source || 'iap'
+    })
+  });
+
+  let payload = null;
+  try { payload = await res.json(); } catch (_) {}
+  if (!res.ok || !payload || payload.ok !== true) {
+    const msg = (payload && payload.message) || (LANG==='tr' ? 'Sunucu doğrulaması başarısız' : 'Server verification failed');
+    if (!silent) showToast(msg);
+    return { ok: false, message: msg, payload: payload };
+  }
+  return payload;
+}
+
 async function syncPremiumFromPayments() {
   if (!window.PaymentService || typeof window.PaymentService.getSubscriptionStatus !== 'function') return;
   try {
     const status = await window.PaymentService.getSubscriptionStatus();
     if (!status || typeof status.active !== 'boolean') return;
-    SETTINGS.premium = !!status.active;
-    SETTINGS.premiumSource = status.source || SETTINGS.premiumSource || null;
-    SETTINGS.premiumProductId = status.productId || SETTINGS.premiumProductId || null;
-    SETTINGS.premiumExpiresAt = status.expiresAt || SETTINGS.premiumExpiresAt || null;
+    const nativeIap = _isNativeCapacitorPlatform() && status.source === 'iap';
+    if (nativeIap && status.active) {
+      const verified = await _verifyIapServerSide({
+        transactionId: status.transactionId,
+        originalTransactionId: status.originalTransactionId,
+        productId: status.productId,
+        source: status.source
+      }, true);
+      if (verified && verified.ok) {
+        SETTINGS.premium = !!verified.active;
+        SETTINGS.premiumSource = 'server-verified-ios';
+        SETTINGS.premiumProductId = verified.productId || status.productId || null;
+        SETTINGS.premiumExpiresAt = verified.expiresAt || null;
+        SETTINGS.premiumTransactionId = verified.transactionId || status.transactionId || null;
+        SETTINGS.premiumOriginalTransactionId = verified.originalTransactionId || status.originalTransactionId || null;
+      } else {
+        SETTINGS.premium = false;
+      }
+    } else {
+      SETTINGS.premium = !!status.active;
+      SETTINGS.premiumSource = status.source || SETTINGS.premiumSource || null;
+      SETTINGS.premiumProductId = status.productId || SETTINGS.premiumProductId || null;
+      SETTINGS.premiumExpiresAt = status.expiresAt || SETTINGS.premiumExpiresAt || null;
+      SETTINGS.premiumTransactionId = status.transactionId || SETTINGS.premiumTransactionId || null;
+      SETTINGS.premiumOriginalTransactionId = status.originalTransactionId || SETTINGS.premiumOriginalTransactionId || null;
+    }
     saveData();
     updatePremiumBadge();
   } catch (e) {
@@ -1209,10 +1332,37 @@ async function activatePremium(productId) {
     showToast(msg);
     return;
   }
+  const nativeIap = _isNativeCapacitorPlatform() && result.source === 'iap';
+  if (nativeIap) {
+    const verified = await _verifyIapServerSide({
+      transactionId: result.transactionId,
+      originalTransactionId: result.originalTransactionId,
+      productId: result.productId || chosenProductId,
+      source: result.source
+    }, false);
+    if (!verified || !verified.ok || !verified.active) {
+      showToast(LANG==='tr' ? 'Satın alma doğrulanamadı, premium aktifleştirilemedi' : 'Purchase could not be verified, premium not activated');
+      return;
+    }
+    SETTINGS.premium = true;
+    SETTINGS.premiumSource = 'server-verified-ios';
+    SETTINGS.premiumProductId = verified.productId || chosenProductId;
+    SETTINGS.premiumExpiresAt = verified.expiresAt || null;
+    SETTINGS.premiumTransactionId = verified.transactionId || result.transactionId || null;
+    SETTINGS.premiumOriginalTransactionId = verified.originalTransactionId || result.originalTransactionId || null;
+    SETTINGS.premiumTrialActive = false;
+    saveData();
+    closePremiumSheet();
+    showToast(LANG==='tr' ? '✦ Premium doğrulandı ve aktif edildi' : '✦ Premium verified and activated');
+    updatePremiumBadge();
+    return;
+  }
   SETTINGS.premium = true;
   SETTINGS.premiumSource = result.source || 'iap';
   SETTINGS.premiumProductId = result.productId || chosenProductId;
   SETTINGS.premiumExpiresAt = result.expiresAt || null;
+  SETTINGS.premiumTransactionId = result.transactionId || SETTINGS.premiumTransactionId || null;
+  SETTINGS.premiumOriginalTransactionId = result.originalTransactionId || SETTINGS.premiumOriginalTransactionId || null;
   SETTINGS.premiumTrialActive = false;
   saveData();
   closePremiumSheet();
@@ -2974,13 +3124,26 @@ function closeAlert(){const alertModal=document.getElementById('alertModal');if(
 function confirmDeleteAll(){showAlert('⚠️',LANG==='tr'?'Tüm Verileri Sil':'Delete All Data',LANG==='tr'?'Tüm servisler ve şifreler kalıcı olarak silinecek. Bu işlem geri alınamaz.':'All services and passwords will be permanently deleted. This action cannot be undone.',[{label:LANG==='tr'?'Evet, Sil':'Yes, delete',style:'danger',action:()=>{SVC=[];localStorage.clear();saveData();buildGrid();renderSubs();renderProfile();closeAlert();showToast(LANG==='tr'?'Tüm veriler silindi':'All data deleted');setTimeout(()=>location.reload(),1000);}},{label:LANG==='tr'?'İptal':'Cancel',style:'secondary',action:closeAlert}]);}
 function showToast(m,type='success'){if(typeof showErrorToast==='function'){showErrorToast(m,type,4000);}else{console.log('Toast:',m);}}
 function fitPhone(){
-  var s = Math.min(window.innerWidth/393, window.innerHeight/852, 1);
   var ph = document.getElementById('phone');
   if(!ph) return;
-  var scaledW = 393 * s;
-  var scaledH = 852 * s;
-  var tx = (window.innerWidth - scaledW) / 2;
-  var ty = (window.innerHeight - scaledH) / 2;
+
+  if (IS_DESKTOP_APP) {
+    // Desktop'ta scale ile yeniden örnekleme bulanıklık yaptığı için doğal ölçekte tut.
+    ph.style.transform = 'translate(0px,0px) scale(1)';
+    ph.style.position = 'relative';
+    ph.style.top = '';
+    ph.style.left = '';
+    ph.style.margin = '0 auto';
+    return;
+  }
+
+  var baseW = ph.offsetWidth || 430;
+  var baseH = ph.offsetHeight || 852;
+  var s = Math.min(window.innerWidth / baseW, window.innerHeight / baseH, 1);
+  var scaledW = baseW * s;
+  var scaledH = baseH * s;
+  var tx = Math.round((window.innerWidth - scaledW) / 2);
+  var ty = Math.round((window.innerHeight - scaledH) / 2);
   ph.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
   ph.style.position = 'fixed';
   ph.style.top = '0';
@@ -3829,3 +3992,4 @@ function initCtaGlow(){
 }
 
 initCtaGlow();
+

@@ -98,7 +98,15 @@
       }
       try {
         const r = await bridge.purchase({ productId: productId || defaultProductId() });
-        if (r && r.ok) return ok({ source: 'iap', productId: r.productId || productId, expiresAt: r.expiresAt || null });
+        if (r && r.ok) {
+          return ok({
+            source: 'iap',
+            productId: r.productId || productId,
+            expiresAt: r.expiresAt || null,
+            transactionId: r.transactionId || null,
+            originalTransactionId: r.originalTransactionId || null
+          });
+        }
         return fail((r && r.code) || 'purchase_failed', (r && r.message) || 'Purchase failed.');
       } catch (e) {
         return fail('purchase_error', e && e.message ? e.message : 'Purchase failed.');
@@ -119,7 +127,15 @@
       }
       try {
         const r = await bridge.restorePurchases();
-        if (r && r.ok) return ok({ source: 'iap' });
+        if (r && r.ok) {
+          return ok({
+            source: 'iap',
+            productId: r.productId || null,
+            expiresAt: r.expiresAt || null,
+            transactionId: r.transactionId || null,
+            originalTransactionId: r.originalTransactionId || null
+          });
+        }
         return fail((r && r.code) || 'restore_failed', (r && r.message) || 'Restore failed.');
       } catch (e) {
         return fail('restore_error', e && e.message ? e.message : 'Restore failed.');
@@ -144,7 +160,9 @@
           active: !!(r && r.active),
           source: 'iap',
           productId: r && r.productId ? r.productId : null,
-          expiresAt: r && r.expiresAt ? r.expiresAt : null
+          expiresAt: r && r.expiresAt ? r.expiresAt : null,
+          transactionId: r && r.transactionId ? r.transactionId : null,
+          originalTransactionId: r && r.originalTransactionId ? r.originalTransactionId : null
         };
       } catch (_) {
         return { active: false, source: 'iap' };
@@ -155,7 +173,9 @@
       active: !!(mock && mock.active),
       source: state.provider === 'web-preview' ? 'mock' : state.provider,
       productId: mock && mock.productId ? mock.productId : null,
-      expiresAt: mock && mock.expiresAt ? mock.expiresAt : null
+      expiresAt: mock && mock.expiresAt ? mock.expiresAt : null,
+      transactionId: null,
+      originalTransactionId: null
     };
   }
 

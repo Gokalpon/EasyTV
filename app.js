@@ -29,6 +29,7 @@ if ((IS_DESKTOP_APP || location.hostname === 'localhost' || location.hostname ==
 
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
+const IAP_VERIFY_ENDPOINT_DEFAULT = `${SUPABASE_URL}/functions/v1/verify-ios-subscription`;
 let _supabase = null;
 try {
   const { createClient } = supabase;
@@ -1229,15 +1230,85 @@ function activatePremiumLegacy() {
   updatePremiumBadge();
 }
 
+function _getIapVerifyEndpoint() {
+  if (SETTINGS && SETTINGS.iapVerifyEndpoint) return SETTINGS.iapVerifyEndpoint;
+  if (window.EASYTV_IAP_VERIFY_ENDPOINT) return window.EASYTV_IAP_VERIFY_ENDPOINT;
+  return IAP_VERIFY_ENDPOINT_DEFAULT;
+}
+
+async function _verifyIapServerSide(meta, silent) {
+  if (!_supabase || !CLOUD_SYNC_AVAILABLE) {
+    return { ok: false, message: 'Cloud sync kapalı' };
+  }
+
+  const transactionId = meta && meta.transactionId ? String(meta.transactionId) : '';
+  const productId = meta && meta.productId ? String(meta.productId) : '';
+  if (!transactionId || !productId) {
+    return { ok: false, message: 'Eksik transaction/product bilgisi' };
+  }
+
+  const sessionRes = await _supabase.auth.getSession();
+  const session = sessionRes && sessionRes.data ? sessionRes.data.session : null;
+  if (!session || !session.access_token) {
+    return { ok: false, message: 'Oturum bulunamadı' };
+  }
+
+  const endpoint = _getIapVerifyEndpoint();
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + session.access_token
+    },
+    body: JSON.stringify({
+      transactionId: transactionId,
+      originalTransactionId: meta.originalTransactionId || null,
+      productId: productId,
+      source: meta.source || 'iap'
+    })
+  });
+
+  let payload = null;
+  try { payload = await res.json(); } catch (_) {}
+  if (!res.ok || !payload || payload.ok !== true) {
+    const msg = (payload && payload.message) || (LANG==='tr' ? 'Sunucu doğrulaması başarısız' : 'Server verification failed');
+    if (!silent) showToast(msg);
+    return { ok: false, message: msg, payload: payload };
+  }
+  return payload;
+}
+
 async function syncPremiumFromPayments() {
   if (!window.PaymentService || typeof window.PaymentService.getSubscriptionStatus !== 'function') return;
   try {
     const status = await window.PaymentService.getSubscriptionStatus();
     if (!status || typeof status.active !== 'boolean') return;
-    SETTINGS.premium = !!status.active;
-    SETTINGS.premiumSource = status.source || SETTINGS.premiumSource || null;
-    SETTINGS.premiumProductId = status.productId || SETTINGS.premiumProductId || null;
-    SETTINGS.premiumExpiresAt = status.expiresAt || SETTINGS.premiumExpiresAt || null;
+    const nativeIap = _isNativeCapacitorPlatform() && status.source === 'iap';
+    if (nativeIap && status.active) {
+      const verified = await _verifyIapServerSide({
+        transactionId: status.transactionId,
+        originalTransactionId: status.originalTransactionId,
+        productId: status.productId,
+        source: status.source
+      }, true);
+      if (verified && verified.ok) {
+        SETTINGS.premium = !!verified.active;
+        SETTINGS.premiumSource = 'server-verified-ios';
+        SETTINGS.premiumProductId = verified.productId || status.productId || null;
+        SETTINGS.premiumExpiresAt = verified.expiresAt || null;
+        SETTINGS.premiumTransactionId = verified.transactionId || status.transactionId || null;
+        SETTINGS.premiumOriginalTransactionId = verified.originalTransactionId || status.originalTransactionId || null;
+      } else {
+        SETTINGS.premium = false;
+      }
+    } else {
+      SETTINGS.premium = !!status.active;
+      SETTINGS.premiumSource = status.source || SETTINGS.premiumSource || null;
+      SETTINGS.premiumProductId = status.productId || SETTINGS.premiumProductId || null;
+      SETTINGS.premiumExpiresAt = status.expiresAt || SETTINGS.premiumExpiresAt || null;
+      SETTINGS.premiumTransactionId = status.transactionId || SETTINGS.premiumTransactionId || null;
+      SETTINGS.premiumOriginalTransactionId = status.originalTransactionId || SETTINGS.premiumOriginalTransactionId || null;
+    }
     saveData();
     updatePremiumBadge();
   } catch (e) {
@@ -1261,10 +1332,37 @@ async function activatePremium(productId) {
     showToast(msg);
     return;
   }
+  const nativeIap = _isNativeCapacitorPlatform() && result.source === 'iap';
+  if (nativeIap) {
+    const verified = await _verifyIapServerSide({
+      transactionId: result.transactionId,
+      originalTransactionId: result.originalTransactionId,
+      productId: result.productId || chosenProductId,
+      source: result.source
+    }, false);
+    if (!verified || !verified.ok || !verified.active) {
+      showToast(LANG==='tr' ? 'Satın alma doğrulanamadı, premium aktifleştirilemedi' : 'Purchase could not be verified, premium not activated');
+      return;
+    }
+    SETTINGS.premium = true;
+    SETTINGS.premiumSource = 'server-verified-ios';
+    SETTINGS.premiumProductId = verified.productId || chosenProductId;
+    SETTINGS.premiumExpiresAt = verified.expiresAt || null;
+    SETTINGS.premiumTransactionId = verified.transactionId || result.transactionId || null;
+    SETTINGS.premiumOriginalTransactionId = verified.originalTransactionId || result.originalTransactionId || null;
+    SETTINGS.premiumTrialActive = false;
+    saveData();
+    closePremiumSheet();
+    showToast(LANG==='tr' ? '✦ Premium doğrulandı ve aktif edildi' : '✦ Premium verified and activated');
+    updatePremiumBadge();
+    return;
+  }
   SETTINGS.premium = true;
   SETTINGS.premiumSource = result.source || 'iap';
   SETTINGS.premiumProductId = result.productId || chosenProductId;
   SETTINGS.premiumExpiresAt = result.expiresAt || null;
+  SETTINGS.premiumTransactionId = result.transactionId || SETTINGS.premiumTransactionId || null;
+  SETTINGS.premiumOriginalTransactionId = result.originalTransactionId || SETTINGS.premiumOriginalTransactionId || null;
   SETTINGS.premiumTrialActive = false;
   saveData();
   closePremiumSheet();
