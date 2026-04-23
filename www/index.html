@@ -21,13 +21,17 @@
 <link rel="stylesheet" href="akira-font.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="style.css?v=20260412a">
-<script src="error-handler.js?v=20260412a" defer></script>
-<script src="premium-system.js?v=20260412a" defer></script>
-<script src="dynamic-theme.js?v=20260412a" defer></script>
+<script src="error-handler.js?v=20260419a" defer></script>
+<script src="premium-system.js?v=20260419a" defer></script>
+<script src="dynamic-theme.js?v=20260419a" defer></script>
 </head>
 <body>
 <script>
-  if ('serviceWorker' in navigator) {
+  const isDesktopApp = !!(
+    (window.easytvDesktop && window.easytvDesktop.isDesktop) ||
+    (navigator.userAgent && navigator.userAgent.includes('Electron'))
+  );
+  if (!isDesktopApp && 'serviceWorker' in navigator) {
     window.addEventListener('load', function() {
       navigator.serviceWorker.register('./service-worker.js').catch(function(err) {
         console.warn('SW register failed', err);
@@ -128,7 +132,7 @@
 
   </div>
 
-  <div id="emailAuthSheet" class="email-auth-sheet" style="display:none;">
+      <div id="emailAuthSheet" class="email-auth-sheet" style="display:none;">
     <div class="email-auth-head">
       <div id="emailAuthTitle" class="email-auth-title">Mail ile Giriş</div>
       <button onclick="closeEmailAuth()" class="email-auth-close" aria-label="Close">×</button>
@@ -698,11 +702,10 @@
 </div>
 </div>
 
-<script type="module" src="src/app.js"></script>
-<script src="payment-service.js?v=20260418b"></script>
-<script src="app.js?v=20260418b" nomodule></script>
-<script src="dynamic-theme.js?v=20260418b"></script>
-<script src="premium-system.js?v=20260418b"></script>
+<script src="payment-service.js?v=20260423a"></script>
+<script src="app.js?v=20260419a"></script>
+<script src="dynamic-theme.js?v=20260419a"></script>
+<script src="premium-system.js?v=20260419a"></script>
 
 </body>
 </html>

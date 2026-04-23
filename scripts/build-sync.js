@@ -20,6 +20,7 @@ const SOURCE_FILES = [
   'premium-system.js',
   'dynamic-theme.js',
   'search-feature.js',
+  'payment-service.js',
   'raleway-font.css',
   'akira-font.css',
   'ubuntu-font.css',
