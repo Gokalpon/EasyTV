@@ -75,12 +75,15 @@
   },
   "license": "ISC",
   "author": "Gökalp Kılıç",
-  "main": "app.js",
+  "main": "electron/main.cjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:sync": "node scripts/build-sync.js",
     "build": "npm run build:sync && npm run cap:sync",
     "dev": "npm run build:sync",
+    "desktop:dev": "npm run build:sync && electron .",
+    "desktop:start": "npm run build:sync && electron .",
+    "desktop:pack": "npm run build:sync && electron-builder --win portable",
     "qa:smoke": "node scripts/smoke-local.js",
     "cap:copy": "npx cap copy",
     "cap:sync": "npx cap sync",
@@ -93,6 +96,40 @@
   "devDependencies": {
     "@capacitor/cli": "^8.3.0",
     "@capacitor/ios": "^8.3.0",
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3",
     "playwright": "^1.59.1"
+  },
+  "build": {
+    "appId": "com.easytvhub.desktop",
+    "productName": "EasyTV Hub",
+    "files": [
+      "index.html",
+      "app.js",
+      "style.css",
+      "error-handler.js",
+      "premium-system.js",
+      "dynamic-theme.js",
+      "search-feature.js",
+      "raleway-font.css",
+      "akira-font.css",
+      "ubuntu-font.css",
+      "h3heading.tailwind.css",
+      "animated-h3.js",
+      "assets/**/*",
+      "manifest.webmanifest",
+      "service-worker.js",
+      "electron/**/*",
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist-electron"
+    },
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        "portable"
+      ]
+    }
   }
 }

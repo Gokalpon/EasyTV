@@ -798,9 +798,9 @@ svg#cb-svg{position:absolute;width:0;height:0;}
 #onboardScreen #obNextBtn.cta-btn{
   width:calc(100% - 18px) !important;
   justify-content:center !important;
-  background:linear-gradient(90deg,#8d55ff 0%,#7d41f5 46%,#6b2fe8 100%) !important;
-  border:1px solid rgba(212,188,255,.2) !important;
-  box-shadow:0 8px 18px rgba(80,24,196,.18) !important;
+  background:linear-gradient(90deg,#8644ff 0%,#7332f2 48%,#6126df 100%) !important;
+  border:1px solid rgba(197,168,255,.22) !important;
+  box-shadow:0 8px 18px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18), inset 0 -10px 20px rgba(59,10,148,.16) !important;
   filter:none !important;
   animation:none !important;
   transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease, background .2s ease !important;
@@ -815,17 +815,19 @@ svg#cb-svg{position:absolute;width:0;height:0;}
   text-shadow:none;
 }
 #onboardScreen #obNextBtn.cta-btn::before{
-  background:radial-gradient(circle at var(--glow-x) var(--glow-y),rgba(255,255,255,.28) 0%,rgba(255,255,255,.08) 22%,transparent 58%);
+  display:none !important;
 }
 #onboardScreen #obNextBtn.cta-btn:hover,
 #onboardScreen #obNextBtn.cta-btn:focus-visible{
-  background:linear-gradient(90deg,#9965ff 0%,#8750f8 46%,#743ce9 100%) !important;
-  box-shadow:0 10px 22px rgba(89,30,214,.24) !important;
+  background:linear-gradient(90deg,#9357ff 0%,#7d40f5 48%,#6d33ea 100%) !important;
+  box-shadow:0 10px 20px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.22), inset 0 -8px 16px rgba(75,18,170,.12) !important;
+  filter:none !important;
 }
 #onboardScreen #obNextBtn.cta-btn:active{
   transform:scale(.982) translateY(2px) !important;
   background:linear-gradient(90deg,#7f48ef 0%,#6f38de 46%,#5e2cd0 100%) !important;
-  box-shadow:0 4px 8px rgba(74,20,180,.16) !important;
+  box-shadow:0 4px 8px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.16) !important;
+  filter:none !important;
 }
 #loginScreen .cta-btn-white,
 #welcomeScreen .cta-btn-white,
@@ -1516,8 +1518,8 @@ button{-webkit-tap-highlight-color:transparent;}
   pointer-events: none;
   z-index: 0;
 }
-.se-save-btn{flex:1;padding:16px 0;border:none;border-radius:22px;font-size:16px;font-weight:800;color:#fff;cursor:pointer;letter-spacing:-.2px;transition:all .2s cubic-bezier(.34,1.4,.64,1);background:#e50914;box-shadow:none;position:relative;overflow:hidden;font-family:'Space Grotesk','Inter',sans-serif;}
-.se-save-btn:active{transform:scale(.97);opacity:.85;background:#b00610;}
+.se-save-btn{flex:1;padding:16px 0;border:none;border-radius:22px;font-size:16px;font-weight:800;color:#fff;cursor:pointer;letter-spacing:-.2px;transition:all .2s cubic-bezier(.34,1.4,.64,1);background:linear-gradient(90deg,#8644ff 0%,#7332f2 48%,#6126df 100%);box-shadow:0 14px 30px rgba(87,28,210,.34),0 0 24px rgba(126,66,255,.18),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -10px 20px rgba(59,10,148,.16);position:relative;overflow:hidden;font-family:'Space Grotesk','Inter',sans-serif;}
+.se-save-btn:active{transform:scale(.97);opacity:.85;background:linear-gradient(90deg,#9357ff 0%,#7d40f5 48%,#6d33ea 100%);}
 .se-del-btn{padding:16px 18px;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.2);border-radius:20px;font-size:14px;font-weight:700;color:rgba(255,80,70,.9);cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;}
 .se-del-btn:active{transform:scale(.95);background:rgba(255,59,48,.2);}
 
@@ -1565,11 +1567,11 @@ button{-webkit-tap-highlight-color:transparent;}
 }
 #subEditModal .se-footer{padding:12px 18px 30px;background:rgba(9,10,20,.95);border-top:1px solid rgba(255,255,255,.05);}
 #subEditModal .se-save-btn{
-  background:#e50914;
-  border:1px solid rgba(255,255,255,.22);
-  box-shadow:none;
+  background:linear-gradient(90deg,#8644ff 0%,#7332f2 48%,#6126df 100%);
+  border:1px solid rgba(197,168,255,.22);
+  box-shadow:0 14px 30px rgba(87,28,210,.34),0 0 24px rgba(126,66,255,.18),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -10px 20px rgba(59,10,148,.16);
 }
-#subEditModal .se-save-btn:active{background:#c50812;transform:scale(.98);box-shadow:inset 0 1px 0 rgba(255,255,255,.36),0 0 0 1px rgba(166,123,255,.34);}
+#subEditModal .se-save-btn:active{background:linear-gradient(90deg,#9357ff 0%,#7d40f5 48%,#6d33ea 100%);transform:scale(.98);box-shadow:inset 0 1px 0 rgba(255,255,255,.36),0 0 0 1px rgba(166,123,255,.34);}
 #subEditModal #sesDeleteBtn{
   min-width:78px;
   min-height:48px;
@@ -1667,3 +1669,88 @@ button[onclick*="openSubEdit"]:active{transform:scale(.9)!important;opacity:.7!i
 
 /* Add btn */
 .add-btn:active{transform:scale(.86)!important;}
+
+/* Purple button theme (flat, no outer glow/outline) */
+:root{
+  --purple-btn-bg: linear-gradient(90deg,#8f5bff 0%,#7a45f2 48%,#6631e2 100%);
+  --purple-btn-bg-hover: linear-gradient(90deg,#9a68ff 0%,#8450f4 48%,#703ce6 100%);
+  --purple-btn-bg-active: linear-gradient(90deg,#8652f1 0%,#7543e2 48%,#6234d4 100%);
+  --purple-btn-border: rgba(212,188,255,.56);
+  --purple-btn-inner-line: rgba(236,224,255,.34);
+}
+
+.cta-btn-purple,
+#loginScreen .cta-btn-purple,
+#welcomeScreen .cta-btn-purple,
+#onboardScreen .cta-btn-purple,
+#onboardScreen #obNextBtn.cta-btn,
+.onboard-btn,
+.se-save-btn,
+#subEditModal .se-save-btn,
+.premium-buy-btn,
+.email-auth-submit,
+.plan-user-pill.active,
+.plan-pay-opt.active{
+  background: var(--purple-btn-bg) !important;
+  border-color: var(--purple-btn-border) !important;
+  border-width: 1.5px !important;
+  box-shadow: inset 0 1.5px 0 var(--purple-btn-inner-line), inset 0 0 0 1px rgba(255,255,255,.12), inset 0 -10px 20px rgba(57,14,142,.18) !important;
+  outline: none !important;
+  filter: none !important;
+}
+
+.cta-btn-purple::before,
+#loginScreen .cta-btn-purple::before,
+#welcomeScreen .cta-btn-purple::before,
+#onboardScreen .cta-btn-purple::before,
+#onboardScreen #obNextBtn.cta-btn::before,
+.onboard-btn::before,
+.premium-buy-btn::before{
+  display: none !important;
+}
+
+.cta-btn-purple:hover,
+.cta-btn-purple:focus-visible,
+#loginScreen .cta-btn-purple:hover,
+#loginScreen .cta-btn-purple:focus-visible,
+#welcomeScreen .cta-btn-purple:hover,
+#welcomeScreen .cta-btn-purple:focus-visible,
+#onboardScreen .cta-btn-purple:hover,
+#onboardScreen .cta-btn-purple:focus-visible,
+#onboardScreen #obNextBtn.cta-btn:hover,
+#onboardScreen #obNextBtn.cta-btn:focus-visible,
+.onboard-btn:hover,
+.onboard-btn:focus-visible,
+.se-save-btn:hover,
+.se-save-btn:focus-visible,
+#subEditModal .se-save-btn:hover,
+#subEditModal .se-save-btn:focus-visible,
+.premium-buy-btn:hover,
+.premium-buy-btn:focus-visible,
+.email-auth-submit:hover,
+.email-auth-submit:focus-visible,
+.plan-user-pill.active:hover,
+.plan-pay-opt.active:hover{
+  background: var(--purple-btn-bg-hover) !important;
+  box-shadow: inset 0 1.5px 0 rgba(244,236,255,.4), inset 0 0 0 1px rgba(255,255,255,.14), inset 0 -8px 16px rgba(64,18,152,.2) !important;
+  outline: none !important;
+  filter: none !important;
+}
+
+.cta-btn-purple:active,
+#loginScreen .cta-btn-purple:active,
+#welcomeScreen .cta-btn-purple:active,
+#onboardScreen .cta-btn-purple:active,
+#onboardScreen #obNextBtn.cta-btn:active,
+.onboard-btn:active,
+.se-save-btn:active,
+#subEditModal .se-save-btn:active,
+.premium-buy-btn:active,
+.email-auth-submit:active,
+.plan-user-pill.active:active,
+.plan-pay-opt.active:active{
+  background: var(--purple-btn-bg-active) !important;
+  box-shadow: inset 0 1.25px 0 rgba(236,224,255,.28), inset 0 0 0 1px rgba(255,255,255,.1), inset 0 -8px 14px rgba(46,10,125,.2) !important;
+  outline: none !important;
+  filter: none !important;
+}

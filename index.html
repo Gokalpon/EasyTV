@@ -27,7 +27,11 @@
 </head>
 <body>
 <script>
-  if ('serviceWorker' in navigator) {
+  const isDesktopApp = !!(
+    (window.easytvDesktop && window.easytvDesktop.isDesktop) ||
+    (navigator.userAgent && navigator.userAgent.includes('Electron'))
+  );
+  if (!isDesktopApp && 'serviceWorker' in navigator) {
     window.addEventListener('load', function() {
       navigator.serviceWorker.register('./service-worker.js').catch(function(err) {
         console.warn('SW register failed', err);
