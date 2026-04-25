@@ -2717,25 +2717,26 @@ function openDeepLink() {
   const s = SVC[active];
   const reg = getRegion();
   const sKey = s.id.toLowerCase();
-  
+
   const deepLink = (reg.deep && reg.deep[sKey]) || null;
   const storeLink = (reg.store && reg.store[sKey]) || null;
 
   if (deepLink) {
-    showToast(t('nav_home') === 'Home' ? `${s.name} opening...` : `${s.name} açılıyor...`);
-    
-    // Güçlü Deep Link Yönlendirmesi
+    // Uygulama varsa aç, yoksa mağazaya git
     const start = Date.now();
-    window.location.href = deepLink;
-    
-    // 1.5 sn içinde uygulama açılmazsa Store'a yönlendir (Fallback)
+    const triggered = window.open(deepLink, '_blank');
+
+    // 1.5 sn içinde uygulama açılmazsa Store'a yönlendir
     setTimeout(() => {
       if (Date.now() - start < 2000) {
-        if (storeLink) window.open(storeLink, '_blank');
+        if (storeLink) {
+          window.open(storeLink, '_blank');
+        } else {
+          showToast(LANG==='tr' ? `${s.name} uygulaması bulunamadı` : `${s.name} app not found`);
+        }
       }
     }, 1500);
   } else if (storeLink) {
-    showToast(t('nav_home') === 'Home' ? 'Redirecting to Store...' : 'Mağazaya yönlendiriliyor...');
     window.open(storeLink, '_blank');
   } else {
     showToast(LANG==='tr' ? 'Bu bölgede link mevcut değil' : 'Link not available in this region');
