@@ -39,3 +39,17 @@
 - [2026-04-20] App Store uyumlulu?u i?in 'hesap sil' men? aksiyonu placeholder olamaz; en az?ndan cloud veri silme + signout + local temizleme zinciri app i?inden tetiklenmeli.
 
 - [2026-04-20] Kullan?c? giri? deneyiminde intro-first ak??? bekliyor; fallback'i do?rudan login'e zorlamak istenen UX'i bozuyor.
+
+- [2026-04-23] Kullanıcı yeni ürün scaffoldlarında doğrudan çalışır klasör yapısı + terminal komutları + ana UI kodunu tek seferde, gereksiz teori olmadan istemektedir.
+
+- [2026-04-23] Kullanıcı yeni ayrı scaffold yerine mevcut EasyTV kod tabanının bozulmadan hatalarının düzeltilip doğrudan desktop app'e dönüştürülmesini istiyor.
+
+- [2026-04-23] Kullanıcı desktop sürümde görsel netlik (bulanıklık olmaması), giriş ekranının her açılışta görünmesi ve hesap oluştur akışının tek denemede çalışmasını net beklenti olarak belirtiyor.
+
+- [2026-04-23] Kullanıcı mor butonlarda referans görseldeki gibi glowsuz/outline'sız düz tema istiyor; form, oran ve yazı tiplerinin kesinlikle korunmasını bekliyor.
+
+- [2026-04-23] Kullanıcı mevcut aşamada UI polish yerine doğrudan App Store’a çıkış rehberi ve eksik/gap analizine öncelik veriyor.
+
+- [2026-04-23] Capacitor v8'de app-embedded custom plugin için en güvenli yol CAPBridgeViewController subclassında ridge?.registerPluginType(...) ile explicit kayıt yapmak; sadece JS scaffold ile bırakmak IAP'yi App Store review'da işlevsiz bırakıyor.
+
+- [2026-04-23] iOS IAP için client-side başarı sinyali tek başına yeterli değil; production akışında transactionId ile server-side Apple App Store API doğrulaması zorunlu tutulmalı ve premium state yalnızca bu sonuçtan yazılmalı.

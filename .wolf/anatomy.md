@@ -99,3 +99,49 @@
 ## scripts/
 
 - smoke-local.js — Playwright tabanlý yerel E2E smoke testi (auth skip/onboarding, servis ekleme-düzenleme, profil, dil) (~520 tok)
+
+## app-builder-assistant/
+
+- `README.md` — Scaffold kurulumu, komutlar ve klasör aðacý (~190 tok)
+- `index.html` — React root mount noktasý (~58 tok)
+- `package.json` — Electron + Vite + Tailwind + Zustand script/baðýmlýlýklarý (~310 tok)
+- `postcss.config.cjs` — Tailwind PostCSS zinciri (~22 tok)
+- `tailwind.config.cjs` — Tema/font/animasyon tokenlarý ve content yollarý (~220 tok)
+- `vite.config.js` — React pluginli Vite konfigürasyonu (~34 tok)
+
+## app-builder-assistant/electron/
+
+- `main.cjs` — BrowserWindow kurulumu + IPC command simülasyon köprüsü (~250 tok)
+- `preload.cjs` — contextBridge ile güvenli desktopAPI yüzeyi (~40 tok)
+
+## app-builder-assistant/src/
+
+- `App.jsx` — Sabit yan panel + ana çalýþma alaný glassmorphism mizanpajý (~165 tok)
+- `main.jsx` — React giriþ noktasý (~35 tok)
+- `styles.css` — Tailwind katmanlarý, fontlar, glass panel ve scrollbar stilleri (~180 tok)
+
+## app-builder-assistant/src/components/
+
+- `ProgressSidebar.jsx` — DONE/IN PROGRESS/PENDING durum kartlarý ve sayaçlar (~320 tok)
+- `WorkspacePanel.jsx` — Komut giriþi, hýzlý promptlar ve output log paneli (~430 tok)
+
+## app-builder-assistant/src/store/
+
+- `taskStore.js` — Zustand görev akýþý + komut yürütme/log state yönetimi (~350 tok)
+
+## electron/
+
+- `main.cjs` — Electron ana süreç: desktop pencere açýlýþý, DPI/zoom ayarý, external navigation güvenliði (~220 tok)
+- `preload.cjs` — Renderer için güvenli `easytvDesktop` bridge yüzeyi (~45 tok)
+
+## dist-electron/
+
+- `EasyTV Hub 1.0.0.exe` — Electron portable Windows build çýktýsý (~8 tok)
+- `builder-debug.yml` — electron-builder debug metadata (~20 tok)
+
+- EasyTVPaymentsPlugin.swift — StoreKit 2 tabanlý Capacitor IAP köprüsü (ürün listeleme/satýn alma/restore/durum) (~1100 tok)
+- MainViewController.swift — CAPBridgeViewController override + özel plugin register (~70 tok)
+
+## supabase/functions/verify-ios-subscription/
+
+- index.ts — Apple App Store Server API ile iOS transaction doðrulayan Supabase Edge Function (~1350 tok)

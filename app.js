@@ -1563,7 +1563,7 @@ loadData();
 const COUNTRIES=[{code:'tr',flag:'🇹🇷',name:'Türkiye',region:'tr',currency:'TRY',symbol:'₺'},{code:'de',flag:'🇩🇪',name:'Almanya',region:'eu',currency:'EUR',symbol:'€'},{code:'at',flag:'🇦🇹',name:'Avusturya',region:'eu',currency:'EUR',symbol:'€'},{code:'fr',flag:'🇫🇷',name:'Fransa',region:'eu',currency:'EUR',symbol:'€'},{code:'gb',flag:'🇬🇧',name:'Birleşik Krallık',region:'eu',currency:'GBP',symbol:'£'},{code:'us',flag:'🇺🇸',name:'Amerika Birleşik Devletleri',region:'us',currency:'USD',symbol:'$'},{code:'ca',flag:'🇨🇦',name:'Kanada',region:'us',currency:'CAD',symbol:'CA$'},{code:'jp',flag:'🇯🇵',name:'Japonya',region:'as',currency:'JPY',symbol:'¥'},{code:'kr',flag:'🇰🇷',name:'Güney Kore',region:'as',currency:'KRW',symbol:'₩'},{code:'au',flag:'🇦🇺',name:'Avustralya',region:'as',currency:'AUD',symbol:'A$'},{code:'in',flag:'🇮🇳',name:'Hindistan',region:'as',currency:'INR',symbol:'₹'},{code:'br',flag:'🇧🇷',name:'Brezilya',region:'us',currency:'BRL',symbol:'R$'},{code:'ae',flag:'🇦🇪',name:'Birleşik Arap Emirlikleri',region:'as',currency:'AED',symbol:'AED'},{code:'sa',flag:'🇸🇦',name:'Suudi Arabistan',region:'as',currency:'SAR',symbol:'SAR'},{code:'sg',flag:'🇸🇬',name:'Singapur',region:'as',currency:'SGD',symbol:'S$'}];
 const COUNTRY_CURRENCY={};COUNTRIES.forEach(c=>{COUNTRY_CURRENCY[c.code]=c.currency;});
 const COUNTRY_PRICES={tr:{netflix:{plans:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile',price:269.99}]},youtube:{plans:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99},{name:'Öğrenci',price:69.99}]},spotify:{plans:[{name:'Bireysel',price:79.99},{name:'Duo',price:129.99},{name:'Aile',price:159.99},{name:'Öğrenci',price:49.99}]},disney:{plans:[{name:'Reklamlı',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]},hbo:{plans:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate',price:249.99}]},apple:{plans:[{name:'Bireysel',price:49.99},{name:'Aile',price:99.99}]}},us:{netflix:{plans:[{name:'Standard w/ Ads',price:6.99},{name:'Standard',price:15.49},{name:'Premium',price:22.99}]},youtube:{plans:[{name:'Individual',price:13.99},{name:'Family',price:22.99},{name:'Student',price:7.99}]},spotify:{plans:[{name:'Individual',price:11.99},{name:'Duo',price:16.99},{name:'Family',price:19.99},{name:'Student',price:5.99}]},disney:{plans:[{name:'Basic w/ Ads',price:7.99},{name:'Standard',price:13.99}]},hbo:{plans:[{name:'With Ads',price:9.99},{name:'Ad-Free',price:15.99},{name:'Ultimate',price:19.99}]},apple:{plans:[{name:'Individual',price:9.99},{name:'Family',price:16.99}]}}};
-async function fetchExchangeRates(force=false){const now=Date.now();if(!force&&EXCHANGE_RATES.USD&&(now-RATES_TIMESTAMP)<24*3600*1000){updateRateUI();return;}const descEl=document.getElementById('rateLastUpdate');if(descEl)descEl.textContent=LANG==='tr'?'Güncelleniyor...':'Updating...';try{const res=await fetch('https://open.er-api.com/v6/latest/TRY');const data=await res.json();if(data.rates){EXCHANGE_RATES=data.rates;RATES_TIMESTAMP=now;localStorage.setItem('easytv_rates',JSON.stringify(EXCHANGE_RATES));localStorage.setItem('easytv_rates_ts',String(now));updateRateUI();showToast(LANG==='tr'?'✓ Kurlar güncellendi':'✓ Rates updated');}}catch(e){if(descEl)descEl.textContent=LANG==='tr'?'Güncelleme başarısız':'Update failed';}}
+async function fetchExchangeRates(force=false,silent=false){const now=Date.now();if(!force&&EXCHANGE_RATES.USD&&(now-RATES_TIMESTAMP)<24*3600*1000){updateRateUI();return;}const descEl=document.getElementById('rateLastUpdate');if(descEl)descEl.textContent=LANG==='tr'?'Güncelleniyor...':'Updating...';try{const res=await fetch('https://open.er-api.com/v6/latest/TRY');const data=await res.json();if(data.rates){EXCHANGE_RATES=data.rates;RATES_TIMESTAMP=now;localStorage.setItem('easytv_rates',JSON.stringify(EXCHANGE_RATES));localStorage.setItem('easytv_rates_ts',String(now));updateRateUI();if(!silent)showToast(LANG==='tr'?'✓ Kurlar güncellendi':'✓ Rates updated');}}catch(e){if(descEl)descEl.textContent=LANG==='tr'?'Güncelleme başarısız':'Update failed';}}
 function updateRateUI(){const descEl=document.getElementById('rateLastUpdate');const curDescEl=document.getElementById('currencyDesc');if(RATES_TIMESTAMP>0&&descEl){const d=new Date(RATES_TIMESTAMP);const locale=LANG==='tr'?'tr-TR':'en-US';const label=LANG==='tr'?'Son güncelleme':'Last update';descEl.textContent=`${label}: ${d.toLocaleDateString(locale)} ${d.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'})}`;}const curCode=SETTINGS.displayCurrency||'TRY';const cur=CURRENCIES.find(c=>c.code===curCode)||CURRENCIES[0];if(curDescEl)curDescEl.textContent=`${cur.name} (${cur.symbol})`;}
 function convertPrice(priceVal, sourceCurrency){
   // priceVal: number, sourceCurrency: 'TRY'|'USD'|... (yoksa TRY varsay)
@@ -3219,7 +3219,7 @@ function getSmartPlans(svcId) {
 }
 
 // AI'dan fiyat güncelle
-async function fetchAIPrices(force = false) {
+async function fetchAIPrices(force = false, silent = false) {
   const ts = parseInt(localStorage.getItem(AI_PRICE_TS_KEY) || '0');
   if (!force && (Date.now() - ts) < AI_PRICE_TTL && Object.keys(AI_PRICES).length > 0) return;
 
@@ -3230,9 +3230,8 @@ async function fetchAIPrices(force = false) {
   const currency = countryObj ? countryObj.currency : 'TRY';
   const symbol = countryObj ? countryObj.symbol : '₺';
 
-  // Ayarlar sayfasında durum göster
   const rateRow = document.getElementById('rateLastUpdate');
-  if (rateRow) rateRow.textContent = LANG==='tr' ? '🤖 AI fiyatları güncelleniyor...' : '🤖 Updating AI prices...';
+  if (!silent && rateRow) rateRow.textContent = LANG==='tr' ? '🤖 AI fiyatları güncelleniyor...' : '🤖 Updating AI prices...';
 
   const serviceList = POPULAR_SVCS.map(s => s.name).join(', ');
 
@@ -3297,8 +3296,8 @@ SADECE JSON döndür, başka hiçbir şey yazma. Format şu şekilde olmalı:
         });
         localStorage.setItem(AI_PRICE_CACHE_KEY, JSON.stringify(AI_PRICES));
         localStorage.setItem(AI_PRICE_TS_KEY, String(Date.now()));
-        if (rateRow) rateRow.textContent = '✓ AI fiyatları güncellendi · ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
-        showToast('🤖 Fiyatlar AI ile güncellendi');
+        if (!silent && rateRow) rateRow.textContent = '✓ AI fiyatları güncellendi · ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
+        if (!silent) showToast('🤖 Fiyatlar AI ile güncellendi');
         return true;
       }
     }
@@ -3307,7 +3306,7 @@ SADECE JSON döndür, başka hiçbir şey yazma. Format şu şekilde olmalı:
   }
 
   // AI başarısız → fallback
-  if (rateRow) rateRow.textContent = 'Fallback veritabanı kullanılıyor';
+  if (!silent && rateRow) rateRow.textContent = 'Fallback veritabanı kullanılıyor';
   return false;
 }
 
@@ -3505,18 +3504,19 @@ function confirmSmartPlanAdd() {
 window.confirmPlanAdd = confirmSmartPlanAdd;
 
 // Ayarlar sayfasına "Fiyatları Güncelle" butonu entegrasyonu
+// Kurlar sadece ayarlar sayfasında açıkça "Güncelle" denirse gösterilsin — açılışta sessiz
 const _origFetchExchangeRates = fetchExchangeRates;
 window.fetchExchangeRates = async function(force = false) {
   await _origFetchExchangeRates(force);
   if (force) await fetchAIPrices(true);
 };
 
-// ── Uygulama açılınca AI fiyat güncelle ──
+// ── Uygulama açılınca sessizce AI fiyat al (toast yok, hata mesajı yok) ──
 const _origUnlockApp = unlockApp;
 window.unlockApp = function() {
   _origUnlockApp();
-  // Biraz gecikmeyle AI fiyatlarını çek (uygulama açılışını bloklamasın)
-  setTimeout(() => fetchAIPrices(false), 1500);
+  // Sessizce AI fiyatlarını al — sadece arka planda çalışsın, kullanıcı görmesin
+  setTimeout(() => fetchAIPrices(false, true), 1500);
 };
 function tick(){const d=new Date();const clk=document.getElementById('clk');if(!clk)return;clk.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 tick();
