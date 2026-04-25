@@ -4,78 +4,185 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gizlilik Politikası — EasyTV</title>
+<meta name="description" content="EasyTV Abonelik Yöneticisi Gizlilik Politikası">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#09090e;color:rgba(255,255,255,.85);line-height:1.7;padding:0 0 60px;}
-  .header{padding:52px 24px 32px;border-bottom:1px solid rgba(255,255,255,.07);}
-  .header h1{font-size:28px;font-weight:700;letter-spacing:-.5px;color:#fff;}
-  .header p{font-size:13px;color:rgba(255,255,255,.35);margin-top:6px;}
-  .content{max-width:640px;margin:0 auto;padding:0 24px;}
-  h2{font-size:16px;font-weight:700;color:#fff;margin:36px 0 10px;letter-spacing:-.2px;}
-  p{font-size:14px;color:rgba(255,255,255,.65);margin-bottom:12px;}
-  ul{font-size:14px;color:rgba(255,255,255,.65);padding-left:20px;margin-bottom:12px;}
-  ul li{margin-bottom:6px;}
-  .highlight{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px 20px;margin:16px 0;}
-  .highlight p{margin:0;color:rgba(255,255,255,.75);}
-  a{color:rgba(255,255,255,.5);}
-  .back{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:rgba(255,255,255,.4);text-decoration:none;padding:16px 24px 0;cursor:pointer;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#09090e;color:rgba(255,255,255,.85);line-height:1.7;padding:0 0 80px;-webkit-text-size-adjust:100%;}
+  .container{max-width:680px;margin:0 auto;padding:0 24px;}
+  .header{padding:52px 0 36px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:32px;}
+  .header h1{font-size:30px;font-weight:700;letter-spacing:-.6px;color:#fff;margin-bottom:8px;}
+  .header .meta{font-size:13px;color:rgba(255,255,255,.35);}
+  h2{font-size:17px;font-weight:700;color:#fff;margin:36px 0 12px;letter-spacing:-.3px;padding-top:4px;}
+  p{font-size:15px;color:rgba(255,255,255,.68);margin-bottom:14px;line-height:1.75;}
+  ul{font-size:15px;color:rgba(255,255,255,.68);padding-left:22px;margin-bottom:14px;line-height:1.75;}
+  ul li{margin-bottom:8px;}
+  ul li::marker{color:rgba(130,80,255,.7);}
+  a{color:#a78bfa;text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .highlight{background:rgba(130,80,255,.08);border:1px solid rgba(130,80,255,.18);border-radius:16px;padding:20px 22px;margin:20px 0;}
+  .highlight p{margin:0;color:rgba(255,255,255,.85);}
+  .highlight strong{color:#c4b5fd;}
+  .divider{border:none;border-top:1px solid rgba(255,255,255,.06);margin:32px 0;}
+  .toc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px 22px;margin-bottom:28px;}
+  .toc-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.6px;text-transform:uppercase;margin-bottom:12px;}
+  .toc-list{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}
+  .toc-list li{margin:0;}
+  .toc-list a{display:inline-block;font-size:13px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.08);}
+  .toc-list a:hover{background:rgba(130,80,255,.15);border-color:rgba(130,80,255,.3);color:#c4b5fd;text-decoration:none;}
+  .contact-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px 22px;margin-top:40px;}
+  .contact-box h3{font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;}
+  .contact-box p{margin-bottom:8px;font-size:14px;}
+  .version{font-size:12px;color:rgba(255,255,255,.25);margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,.05);}
 </style>
 </head>
 <body>
-<a class="back" onclick="history.back()">← Geri</a>
+<div class="container">
+
 <div class="header">
   <h1>Gizlilik Politikası</h1>
-  <p>Son güncelleme: Mart 2026</p>
+  <p class="meta">Son güncelleme: Nisan 2026 · Versiyon 1.0</p>
 </div>
-<div class="content">
+
+<div class="toc">
+  <div class="toc-title">İçindekiler</div>
+  <ul class="toc-list">
+    <li><a href="#hangi">Hangi Verileri Topluyoruz</a></li>
+    <li><a href="#nasil">Nasıl Kullanıyoruz</a></li>
+    <li><a href="#saklama">Veri Saklama</a></li>
+    <li><a href="#sifreleme">Şifreleme</a></li>
+    <li><a href="#ucuncul">Üçüncü Taraf Hizmetleri</a></li>
+    <li><a href="#paylasim">Veri Paylaşımı</a></li>
+    <li><a href="#haklariniz">Haklarınız</a></li>
+    <li><a href="#cocuklar">Çocuklar</a></li>
+    <li><a href="#degisiklik">Değişiklikler</a></li>
+    <li><a href="#iletisim">İletişim</a></li>
+  </ul>
+</div>
 
 <div class="highlight">
-  <p>🔒 <strong>Zero-Knowledge:</strong> Şifreleriniz yalnızca cihazınızda, PIN'inizden türetilen bir anahtarla şifrelenir. Biz dahil hiç kimse şifrelerinizi göremez.</p>
+  <p><strong>Özet:</strong> EasyTV, abonelik kimlik bilgilerinizi cihazınızda PIN'inizden türetilen bir anahtarla AES-256-GCM ile şifreler. Şifre çözme anahtarı yalnızca sizin cihazınızda bulunur — biz dahil hiçkimse şifrelerinizi göremez veya erişemez.</p>
 </div>
 
-<h2>Toplanan Veriler</h2>
-<p>EasyTV yalnızca aşağıdaki verileri toplar:</p>
+<h2 id="hangi">1. Hangi Verileri Topluyoruz</h2>
+<p>EasyTV, size hizmet sunmak için yalnızca aşağıdaki verileri toplar. Başka hiçbir kişisel veri toplanmaz.</p>
 <ul>
-  <li><strong>Hesap e-postası</strong> — yalnızca Google/Apple ile giriş yapılırsa</li>
-  <li><strong>Abonelik isimleri ve fiyatları</strong> — uygulama işlevi için</li>
-  <li><strong>Uygulama tercihleri</strong> — bölge, dil, güvenlik ayarları</li>
+  <li><strong>E-posta adresi</strong> — Apple Sign In veya Google Sign In ile giriş yapmanız halinde; yalnızca kimlik doğrulama için kullanılır</li>
+  <li><strong>Abonelik bilgileri</strong> — eklediğiniz servislerin ismi, fiyatı, planı ve yenileme tarihi</li>
+  <li><strong>Uygulama tercihleri</strong> — dil, bölge, para birimi, PIN ayarları, güvenlik tercihleri</li>
+  <li><strong>Premium durumu</strong> — abonelik satın alma kaydı (Apple tarafından yönetilen In-App Purchase)</li>
 </ul>
-<p>Cihaz bilgisi, konum, reklam kimliği veya kişisel tanımlayıcı <strong>toplanmaz</strong>.</p>
-
-<h2>Şifre ve Kimlik Bilgilerinin Korunması</h2>
-<p>Uygulamaya kaydettiğiniz kullanıcı adı ve şifreler:</p>
+<p>Aşağıdakiler <strong>hiçbir zaman</strong> toplanmaz:</p>
 <ul>
-  <li>PIN'inizden PBKDF2 (100.000 iterasyon, SHA-256) ile türetilen AES-256-GCM anahtarıyla şifrelenir</li>
-  <li>Şifre çözme anahtarı yalnızca PIN girişinden sonra bellekte tutulur; uygulama kilitlendiğinde silinir</li>
-  <li>Sunucularımız yalnızca şifreli veriyi depolar — orijinal şifreyi görmek teknik olarak mümkün değildir</li>
-</ul>
-
-<h2>Veri Depolama</h2>
-<ul>
-  <li><strong>Cihaz üzerinde:</strong> Şifreli veriler cihazın yerel depolama alanında tutulur</li>
-  <li><strong>Bulut yedekleme:</strong> Supabase altyapısında şifreli biçimde saklanır; Supabase şifre çözme anahtarına erişemez</li>
-  <li><strong>Döviz kurları:</strong> open.er-api.com'dan anonim olarak çekilir</li>
+  <li>Reklam tanımlayıcısı (IDFA)</li>
+  <li>Cihaz tanımlayıcıları veya seri numaraları</li>
+  <li>Konum bilgisi</li>
+  <li>Kişiler veya fotoğraflar</li>
+  <li>Tarama geçmişi veya diğer uygulamalardaki veriler</li>
 </ul>
 
-<h2>Üçüncü Taraflar</h2>
+<hr class="divider">
+
+<h2 id="nasil">2. Nasıl Kullanıyoruz</h2>
+<p>Topladığımız veriler yalnızca şu amaçlarla kullanılır:</p>
 <ul>
-  <li><strong>Supabase</strong> — şifreli veri depolama ve kimlik doğrulama</li>
-  <li><strong>Apple / Google</strong> — isteğe bağlı giriş yöntemi olarak</li>
-  <li><strong>open.er-api.com</strong> — döviz kuru verisi (anonim istek)</li>
+  <li>Aboneliklerinizi tek bir yerde görüntülemek ve takip etmek</li>
+  <li>Aylık/yıllık harcama özeti sunmak</li>
+  <li>Paylaşımlı aboneliklerde kişi başı maliyet hesaplamak</li>
+  <li>Yenileme tarihi hatırlatıcıları göndermek (yalnızca siz etkinleştirdiyseniz)</li>
+  <li>Premium özelliklere erişim sağlamak</li>
+  <li>Cloud sync ile verilerinizi cihazlar arasında senkronize etmek</li>
+  <li>Hesabınızı doğrulamak ve güvenliğini sağlamak</li>
 </ul>
-<p>Verileriniz reklam amaçlı kullanılmaz ve üçüncü taraflarla satılmaz veya paylaşılmaz.</p>
 
-<h2>Veri Silme</h2>
-<p>Verilerinizi istediğiniz zaman Ayarlar → Tüm Verileri Sil bölümünden kalıcı olarak silebilirsiniz. Bulut yedekleriniz de bu işlemle birlikte silinir.</p>
+<hr class="divider">
 
-<h2>Çocukların Gizliliği</h2>
-<p>EasyTV 13 yaş altı kullanıcılara yönelik değildir ve bu yaş grubundan bilerek veri toplamaz.</p>
+<h2 id="saklama">3. Veri Saklama ve Tutma</h2>
+<p>Verileriniz iki şekilde saklanır:</p>
+<ul>
+  <li><strong>Cihaz üzerinde (yerel depolama):</strong> Şifreli olarak cihazınızda tutulur; uygulamayı silmeniz halinde otomatik olarak silinir</li>
+  <li><strong>Bulut yedekleme (Supabase):</strong> Yalnızca giriş yapmış kullanıcılar için, şifreli biçimde bulut sunucusunda yedeklenir</li>
+</ul>
+<p>Bulut verileri, hesabınızı sildiğinizde veya verilerinizi sildiğinizde kalıcı olarak silinir.</p>
+<p><strong>Saklama süresi:</strong> Verileriniz, hesabınız aktif olduğu sürece saklanır. Hesabınızı silmeniz halinde tüm veriler 30 gün içinde silinir.</p>
 
-<h2>Değişiklikler</h2>
-<p>Bu politika güncellendiğinde uygulama içinden bildirim alırsınız.</p>
+<hr class="divider">
 
-<h2>İletişim</h2>
-<p>Sorularınız için: <a href="mailto:easytvhub@gmail.com">easytvhub@gmail.com</a></p>
+<h2 id="sifreleme">4. Şifreleme ve Güvenlik</h2>
+<p>EasyTV, kimlik bilgilerinizin güvenliğini sağlamak için endüstri standardı şifreleme kullanır:</p>
+<ul>
+  <li><strong>AES-256-GCM</strong> — şifreleme algoritması</li>
+  <li><strong>PBKDF2</strong> — PIN'inizden anahtar türetme (100.000 iterasyon, SHA-256)</li>
+  <li><strong>Zero-Knowledge mimarisi</strong> — şifre çözme anahtarı yalnızca cihazınızda oluşturulur ve saklanır; sunucular şifreleri çözemez</li>
+</ul>
+<p>PIN girişi yapılmadan şifreli verilere erişilemez. Uygulama kilitlendiğinde veya arka plana alındığında, şifre çözme anahtarı bellekten silinir.</p>
+
+<hr class="divider">
+
+<h2 id="ucuncul">5. Üçüncü Taraf Hizmetleri</h2>
+<p>EasyTV aşağıdaki üçüncü taraf hizmetlerini kullanır:</p>
+
+<h3>Apple Sign In</h3>
+<p>Apple Kimlik Bilgisi ile giriş yapmanız halinde, Apple'ın gizlilik politikası geçerlidir. Apple, e-posta adresinizi bizimle paylaşmaz (Hide My Email kullanırsanız rastgele bir iletilen adres kullanılır).</p>
+
+<h3>Google Sign In</h3>
+<p>Google hesabınızla giriş yapmanız halinde, Google'ın gizlilik politikası geçerlidir. E-posta adresiniz kimlik doğrulama için kullanılır.</p>
+
+<h3>Supabase</h3>
+<p>Abonelik verilerinizin bulut yedeklemesi ve kimlik doğrulama için Supabase (supabase.com) kullanılır. Supabase, yalnızca şifreli veri depolar ve şifre çözme anahtarına erişemez.</p>
+
+<h3>Apple In-App Purchase</h3>
+<p>Premium abonelik satın alımları Apple'ın App Store sistemi üzerinden işlenir. Ödeme bilgileriniz Apple'da kalır; EasyTV yalnızca satın alma onayını alır.</p>
+
+<h3>Döviz Kuru API</h3>
+<p>Açık döviz kurları için open.er-api.com kullanılır. Bu hizmet yalnızca anlık kur bilgisi sağlar ve kişisel veri toplamaz.</p>
+
+<hr class="divider">
+
+<h2 id="paylasim">6. Veri Paylaşımı</h2>
+<p>EasyTV, kişisel verilerinizi:</p>
+<ul>
+  <li>Reklam amaçlı kullanmaz</li>
+  <li>Üçüncü taraflarla satmaz veya kiralamaz</li>
+  <li>Analitik veya pazarlama amaçlı paylaşmaz</li>
+  <li>Yasal zorunluluk dışında yetkilendirme paylaşımı yapmaz</li>
+</ul>
+<p>Supabase'de saklanan veriler, yalnızca sizin hesabınıza ait verilerdir ve başka kullanıcılar tarafından görülemez.</p>
+
+<hr class="divider">
+
+<h2 id="haklariniz">7. Haklarınız</h2>
+<p>GDPR ve ilgili yasalara uygun olarak aşağıdaki haklara sahipsiniz:</p>
+<ul>
+  <li><strong>Veri erişimi:</strong> Hakkınızda tutulan tüm verileri talep edebilirsiniz</li>
+  <li><strong>Veri silme:</strong> Hesabınızı ve tüm verilerinizi Ayarlar → Hesabımı Sil bölümünden kalıcı olarak silebilirsiniz</li>
+  <li><strong>Veri taşınabilirliği:</strong> Verilerinizin bir kopyasını JSON formatında dışa aktarabilirsiniz</li>
+  <li><strong>Düzeltme:</strong> Yanlış veya eksik verilerinizi düzeltebilirsiniz</li>
+  <li><strong>İtiraz:</strong> Belirli veri işleme faaliyetlerine itiraz edebilirsiniz</li>
+</ul>
+<p>Bu haklarınızı kullanmak için <a href="mailto:easytvhub@gmail.com">easytvhub@gmail.com</a> adresinden bize ulaşabilirsiniz.</p>
+
+<hr class="divider">
+
+<h2 id="cocuklar">8. Çocukların Gizliliği</h2>
+<p>EasyTV, 13 yaşın altındaki kullanıcılara yönelik değildir ve bu yaş grubundan bilerek kişisel veri toplamaz. Uygulamamızda çocuklara yönelik içerik veya hedefli reklam bulunmaz.</p>
+<p>Ebeveynlerin 13 yaş altındaki çocukları için herhangi bir veri toplandığını fark ederseniz, lütfen bizimle iletişime geçin.</p>
+
+<hr class="divider">
+
+<h2 id="degisiklik">9. Politika Değişiklikleri</h2>
+<p>Bu gizlilik politikasını önemli ölçüde değiştirdiğimizde, uygulamayı güncelleyerek veya size bir bildirim göndererek bilgilendiririz.</p>
+<p>Değişiklikler yürürlüğe girdikten sonra uygulamayı kullanmaya devam etmeniz, yeni politikayı kabul ettiğiniz anlamına gelir.</p>
+
+<div class="contact-box">
+  <h3>İletişim</h3>
+  <p><strong>Uygulama:</strong> EasyTV — Abonelik Yöneticisi</p>
+  <p><strong>Geliştirici:</strong> Gökalp Kılıç (Gokalpon)</p>
+  <p><strong>E-posta:</strong> <a href="mailto:easytvhub@gmail.com">easytvhub@gmail.com</a></p>
+  <p><strong>Website:</strong> https://easytvhub.app</p>
+</div>
+
+<p class="version">Bu politika, EasyTV uygulaması (versiyon 1.0+) için geçerlidir.</p>
 
 </div>
 </body>

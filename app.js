@@ -1028,12 +1028,7 @@ function _showLoginFromIntro(mode) {
         login.style.animation = 'screenSlideIn .38s cubic-bezier(.34,1.4,.64,1) both';
         _charReveal(document.getElementById('loginHeading'), 0.18);
         _charReveal(document.getElementById('loginSub'), 0.46);
-        // Otomatik form açılmasın, sadece mod verilmişse aç
-        if (mode === 'signup') {
-          setTimeout(() => showSignupOptions(), 500);
-        } else if (mode === 'signin') {
-          setTimeout(() => showSigninOptions(), 500);
-        }
+        // Otomatik form açılmasın — kullanıcı butona bassın
       }
     }, 300);
   } else {
