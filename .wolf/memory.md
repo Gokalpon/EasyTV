@@ -30,3 +30,13 @@
 | 05:02 | IAP server-verify hattý eklendi: Supabase Edge Function (Apple App Store API JWT + transaction verify), app.js strict verify akýþý ve SQL audit tablosu güncellendi | supabase/functions/verify-ios-subscription/index.ts, app.js, payment-service.js, supabase_setup.sql | native satýn alma artýk server doðrulama olmadan premium açmýyor | ~1500 |
 | 22:07 | Edited style.css | 5â†’5 lines | ~131 |
 | 22:07 | Edited style.css | modified media() | ~90 |
+
+## Session: 2026-04-25 22:20
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-04-25 22:22
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
