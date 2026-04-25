@@ -1,0 +1,13 @@
+{
+  "session_id": "",
+  "files_read": {
+    "/home/user/EasyTV/style.css": {
+      "count": 2,
+      "tokens": 30302,
+      "first_read": "2026-04-25T22:07:12.096Z"
+    }
+  },
+  "anatomy_hits": 1,
+  "anatomy_misses": 0,
+  "repeated_reads_warned": 1
+}

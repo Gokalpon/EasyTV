@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-11T15:00:00.978Z
-> Files: 50 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-25T22:07:48.515Z
+> Files: 51 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -19,8 +19,8 @@
 - `H3Heading.jsx` â€” H3Heading component (~250 tok)
 - `h3heading.tailwind.css` â€” Styles: 4 rules, 1 animations, 1 layers (~128 tok)
 - `IMPROVEMENTS.md` â€” ğŸš€ EasyTV Ä°yileÅŸtirmeler - v1.1 (~1234 tok)
-- `IOS_STABILIZATION_AUDIT.md` â€” iOS functional/broken matrix, SWOT, sprint backlog ve release checklist raporu (~2200 tok)
 - `index.html` â€” EasyTV (~15158 tok)
+- `IOS_STABILIZATION_AUDIT.md` â€” iOS functional/broken matrix, SWOT, sprint backlog ve release checklist raporu (~2200 tok)
 - `manifest.webmanifest` (~151 tok)
 - `netlify.toml` (~37 tok)
 - `optimize-images.md` â€” Image Optimization PlanÄ± (~253 tok)
@@ -30,7 +30,7 @@
 - `raleway-font.css` â€” Styles: 1 rules (~25 tok)
 - `search-feature.js` â€” â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• (~2389 tok)
 - `service-worker.js` â€” Declares CACHE_NAME (~351 tok)
-- `style.css` â€” Styles: 57 rules, 6 vars, 2 media queries, 5 animations (~30302 tok)
+- `style.css` â€” Styles: 57 rules, 6 vars (~32609 tok)
 - `supabase_setup.sql` â€” EasyTV Supabase Kurulum SQL'i (~453 tok)
 - `temp_svcs.txt` (~1901 tok)
 - `ubuntu-font.css` â€” Styles: 1 rules (~25 tok)
@@ -44,6 +44,27 @@
 ## .claude/rules/
 
 - `openwolf.md` (~313 tok)
+
+## app-builder-assistant/
+
+
+## app-builder-assistant/electron/
+
+
+## app-builder-assistant/src/
+
+
+## app-builder-assistant/src/components/
+
+
+## app-builder-assistant/src/store/
+
+
+## dist-electron/
+
+
+## electron/
+
 
 ## ios/
 
@@ -90,58 +111,14 @@
 
 - `CapApp-SPM.swift` (~9 tok)
 
+## scripts/
+
+
+## supabase/functions/verify-ios-subscription/
+
+
 ## www/
 
 - `app.js` â€” â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• (~48610 tok)
 - `index.html` â€” EasyTV (~15158 tok)
 - `style.css` â€” Styles: 60 rules, 6 vars, 2 media queries, 5 animations (~30238 tok)
-
-## scripts/
-
-- smoke-local.js — Playwright tabanlı yerel E2E smoke testi (auth skip/onboarding, servis ekleme-düzenleme, profil, dil) (~520 tok)
-
-## app-builder-assistant/
-
-- `README.md` — Scaffold kurulumu, komutlar ve klasör ağacı (~190 tok)
-- `index.html` — React root mount noktası (~58 tok)
-- `package.json` — Electron + Vite + Tailwind + Zustand script/bağımlılıkları (~310 tok)
-- `postcss.config.cjs` — Tailwind PostCSS zinciri (~22 tok)
-- `tailwind.config.cjs` — Tema/font/animasyon tokenları ve content yolları (~220 tok)
-- `vite.config.js` — React pluginli Vite konfigürasyonu (~34 tok)
-
-## app-builder-assistant/electron/
-
-- `main.cjs` — BrowserWindow kurulumu + IPC command simülasyon köprüsü (~250 tok)
-- `preload.cjs` — contextBridge ile güvenli desktopAPI yüzeyi (~40 tok)
-
-## app-builder-assistant/src/
-
-- `App.jsx` — Sabit yan panel + ana çalışma alanı glassmorphism mizanpajı (~165 tok)
-- `main.jsx` — React giriş noktası (~35 tok)
-- `styles.css` — Tailwind katmanları, fontlar, glass panel ve scrollbar stilleri (~180 tok)
-
-## app-builder-assistant/src/components/
-
-- `ProgressSidebar.jsx` — DONE/IN PROGRESS/PENDING durum kartları ve sayaçlar (~320 tok)
-- `WorkspacePanel.jsx` — Komut girişi, hızlı promptlar ve output log paneli (~430 tok)
-
-## app-builder-assistant/src/store/
-
-- `taskStore.js` — Zustand görev akışı + komut yürütme/log state yönetimi (~350 tok)
-
-## electron/
-
-- `main.cjs` — Electron ana süreç: desktop pencere açılışı, DPI/zoom ayarı, external navigation güvenliği (~220 tok)
-- `preload.cjs` — Renderer için güvenli `easytvDesktop` bridge yüzeyi (~45 tok)
-
-## dist-electron/
-
-- `EasyTV Hub 1.0.0.exe` — Electron portable Windows build çıktısı (~8 tok)
-- `builder-debug.yml` — electron-builder debug metadata (~20 tok)
-
-- EasyTVPaymentsPlugin.swift — StoreKit 2 tabanlı Capacitor IAP köprüsü (ürün listeleme/satın alma/restore/durum) (~1100 tok)
-- MainViewController.swift — CAPBridgeViewController override + özel plugin register (~70 tok)
-
-## supabase/functions/verify-ios-subscription/
-
-- index.ts — Apple App Store Server API ile iOS transaction doğrulayan Supabase Edge Function (~1350 tok)
