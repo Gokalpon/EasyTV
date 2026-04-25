@@ -1,4 +1,4 @@
-const CACHE_NAME = 'easytv-static-v8';
+const CACHE_NAME = 'easytv-static-v10';
 const STATIC_ASSETS = [
   './akira-font.css',
   './raleway-font.css',
