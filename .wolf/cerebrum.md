@@ -53,3 +53,5 @@
 - [2026-04-23] Capacitor v8'de app-embedded custom plugin için en güvenli yol CAPBridgeViewController subclassında ridge?.registerPluginType(...) ile explicit kayıt yapmak; sadece JS scaffold ile bırakmak IAP'yi App Store review'da işlevsiz bırakıyor.
 
 - [2026-04-23] iOS IAP için client-side başarı sinyali tek başına yeterli değil; production akışında transactionId ile server-side Apple App Store API doğrulaması zorunlu tutulmalı ve premium state yalnızca bu sonuçtan yazılmalı.
+
+- [2026-04-27] Phone/LAN real-device view must visually match /preview phone frame; avoid global 100dvh/card padding changes that make tiles oversized and bottom nav full-width.

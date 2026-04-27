@@ -78,6 +78,26 @@
                                       ],
                      "occurrences":  1,
                      "last_seen":  "2026-04-27T13:05:00.0000000+03:00"
+                 },
+                 {
+                     "id":  "bug-034",
+                     "timestamp":  "2026-04-27T22:30:00.0000000+03:00",
+                     "error_message":  "Kullanici raporu: telefondaki tema /preview telefon onizlemesinden farkli, kartlar buyuk ve nav bozuk gorunuyor.",
+                     "file":  "style.css, www/style.css, index.html, www/index.html",
+                     "root_cause":  "Onceki mobil viewport duzeltmesi phone height, grid padding ve bottom nav kurallarini gercek telefonda genis/kirpilmis gorunume tasidi; ayrica dynamic-theme/premium-system scriptleri iki kez yuklenip tema runtime hatasi uretiyordu.",
+                     "fix":  "Phone frame yuksekligi ve grid-scroll paddingi /preview kompakt duzene geri alindi; bottom nav tekrar inset pill yapildi; duplicate script include kaldirildi; www kopyalari senkronlandi.",
+                     "tags":  [
+                                  "ui",
+                                  "mobile",
+                                  "theme",
+                                  "preview",
+                                  "layout"
+                              ],
+                     "related_bugs":  [
+                                          "bug-031"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-27T22:30:00.0000000+03:00"
                  }
              ]
 }
