@@ -30,6 +30,7 @@ if ((IS_DESKTOP_APP || location.hostname === 'localhost' || location.hostname ==
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
 const IAP_VERIFY_ENDPOINT_DEFAULT = `${SUPABASE_URL}/functions/v1/verify-ios-subscription`;
+const ACCOUNT_DELETE_ENDPOINT_DEFAULT = `${SUPABASE_URL}/functions/v1/delete-account`;
 let _supabase = null;
 try {
   const { createClient } = supabase;
@@ -640,14 +641,14 @@ async function submitEmailAuth() {
         LANG==='tr' 
           ? 'Şifreniz en az 6 karakter olmalıdır.' 
           : 'Password must be at least 6 characters.',
-        [{ label: 'Tamam', action: closeAlert }]
+        [{ label: LANG==='tr' ? 'Tamam' : 'OK', action: closeAlert }]
       );
       return;
     }
     if (password !== confirmPassword) {
       showAlert('🔑', LANG==='tr' ? 'Şifre Hatası' : 'Password Error', 
         LANG==='tr' ? 'Şifreler birbiriyle eşleşmiyor.' : 'Passwords do not match.',
-        [{ label: 'Tamam', action: closeAlert }]
+        [{ label: LANG==='tr' ? 'Tamam' : 'OK', action: closeAlert }]
       );
       return;
     }
@@ -704,13 +705,13 @@ async function submitEmailAuth() {
         '✉️',
         LANG==='tr'?'E-posta Doğrulama':'Email Verification',
         t('email_auth_signup_success_verify'),
-        [{ label: 'Tamam', action: () => { closeAlert(); setEmailAuthMode('signin'); } }]
+        [{ label: LANG==='tr' ? 'Tamam' : 'OK', action: () => { closeAlert(); setEmailAuthMode('signin'); } }]
       );
     }
   } catch (e) {
     console.error('Auth Submit Error:', e);
     const msg = e.message || t('unknown_error');
-    showAlert('❌', LANG==='tr' ? 'Auth Hatası' : 'Auth Error', msg, [{ label: 'Tamam', action: closeAlert }]);
+    showAlert('❌', LANG==='tr' ? 'Auth Hatası' : 'Auth Error', msg, [{ label: LANG==='tr' ? 'Tamam' : 'OK', action: closeAlert }]);
   } finally {
     if (authLoading) authLoading.style.display = 'none';
   }
@@ -1028,12 +1029,7 @@ function _showLoginFromIntro(mode) {
         login.style.animation = 'screenSlideIn .38s cubic-bezier(.34,1.4,.64,1) both';
         _charReveal(document.getElementById('loginHeading'), 0.18);
         _charReveal(document.getElementById('loginSub'), 0.46);
-        // Otomatik form açılmasın, sadece mod verilmişse aç
-        if (mode === 'signup') {
-          setTimeout(() => showSignupOptions(), 500);
-        } else if (mode === 'signin') {
-          setTimeout(() => showSigninOptions(), 500);
-        }
+        // Otomatik form açılmasın — kullanıcı butona bassın
       }
     }, 300);
   } else {
@@ -1372,10 +1368,13 @@ async function activatePremium(productId) {
 
 function deactivatePremium() {
   if (SVC.length > FREE_LIMIT) {
-    showAlert('⚠️', 'Premium İptal',
-      'Şu an ' + SVC.length + ' servisin var. Premium iptal edilirse ' + (SVC.length - FREE_LIMIT) + ' servis kilitlenecek (silinmeyecek).',
+    showAlert('⚠️',
+      LANG==='tr' ? 'Premium İptal' : 'Cancel Premium',
+      LANG==='tr'
+        ? 'Şu an ' + SVC.length + ' servisin var. Premium iptal edilirse ' + (SVC.length - FREE_LIMIT) + ' servis kilitlenecek (silinmeyecek).'
+        : 'You currently have ' + SVC.length + ' services. If Premium is cancelled, ' + (SVC.length - FREE_LIMIT) + ' services will be locked, not deleted.',
       [
-        { label: 'İptal Et', style: 'danger', action: function() {
+        { label: LANG==='tr' ? 'İptal Et' : 'Cancel Premium', style: 'danger', action: function() {
           SETTINGS.premium = false;
           SETTINGS.premiumTrialActive = false;
           saveData();
@@ -1383,9 +1382,9 @@ function deactivatePremium() {
           updatePremiumBadge();
           buildGrid();
           renderSubs();
-          showErrorToast('Premium iptal edildi. ' + (SVC.length - FREE_LIMIT) + ' servis kilitlendi.', 'warning', 5000);
+          showErrorToast(LANG==='tr' ? 'Premium iptal edildi. ' + (SVC.length - FREE_LIMIT) + ' servis kilitlendi.' : 'Premium cancelled. ' + (SVC.length - FREE_LIMIT) + ' services were locked.', 'warning', 5000);
         }},
-        { label: 'Vazgeç', style: 'secondary', action: closeAlert }
+        { label: LANG==='tr' ? 'Vazgeç' : 'Keep Premium', style: 'secondary', action: closeAlert }
       ]
     );
   } else {
@@ -1393,7 +1392,7 @@ function deactivatePremium() {
     SETTINGS.premiumTrialActive = false;
     saveData();
     updatePremiumBadge();
-    showToast('Premium iptal edildi');
+    showToast(LANG==='tr' ? 'Premium iptal edildi' : 'Premium cancelled');
   }
 }
 
@@ -1566,10 +1565,14 @@ try{const rc=localStorage.getItem('easytv_rates');const rt=localStorage.getItem(
 setTimeout(()=>{fetchExchangeRates(false);},2500);
 loadData();
 const COUNTRIES=[{code:'tr',flag:'🇹🇷',name:'Türkiye',region:'tr',currency:'TRY',symbol:'₺'},{code:'de',flag:'🇩🇪',name:'Almanya',region:'eu',currency:'EUR',symbol:'€'},{code:'at',flag:'🇦🇹',name:'Avusturya',region:'eu',currency:'EUR',symbol:'€'},{code:'fr',flag:'🇫🇷',name:'Fransa',region:'eu',currency:'EUR',symbol:'€'},{code:'gb',flag:'🇬🇧',name:'Birleşik Krallık',region:'eu',currency:'GBP',symbol:'£'},{code:'us',flag:'🇺🇸',name:'Amerika Birleşik Devletleri',region:'us',currency:'USD',symbol:'$'},{code:'ca',flag:'🇨🇦',name:'Kanada',region:'us',currency:'CAD',symbol:'CA$'},{code:'jp',flag:'🇯🇵',name:'Japonya',region:'as',currency:'JPY',symbol:'¥'},{code:'kr',flag:'🇰🇷',name:'Güney Kore',region:'as',currency:'KRW',symbol:'₩'},{code:'au',flag:'🇦🇺',name:'Avustralya',region:'as',currency:'AUD',symbol:'A$'},{code:'in',flag:'🇮🇳',name:'Hindistan',region:'as',currency:'INR',symbol:'₹'},{code:'br',flag:'🇧🇷',name:'Brezilya',region:'us',currency:'BRL',symbol:'R$'},{code:'ae',flag:'🇦🇪',name:'Birleşik Arap Emirlikleri',region:'as',currency:'AED',symbol:'AED'},{code:'sa',flag:'🇸🇦',name:'Suudi Arabistan',region:'as',currency:'SAR',symbol:'SAR'},{code:'sg',flag:'🇸🇬',name:'Singapur',region:'as',currency:'SGD',symbol:'S$'}];
+const COUNTRY_NAMES_EN={tr:'Turkey',de:'Germany',at:'Austria',fr:'France',gb:'United Kingdom',us:'United States',ca:'Canada',jp:'Japan',kr:'South Korea',au:'Australia',in:'India',br:'Brazil',ae:'United Arab Emirates',sa:'Saudi Arabia',sg:'Singapore'};
+const CURRENCY_NAMES_EN={TRY:'Turkish Lira',USD:'US Dollar',EUR:'Euro',GBP:'British Pound',JPY:'Japanese Yen',CAD:'Canadian Dollar',AUD:'Australian Dollar',CHF:'Swiss Franc',SEK:'Swedish Krona',NOK:'Norwegian Krone',KRW:'South Korean Won',INR:'Indian Rupee',BRL:'Brazilian Real',SGD:'Singapore Dollar',AED:'UAE Dirham',SAR:'Saudi Riyal'};
+function countryNameForUi(country){return LANG==='en'?(COUNTRY_NAMES_EN[country.code]||country.name):country.name;}
+function currencyNameForUi(currency){return LANG==='en'?(CURRENCY_NAMES_EN[currency.code]||currency.name):currency.name;}
 const COUNTRY_CURRENCY={};COUNTRIES.forEach(c=>{COUNTRY_CURRENCY[c.code]=c.currency;});
 const COUNTRY_PRICES={tr:{netflix:{plans:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile',price:269.99}]},youtube:{plans:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99},{name:'Öğrenci',price:69.99}]},spotify:{plans:[{name:'Bireysel',price:79.99},{name:'Duo',price:129.99},{name:'Aile',price:159.99},{name:'Öğrenci',price:49.99}]},disney:{plans:[{name:'Reklamlı',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]},hbo:{plans:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate',price:249.99}]},apple:{plans:[{name:'Bireysel',price:49.99},{name:'Aile',price:99.99}]}},us:{netflix:{plans:[{name:'Standard w/ Ads',price:6.99},{name:'Standard',price:15.49},{name:'Premium',price:22.99}]},youtube:{plans:[{name:'Individual',price:13.99},{name:'Family',price:22.99},{name:'Student',price:7.99}]},spotify:{plans:[{name:'Individual',price:11.99},{name:'Duo',price:16.99},{name:'Family',price:19.99},{name:'Student',price:5.99}]},disney:{plans:[{name:'Basic w/ Ads',price:7.99},{name:'Standard',price:13.99}]},hbo:{plans:[{name:'With Ads',price:9.99},{name:'Ad-Free',price:15.99},{name:'Ultimate',price:19.99}]},apple:{plans:[{name:'Individual',price:9.99},{name:'Family',price:16.99}]}}};
-async function fetchExchangeRates(force=false){const now=Date.now();if(!force&&EXCHANGE_RATES.USD&&(now-RATES_TIMESTAMP)<24*3600*1000){updateRateUI();return;}const descEl=document.getElementById('rateLastUpdate');if(descEl)descEl.textContent=LANG==='tr'?'Güncelleniyor...':'Updating...';try{const res=await fetch('https://open.er-api.com/v6/latest/TRY');const data=await res.json();if(data.rates){EXCHANGE_RATES=data.rates;RATES_TIMESTAMP=now;localStorage.setItem('easytv_rates',JSON.stringify(EXCHANGE_RATES));localStorage.setItem('easytv_rates_ts',String(now));updateRateUI();showToast(LANG==='tr'?'✓ Kurlar güncellendi':'✓ Rates updated');}}catch(e){if(descEl)descEl.textContent=LANG==='tr'?'Güncelleme başarısız':'Update failed';}}
-function updateRateUI(){const descEl=document.getElementById('rateLastUpdate');const curDescEl=document.getElementById('currencyDesc');if(RATES_TIMESTAMP>0&&descEl){const d=new Date(RATES_TIMESTAMP);const locale=LANG==='tr'?'tr-TR':'en-US';const label=LANG==='tr'?'Son güncelleme':'Last update';descEl.textContent=`${label}: ${d.toLocaleDateString(locale)} ${d.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'})}`;}const curCode=SETTINGS.displayCurrency||'TRY';const cur=CURRENCIES.find(c=>c.code===curCode)||CURRENCIES[0];if(curDescEl)curDescEl.textContent=`${cur.name} (${cur.symbol})`;}
+async function fetchExchangeRates(force=false,silent=false){const now=Date.now();if(!force&&EXCHANGE_RATES.USD&&(now-RATES_TIMESTAMP)<24*3600*1000){updateRateUI();return;}const descEl=document.getElementById('rateLastUpdate');if(descEl)descEl.textContent=LANG==='tr'?'Güncelleniyor...':'Updating...';try{const res=await fetch('https://open.er-api.com/v6/latest/TRY');const data=await res.json();if(data.rates){EXCHANGE_RATES=data.rates;RATES_TIMESTAMP=now;localStorage.setItem('easytv_rates',JSON.stringify(EXCHANGE_RATES));localStorage.setItem('easytv_rates_ts',String(now));updateRateUI();if(!silent)showToast(LANG==='tr'?'✓ Kurlar güncellendi':'✓ Rates updated');}}catch(e){if(descEl)descEl.textContent=LANG==='tr'?'Güncelleme başarısız':'Update failed';}}
+function updateRateUI(){const descEl=document.getElementById('rateLastUpdate');const curDescEl=document.getElementById('currencyDesc');if(RATES_TIMESTAMP>0&&descEl){const d=new Date(RATES_TIMESTAMP);const locale=LANG==='tr'?'tr-TR':'en-US';const label=LANG==='tr'?'Son güncelleme':'Last update';descEl.textContent=`${label}: ${d.toLocaleDateString(locale)} ${d.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'})}`;}const curCode=SETTINGS.displayCurrency||'TRY';const cur=CURRENCIES.find(c=>c.code===curCode)||CURRENCIES[0];if(curDescEl)curDescEl.textContent=`${currencyNameForUi(cur)} (${cur.symbol})`;}
 function convertPrice(priceVal, sourceCurrency){
   // priceVal: number, sourceCurrency: 'TRY'|'USD'|... (yoksa TRY varsay)
   const src = sourceCurrency || 'TRY';
@@ -1592,11 +1595,19 @@ function formatPrice(priceVal, sourceCurrency){
   const {value, symbol} = convertPrice(priceVal, sourceCurrency || 'TRY');
   return symbol + value.toFixed(2);
 }
-function renderCurrencyList(q){const curCode=SETTINGS.displayCurrency||'TRY';const filtered=q?CURRENCIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.toLowerCase().includes(q.toLowerCase())||c.symbol.toLowerCase().includes(q.toLowerCase())):CURRENCIES;const list=document.getElementById('currencyPickerList');if(!list)return;list.innerHTML=filtered.map(c=>`<div onclick="selectCurrency('${c.code}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 18px;font-size:14px;font-weight:600;color:${c.code===curCode?'#fff':'rgba(255,255,255,.65)'};cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);"><span><span style="font-weight:800;color:rgba(255,255,255,.9);min-width:36px;display:inline-block;">${c.symbol}</span>&nbsp;${c.name} <span style="font-size:12px;color:rgba(255,255,255,.3);">${c.code}</span></span>${c.code===curCode?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>`).join('');}
+function renderCurrencyList(q){const curCode=SETTINGS.displayCurrency||'TRY';const normalized=(q||'').toLowerCase();const filtered=q?CURRENCIES.filter(c=>currencyNameForUi(c).toLowerCase().includes(normalized)||c.name.toLowerCase().includes(normalized)||c.code.toLowerCase().includes(normalized)||c.symbol.toLowerCase().includes(normalized)):CURRENCIES;const list=document.getElementById('currencyPickerList');if(!list)return;list.innerHTML=filtered.map(c=>`<div onclick="selectCurrency('${c.code}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 18px;font-size:14px;font-weight:600;color:${c.code===curCode?'#fff':'rgba(255,255,255,.65)'};cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);"><span><span style="font-weight:800;color:rgba(255,255,255,.9);min-width:36px;display:inline-block;">${c.symbol}</span>&nbsp;${currencyNameForUi(c)} <span style="font-size:12px;color:rgba(255,255,255,.3);">${c.code}</span></span>${c.code===curCode?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>`).join('');}
 function openCurrencyPicker(){let pickerEl=document.getElementById('currencyPickerModal');if(!pickerEl){const title=LANG==='tr'?'Para Birimi Seç':'Select Currency';const searchPh=LANG==='tr'?'🔍 Para birimi ara...':'🔍 Search currency...';pickerEl=document.createElement('div');pickerEl.id='currencyPickerModal';pickerEl.style.cssText='display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';pickerEl.innerHTML=`<div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:80%;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;"><div style="font-size:17px;font-weight:800;color:#fff;">${title}</div><button onclick="closeCurrencyPicker()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div><div style="padding:0 16px 10px;"><input class="add-input" id="currencySearchInput" placeholder="${searchPh}" oninput="renderCurrencyList(this.value)" style="margin:0;" autocomplete="off"></div><div id="currencyPickerList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div></div>`;pickerEl.addEventListener('click',function(e){if(e.target===pickerEl)closeCurrencyPicker();});document.getElementById('phone').appendChild(pickerEl);}pickerEl.style.display='flex';setTimeout(()=>renderCurrencyList(''),30);}
 function closeCurrencyPicker(){const el=document.getElementById('currencyPickerModal');if(el)el.style.display='none';}
 function selectCurrency(code){SETTINGS.displayCurrency=code;saveData();closeCurrencyPicker();updateRateUI();renderSubs();showToast(LANG==='tr'?'✓ Para birimi değiştirildi':'✓ Currency updated');}
 let LANG=localStorage.getItem('easytv_lang')||'tr';
+function applyDocumentLanguage(){
+  const langCode = LANG === 'en' ? 'en' : 'tr';
+  if (document.documentElement) {
+    document.documentElement.lang = langCode;
+    document.documentElement.setAttribute('xml:lang', langCode);
+  }
+  if (document.body) document.body.lang = langCode;
+}
 function t(key,...args){
   const dict = {
     tr:{
@@ -1624,6 +1635,7 @@ function t(key,...args){
       signout_label:'Çıkış Yap',delete_label:'Tüm Verileri Sil',
       login_heading:'Tüm servisleriniz<br>tek bir yerde.',
       login_sub:'Tek yerden hızlıca erişin. Üyeliklerinizi<br>ve ödemelerinizi de kolayca takip edin.',
+      intro_cta:'Başlayın',
       login_create:'Hesap Oluştur',login_or:'VEYA GİRİŞ YAP',
       login_apple:'Apple ile Giriş Yap',login_google:'Google ile Giriş Yap',login_email:'Mail ile Giriş Yap',
       login_skip:'Şimdilik atla',intro_hint:'Zaten hesabınız var mı? Giriş yapın',
@@ -1719,11 +1731,35 @@ function t(key,...args){
       export_data:'Export My Data',export_desc:'Download your data',
       import_data:'Restore Data',import_desc:'Load backup data',
       pin_change:'Change PIN',pin_change_desc:'Update your login PIN',
-      unlimited_subs:'Add unlimited subscriptions'
+      unlimited_subs:'Add unlimited subscriptions',
+      no_subs_title:'No services yet',
+      no_subs_hint:'Tap the + button in the top right to add one',
+      premium_trial_text:'Try 1 week free<br>cancel anytime',
+      search_placeholder:'Search...',
+      search_no_results:'No results found',
+      search_try_again:'Try a different search',
+      search_cat:'CATEGORY',
+      search_sort:'SORT',
+      search_cat_all:'All',
+      search_cat_streaming:'Streaming',
+      search_cat_music:'Music',
+      search_cat_gaming:'Gaming',
+      search_cat_other:'Other',
+      search_sort_name:'Name',
+      search_sort_price:'Price',
+      search_sort_date:'Date',
+      intro_cta:'Get Started',
+      about_label:'About',
+      privacy_label:'Privacy Policy',
+      privacy_desc:'How your data is protected',
+      delete_account_label:'Delete My Account',
+      delete_account_desc:'Account and cloud data are permanently deleted',
+      reminders_premium:'Reminders'
     }
   };
   const s = dict[LANG] || dict.en;
   let val=s[key];
+  if(val===undefined) val=(dict.en&&dict.en[key]!==undefined)?dict.en[key]:(dict.tr&&dict.tr[key]);
   let res=typeof val==='function'?val(...args):(val||key);
   if(LANG==='en' && typeof res==='string'){ res=res.replace(/İ/g,'I'); }
   return res;
@@ -1739,6 +1775,7 @@ function cycleLang() {
 
 function setLang(lang){LANG=lang;localStorage.setItem('easytv_lang',lang);applyLang();buildGrid();if(curTab==='subs')renderSubs();if(curTab==='profile')renderProfile();}
 function applyLang(){
+  applyDocumentLanguage();
   const $ = id => document.getElementById(id);
   // Nav label'ları
   ['home','subs','profile','settings'].forEach(id=>{
@@ -1798,6 +1835,10 @@ function applyLang(){
   if($('loginSub')) $('loginSub').innerHTML = t('login_sub');
   if($('introTagline')) $('introTagline').innerHTML = t('login_heading');
   if($('introSub')) $('introSub').innerHTML = t('login_sub');
+  if($('introCta')) {
+    const introCtaText = $('introCta').querySelector('.cta-btn-text');
+    if(introCtaText) introCtaText.textContent = t('intro_cta');
+  }
   if($('introHint')) $('introHint').textContent = t('intro_hint');
   if($('loginCreateBtnText')) $('loginCreateBtnText').textContent = t('login_create');
   if($('loginOrText')) $('loginOrText').textContent = t('login_or');
@@ -1806,7 +1847,13 @@ function applyLang(){
   if($('loginEmailBtnText')) $('loginEmailBtnText').textContent = t('login_email');
   if($('loginSkipText')) $('loginSkipText').textContent = t('login_skip');
   if($('lbl-premium-section')) $('lbl-premium-section').textContent = 'Premium';
-  if($('lbl-account-section')) $('lbl-account-section').textContent = t('tab_profile_title');
+  if($('lbl-account-section')) $('lbl-account-section').textContent = LANG==='tr' ? 'Hesap' : 'Account';
+  if($('aboutLbl')) $('aboutLbl').textContent = LANG==='tr' ? 'Hakkında' : t('about_label');
+  if($('privacyLbl')) $('privacyLbl').textContent = LANG==='tr' ? 'Gizlilik Politikası' : t('privacy_label');
+  if($('privacyDesc')) $('privacyDesc').textContent = LANG==='tr' ? 'Verileriniz nasıl korunur' : t('privacy_desc');
+  if($('deleteAccountLbl')) $('deleteAccountLbl').textContent = LANG==='tr' ? 'Hesabımı Sil' : t('delete_account_label');
+  if($('deleteAccountDesc')) $('deleteAccountDesc').textContent = LANG==='tr' ? 'Hesap ve bulut verileri kalıcı silinir' : t('delete_account_desc');
+  if($('lbl-reminders-premium')) $('lbl-reminders-premium').innerHTML = (LANG==='tr' ? 'Hatırlatıcılar' : t('reminders_premium')) + ' <span style="font-size:10px;color:#c084fc;background:rgba(130,80,255,.15);padding:2px 7px;border-radius:10px;margin-left:6px;font-weight:700;">Premium</span>';
   if($('premiumMenuLbl')) $('premiumMenuLbl').textContent = 'EasyTV Premium';
   if($('premiumStatusDesc')) $('premiumStatusDesc').textContent = isPremium() ? '' : t('unlimited_subs');
   if($('premiumTrialText')) $('premiumTrialText').innerHTML = t('premium_trial_text');
@@ -1903,10 +1950,10 @@ function localizePlanName(name){
   };
   return map[name]||name;
 }
-function updateRegionUI(){const code=SETTINGS.country||'tr';const country=COUNTRIES.find(c=>c.code===code);const desc=document.getElementById('regionDesc');if(desc)desc.textContent=country?country.name:(LANG==='tr'?'Türkiye':'Turkey');}
+function updateRegionUI(){const code=SETTINGS.country||'tr';const country=COUNTRIES.find(c=>c.code===code);const desc=document.getElementById('regionDesc');if(desc)desc.textContent=country?countryNameForUi(country):(LANG==='tr'?'Türkiye':'Turkey');}
 function buildRegionPicker(){const cur=SETTINGS.country||'tr';const picker=document.getElementById('regionPicker');if(!picker)return;picker.innerHTML=`<input id="countrySearch" class="add-input" placeholder="${LANG==='tr'?'🔍 Ülke ara...':'🔍 Search country...'}" type="text" style="margin-bottom:4px;" oninput="filterCountries(this.value)" autocomplete="off"><div id="countryList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;scrollbar-width:none;"></div>`;renderCountryList('',cur);setTimeout(()=>{const el=document.getElementById('countrySearch');if(el)el.focus();},100);}
 function filterCountries(q){renderCountryList(q,SETTINGS.country||'tr');}
-function renderCountryList(q,cur){const list=document.getElementById('countryList');if(!list)return;const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.includes(q.toLowerCase())):COUNTRIES;list.innerHTML=filtered.map(c=>`<div class="region-item${c.code===cur?' region-sel':''}" onclick="selectCountry('${c.code}','${c.region}')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;line-height:1;">${c.flag}</span><div><div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.75)'};">${c.name}</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div></div></div>${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>`).join('');}
+function renderCountryList(q,cur){const list=document.getElementById('countryList');if(!list)return;const normalized=(q||'').toLowerCase();const filtered=q?COUNTRIES.filter(c=>countryNameForUi(c).toLowerCase().includes(normalized)||c.name.toLowerCase().includes(normalized)||c.code.includes(normalized)):COUNTRIES;list.innerHTML=filtered.map(c=>`<div class="region-item${c.code===cur?' region-sel':''}" onclick="selectCountry('${c.code}','${c.region}')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;line-height:1;">${c.flag}</span><div><div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.75)'};">${countryNameForUi(c)}</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div></div></div>${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>`).join('');}
 function selectCountry(code,region){SETTINGS.country=code;SETTINGS.region=region;saveData();renderCountryList('',code);updateRegionUI();}
 function setPinChoice(val){
   SETTINGS.usePin=val;
@@ -2722,25 +2769,26 @@ function openDeepLink() {
   const s = SVC[active];
   const reg = getRegion();
   const sKey = s.id.toLowerCase();
-  
+
   const deepLink = (reg.deep && reg.deep[sKey]) || null;
   const storeLink = (reg.store && reg.store[sKey]) || null;
 
   if (deepLink) {
-    showToast(t('nav_home') === 'Home' ? `${s.name} opening...` : `${s.name} açılıyor...`);
-    
-    // Güçlü Deep Link Yönlendirmesi
+    // Uygulama varsa aç, yoksa mağazaya git
     const start = Date.now();
-    window.location.href = deepLink;
-    
-    // 1.5 sn içinde uygulama açılmazsa Store'a yönlendir (Fallback)
+    const triggered = window.open(deepLink, '_blank');
+
+    // 1.5 sn içinde uygulama açılmazsa Store'a yönlendir
     setTimeout(() => {
       if (Date.now() - start < 2000) {
-        if (storeLink) window.open(storeLink, '_blank');
+        if (storeLink) {
+          window.open(storeLink, '_blank');
+        } else {
+          showToast(LANG==='tr' ? `${s.name} uygulaması bulunamadı` : `${s.name} app not found`);
+        }
       }
     }, 1500);
   } else if (storeLink) {
-    showToast(t('nav_home') === 'Home' ? 'Redirecting to Store...' : 'Mağazaya yönlendiriliyor...');
     window.open(storeLink, '_blank');
   } else {
     showToast(LANG==='tr' ? 'Bu bölgede link mevcut değil' : 'Link not available in this region');
@@ -2807,7 +2855,7 @@ window.saveCustomService=saveCustomService;
 function openAddModal(){
   buildPopularGrid();buildColorPicker();selectedPopular=null;const popularForm=document.getElementById('popularForm');const addModal=document.getElementById('addModal');if(popularForm)popularForm.style.display='none';if(addModal)addModal.classList.add('open');}
 let planModalSvc=null,planModalSelected=null;
-function openPlanModal(s){planModalSvc=s;planModalSelected=null;const L=LOGO[s.id]||null;let logoHtml='';if(L&&L.html&&L.html.includes('<img')){const iS=L.html.match(/src="([^"]+)"/)?.[ 1]||'';logoHtml=`<img src="${iS}" style="width:32px;height:32px;object-fit:contain;">`;}document.getElementById('planModalLogo').style.background=TILE_GRADIENTS[s.id]||s.color;document.getElementById('planModalLogo').innerHTML=logoHtml;document.getElementById('planModalName').textContent=s.name;const d=new Date();d.setMonth(d.getMonth()+1);document.getElementById('planRenewInput').value=d.toISOString().split('T')[0];const plans=getCountryPlans(s.id);const sym=getCountrySymbol();const list=document.getElementById('planList');list.innerHTML='';plans.forEach((p,i)=>{const el=document.createElement('div');el.className='plan-option'+(i===0?' selected':'');if(i===0)planModalSelected=p;el.innerHTML=`<div class="plan-option-left"><div class="plan-option-name">${p.name}</div><div style="font-size:13px;color:rgba(255,255,255,.45);">${p.price>0?sym+p.price.toFixed(2)+'/ay':'Ücretsiz'}</div></div><div class="plan-option-check">${i===0?'<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}</div>`;el.onclick=()=>{planModalSelected=p;list.querySelectorAll('.plan-option').forEach(o=>{o.classList.remove('selected');o.querySelector('.plan-option-check').innerHTML='';});el.classList.add('selected');el.querySelector('.plan-option-check').innerHTML='<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';};list.appendChild(el);});const btn=document.createElement('button');btn.className='plan-confirm-btn';btn.style.background='#fff';btn.style.color='#000';btn.textContent='Ekle';btn.onclick=confirmPlanAdd;list.appendChild(btn);document.getElementById('planModal').classList.add('open');}
+function openPlanModal(s){planModalSvc=s;planModalSelected=null;const L=LOGO[s.id]||null;let logoHtml='';if(L&&L.html&&L.html.includes('<img')){const iS=L.html.match(/src="([^"]+)"/)?.[ 1]||'';logoHtml=`<img src="${iS}" style="width:32px;height:32px;object-fit:contain;">`;}document.getElementById('planModalLogo').style.background=TILE_GRADIENTS[s.id]||s.color;document.getElementById('planModalLogo').innerHTML=logoHtml;document.getElementById('planModalName').textContent=s.name;const d=new Date();d.setMonth(d.getMonth()+1);document.getElementById('planRenewInput').value=d.toISOString().split('T')[0];const plans=getCountryPlans(s.id);const sym=getCountrySymbol();const list=document.getElementById('planList');list.innerHTML='';plans.forEach((p,i)=>{const el=document.createElement('div');el.className='plan-option'+(i===0?' selected':'');if(i===0)planModalSelected=p;el.innerHTML=`<div class="plan-option-left"><div class="plan-option-name">${p.name}</div><div style="font-size:13px;color:rgba(255,255,255,.45);">${p.price>0?sym+p.price.toFixed(2)+t('per_month'):t('free_badge')}</div></div><div class="plan-option-check">${i===0?'<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}</div>`;el.onclick=()=>{planModalSelected=p;list.querySelectorAll('.plan-option').forEach(o=>{o.classList.remove('selected');o.querySelector('.plan-option-check').innerHTML='';});el.classList.add('selected');el.querySelector('.plan-option-check').innerHTML='<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';};list.appendChild(el);});const btn=document.createElement('button');btn.className='plan-confirm-btn';btn.style.background='#fff';btn.style.color='#000';btn.textContent=LANG==='tr'?'Ekle':'Add';btn.onclick=confirmPlanAdd;list.appendChild(btn);document.getElementById('planModal').classList.add('open');}
 function closePlanModal(){const planModal=document.getElementById('planModal');if(planModal)planModal.classList.remove('open');planModalSvc=null;planModalSelected=null;}
 function confirmPlanAdd(){if(!planModalSvc||!planModalSelected)return;const s=planModalSvc;const p=planModalSelected;const renew=document.getElementById('planRenewInput').value||null;const existing=SVC.findIndex(sv=>sv.id===s.id);
   let myPrice=p.price;
@@ -2995,15 +3043,15 @@ function saveSubEdit(){if(seEditIdx<0)return;
   if(payMethod==='split')myPrice=fullPrice/userCount;
   else if(payMethod==='other')myPrice=0;
   SVC[seEditIdx]={...SVC[seEditIdx],price:myPrice,_fullPrice:fullPrice,_userCount:userCount,_payMethod:payMethod,plan,renew,email,pwd};
-  saveData();renderSubs();closeSubEdit();showToast('✓ Güncellendi');}
-function deleteSubEdit(){if(seEditIdx<0)return;const name=SVC[seEditIdx].name;SVC.splice(seEditIdx,1);saveData();buildGrid();renderSubs();closeSubEdit();showToast(`${name} silindi`);}
+  saveData();renderSubs();closeSubEdit();showToast(LANG==='tr'?'✓ Güncellendi':'✓ Updated');}
+function deleteSubEdit(){if(seEditIdx<0)return;const name=SVC[seEditIdx].name;SVC.splice(seEditIdx,1);saveData();buildGrid();renderSubs();closeSubEdit();showToast(LANG==='tr'?`${name} silindi`:`${name} deleted`);}
 function renderProfile(){const paid=SVC.filter(s=>s.price>0);animateNumber(document.getElementById('statApps'),SVC.length,'','',0);animateNumber(document.getElementById('statSubs'),paid.length,'','',0);const sTot=paid.reduce((a,sv)=>{const c=convertPrice(sv.price,sv.priceCurrency||'TRY');return a+c.value;},0);
   const sSym=(CURRENCIES.find(c=>c.code===(SETTINGS.displayCurrency||'TRY'))||CURRENCIES[0]).symbol;
   const profileName=document.getElementById('profileName');
   const profileEmail=document.getElementById('profileEmail');
   const profileAvatar=document.getElementById('profileAvatar');
   const signedInEl=document.getElementById('signedInAs');
-  animateNumber(document.getElementById('statSaved'),sTot,sSym,'',2);if(profileName)profileName.textContent=PROFILE.name||'Kullanıcı';if(profileEmail)profileEmail.textContent=PROFILE.email||'';if(profileAvatar)profileAvatar.textContent=(PROFILE.name||'K')[0].toUpperCase();if(signedInEl)signedInEl.textContent=PROFILE.email||'';updateAuthMenuAction();}
+  animateNumber(document.getElementById('statSaved'),sTot,sSym,'',2);if(profileName)profileName.textContent=PROFILE.name||(LANG==='tr'?'Kullanıcı':'User');if(profileEmail)profileEmail.textContent=PROFILE.email||'';if(profileAvatar)profileAvatar.textContent=(PROFILE.name||'K')[0].toUpperCase();if(signedInEl)signedInEl.textContent=PROFILE.email||'';updateAuthMenuAction();}
 function applySettings(){['faceid','autolock','qrrotate','colorblind','reminder','pricechange','remind1','remind3','remind7'].forEach(k=>{const tog=document.getElementById('tog-'+k);if(tog)tog.classList.toggle('on',!!SETTINGS[k]);});if(document.body)document.body.classList.toggle('colorblind',!!SETTINGS.colorblind);updateRegionUI();setTimeout(function(){try{updatePremiumBadge();}catch(e){console.error('updatePremiumBadge hatası:',e);}},100);}
 async function toggleSetting(key,el){
   const next=!el.classList.contains('on');
@@ -3052,6 +3100,11 @@ function _clearLocalAccountData(){
     console.warn('Local account data clear hatası:', e);
   }
 }
+function _getAccountDeleteEndpoint(){
+  if (SETTINGS && SETTINGS.accountDeleteEndpoint) return SETTINGS.accountDeleteEndpoint;
+  if (window.EASYTV_DELETE_ACCOUNT_ENDPOINT) return window.EASYTV_DELETE_ACCOUNT_ENDPOINT;
+  return ACCOUNT_DELETE_ENDPOINT_DEFAULT;
+}
 async function deleteAccount(){
   const title = LANG==='tr' ? 'Hesabı Kalıcı Sil' : 'Delete Account Permanently';
   const msg = LANG==='tr'
@@ -3079,26 +3132,21 @@ async function deleteAccount(){
           return;
         }
         const userId = session.user.id;
-        const delRes = await _supabase.from('easytv_user_data').delete().eq('user_id', userId);
-        if(delRes && delRes.error){
-          console.warn('Cloud account data delete hatası:', delRes.error);
-          showToast(LANG==='tr'?'Cloud verileri silinemedi':'Could not delete cloud data');
+        const endpoint = _getAccountDeleteEndpoint();
+        const deleteRes = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.access_token
+          },
+          body: JSON.stringify({ userId: userId })
+        });
+        let deletePayload = {};
+        try{ deletePayload = await deleteRes.json(); }catch(_){}
+        if(!deleteRes.ok || deletePayload.ok === false){
+          console.warn('Account delete endpoint hatası:', deletePayload);
+          showToast(LANG==='tr'?'Hesap silinemedi':'Could not delete account');
           return;
-        }
-        try{
-          const endpoint = (SETTINGS && SETTINGS.accountDeleteEndpoint) || window.EASYTV_DELETE_ACCOUNT_ENDPOINT;
-          if(endpoint){
-            await fetch(endpoint, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + session.access_token
-              },
-              body: JSON.stringify({ userId: userId })
-            });
-          }
-        }catch(e){
-          console.warn('Account delete endpoint çağrısı başarısız:', e);
         }
         try{ await _supabase.auth.signOut(); }catch(e){ console.warn('Signout hatası:', e); }
         _clearLocalAccountData();
@@ -3118,7 +3166,7 @@ async function deleteAccount(){
 }
 function openRegionPicker(){let pickerEl=document.getElementById('regionPickerModal');if(!pickerEl){const title=LANG==='tr'?'Ülke / Bölge Seç':'Select Country / Region';const searchPh=LANG==='tr'?'🔍 Ülke ara...':'🔍 Search country...';pickerEl=document.createElement('div');pickerEl.id='regionPickerModal';pickerEl.style.cssText='display:none;position:absolute;inset:0;z-index:450;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:flex-end;';pickerEl.innerHTML=`<div style="background:#1e1f26;border-radius:24px 24px 0 0;width:100%;max-height:82%;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;"><div style="font-size:17px;font-weight:800;color:#fff;">${title}</div><button onclick="closeRegionPickerModal()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div><div style="padding:0 16px 10px;"><input class="add-input" id="regionSearchInput" placeholder="${searchPh}" oninput="renderRegionModalList(this.value)" style="margin:0;" autocomplete="off"></div><div id="regionPickerModalList" style="overflow-y:auto;scrollbar-width:none;padding-bottom:32px;"></div></div>`;pickerEl.addEventListener('click',function(e){if(e.target===pickerEl)closeRegionPickerModal();});document.getElementById('phone').appendChild(pickerEl);}pickerEl.style.display='flex';setTimeout(()=>renderRegionModalList(''),30);}
 function closeRegionPickerModal(){const el=document.getElementById('regionPickerModal');if(el)el.style.display='none';}
-function renderRegionModalList(q){const list=document.getElementById('regionPickerModalList');if(!list)return;const cur=SETTINGS.country||'tr';const filtered=q?COUNTRIES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.includes(q.toLowerCase())):COUNTRIES;list.innerHTML='';filtered.forEach(c=>{const el=document.createElement('div');el.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:13px 20px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);';el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">${c.flag}</span><div><div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.8)'};">${c.name}</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div></div></div>${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}`;el.onclick=()=>{SETTINGS.country=c.code;SETTINGS.region=c.region;saveData();updateRegionUI();closeRegionPickerModal();showToast((LANG==='tr'?'✓ Ülke güncellendi: ':'✓ Country updated: ')+c.name);};list.appendChild(el);});}
+function renderRegionModalList(q){const list=document.getElementById('regionPickerModalList');if(!list)return;const cur=SETTINGS.country||'tr';const normalized=(q||'').toLowerCase();const filtered=q?COUNTRIES.filter(c=>countryNameForUi(c).toLowerCase().includes(normalized)||c.name.toLowerCase().includes(normalized)||c.code.includes(normalized)):COUNTRIES;list.innerHTML='';filtered.forEach(c=>{const el=document.createElement('div');el.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:13px 20px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);';el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">${c.flag}</span><div><div style="font-size:14px;font-weight:600;color:${c.code===cur?'#fff':'rgba(255,255,255,.8)'};">${countryNameForUi(c)}</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;">${c.currency} · ${c.symbol}</div></div></div>${c.code===cur?'<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5l4 4L13 1" stroke="#4cd964" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}`;el.onclick=()=>{SETTINGS.country=c.code;SETTINGS.region=c.region;saveData();updateRegionUI();closeRegionPickerModal();showToast((LANG==='tr'?'✓ Ülke güncellendi: ':'✓ Country updated: ')+countryNameForUi(c));};list.appendChild(el);});}
 function showAlert(icon,title,msg,actions){const alertIcon=document.getElementById('alertIcon');const alertTitle=document.getElementById('alertTitle');const alertMsg=document.getElementById('alertMsg');const actEl=document.getElementById('alertActions');const alertModal=document.getElementById('alertModal');if(!alertIcon||!alertTitle||!alertMsg||!actEl||!alertModal)return;alertIcon.textContent=icon;alertTitle.textContent=title;alertMsg.textContent=msg;actEl.innerHTML='';actions.forEach(a=>{const btn=document.createElement('button');btn.className=`alert-btn ${a.style||'secondary'}`;btn.textContent=a.label;btn.onclick=a.action;actEl.appendChild(btn);});alertModal.classList.add('open');}
 function closeAlert(){const alertModal=document.getElementById('alertModal');if(alertModal)alertModal.classList.remove('open');}
 function confirmDeleteAll(){showAlert('⚠️',LANG==='tr'?'Tüm Verileri Sil':'Delete All Data',LANG==='tr'?'Tüm servisler ve şifreler kalıcı olarak silinecek. Bu işlem geri alınamaz.':'All services and passwords will be permanently deleted. This action cannot be undone.',[{label:LANG==='tr'?'Evet, Sil':'Yes, delete',style:'danger',action:()=>{SVC=[];localStorage.clear();saveData();buildGrid();renderSubs();renderProfile();closeAlert();showToast(LANG==='tr'?'Tüm veriler silindi':'All data deleted');setTimeout(()=>location.reload(),1000);}},{label:LANG==='tr'?'İptal':'Cancel',style:'secondary',action:closeAlert}]);}
@@ -3224,20 +3272,19 @@ function getSmartPlans(svcId) {
 }
 
 // AI'dan fiyat güncelle
-async function fetchAIPrices(force = false) {
+async function fetchAIPrices(force = false, silent = false) {
   const ts = parseInt(localStorage.getItem(AI_PRICE_TS_KEY) || '0');
   if (!force && (Date.now() - ts) < AI_PRICE_TTL && Object.keys(AI_PRICES).length > 0) return;
 
   const region = SETTINGS.region || 'tr';
   const country = SETTINGS.country || 'tr';
   const countryObj = COUNTRIES.find(c => c.code === country);
-  const countryName = countryObj ? countryObj.name : 'Türkiye';
+  const countryName = countryObj ? countryNameForUi(countryObj) : (LANG==='tr' ? 'Türkiye' : 'Turkey');
   const currency = countryObj ? countryObj.currency : 'TRY';
   const symbol = countryObj ? countryObj.symbol : '₺';
 
-  // Ayarlar sayfasında durum göster
   const rateRow = document.getElementById('rateLastUpdate');
-  if (rateRow) rateRow.textContent = LANG==='tr' ? '🤖 AI fiyatları güncelleniyor...' : '🤖 Updating AI prices...';
+  if (!silent && rateRow) rateRow.textContent = LANG==='tr' ? '🤖 AI fiyatları güncelleniyor...' : '🤖 Updating AI prices...';
 
   const serviceList = POPULAR_SVCS.map(s => s.name).join(', ');
 
@@ -3302,8 +3349,8 @@ SADECE JSON döndür, başka hiçbir şey yazma. Format şu şekilde olmalı:
         });
         localStorage.setItem(AI_PRICE_CACHE_KEY, JSON.stringify(AI_PRICES));
         localStorage.setItem(AI_PRICE_TS_KEY, String(Date.now()));
-        if (rateRow) rateRow.textContent = '✓ AI fiyatları güncellendi · ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
-        showToast('🤖 Fiyatlar AI ile güncellendi');
+        if (!silent && rateRow) rateRow.textContent = '✓ AI fiyatları güncellendi · ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
+        if (!silent) showToast('🤖 Fiyatlar AI ile güncellendi');
         return true;
       }
     }
@@ -3312,7 +3359,7 @@ SADECE JSON döndür, başka hiçbir şey yazma. Format şu şekilde olmalı:
   }
 
   // AI başarısız → fallback
-  if (rateRow) rateRow.textContent = 'Fallback veritabanı kullanılıyor';
+  if (!silent && rateRow) rateRow.textContent = 'Fallback veritabanı kullanılıyor';
   return false;
 }
 
@@ -3510,18 +3557,19 @@ function confirmSmartPlanAdd() {
 window.confirmPlanAdd = confirmSmartPlanAdd;
 
 // Ayarlar sayfasına "Fiyatları Güncelle" butonu entegrasyonu
+// Kurlar sadece ayarlar sayfasında açıkça "Güncelle" denirse gösterilsin — açılışta sessiz
 const _origFetchExchangeRates = fetchExchangeRates;
 window.fetchExchangeRates = async function(force = false) {
   await _origFetchExchangeRates(force);
   if (force) await fetchAIPrices(true);
 };
 
-// ── Uygulama açılınca AI fiyat güncelle ──
+// ── Uygulama açılınca sessizce AI fiyat al (toast yok, hata mesajı yok) ──
 const _origUnlockApp = unlockApp;
 window.unlockApp = function() {
   _origUnlockApp();
-  // Biraz gecikmeyle AI fiyatlarını çek (uygulama açılışını bloklamasın)
-  setTimeout(() => fetchAIPrices(false), 1500);
+  // Sessizce AI fiyatlarını al — sadece arka planda çalışsın, kullanıcı görmesin
+  setTimeout(() => fetchAIPrices(false, true), 1500);
 };
 function tick(){const d=new Date();const clk=document.getElementById('clk');if(!clk)return;clk.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 tick();

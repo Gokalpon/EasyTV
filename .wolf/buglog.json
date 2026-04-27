@@ -8,8 +8,15 @@
                      "file":  "app.js, style.css",
                      "root_cause":  "_showFallbackScreen introScreen gösteriyordu loginScreen yerine; se-save-btn kırmızı #e50914 mor gradient değil.",
                      "fix":  "Fallback loginScreen göstermeye geçti; .se-save-btn mor gradient ile değiştirildi.",
-                     "tags":  ["ui","login-screen","button-color","auth-flow"],
-                     "related_bugs":  ["bug-028"],
+                     "tags":  [
+                                  "ui",
+                                  "login-screen",
+                                  "button-color",
+                                  "auth-flow"
+                              ],
+                     "related_bugs":  [
+                                          "bug-028"
+                                      ],
                      "occurrences":  1,
                      "last_seen":  "2026-04-26T00:00:00.0000000+03:00"
                  },
@@ -18,10 +25,18 @@
                      "timestamp":  "2026-04-26T00:00:00.0000000+03:00",
                      "error_message":  "Telefonda yarım ekran görünüyordu, içerik alta kayıyordu.",
                      "file":  "style.css, index.html",
-                     "root_cause":  "phone: height:min(100dvh,852px) mobil viewport'ta tam hıza uymuyordu; loginScreen flex-center eksikti.",
+                     "root_cause":  "phone: height:min(100dvh,852px) mobil viewport\u0027ta tam hıza uymuyordu; loginScreen flex-center eksikti.",
                      "fix":  "phone height:100dvh; loginScreen layout iyileştirmesi; iOS safe-area; se-sheet 90vh; statusbar fallback padding; grid-scroll padding düzeltildi.",
-                     "tags":  ["mobile","viewport","responsive","safe-area","layout"],
-                     "related_bugs":  [],
+                     "tags":  [
+                                  "mobile",
+                                  "viewport",
+                                  "responsive",
+                                  "safe-area",
+                                  "layout"
+                              ],
+                     "related_bugs":  [
+
+                                      ],
                      "occurrences":  1,
                      "last_seen":  "2026-04-26T00:00:00.0000000+03:00"
                  },
@@ -32,10 +47,37 @@
                      "file":  "style.css",
                      "root_cause":  "Global :focus/:focus-visible states ve reduced motion media query eksikti.",
                      "fix":  "Global *:focus-visible {outline:2px solid rgba(130,80,255,.7)} ve @media(prefers-reduced-motion:reduce) eklendi.",
-                     "tags":  ["accessibility","focus-states","motion","ux"],
-                     "related_bugs":  [],
+                     "tags":  [
+                                  "accessibility",
+                                  "focus-states",
+                                  "motion",
+                                  "ux"
+                              ],
+                     "related_bugs":  [
+
+                                      ],
                      "occurrences":  1,
                      "last_seen":  "2026-04-26T00:00:00.0000000+03:00"
+                 },
+                 {
+                     "id":  "bug-033",
+                     "timestamp":  "2026-04-27T13:05:00.0000000+03:00",
+                     "error_message":  "App Store hazirligi: hesap silme akisi sadece app data/local data temizliyordu, Supabase Auth kullanicisini server-side silemiyordu.",
+                     "file":  "app.js, www/app.js, supabase/functions/delete-account/index.ts",
+                     "root_cause":  "Client publishable key ile auth.users kaydi silinemez; onceki endpoint opsiyoneldi ve basarisiz olsa bile kullaniciya silindi mesaji verilebiliyordu.",
+                     "fix":  "delete-account Supabase Edge Function eklendi; bearer session dogrulama + service role ile easytv_user_data ve Auth user silme; app silme akisi endpoint basarisizsa duracak sekilde zorunlu hale getirildi.",
+                     "tags":  [
+                                  "app-store",
+                                  "account-deletion",
+                                  "supabase",
+                                  "edge-function",
+                                  "privacy"
+                              ],
+                     "related_bugs":  [
+                                          "bug-020"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-27T13:05:00.0000000+03:00"
                  }
              ]
 }

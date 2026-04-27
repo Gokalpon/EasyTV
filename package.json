@@ -81,6 +81,8 @@
     "build:sync": "node scripts/build-sync.js",
     "build": "npm run build:sync && npm run cap:sync",
     "dev": "npm run build:sync",
+    "preview:mobile": "node scripts/mobile-preview.js",
+    "preview:phone": "node scripts/mobile-preview.js --open",
     "desktop:dev": "npm run build:sync && electron .",
     "desktop:start": "npm run build:sync && electron .",
     "desktop:pack": "npm run build:sync && electron-builder --win portable",
