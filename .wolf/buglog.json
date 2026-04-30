@@ -1,75 +1,101 @@
 {
-  "version": 1,
-  "bugs": [
-    {
-      "id": "bug-030",
-      "timestamp": "2026-04-26T00:00:00.0000000+03:00",
-      "error_message": "KullanÄ±cÄ± raporu: giriÅŸ ekranÄ± bozuk ve dÃ¼zenle butonu kÄ±rmÄ±zÄ± (mor olmasÄ± gerekiyor).",
-      "file": "app.js, style.css",
-      "root_cause": "_showFallbackScreen introScreen gÃ¶steriyordu loginScreen yerine; se-save-btn kÄ±rmÄ±zÄ± #e50914 mor gradient deÄŸil.",
-      "fix": "Fallback loginScreen gÃ¶stermeye geÃ§ti; .se-save-btn mor gradient ile deÄŸiÅŸtirildi.",
-      "tags": [
-        "ui",
-        "login-screen",
-        "button-color",
-        "auth-flow"
-      ],
-      "related_bugs": [
-        "bug-028"
-      ],
-      "occurrences": 1,
-      "last_seen": "2026-04-26T00:00:00.0000000+03:00"
-    },
-    {
-      "id": "bug-031",
-      "timestamp": "2026-04-26T00:00:00.0000000+03:00",
-      "error_message": "Telefonda yarÄ±m ekran gÃ¶rÃ¼nÃ¼yordu, iÃ§erik alta kayÄ±yordu.",
-      "file": "style.css, index.html",
-      "root_cause": "phone: height:min(100dvh,852px) mobil viewport'ta tam hÄ±za uymuyordu; loginScreen flex-center eksikti.",
-      "fix": "phone height:100dvh; loginScreen layout iyileÅŸtirmesi; iOS safe-area; se-sheet 90vh; statusbar fallback padding; grid-scroll padding dÃ¼zeltildi.",
-      "tags": [
-        "mobile",
-        "viewport",
-        "responsive",
-        "safe-area",
-        "layout"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-04-26T00:00:00.0000000+03:00"
-    },
-    {
-      "id": "bug-032",
-      "timestamp": "2026-04-26T00:00:00.0000000+03:00",
-      "error_message": "UI/UX inceleme: global focus ring eksik, cursor:pointer eksik, prefers-reduced-motion eksik.",
-      "file": "style.css",
-      "root_cause": "Global :focus/:focus-visible states ve reduced motion media query eksikti.",
-      "fix": "Global *:focus-visible {outline:2px solid rgba(130,80,255,.7)} ve @media(prefers-reduced-motion:reduce) eklendi.",
-      "tags": [
-        "accessibility",
-        "focus-states",
-        "motion",
-        "ux"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-04-26T00:00:00.0000000+03:00"
-    },
-    {
-      "id": "bug-004",
-      "timestamp": "2026-04-25T22:07:40.610Z",
-      "error_message": "CSS fix: height, min-height",
-      "file": "style.css",
-      "root_cause": "height: 100dvh â†’ min(100dvh,852px); min-height: 100dvh â†’ 780px",
-      "fix": "Changed height: 100dvh â†’ min(100dvh,852px); min-height: 100dvh â†’ 780px",
-      "tags": [
-        "auto-detected",
-        "style-fix",
-        "css"
-      ],
-      "related_bugs": [],
-      "occurrences": 2,
-      "last_seen": "2026-04-25T22:07:48.533Z"
-    }
-  ]
+    "version":  1,
+    "bugs":  [
+                 {
+                     "id":  "bug-030",
+                     "timestamp":  "2026-04-26T00:00:00.0000000+03:00",
+                     "error_message":  "KullanÄ±cÄ± raporu: giriÅŸ ekranÄ± bozuk ve dÃ¼zenle butonu kÄ±rmÄ±zÄ± (mor olmasÄ± gerekiyor).",
+                     "file":  "app.js, style.css",
+                     "root_cause":  "_showFallbackScreen introScreen gÃ¶steriyordu loginScreen yerine; se-save-btn kÄ±rmÄ±zÄ± #e50914 mor gradient deÄŸil.",
+                     "fix":  "Fallback loginScreen gÃ¶stermeye geÃ§ti; .se-save-btn mor gradient ile deÄŸiÅŸtirildi.",
+                     "tags":  [
+                                  "ui",
+                                  "login-screen",
+                                  "button-color",
+                                  "auth-flow"
+                              ],
+                     "related_bugs":  [
+                                          "bug-028"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-26T00:00:00.0000000+03:00"
+                 },
+                 {
+                     "id":  "bug-031",
+                     "timestamp":  "2026-04-26T00:00:00.0000000+03:00",
+                     "error_message":  "Telefonda yarÄ±m ekran gÃ¶rÃ¼nÃ¼yordu, iÃ§erik alta kayÄ±yordu.",
+                     "file":  "style.css, index.html",
+                     "root_cause":  "phone: height:min(100dvh,852px) mobil viewport\u0027ta tam hÄ±za uymuyordu; loginScreen flex-center eksikti.",
+                     "fix":  "phone height:100dvh; loginScreen layout iyileÅŸtirmesi; iOS safe-area; se-sheet 90vh; statusbar fallback padding; grid-scroll padding dÃ¼zeltildi.",
+                     "tags":  [
+                                  "mobile",
+                                  "viewport",
+                                  "responsive",
+                                  "safe-area",
+                                  "layout"
+                              ],
+                     "related_bugs":  [
+
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-26T00:00:00.0000000+03:00"
+                 },
+                 {
+                     "id":  "bug-032",
+                     "timestamp":  "2026-04-26T00:00:00.0000000+03:00",
+                     "error_message":  "UI/UX inceleme: global focus ring eksik, cursor:pointer eksik, prefers-reduced-motion eksik.",
+                     "file":  "style.css",
+                     "root_cause":  "Global :focus/:focus-visible states ve reduced motion media query eksikti.",
+                     "fix":  "Global *:focus-visible {outline:2px solid rgba(130,80,255,.7)} ve @media(prefers-reduced-motion:reduce) eklendi.",
+                     "tags":  [
+                                  "accessibility",
+                                  "focus-states",
+                                  "motion",
+                                  "ux"
+                              ],
+                     "related_bugs":  [
+
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-26T00:00:00.0000000+03:00"
+                 },
+                 {
+                     "id":  "bug-004",
+                     "timestamp":  "2026-04-25T22:07:40.610Z",
+                     "error_message":  "CSS fix: height, min-height",
+                     "file":  "style.css",
+                     "root_cause":  "height: 100dvh â†’ min(100dvh,852px); min-height: 100dvh â†’ 780px",
+                     "fix":  "Changed height: 100dvh â†’ min(100dvh,852px); min-height: 100dvh â†’ 780px",
+                     "tags":  [
+                                  "auto-detected",
+                                  "style-fix",
+                                  "css"
+                              ],
+                     "related_bugs":  [
+
+                                      ],
+                     "occurrences":  2,
+                     "last_seen":  "2026-04-25T22:07:48.533Z"
+                 },
+                 {
+                     "id":  "bug-033",
+                     "timestamp":  "2026-04-30T03:27:03.9148941+03:00",
+                     "error_message":  "Kullanýcý raporu: Uygulama yavaþ açýlýyor, animasyonlarda donmalar var; hýzlý iki týkta servis sheet açýlmayabiliyor.",
+                     "file":  "app.js, style.css",
+                     "root_cause":  "Intro logo gallery requestAnimationFrame döngüsü intro kapandýktan sonra bile sürekli çalýþýyordu; servis grid animasyonu uzun stagger ile tekrar renderlarda tap algýsýný geciktiriyordu; bazý cam yüzeylerde mobil için pahalý blur deðerleri vardý.",
+                     "fix":  "Intro canvas RAF görünmezken duracak þekilde lifecycle guard eklendi; grid reveal ilk render ile sýnýrlandý ve kýsaltýldý; iki-týk akýþý rapid retap toleransýyla korundu; aðýr backdrop blur deðerleri düþürüldü.",
+                     "tags":  [
+                                  "performance",
+                                  "animation",
+                                  "two-tap",
+                                  "mobile",
+                                  "ui"
+                              ],
+                     "related_bugs":  [
+
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-04-30T03:27:03.9235140+03:00"
+                 }
+             ]
 }

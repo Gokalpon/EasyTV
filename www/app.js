@@ -182,7 +182,11 @@ function _charReveal(el, baseDelay) {
 // ── Circular Gallery ──
 function _initLogoGallery() {
   var el = document.getElementById('introLogoGallery');
-  if (!el || el.dataset.init) return;
+  if (!el) return;
+  if (el.dataset.init) {
+    if (typeof el._startLogoGallery === 'function') el._startLogoGallery();
+    return;
+  }
   el.dataset.init = '1';
 
   var S = [
@@ -271,9 +275,17 @@ function _initLogoGallery() {
     return {tx:tx,cx:cx,dx:dx,ty:ty,eff:eff,alpha:alpha,rot:rot};
   }
 
+  var galleryRunning = false;
+  var galleryRaf = 0;
+
   function tick(){
+    if (!galleryRunning) return;
     var intro=document.getElementById('introScreen');
-    if(!intro||intro.style.display==='none'){requestAnimationFrame(tick);return;}
+    if(!intro||intro.style.display==='none'){
+      galleryRunning = false;
+      galleryRaf = 0;
+      return;
+    }
     if(!dn) sc.tgt+=0.45;
     sc.cur=lerp(sc.cur,sc.tgt,0.065);
     ctx.clearRect(0,0,cW,cvH);
@@ -342,10 +354,24 @@ function _initLogoGallery() {
         ctx.restore();
       }
     }
-
-    requestAnimationFrame(tick);
+    galleryRaf = requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
+
+  el._startLogoGallery = function(){
+    if (galleryRunning) return;
+    var intro=document.getElementById('introScreen');
+    if(!intro||intro.style.display==='none') return;
+    galleryRunning = true;
+    galleryRaf = requestAnimationFrame(tick);
+  };
+
+  el._stopLogoGallery = function(){
+    galleryRunning = false;
+    if (galleryRaf) cancelAnimationFrame(galleryRaf);
+    galleryRaf = 0;
+  };
+
+  el._startLogoGallery();
 }
 
 function _applyLogoReveal(imgEl) {
@@ -2128,6 +2154,7 @@ async function checkPin(){
   } else { shakePin(); pinVal=''; }
 }
 const gridEl = document.getElementById('grid');
+let _gridHasAnimatedOnce = false;
 
 // ── Parallax: scroll grid → aurora küreleri ters yönde hafif kayar ──
 (function initParallax() {
@@ -2185,6 +2212,7 @@ function buildGrid() {
   const BOX_IMG = './assets/box2.webp';
   const active = getActiveSubs();
   const locked = getLockedSubs();
+  const animateTiles = !_gridHasAnimatedOnce;
   // Render active services (normal)
   active.forEach((s, i) => {
     const tile = document.createElement('div');
@@ -2211,14 +2239,20 @@ function buildGrid() {
         tap(i);
       }
     });
-    // Giriş animasyonu - neon pulse CSS class ile ayrı
-    tile.style.opacity = '0';
-    tile.style.transform = 'translateY(14px) scale(.95)';
-    tile.style.transition = `opacity .4s ease ${Math.min(i*.07,.6)}s, transform .4s cubic-bezier(.34,1.2,.64,1) ${Math.min(i*.07,.6)}s`;
-    tile.classList.add('skeleton');
-    setTimeout(() => { tile.style.opacity='1'; tile.style.transform=''; tile.classList.remove('skeleton'); }, Math.min(i*70+300, 900));
+    if (animateTiles) {
+      // Keep the premium reveal, but do not block taps with a long stagger.
+      const delay = Math.min(i * 35, 210);
+      tile.style.opacity = '0';
+      tile.style.transform = 'translateY(10px) scale(.97)';
+      tile.style.transition = `opacity .22s ease ${delay}ms, transform .24s cubic-bezier(.34,1.2,.64,1) ${delay}ms`;
+      tile.classList.add('skeleton');
+      setTimeout(() => { tile.style.opacity='1'; tile.style.transform=''; tile.classList.remove('skeleton'); }, delay + 90);
+    } else {
+      tile.style.opacity = '1';
+    }
     gridEl.appendChild(tile);
   });
+  _gridHasAnimatedOnce = true;
   // Render locked services (visually disabled, not deleted)
   locked.forEach((s, i) => {
     const tile = document.createElement('div');
@@ -2262,6 +2296,7 @@ function buildGrid() {
 let _dragTile = null, _dragIdx = -1, _dragStartX = 0, _dragStartY = 0, _dragMoved = false;
 let _dragLongPress = null, _dragActive = false, _dragPid = -1;
 let _jiggleMode = false;
+let _lastTileTapIdx = -1, _lastTileTapAt = 0;
 
 function enterJiggleMode() {
   if (_jiggleMode) return;
@@ -2567,22 +2602,27 @@ function hidePinScreen() {
 
 
 function tap(i) {
-  if (active === i) {
+  const now = performance.now();
+  const rapidRetap = _lastTileTapIdx === i && (now - _lastTileTapAt) < 420;
+  _lastTileTapIdx = i;
+  _lastTileTapAt = now;
+
+  if (active === i || rapidRetap) {
     openSheet(i);
     return;
   }
+
   if (active >= 0) deactivate(active);
   active = i;
   activate(i);
 }
-function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.add('active');
-  
-  // Dinamik tema arka planını güncelle
+
+function applyServiceThemeEffects(s){
+  if(!s) return;
   if (typeof updateThemeColor !== 'undefined') {
     var tg = TILE_GRADIENTS[s.id];
     var rc = s.color || '#8250FF';
     if (!rc && tg) { var mm = tg.match(/#[0-9a-fA-F]{6}/); rc = mm ? mm[0] : '#8250FF'; }
-    // Hex → rgba dönüşümü
     if (rc.startsWith('#') && rc.length === 7) {
       var r2 = parseInt(rc.slice(1,3),16);
       var g2 = parseInt(rc.slice(3,5),16);
@@ -2592,26 +2632,20 @@ function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._cu
       updateThemeColor(rc);
     }
   }
-  
-  // Morphing bubble - sadece renk güncelle, pozisyon CSS'te sabit
   const beam=document.getElementById('ambientBeam');
   if(beam&&(s.color||TILE_GRADIENTS[s.id])){
-    // TILE_GRADIENTS varsa ondan da renk çıkar
     var tileGrad = TILE_GRADIENTS[s.id];
     var rawCol = s.color;
     if (!rawCol && tileGrad) {
-      // gradient'ten ilk rengi çıkar
       var m = tileGrad.match(/#[0-9a-fA-F]{6}/);
       rawCol = m ? m[0] : '#8250FF';
     }
     rawCol = rawCol || '#8250FF';
-    // Hex rengi parlaştır - beam için daha canlı
     var beamCol = rawCol;
     if(rawCol.startsWith('#') && rawCol.length === 7) {
       var rr = parseInt(rawCol.slice(1,3),16);
       var gg = parseInt(rawCol.slice(3,5),16);
       var bb = parseInt(rawCol.slice(5,7),16);
-      // Parlaklık artır
       rr = Math.min(255, Math.round(rr * 1.8 + 40));
       gg = Math.min(255, Math.round(gg * 1.8 + 20));
       bb = Math.min(255, Math.round(bb * 1.8 + 40));
@@ -2619,7 +2653,6 @@ function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._cu
     }
     beam.style.background=beamCol;
     beam.classList.add('active');
-    // Nav glow rengi de değişsin
     const navGlow=document.getElementById('navGlow');
     if(navGlow){
       var nr=parseInt(rawCol.replace('#','').substring(0,2),16)||130;
@@ -2630,7 +2663,10 @@ function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._cu
       nb=Math.min(255,Math.round(nb*1.8+40));
       navGlow.style.background='radial-gradient(circle,rgba('+nr+','+ng+','+nb+',.5) 0%,transparent 70%)';
     }
-  }el.style.backgroundImage='none';el.style.backgroundColor=TILE_GRADIENTS[s.id]?'':s.color;if(TILE_GRADIENTS[s.id])el.style.background=TILE_GRADIENTS[s.id];el.style.backdropFilter='none';el.style.webkitBackdropFilter='none';el.style.transform='scale(1.04) translateZ(0)';if(s.textDark||L.textDark){el.classList.add('dark-text');el.querySelector('.tile-logo').innerHTML=L.htmlDark||L.html;el.style.boxShadow=`0 8px 28px rgba(${s.rgb},.3)`;}else{el.style.boxShadow=`0 0 0 2px rgba(255,255,255,.12),0 8px 30px rgba(${s.rgb},.45)`;}}
+  }
+}
+function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.add('active');
+  el.style.backgroundImage='none';el.style.backgroundColor=TILE_GRADIENTS[s.id]?'':s.color;if(TILE_GRADIENTS[s.id])el.style.background=TILE_GRADIENTS[s.id];el.style.backdropFilter='none';el.style.webkitBackdropFilter='none';el.style.transform='scale(1.04) translateZ(0)';if(s.textDark||L.textDark){el.classList.add('dark-text');el.querySelector('.tile-logo').innerHTML=L.htmlDark||L.html;el.style.boxShadow=`0 8px 28px rgba(${s.rgb},.3)`;}else{el.style.boxShadow=`0 0 0 2px rgba(255,255,255,.12),0 8px 30px rgba(${s.rgb},.45)`;}}
 function deactivate(i){
   // Null check - gridEl veya children[i] undefined olabilir
   if (!gridEl || !gridEl.children || !gridEl.children[i]) {
@@ -2680,10 +2716,12 @@ function openSheet(i) {
   if (els.sColor) els.sColor.style.background = tileGrad;
   if (els.sLogoWrap) els.sLogoWrap.style.background = tileGrad;
 
-  // Dinamik tema
-  if (typeof onServiceClick !== 'undefined' && s.id) {
-    onServiceClick(s.id);
-  }
+  requestAnimationFrame(() => {
+    applyServiceThemeEffects(s);
+    if (typeof onServiceClick !== 'undefined' && s.id) {
+      onServiceClick(s.id);
+    }
+  });
 
   // Logo render
   if (els.sIco) {
