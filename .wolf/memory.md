@@ -41,3 +41,4 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 03:27 | Mobile açýlýþ ve animasyon donmasý için RAF/grid/blur performans düzeltmeleri yapýldý | app.js, style.css, www/app.js, www/style.css | build:sync ve two-tap smoke testi geçti | ~tokens |
+| 02:40 | MacBook iOS temiz kurulum hazýrlýk scripti eklendi | package.json, scripts/macbook-prepare.sh | package JSON ve release preflight geçti | ~tokens |

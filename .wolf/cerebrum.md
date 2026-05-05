@@ -55,3 +55,5 @@
 - [2026-04-23] iOS IAP için client-side başarı sinyali tek başına yeterli değil; production akışında transactionId ile server-side Apple App Store API doğrulaması zorunlu tutulmalı ve premium state yalnızca bu sonuçtan yazılmalı.
 
 - [2026-04-30] Kullanıcı ana ekranda servis logolarının iki tık davranışının korunmasını kesin istiyor; performans fixleri bu UX sözleşmesini değiştirmemeli.
+
+- [2026-05-06] Kullanıcı fiziksel cihaz/Mac tarafında da yapılabilecek tüm hazırlıkların ajan tarafından yapılmasını bekliyor; sadece komut listesi vermek yetersiz.
