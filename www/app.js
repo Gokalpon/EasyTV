@@ -1582,8 +1582,9 @@ let qrRotateInterval=null,qrCountdown=null,qrSec=30,_qrSeed=Date.now();
 let lockTimer=null,isLocked=false;
 let pinVal='',pinMode='unlock',pinStep=0,tempPin='';
 let selectedPopular=null;
+let _svcSaveSeq=0;
 function saveData(){try{localStorage.setItem('easytv_settings',JSON.stringify(SETTINGS));localStorage.setItem('easytv_profile',JSON.stringify(PROFILE));localStorage.setItem('easytv_pin',SETTINGS.pinHash||'');}catch(e){}_saveSVCEncrypted();}
-async function _saveSVCEncrypted(){try{const enc=await Promise.all(SVC.map(s=>encryptCreds(s)));localStorage.setItem('easytv_svc',JSON.stringify(enc));}catch(e){const stripped=SVC.map(s=>({...s,email:'',pwd:''}));try{localStorage.setItem('easytv_svc',JSON.stringify(stripped));}catch(e2){}}}
+async function _saveSVCEncrypted(){const seq=++_svcSaveSeq;const snapshot=SVC.map(s=>({...s}));try{const enc=await Promise.all(snapshot.map(s=>encryptCreds(s)));if(seq===_svcSaveSeq)localStorage.setItem('easytv_svc',JSON.stringify(enc));}catch(e){const stripped=snapshot.map(s=>({...s,email:'',pwd:''}));try{if(seq===_svcSaveSeq)localStorage.setItem('easytv_svc',JSON.stringify(stripped));}catch(e2){}}}
 function loadData(){try{const s=localStorage.getItem('easytv_svc');const st=localStorage.getItem('easytv_settings');const pr=localStorage.getItem('easytv_profile');if(s)SVC=JSON.parse(s);if(st)SETTINGS=JSON.parse(st);if(pr)PROFILE=JSON.parse(pr);if(SETTINGS.pin===undefined && !SETTINGS.pinHash)SETTINGS.pin='1111';if(SETTINGS.autolock===undefined)SETTINGS.autolock=true;if(SETTINGS.faceid===undefined)SETTINGS.faceid=true;if(SETTINGS.qrrotate===undefined)SETTINGS.qrrotate=true;if(SETTINGS.remind1===undefined)SETTINGS.remind1=false;if(SETTINGS.remind3===undefined)SETTINGS.remind3=false;if(SETTINGS.remind7===undefined)SETTINGS.remind7=false;if(SETTINGS.premium===undefined)SETTINGS.premium=false;if(SETTINGS.premiumTrialUsed===undefined)SETTINGS.premiumTrialUsed=false;if(SETTINGS.premiumTrialActive===undefined)SETTINGS.premiumTrialActive=false;if(SETTINGS.premiumTrialEndDate===undefined)SETTINGS.premiumTrialEndDate=null;// eski localStorage premium key'ini temizle
 localStorage.removeItem('easytv_premium');}catch(e){SETTINGS={pin:'1111',autolock:true,faceid:true,qrrotate:true};}}
 let EXCHANGE_RATES={};let RATES_TIMESTAMP=0;
@@ -2162,10 +2163,17 @@ let _gridHasAnimatedOnce = false;
   const amb = document.querySelector('.bg-ambient');
   const grn = document.querySelector('.bg-grain');
   if (gs && amb) {
+    let ticking = false;
+    let latestY = 0;
     gs.addEventListener('scroll', () => {
-      const y = gs.scrollTop * -0.08;
-      amb.style.transform = `translateY(${y}px)`;
-      if (grn) grn.style.transform = `translateY(${y * 0.6}px)`;
+      latestY = gs.scrollTop * -0.08;
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        amb.style.transform = `translateY(${latestY}px)`;
+        if (grn) grn.style.transform = `translateY(${latestY * 0.6}px)`;
+        ticking = false;
+      });
     }, {passive: true});
   }
 })();
@@ -2213,6 +2221,7 @@ function buildGrid() {
   const active = getActiveSubs();
   const locked = getLockedSubs();
   const animateTiles = !_gridHasAnimatedOnce;
+  const frag = document.createDocumentFragment();
   // Render active services (normal)
   active.forEach((s, i) => {
     const tile = document.createElement('div');
@@ -2250,7 +2259,7 @@ function buildGrid() {
     } else {
       tile.style.opacity = '1';
     }
-    gridEl.appendChild(tile);
+    frag.appendChild(tile);
   });
   _gridHasAnimatedOnce = true;
   // Render locked services (visually disabled, not deleted)
@@ -2288,8 +2297,9 @@ function buildGrid() {
       showErrorToast('Bu hizmet kilitli. Premium’a geçin veya başka bir hizmeti kaldırın.', 'warning');
     };
     tile.style.opacity = '0.5';
-    gridEl.appendChild(tile);
+    frag.appendChild(tile);
   });
+  gridEl.appendChild(frag);
 }
 
 // ── Drag-to-Reorder — iPhone-style jiggle mode ──
@@ -3891,6 +3901,7 @@ function renderSubs(){
   const today=new Date();
   today.setHours(0,0,0,0);
   const svcWithIdx=SVC.map((s,i)=>({...s,_idx:i}));
+  const frag=document.createDocumentFragment();
   svcWithIdx.sort((a,b)=>{
     if(!a.renew&&!b.renew)return 0;
     if(!a.renew)return 1;
@@ -3926,8 +3937,9 @@ function renderSubs(){
     }
     card.innerHTML=`<div style="width:44px;height:44px;border-radius:13px;background:${s.color||'rgba(255,255,255,.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">${cLogo}</div><div style="flex:1;min-width:0;"><div class="sub-name">${s.name}</div><div class="sub-plan">${s.plan||'Standart'}</div>${badge}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;"><div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.5px;white-space:nowrap;">${s.price>0?formatPrice(s.price):'—'}</div><div style="font-size:11px;color:rgba(255,255,255,.33);margin-top:-2px;">${s.price>0?t('per_month'):''}</div><button onclick="event.stopPropagation();openSubEdit(${idx})" style="margin-top:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 13px;color:rgba(255,255,255,.75);font-size:12px;font-weight:600;cursor:pointer;">${t('edit_btn')}</button></div>`;
     card.onclick=()=>openSubEdit(idx);
-    list.appendChild(card);
+    frag.appendChild(card);
   });
+  list.appendChild(frag);
 }
 
 function renderSpendingChart(svc) {

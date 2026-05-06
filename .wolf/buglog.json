@@ -96,6 +96,25 @@
                                       ],
                      "occurrences":  1,
                      "last_seen":  "2026-04-30T03:27:03.9235140+03:00"
+                 },
+                 {
+                     "id":  "bug-034",
+                     "timestamp":  "2026-05-07T02:55:50.5663118+03:00",
+                     "error_message":  "qa:smoke 120 saniyede timeout oldu; test eski login-first akýþýný bekliyordu.",
+                     "file":  "scripts/smoke-local.js",
+                     "root_cause":  "Smoke test loginScreen visible bekliyordu ama ürün artýk intro-first akýþ kullanýyor; test intro ekranýndan login/onboarding akýþýna geçmiyordu.",
+                     "fix":  "Smoke test introScreen görünürlüðünü bekleyecek ve #introCta üzerinden login ekranýna geçecek þekilde güncellendi.",
+                     "tags":  [
+                                  "qa",
+                                  "smoke",
+                                  "intro-flow",
+                                  "test-timeout"
+                              ],
+                     "related_bugs":  [
+                                          "bug-033"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-05-07T02:55:50.5663118+03:00"
                  }
              ]
 }

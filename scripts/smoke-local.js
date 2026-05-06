@@ -69,11 +69,13 @@ async function run() {
   try {
     await page.goto(`http://localhost:${PORT}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-    await check('Login screen visible', async () => {
-      await page.waitForSelector('#loginScreen', { state: 'visible', timeout: 10000 });
+    await check('Intro screen visible', async () => {
+      await page.waitForSelector('#introScreen', { state: 'visible', timeout: 10000 });
     });
 
     await check('Skip auth onboarding path reaches main app', async () => {
+      await page.click('#introCta');
+      await page.waitForSelector('#loginScreen', { state: 'visible', timeout: 10000 });
       await page.click('#loginSkipText');
       await page.waitForSelector('#onboardScreen', { state: 'visible', timeout: 10000 });
       await page.click('#obSkipBtn');
