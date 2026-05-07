@@ -4106,7 +4106,7 @@ function saveProfile(){
 // ══════════════════════════════════════════════════
 window.PaymentService = (() => {
   // TODO: Buraya RevenueCat Dashboard'dan aldığın iOS API key'ini yaz
-  const RC_API_KEY = 'REVENUECAT_IOS_API_KEY_HERE';
+  const RC_API_KEY = 'test_sMbSaLTdQjIzXMxUqXdljrANOpb';
 
   // App Store Connect'teki product ID'leri
   const PRODUCT_IDS = {
