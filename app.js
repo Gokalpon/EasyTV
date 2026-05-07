@@ -1124,8 +1124,8 @@ function animateNumber(el, target, prefix, suffix, decimals) {
 // ══════════════════════════════════════════════════
 const FREE_LIMIT = 6;
 const PREMIUM_FALLBACK_PRODUCTS = [
-  { id: 'easytv.premium.monthly', title: 'EasyTV Premium', price: '₺49,99', period: 'monthly' },
-  { id: 'easytv.premium.yearly', title: 'EasyTV Premium', price: '₺399,99', period: 'yearly' }
+  { id: 'monthly', title: 'EasyTV Premium', price: '₺49,99', period: 'monthly' },
+  { id: 'yearly',  title: 'EasyTV Premium', price: '₺399,99', period: 'yearly' }
 ];
 const PREMIUM_UI_STATE = {
   products: [],
@@ -4108,10 +4108,10 @@ window.PaymentService = (() => {
   // TODO: Buraya RevenueCat Dashboard'dan aldığın iOS API key'ini yaz
   const RC_API_KEY = 'test_sMbSaLTdQjIzXMxUqXdljrANOpb';
 
-  // App Store Connect'teki product ID'leri
+  // RevenueCat product identifier'ları (App Store Connect'tekiyle eşleşmeli)
   const PRODUCT_IDS = {
-    monthly: 'com.easytvhub.app.premium.monthly',
-    yearly:  'com.easytvhub.app.premium.yearly'
+    monthly: 'monthly',
+    yearly:  'yearly'
   };
 
   let _rcPlugin = null;
