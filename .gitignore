@@ -46,3 +46,6 @@ credentials.json
 
 # Production secrets (exclude during sync)
 # supabase_setup.sql is SAFE to commit (DDL only, no secrets)
+
+# OpenWolf session state (changes every message, no need to track)
+.wolf/hooks/_session.json
