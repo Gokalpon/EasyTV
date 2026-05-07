@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-04-10T23:45:19.921Z",
   "lifetime": {
-    "total_tokens_estimated": 99081,
-    "total_reads": 39,
-    "total_writes": 293,
-    "total_sessions": 22,
-    "anatomy_hits": 33,
+    "total_tokens_estimated": 102192,
+    "total_reads": 40,
+    "total_writes": 306,
+    "total_sessions": 23,
+    "anatomy_hits": 34,
     "anatomy_misses": 6,
     "repeated_reads_blocked": 0,
-    "estimated_savings_vs_bare_cli": 6600
+    "estimated_savings_vs_bare_cli": 6800
   },
   "sessions": [
     {
@@ -2290,6 +2290,94 @@
       "id": "session-2026-05-07-1829",
       "started": "2026-05-07T18:29:59.757Z",
       "ended": "2026-05-07T19:03:02.161Z",
+      "reads": [
+        {
+          "file": "/home/user/EasyTV/capacitor.config.json",
+          "tokens_estimated": 24,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/user/EasyTV/package.json",
+          "tokens_estimated": 81,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 282,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 128,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 1158,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 1116,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 16,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 35,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 39,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 66,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 49,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 44,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 47,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 24,
+        "output_tokens_estimated": 3087,
+        "reads_count": 1,
+        "writes_count": 13,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-05-07-1829",
+      "started": "2026-05-07T18:29:59.757Z",
+      "ended": "2026-05-07T19:03:09.970Z",
       "reads": [
         {
           "file": "/home/user/EasyTV/capacitor.config.json",

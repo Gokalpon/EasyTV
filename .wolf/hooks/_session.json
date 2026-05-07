@@ -1,100 +1,12 @@
 {
-  "session_id": "session-2026-05-07-1829",
-  "started": "2026-05-07T18:29:59.757Z",
-  "files_read": {
-    "/home/user/EasyTV/capacitor.config.json": {
-      "count": 1,
-      "tokens": 24,
-      "first_read": "2026-05-07T18:33:24.399Z"
-    }
-  },
-  "files_written": [
-    {
-      "file": "/home/user/EasyTV/package.json",
-      "action": "edit",
-      "tokens": 81,
-      "at": "2026-05-07T18:34:44.298Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 26,
-      "at": "2026-05-07T18:34:47.960Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 282,
-      "at": "2026-05-07T18:34:59.050Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 128,
-      "at": "2026-05-07T18:35:04.821Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 1158,
-      "at": "2026-05-07T18:35:30.596Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 1116,
-      "at": "2026-05-07T18:35:50.419Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 16,
-      "at": "2026-05-07T18:47:24.092Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 35,
-      "at": "2026-05-07T18:55:36.110Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 39,
-      "at": "2026-05-07T18:55:50.226Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 66,
-      "at": "2026-05-07T18:55:55.076Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 49,
-      "at": "2026-05-07T18:55:58.390Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 44,
-      "at": "2026-05-07T18:57:13.645Z"
-    },
-    {
-      "file": "/home/user/EasyTV/app.js",
-      "action": "edit",
-      "tokens": 47,
-      "at": "2026-05-07T18:57:17.935Z"
-    }
-  ],
-  "edit_counts": {
-    "package.json": 1,
-    "app.js": 12
-  },
-  "anatomy_hits": 1,
+  "session_id": "session-2026-05-07-1911",
+  "started": "2026-05-07T19:11:45.680Z",
+  "files_read": {},
+  "files_written": [],
+  "edit_counts": {},
+  "anatomy_hits": 0,
   "anatomy_misses": 0,
   "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 33
+  "stop_count": 1
 }
