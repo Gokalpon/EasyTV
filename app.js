@@ -4110,8 +4110,8 @@ window.PaymentService = (() => {
 
   // App Store Connect'teki product ID'leri
   const PRODUCT_IDS = {
-    monthly:  'com.easytvhub.app.premium.monthly',
-    yearly:   'com.easytvhub.app.premium.yearly'
+    monthly: 'com.easytvhub.app.premium.monthly',
+    yearly:  'com.easytvhub.app.premium.yearly'
   };
 
   let _rcPlugin = null;
