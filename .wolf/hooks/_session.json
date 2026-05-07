@@ -1,27 +1,12 @@
 {
-  "session_id": "session-2026-05-07-1810",
-  "started": "2026-05-07T18:10:36.292Z",
-  "files_read": {
-    "/home/user/EasyTV/scripts/macbook-prepare.sh": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-07T18:10:50.826Z"
-    }
-  },
-  "files_written": [
-    {
-      "file": "/home/user/EasyTV/scripts/macbook-prepare.sh",
-      "action": "edit",
-      "tokens": 476,
-      "at": "2026-05-07T18:11:18.939Z"
-    }
-  ],
-  "edit_counts": {
-    "scripts/macbook-prepare.sh": 1
-  },
+  "session_id": "session-2026-05-07-1823",
+  "started": "2026-05-07T18:23:54.128Z",
+  "files_read": {},
+  "files_written": [],
+  "edit_counts": {},
   "anatomy_hits": 0,
-  "anatomy_misses": 1,
+  "anatomy_misses": 0,
   "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 5
+  "stop_count": 1
 }
