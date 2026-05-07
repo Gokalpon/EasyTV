@@ -139,6 +139,22 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-05-07T18:35:30.598Z"
+    },
+    {
+      "id": "bug-009",
+      "timestamp": "2026-05-07T18:47:24.095Z",
+      "error_message": "Incorrect value in code",
+      "file": "app.js",
+      "root_cause": "Had 'REVENUECAT_IOS_API_KEY_HERE'",
+      "fix": "Changed to 'test_sMbSaLTdQjIzXMxUqXdljrANOpb'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-07T18:47:24.095Z"
     }
   ]
 }
