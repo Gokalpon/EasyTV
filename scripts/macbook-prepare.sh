@@ -12,6 +12,39 @@ fi
 echo "EasyTV MacBook iOS prepare"
 echo "==========================="
 
+# ── Developer Mode check (iOS 16+) ──────────────────────────────────────────
+echo "Checking connected iOS devices for Developer Mode..."
+XCODE_MAJOR=$(xcodebuild -version 2>/dev/null | awk 'NR==1{split($2,a,"."); print a[1]}')
+if [[ "${XCODE_MAJOR:-0}" -ge 15 ]]; then
+  # devicectl available (Xcode 15+)
+  DEVICES=$(xcrun devicectl list devices 2>/dev/null | grep -E "iPhone|iPad" || true)
+  if [[ -z "$DEVICES" ]]; then
+    echo "  No physical device connected. Skipping Developer Mode check."
+  else
+    echo "$DEVICES"
+    echo
+    echo "  Attempting to enable Developer Mode on connected device(s)..."
+    # Extract device identifiers and try to enable developer mode
+    xcrun devicectl list devices 2>/dev/null | grep -E "iPhone|iPad" | awk '{print $NF}' | while read -r DEV_ID; do
+      echo "  → xcrun devicectl device enable developer-mode --device $DEV_ID"
+      xcrun devicectl device enable developer-mode --device "$DEV_ID" 2>&1 || true
+    done
+    echo
+    echo "  If the command above showed an error, enable Developer Mode manually:"
+    echo "  Ayarlar → Gizlilik ve Güvenlik → Developer Mode → Aç → Yeniden Başlat"
+  fi
+else
+  # Xcode < 15: no devicectl, give manual steps
+  CONNECTED=$(system_profiler SPUSBDataType 2>/dev/null | grep -E "iPhone|iPad" || true)
+  if [[ -n "$CONNECTED" ]]; then
+    echo "  iOS cihaz bağlı ama Xcode < 15 — Developer Mode'u manuel aç:"
+    echo "  Ayarlar → Gizlilik ve Güvenlik → Developer Mode → Aç → Yeniden Başlat"
+  else
+    echo "  No physical device detected. Continuing..."
+  fi
+fi
+echo
+
 if ! command -v node >/dev/null 2>&1; then
   echo "Node.js missing. Install Node LTS first: https://nodejs.org/"
   exit 1
