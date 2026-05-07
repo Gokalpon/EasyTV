@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-25T22:07:48.515Z
-> Files: 51 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-07T18:11:18.916Z
+> Files: 52 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -113,6 +113,7 @@
 
 ## scripts/
 
+- `macbook-prepare.sh` (~847 tok)
 
 ## supabase/functions/verify-ios-subscription/
 
@@ -122,5 +123,3 @@
 - `app.js` — ══════════════════════════════════════════════════ (~48610 tok)
 - `index.html` — EasyTV (~15158 tok)
 - `style.css` — Styles: 60 rules, 6 vars, 2 media queries, 5 animations (~30238 tok)
-
-- scripts/macbook-prepare.sh � MacBook temiz kurulum, Capacitor iOS sync, release preflight ve Xcode a�ma yard�mc� scripti (~260 tok)
