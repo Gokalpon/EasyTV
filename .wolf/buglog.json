@@ -171,6 +171,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-07T18:55:50.228Z"
+    },
+    {
+      "id": "bug-011",
+      "timestamp": "2026-05-07T18:57:17.937Z",
+      "error_message": "Incorrect value in code",
+      "file": "app.js",
+      "root_cause": "Had 'easytv.premium.monthly'",
+      "fix": "Changed to 'monthly'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-07T18:57:17.937Z"
     }
   ]
 }
