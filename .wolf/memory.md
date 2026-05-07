@@ -40,6 +40,8 @@
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
-| 03:27 | Mobile açýlýþ ve animasyon donmasý için RAF/grid/blur performans düzeltmeleri yapýldý | app.js, style.css, www/app.js, www/style.css | build:sync ve two-tap smoke testi geçti | ~tokens |
-| 02:40 | MacBook iOS temiz kurulum hazýrlýk scripti eklendi | package.json, scripts/macbook-prepare.sh | package JSON ve release preflight geçti | ~tokens |
-| 02:55 | Runtime optimizasyonu ve smoke intro-first düzeltmesi yapýldý | app.js, service-worker.js, scripts/smoke-local.js, www/* | qa:smoke ve release:preflight geçti | ~tokens |
+
+## Session: 2026-05-07 11:40
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
