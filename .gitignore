@@ -49,3 +49,6 @@ credentials.json
 
 # OpenWolf session state (changes every message, no need to track)
 .wolf/hooks/_session.json
+.wolf/token-ledger.json
+.wolf/memory.md
+.wolf/anatomy.md
