@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-07T18:11:18.916Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-07T18:35:50.406Z
 > Files: 52 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -8,7 +8,7 @@
 - `.gitignore` — Git ignore rules (~10 tok)
 - `akira-font.css` — Styles: 1 rules (~42 tok)
 - `animated-h3.js` — Per-letter animation for .animated-h3 (~170 tok)
-- `app.js` — ══════════════════════════════════════════════════ (~48610 tok)
+- `app.js` — ══════════════════════════════════════════════════ (~65642 tok)
 - `APPSTORE_ROADMAP.md` — 🚀 EasyTV — App Store Yol Haritası & İyileştirme Raporu (~7368 tok)
 - `capacitor.config.json` (~24 tok)
 - `CLAUDE.md` — OpenWolf (~852 tok)
@@ -24,7 +24,7 @@
 - `manifest.webmanifest` (~151 tok)
 - `netlify.toml` (~37 tok)
 - `optimize-images.md` — Image Optimization Planı (~253 tok)
-- `package.json` — Node.js package manifest (~397 tok)
+- `package.json` — Node.js package manifest (~934 tok)
 - `premium-system.js` — ══════════════════════════════════════════════════ (~552 tok)
 - `privacy.html` — Gizlilik Politikası — EasyTV (~1032 tok)
 - `raleway-font.css` — Styles: 1 rules (~25 tok)
