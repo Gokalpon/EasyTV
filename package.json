@@ -96,7 +96,10 @@
     "mac:prepare:open": "bash scripts/macbook-prepare.sh --open"
   },
   "dependencies": {
-    "@capacitor/core": "^8.3.0"
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/browser": "^6.0.0",
+    "@capacitor-community/biometric-auth": "^7.0.0",
+    "@revenuecat/purchases-capacitor": "^9.0.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.3.0",

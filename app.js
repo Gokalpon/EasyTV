@@ -727,10 +727,24 @@ async function submitEmailAuth() {
         return;
       }
 
+      // Email doğrulama zorunluysa hemen sign-in dene (bazı Supabase config'lerde çalışır)
+      if (data && data.user) {
+        try {
+          const autoLogin = await _supabase.auth.signInWithPassword({ email, password });
+          if (autoLogin.data?.user && !autoLogin.error) {
+            closeEmailAuth();
+            onAuthSuccess(autoLogin.data.user);
+            return;
+          }
+        } catch (_) {}
+      }
+
       showAlert(
         '✉️',
         LANG==='tr'?'E-posta Doğrulama':'Email Verification',
-        t('email_auth_signup_success_verify'),
+        LANG==='tr'
+          ? 'Hesabın oluşturuldu! Gelen kutunu kontrol et ve e-postayı doğrula, sonra giriş yapabilirsin.'
+          : 'Account created! Check your inbox and verify your email, then sign in.',
         [{ label: LANG==='tr' ? 'Tamam' : 'OK', action: () => { closeAlert(); setEmailAuthMode('signin'); } }]
       );
     }
@@ -795,8 +809,15 @@ async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
         loginBtn.disabled = false;
       }
     }
-    // Bazı istemci sürümlerinde otomatik yönlendirme yapılmadığı için URL'i manuel aç.
+    // Native'de Browser plugin ile SFSafariViewController aç (callback easytvhub:// scheme ile döner)
     if (data && data.url) {
+      if (_isNativeCapacitorPlatform()) {
+        const BrowserPlugin = window.Capacitor?.Plugins?.Browser;
+        if (BrowserPlugin) {
+          await BrowserPlugin.open({ url: data.url, presentationStyle: 'popover' });
+          return;
+        }
+      }
       window.location.assign(data.url);
       return;
     }
@@ -2010,7 +2031,7 @@ function setPinChoice(val){
   tapped.style.transform='scale(.97)';
   setTimeout(function(){ tapped.style.transform='scale(1.01)'; setTimeout(function(){ tapped.style.transform=''; },200); },100);
 }
-let obStep=0;const obSteps=['services','pinChoice','pin','done'];let obSelectedServices=['netflix','youtube','disney','prime','hbo','apple'];let obNewPin='';
+let obStep=0;const obSteps=['services','pinChoice','pin','done'];let obSelectedServices=[];let obNewPin='';
 function renderOnboardStep(){const prog=document.getElementById('obProgress');prog.innerHTML=obSteps.map((_,i)=>`<div class="onboard-dot${i<=obStep?' done':''}"></div>`).join('');const content=document.getElementById('obContent');const btn=document.getElementById('obNextBtn');const btnText=btn?btn.querySelector('.cta-btn-text'):null;const skip=document.querySelector('.onboard-skip');const tr=LANG==='tr';const setSkip=(v)=>{if(skip)skip.style.display=v;};if(skip)skip.textContent=tr?'Atla':'Skip';content.style.animation='none';content.offsetHeight;content.style.animation='obSlideIn .45s cubic-bezier(.32,.72,0,1) both';if(obStep===0){if(btnText)btnText.textContent=tr?'Devam':'Continue';setSkip('block');content.innerHTML=`<div style="padding:0 24px;"><div class="onboard-step-lbl">${tr?'Adım 1 / 3':'Step 1 / 3'}</div><div class="onboard-title">${tr?'Hangi servisleri<br>kullanıyorsun?':'Which services<br>do you use?'}</div><div class="onboard-sub">${tr?'Hepsini sonra değiştirebilirsin.':'You can change all of them later.'}</div><div class="service-pick-grid" id="spGrid" style="margin-top:20px;"></div></div>`;buildServicePicker();}else if(obStep===1){if(btnText)btnText.textContent=tr?'Devam':'Continue';setSkip('block');content.innerHTML=`<div style="padding:0 4px;">
 <div class="onboard-step-lbl">${tr?'Adım 2 / 3':'Step 2 / 3'}</div>
 <div class="onboard-title" style="margin-bottom:8px;">${tr?'Güvenlik':'Security'}</div>
@@ -2553,33 +2574,63 @@ document.addEventListener('click', resetLockTimer);
 function _toBase64Url(buf){const bytes=buf instanceof Uint8Array?buf:new Uint8Array(buf);let str='';for(let i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function _fromBase64Url(s){const b64=(s||'').replace(/-/g,'+').replace(/_/g,'/');const pad='='.repeat((4-b64.length%4)%4);const bin=atob(b64+pad);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out;}
 function _randomBytes(n){const out=new Uint8Array(n);crypto.getRandomValues(out);return out;}
-async function _isBiometricSupported(){try{if(!window.isSecureContext||!window.PublicKeyCredential)return false;if(typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable==='function'){return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();}return true;}catch(_){return false;}}
-async function _enrollBiometricCredential(){
-  if(!(await _isBiometricSupported())){showToast(LANG==='tr'?'Bu cihazda Face ID desteklenmiyor':'Face ID is not supported on this device');return false;}
-  try{
-    const userLabel=(PROFILE.email||PROFILE.name||'easytv-user').slice(0,64);
-    const userId=_randomBytes(32);
-    const cred=await navigator.credentials.create({publicKey:{challenge:_randomBytes(32),rp:{name:'EasyTV'},user:{id:userId,name:userLabel,displayName:PROFILE.name||userLabel},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},timeout:60000,attestation:'none'}});
-    if(!cred||!cred.rawId)return false;
-    SETTINGS.faceidCredentialId=_toBase64Url(cred.rawId);
-    saveData();
-    showToast(LANG==='tr'?'Face ID etkinleştirildi':'Face ID enabled');
-    return true;
-  }catch(e){
-    showToast(LANG==='tr'?'Face ID kaydı iptal edildi':'Face ID enrollment cancelled');
-    return false;
-  }
+
+function _getNativeBiometricPlugin(){
+  return window.Capacitor?.Plugins?.BiometricAuth || null;
 }
+
+async function _isBiometricSupported(){
+  const plugin=_getNativeBiometricPlugin();
+  if(plugin){
+    try{
+      const r=await plugin.checkBiometry();
+      return !!(r&&r.isAvailable);
+    }catch(_){return false;}
+  }
+  // Web fallback (WebAuthn — sadece HTTPS'de çalışır, WKWebView'da çalışmaz)
+  try{if(!window.isSecureContext||!window.PublicKeyCredential)return false;if(typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable==='function'){return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();}return true;}catch(_){return false;}
+}
+
+async function _enrollBiometricCredential(){
+  const plugin=_getNativeBiometricPlugin();
+  if(plugin){
+    try{
+      const r=await plugin.checkBiometry();
+      if(!r||!r.isAvailable){showToast(LANG==='tr'?'Bu cihazda Face ID desteklenmiyor':'Face ID is not supported on this device');return false;}
+      // Native plugin enrollment olmaz; ilk authenticate deneme kayıt işlevi görür
+      showToast(LANG==='tr'?'Face ID etkinleştirildi':'Face ID enabled');
+      SETTINGS.faceidCredentialId='native';
+      saveData();
+      return true;
+    }catch(e){
+      showToast(LANG==='tr'?'Face ID kaydı iptal edildi':'Face ID enrollment cancelled');
+      return false;
+    }
+  }
+  // Web WebAuthn fallback
+  if(!(await _isBiometricSupported())){showToast(LANG==='tr'?'Bu cihazda Face ID desteklenmiyor':'Face ID is not supported on this device');return false;}
+  try{const userLabel=(PROFILE.email||PROFILE.name||'easytv-user').slice(0,64);const userId=_randomBytes(32);const cred=await navigator.credentials.create({publicKey:{challenge:_randomBytes(32),rp:{name:'EasyTV'},user:{id:userId,name:userLabel,displayName:PROFILE.name||userLabel},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},timeout:60000,attestation:'none'}});if(!cred||!cred.rawId)return false;SETTINGS.faceidCredentialId=_toBase64Url(cred.rawId);saveData();showToast(LANG==='tr'?'Face ID etkinleştirildi':'Face ID enabled');return true;}catch(e){showToast(LANG==='tr'?'Face ID kaydı iptal edildi':'Face ID enrollment cancelled');return false;}
+}
+
 async function _verifyBiometricCredential(){
+  const plugin=_getNativeBiometricPlugin();
+  if(plugin){
+    try{
+      await plugin.authenticate({
+        reason:LANG==='tr'?'EasyTV uygulamasına giriş':'Sign in to EasyTV',
+        cancelTitle:LANG==='tr'?'İptal':'Cancel',
+        iosFallbackTitle:LANG==='tr'?'PIN ile giriş':'Use PIN',
+        allowDeviceCredential:false
+      });
+      return true;
+    }catch(_){return false;}
+  }
+  // Web fallback
   if(!(await _isBiometricSupported()))return false;
   if(!SETTINGS.faceidCredentialId)return _enrollBiometricCredential();
-  try{
-    const assertion=await navigator.credentials.get({publicKey:{challenge:_randomBytes(32),allowCredentials:[{type:'public-key',id:_fromBase64Url(SETTINGS.faceidCredentialId)}],userVerification:'required',timeout:60000}});
-    return !!assertion;
-  }catch(_){
-    return false;
-  }
+  try{const assertion=await navigator.credentials.get({publicKey:{challenge:_randomBytes(32),allowCredentials:[{type:'public-key',id:_fromBase64Url(SETTINGS.faceidCredentialId)}],userVerification:'required',timeout:60000}});return !!assertion;}catch(_){return false;}
 }
+
 async function deviceAuth(showPinOnFail=true){
   const ok=await _verifyBiometricCredential();
   if(ok){unlockApp();return true;}
@@ -4049,6 +4100,109 @@ function saveProfile(){
   closeEditProfile();
   showToast('✓ Profil güncellendi');
 }
+
+// ══════════════════════════════════════════════════
+// PAYMENT SERVICE — RevenueCat Capacitor Bridge
+// ══════════════════════════════════════════════════
+window.PaymentService = (() => {
+  // TODO: Buraya RevenueCat Dashboard'dan aldığın iOS API key'ini yaz
+  const RC_API_KEY = 'REVENUECAT_IOS_API_KEY_HERE';
+
+  // App Store Connect'teki product ID'leri
+  const PRODUCT_IDS = {
+    monthly:  'com.easytvhub.app.premium.monthly',
+    yearly:   'com.easytvhub.app.premium.yearly'
+  };
+
+  let _rcPlugin = null;
+  let _initialized = false;
+
+  function _getPlugin() {
+    if (!_rcPlugin) _rcPlugin = window.Capacitor?.Plugins?.Purchases || null;
+    return _rcPlugin;
+  }
+
+  async function init() {
+    const rc = _getPlugin();
+    if (!rc || _initialized) return;
+    try {
+      await rc.configure({ apiKey: RC_API_KEY });
+      _initialized = true;
+    } catch (e) {
+      console.warn('RevenueCat configure hatası:', e);
+    }
+  }
+
+  function defaultProductId() {
+    return PRODUCT_IDS.monthly;
+  }
+
+  async function getProducts() {
+    const rc = _getPlugin();
+    if (!rc) return [];
+    try {
+      await init();
+      const { offerings } = await rc.getOfferings();
+      const pkgs = offerings?.current?.availablePackages || [];
+      return pkgs.map(pkg => ({
+        id: pkg.product?.identifier || pkg.identifier,
+        title: pkg.product?.title || pkg.identifier,
+        price: pkg.product?.priceString || '',
+        period: pkg.packageType === 'ANNUAL' ? 'yearly' : 'monthly',
+        _raw: pkg
+      }));
+    } catch (e) {
+      console.warn('RevenueCat getProducts hatası:', e);
+      return [];
+    }
+  }
+
+  async function purchase(productId) {
+    const rc = _getPlugin();
+    if (!rc) throw new Error(LANG === 'tr' ? 'Ödeme sistemi bu cihazda mevcut değil' : 'Payment system not available');
+    await init();
+    try {
+      const { offerings } = await rc.getOfferings();
+      const pkgs = offerings?.current?.availablePackages || [];
+      const pkg = pkgs.find(p => p.product?.identifier === productId) || pkgs[0];
+      if (!pkg) throw new Error('Ürün bulunamadı');
+      const { customerInfo } = await rc.purchasePackage({ aPackage: pkg });
+      const isActive = !!customerInfo?.entitlements?.active?.premium;
+      if (!isActive) throw new Error(LANG === 'tr' ? 'Satın alma doğrulanamadı' : 'Purchase could not be verified');
+      return { ok: true, source: 'iap', transactionId: pkg.product?.identifier, productId };
+    } catch (e) {
+      if (e.code === 'PURCHASE_CANCELLED') throw new Error(LANG === 'tr' ? 'Satın alma iptal edildi' : 'Purchase cancelled');
+      throw e;
+    }
+  }
+
+  async function restorePurchases() {
+    const rc = _getPlugin();
+    if (!rc) return { ok: false, message: LANG === 'tr' ? 'Ödeme sistemi mevcut değil' : 'Payment system not available' };
+    await init();
+    try {
+      const { customerInfo } = await rc.restorePurchases();
+      const isActive = !!customerInfo?.entitlements?.active?.premium;
+      return { ok: isActive, message: isActive ? (LANG === 'tr' ? 'Premium geri yüklendi' : 'Premium restored') : (LANG === 'tr' ? 'Aktif abonelik bulunamadı' : 'No active subscription found') };
+    } catch (e) {
+      return { ok: false, message: e.message || 'Restore başarısız' };
+    }
+  }
+
+  async function getSubscriptionStatus() {
+    const rc = _getPlugin();
+    if (!rc) return null;
+    await init();
+    try {
+      const { customerInfo } = await rc.getCustomerInfo();
+      const isActive = !!customerInfo?.entitlements?.active?.premium;
+      if (!isActive) return null;
+      return { ok: true, source: 'iap', productId: PRODUCT_IDS.monthly };
+    } catch (_) { return null; }
+  }
+
+  return { init, defaultProductId, getProducts, purchase, restorePurchases, getSubscriptionStatus };
+})();
 
 // ══════════════════════════════════════════════════
 // INIT - Güvenli Başlatma
