@@ -1,12 +1,18 @@
 {
-  "session_id": "session-2026-05-07-1742",
-  "started": "2026-05-07T17:42:17.556Z",
-  "files_read": {},
+  "session_id": "session-2026-05-08-1229",
+  "started": "2026-05-08T12:29:58.512Z",
+  "files_read": {
+    "/home/user/EasyTV/app.js": {
+      "count": 5,
+      "tokens": 48610,
+      "first_read": "2026-05-08T12:32:54.565Z"
+    }
+  },
   "files_written": [],
   "edit_counts": {},
-  "anatomy_hits": 0,
+  "anatomy_hits": 1,
   "anatomy_misses": 0,
-  "repeated_reads_warned": 0,
+  "repeated_reads_warned": 4,
   "cerebrum_warnings": 0,
-  "stop_count": 9
+  "stop_count": 1
 }
