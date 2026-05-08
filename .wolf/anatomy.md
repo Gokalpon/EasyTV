@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-25T22:07:48.515Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-08T12:40:03.567Z
 > Files: 51 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -8,7 +8,7 @@
 - `.gitignore` — Git ignore rules (~10 tok)
 - `akira-font.css` — Styles: 1 rules (~42 tok)
 - `animated-h3.js` — Per-letter animation for .animated-h3 (~170 tok)
-- `app.js` — ══════════════════════════════════════════════════ (~48610 tok)
+- `app.js` — ══════════════════════════════════════════════════ (~63959 tok)
 - `APPSTORE_ROADMAP.md` — 🚀 EasyTV — App Store Yol Haritası & İyileştirme Raporu (~7368 tok)
 - `capacitor.config.json` (~24 tok)
 - `CLAUDE.md` — OpenWolf (~852 tok)
@@ -19,7 +19,7 @@
 - `H3Heading.jsx` — H3Heading component (~250 tok)
 - `h3heading.tailwind.css` — Styles: 4 rules, 1 animations, 1 layers (~128 tok)
 - `IMPROVEMENTS.md` — 🚀 EasyTV İyileştirmeler - v1.1 (~1234 tok)
-- `index.html` — EasyTV (~15158 tok)
+- `index.html` — EasyTV (~15803 tok)
 - `IOS_STABILIZATION_AUDIT.md` — iOS functional/broken matrix, SWOT, sprint backlog ve release checklist raporu (~2200 tok)
 - `manifest.webmanifest` (~151 tok)
 - `netlify.toml` (~37 tok)
@@ -122,5 +122,3 @@
 - `app.js` — ══════════════════════════════════════════════════ (~48610 tok)
 - `index.html` — EasyTV (~15158 tok)
 - `style.css` — Styles: 60 rules, 6 vars, 2 media queries, 5 animations (~30238 tok)
-
-- scripts/macbook-prepare.sh � MacBook temiz kurulum, Capacitor iOS sync, release preflight ve Xcode a�ma yard�mc� scripti (~260 tok)

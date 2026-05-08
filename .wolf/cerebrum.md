@@ -59,3 +59,9 @@
 - [2026-05-06] Kullanıcı fiziksel cihaz/Mac tarafında da yapılabilecek tüm hazırlıkların ajan tarafından yapılmasını bekliyor; sadece komut listesi vermek yetersiz.
 
 - [2026-05-07] Performans optimizasyonlarında iki-tık logo UX'i korunmalı; render iyileştirmeleri grid/list DOM fragmentleri, rAF scroll throttle ve cache-safe service worker seviyesinde yapılabilir.
+
+- [2026-05-08] toggleCountryDropdown (app.js:1572) getElementById('countryDropdown') sonucunu null kontrolü yapmadan d.style.display üzerinden kullanıyor; countryDropdown ne HTML'de ne de dinamik olarak oluşturuluyor — bu fonksiyon çağrılırsa TypeError crash üretir.
+- [2026-05-08] selectLoginCountry (app.js:1575) da getElementById('selectedCountryLabel') ve getElementById('countryDropdown') sonuçlarını null kontrolsüz kullanıyor; aynı crash riski.
+- [2026-05-08] homeGreeting, nextRenew, premiumToggle ID'leri index.html'de yok ve dinamik da yaratılmıyor; bu ID'leri sorgulayan fonksiyonlarda if(!el)return guard var, dolayısıyla sessizce başarısız oluyorlar (crash yok ama özellik çalışmıyor).
+- [2026-05-08] root/ ve www/ dosyaları (app.js, index.html, style.css) MD5 hash seviyesinde birebir aynı — drift yok.
+- [2026-05-08] buildRegionPicker (app.js:1981) getElementById('regionPicker') kullanıyor; bu ID HTML'de yok ve if(!picker)return guard ile sessizce çıkıyor — dead code.
