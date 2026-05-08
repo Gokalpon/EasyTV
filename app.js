@@ -2025,15 +2025,12 @@ requestAnimationFrame(function(){var t=content.querySelector('.onboard-title');v
 let obPinStep=0;
 function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'PIN\'ini bir kez daha gir.':'Enter your PIN one more time.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'Eşleşmedi. Tekrar dene.':'PINs do not match. Try again.';}}}}
 function _obSlideNext(cb){const c=document.getElementById('obContent');c.style.animation='obSlideOut .25s cubic-bezier(.55,.06,.68,.19) both';c.addEventListener('animationend',function h(){c.removeEventListener('animationend',h);cb();},{once:true});}
-function onboardNext(){if(obStep===0){SVC=[];obSelectedServices.forEach(id=>{const svc=POPULAR_SVCS.find(s=>s.id===id);if(svc){const reg=SETTINGS.region||'tr';const pr=svc.prices?.[reg]||{amount:0,plan:''};const renewDate=new Date();renewDate.setMonth(renewDate.getMonth()+1);SVC.push({...svc,email:'',pwd:'',price:pr.amount,plan:pr.plan,renew:renewDate.toISOString().split('T')[0]});}});saveData();_obSlideNext(()=>{obStep++;renderOnboardStep();});return;}if(obStep===1){if(SETTINGS.usePin===false){_obSlideNext(()=>finishOnboard());}else{_obSlideNext(()=>{obStep++;renderOnboardStep();});}return;}if(obStep===2){_obSlideNext(()=>finishOnboard());return;}_obSlideNext(()=>{obStep++;renderOnboardStep();});}
+function onboardNext(){if(obStep===0){SVC=[];obSelectedServices.forEach(id=>{const svc=POPULAR_SVCS.find(s=>s.id===id);if(svc){SVC.push({...svc,email:'',pwd:'',price:0,plan:'',renew:''});}});saveData();_obSlideNext(()=>{obStep++;renderOnboardStep();});return;}if(obStep===1){if(SETTINGS.usePin===false){_obSlideNext(()=>finishOnboard());}else{_obSlideNext(()=>{obStep++;renderOnboardStep();});}return;}if(obStep===2){_obSlideNext(()=>finishOnboard());return;}_obSlideNext(()=>{obStep++;renderOnboardStep();});}
 function finishOnboard(){
   localStorage.setItem('easytv_setup_done','1');
   if(SETTINGS.usePin!==false && !SETTINGS.pin && !SETTINGS.pinHash){
-    // Güvenli rastgele PIN oluştur
-    const rPin = String(Math.floor(100000 + Math.random()*900000)).slice(0,4);
-    savePin(rPin).then(()=>{
-      showToast('Geçici PIN: ' + rPin + ' — Lütfen değiştirin!');
-    });
+    SETTINGS.usePin = false;
+    saveData();
   }
   const onboardScreen=document.getElementById('onboardScreen');
   const pinScreen=document.getElementById('pinScreen');

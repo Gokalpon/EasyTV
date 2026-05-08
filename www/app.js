@@ -28,7 +28,7 @@ if ((IS_DESKTOP_APP || location.hostname === 'localhost' || location.hostname ==
 }
 
 const SUPABASE_URL = 'https://susshevhyrylxrxesngc.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1c3NoZXZoeXJ5bHhyeGVzbmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDI0MTYsImV4cCI6MjA4ODU3ODQxNn0.eBuoqS6ehvBHXA7hSZsfiKrM59MWPeDki5HsCXL2Ra4';
 const IAP_VERIFY_ENDPOINT_DEFAULT = `${SUPABASE_URL}/functions/v1/verify-ios-subscription`;
 const ACCOUNT_DELETE_ENDPOINT_DEFAULT = `${SUPABASE_URL}/functions/v1/delete-account`;
 let _supabase = null;
@@ -744,24 +744,7 @@ async function submitEmailAuth() {
 }
 
 async function loginWithDemo() {
-  if (authLoading) authLoading.style.display = 'flex';
-  try {
-    // Demo hesabı ile hızlı giriş (Varsa giriş yapar yoksa hata verir ama demo için bypass eklenebilir)
-    const demoEmail = 'demo@easytv.app';
-    const demoPass = 'Demo123!';
-    const { data, error } = await _supabase.auth.signInWithPassword({ email: demoEmail, password: demoPass });
-    if (error) {
-      // Eğer demo hesabı yoksa veya giriş başarısızsa, sanki kayıtlıymış gibi devam et (Mock data local mod)
-      showToast(LANG==='tr'?'Demo moduna geçiliyor...':'Entering demo mode...');
-      onAuthSuccess({ id: 'demo-user', email: 'demo@easytv.app' });
-    } else {
-      onAuthSuccess(data.user);
-    }
-  } catch(e) {
-    onAuthSuccess({ id: 'demo-user', email: 'demo@easytv.app' });
-  } finally {
-    if (authLoading) authLoading.style.display = 'none';
-  }
+  openEmailAuth('signin');
 }
 
 async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
@@ -1576,7 +1559,7 @@ function selectLoginCountry(code,region){SETTINGS.country=code;SETTINGS.region=r
 const CURRENCIES=[{code:'TRY',symbol:'₺',name:'Türk Lirası'},{code:'USD',symbol:'$',name:'Amerikan Doları'},{code:'EUR',symbol:'€',name:'Euro'},{code:'GBP',symbol:'£',name:'Sterlin'},{code:'JPY',symbol:'¥',name:'Japon Yeni'},{code:'CAD',symbol:'CA$',name:'Kanada Doları'},{code:'AUD',symbol:'A$',name:'Avustralya Doları'},{code:'CHF',symbol:'Fr',name:'İsviçre Frangı'},{code:'SEK',symbol:'kr',name:'İsveç Kronu'},{code:'NOK',symbol:'kr',name:'Norveç Kronu'},{code:'KRW',symbol:'₩',name:'Güney Kore Wonu'},{code:'INR',symbol:'₹',name:'Hindistan Rupisi'},{code:'BRL',symbol:'R$',name:'Brezilya Reali'},{code:'SGD',symbol:'S$',name:'Singapur Doları'},{code:'AED',symbol:'AED',name:'BAE Dirhemi'},{code:'SAR',symbol:'SAR',name:'Suudi Riyali'}];
 const POPULAR_SVCS=[{id:'netflix',name:'Netflix',color:'#E50914',rgb:'229,9,20',prices:{tr:{amount:219.99,plan:'Standart'},us:{amount:15.49,plan:'Standard'},eu:{amount:13.99,plan:'Standard'},as:{amount:13.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:149.99},{name:'Standart',price:219.99},{name:'Premium',price:329.99},{name:'Aile Paylaşımı',price:269.99}]}},{id:'youtube',name:'YouTube',color:'#FF0000',rgb:'255,0,0',prices:{tr:{amount:109.99,plan:'Premium'},us:{amount:13.99,plan:'Premium'},eu:{amount:11.99,plan:'Premium'},as:{amount:11.99,plan:'Premium'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile (6 kişi)',price:179.99},{name:'Öğrenci',price:69.99}]}},{id:'disney',name:'Disney+',color:'#0ABFBC',rgb:'10,191,188',prices:{tr:{amount:149.99,plan:'Standart'},us:{amount:7.99,plan:'Basic'},eu:{amount:8.99,plan:'Standard'},as:{amount:8.99,plan:'Standard'}},plans:{tr:[{name:'Standart (Reklamlı)',price:109.99},{name:'Standart',price:149.99},{name:'Premium',price:219.99}]}},{id:'prime',name:'Prime Video',color:'#1A98FF',rgb:'26,152,255',prices:{tr:{amount:129.99,plan:'Prime'},us:{amount:8.99,plan:'Prime'},eu:{amount:8.99,plan:'Prime'},as:{amount:8.99,plan:'Prime'}},plans:{tr:[{name:'Prime Üyelik',price:129.99},{name:'Prime Video Kanal',price:49.99}]}},{id:'hbo',name:'HBO Max',color:'#3B1F6B',rgb:'59,31,107',prices:{tr:{amount:189.99,plan:'Reklamsız'},us:{amount:15.99,plan:'Ad-Free'},eu:{amount:9.99,plan:'Standard'},as:{amount:9.99,plan:'Standard'}},plans:{tr:[{name:'Reklamlı',price:129.99},{name:'Reklamsız',price:189.99},{name:'Ultimate (4K)',price:249.99}]}},{id:'apple',name:'Apple TV+',color:'#ffffff',rgb:'255,255,255',textDark:true,prices:{tr:{amount:99.99,plan:'Aile'},us:{amount:9.99,plan:'Monthly'},eu:{amount:8.99,plan:'Monthly'},as:{amount:8.99,plan:'Monthly'}},plans:{tr:[{name:'Bireysel',price:49.99},{name:'Aile (6 kişi)',price:99.99}]}},{id:'twitch',name:'Twitch',color:'#9146FF',rgb:'145,70,255',prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Turbo',price:89.99},{name:'Kanal Aboneliği',price:49.99}]}},{id:'kick',name:'Kick',color:'#53FC18',rgb:'83,252,24',textDark:true,prices:{tr:{amount:0,plan:'Ücretsiz'},us:{amount:0,plan:'Free'},eu:{amount:0,plan:'Free'},as:{amount:0,plan:'Free'}},plans:{tr:[{name:'Ücretsiz',price:0},{name:'Kanal Aboneliği',price:49.99}]}},{id:'exxen',name:'EXXEN',color:'#F9D100',rgb:'249,209,0',textDark:true,prices:{tr:{amount:179.99,plan:'Reklamlı HD'},us:{amount:0,plan:'N/A'},eu:{amount:0,plan:'N/A'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Reklamlı HD',price:119.99},{name:'Reklamsız HD',price:179.99},{name:'Reklamsız 4K',price:239.99},{name:'Spor Paketi',price:349.99}]}},{id:'bein',name:'beIN Connect',color:'#6F2DA8',rgb:'111,45,168',prices:{tr:{amount:249.99,plan:'Spor Paketi'},us:{amount:0,plan:'N/A'},eu:{amount:19.99,plan:'Sports'},as:{amount:0,plan:'N/A'}},plans:{tr:[{name:'Eğlence Paketi',price:149.99},{name:'Spor Paketi',price:249.99},{name:'Süper Paket',price:349.99}]}},{id:'spotify',name:'Spotify',color:'#1DB954',rgb:'29,185,84',prices:{tr:{amount:79.99,plan:'Bireysel'},us:{amount:10.99,plan:'Individual'},eu:{amount:10.99,plan:'Individual'},as:{amount:10.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:79.99},{name:'Öğrenci',price:49.99},{name:'Duo (2 kişi)',price:129.99},{name:'Aile (6 kişi)',price:159.99}]}},{id:'tvplus',name:'Turkcell TV+',color:'#FFD100',rgb:'255,209,0',textDark:true,prices:{tr:{amount:109.99,plan:'Bireysel'},us:{amount:9.99,plan:'Individual'},eu:{amount:9.99,plan:'Individual'},as:{amount:9.99,plan:'Individual'}},plans:{tr:[{name:'Bireysel',price:109.99},{name:'Aile',price:179.99}]}}];
 const LOGO={netflix:{w:72,h:72,html:`<img src="./assets/netflix_N.webp" style="width:66px;height:66px;object-fit:contain;">`},youtube:{w:72,h:72,html:`<img src="./assets/youtube.webp" style="width:66px;height:66px;object-fit:contain;">`},disney:{w:72,h:72,html:`<img src="./assets/Disney+.webp" style="width:66px;height:66px;object-fit:contain;">`},prime:{w:72,h:72,html:`<img src="./assets/prime video.webp" style="width:66px;height:66px;object-fit:contain;">`},hbo:{w:72,h:72,html:`<img src="./assets/hbo.webp" style="width:66px;height:66px;object-fit:contain;">`},apple:{w:72,h:72,html:`<img src="./assets/apple.webp" style="width:66px;height:66px;object-fit:contain;filter:brightness(10);">`,htmlDark:`<img src="./assets/appleb.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},twitch:{w:72,h:72,html:`<img src="./assets/twitch.webp" style="width:66px;height:66px;object-fit:contain;">`},kick:{w:72,h:72,html:`<img src="./assets/kick.webp" style="width:52px;height:52px;object-fit:contain;">`,htmlDark:`<img src="./assets/kickb.webp" style="width:52px;height:52px;object-fit:contain;">`,textDark:true},exxen:{w:72,h:72,html:`<img src="./assets/exxen.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/exxenb.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},bein:{w:72,h:72,html:`<img src="./assets/bein.webp" style="width:66px;height:66px;object-fit:contain;">`},spotify:{w:72,h:72,html:`<img src="./assets/Spotify.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/Spotifyb.webp" style="width:66px;height:66px;object-fit:contain;">`},tvplus:{w:66,h:66,html:`<img src="./assets/tvplus.webp" style="width:66px;height:66px;object-fit:contain;">`,htmlDark:`<img src="./assets/tvplus2.webp" style="width:66px;height:66px;object-fit:contain;">`,textDark:true},_custom:{w:36,h:36,html:`<svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"/><text x="18" y="24" font-family="-apple-system,sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">▶</text></svg>`}};
-let SVC=[],SETTINGS={},PROFILE={name:'Kullanıcı',email:'kullanici@icloud.com'};
+let SVC=[],SETTINGS={},PROFILE={name:'',email:''};
 let active=-1,pwdShow=false;
 let qrRotateInterval=null,qrCountdown=null,qrSec=30,_qrSeed=Date.now();
 let lockTimer=null,isLocked=false;
@@ -1585,8 +1568,8 @@ let selectedPopular=null;
 let _svcSaveSeq=0;
 function saveData(){try{localStorage.setItem('easytv_settings',JSON.stringify(SETTINGS));localStorage.setItem('easytv_profile',JSON.stringify(PROFILE));localStorage.setItem('easytv_pin',SETTINGS.pinHash||'');}catch(e){}_saveSVCEncrypted();}
 async function _saveSVCEncrypted(){const seq=++_svcSaveSeq;const snapshot=SVC.map(s=>({...s}));try{const enc=await Promise.all(snapshot.map(s=>encryptCreds(s)));if(seq===_svcSaveSeq)localStorage.setItem('easytv_svc',JSON.stringify(enc));}catch(e){const stripped=snapshot.map(s=>({...s,email:'',pwd:''}));try{if(seq===_svcSaveSeq)localStorage.setItem('easytv_svc',JSON.stringify(stripped));}catch(e2){}}}
-function loadData(){try{const s=localStorage.getItem('easytv_svc');const st=localStorage.getItem('easytv_settings');const pr=localStorage.getItem('easytv_profile');if(s)SVC=JSON.parse(s);if(st)SETTINGS=JSON.parse(st);if(pr)PROFILE=JSON.parse(pr);if(SETTINGS.pin===undefined && !SETTINGS.pinHash)SETTINGS.pin='1111';if(SETTINGS.autolock===undefined)SETTINGS.autolock=true;if(SETTINGS.faceid===undefined)SETTINGS.faceid=true;if(SETTINGS.qrrotate===undefined)SETTINGS.qrrotate=true;if(SETTINGS.remind1===undefined)SETTINGS.remind1=false;if(SETTINGS.remind3===undefined)SETTINGS.remind3=false;if(SETTINGS.remind7===undefined)SETTINGS.remind7=false;if(SETTINGS.premium===undefined)SETTINGS.premium=false;if(SETTINGS.premiumTrialUsed===undefined)SETTINGS.premiumTrialUsed=false;if(SETTINGS.premiumTrialActive===undefined)SETTINGS.premiumTrialActive=false;if(SETTINGS.premiumTrialEndDate===undefined)SETTINGS.premiumTrialEndDate=null;// eski localStorage premium key'ini temizle
-localStorage.removeItem('easytv_premium');}catch(e){SETTINGS={pin:'1111',autolock:true,faceid:true,qrrotate:true};}}
+function loadData(){try{const s=localStorage.getItem('easytv_svc');const st=localStorage.getItem('easytv_settings');const pr=localStorage.getItem('easytv_profile');if(s)SVC=JSON.parse(s);if(st)SETTINGS=JSON.parse(st);if(pr)PROFILE=JSON.parse(pr);if(SETTINGS.autolock===undefined)SETTINGS.autolock=true;if(SETTINGS.faceid===undefined)SETTINGS.faceid=true;if(SETTINGS.qrrotate===undefined)SETTINGS.qrrotate=true;if(SETTINGS.remind1===undefined)SETTINGS.remind1=false;if(SETTINGS.remind3===undefined)SETTINGS.remind3=false;if(SETTINGS.remind7===undefined)SETTINGS.remind7=false;if(SETTINGS.premium===undefined)SETTINGS.premium=false;if(SETTINGS.premiumTrialUsed===undefined)SETTINGS.premiumTrialUsed=false;if(SETTINGS.premiumTrialActive===undefined)SETTINGS.premiumTrialActive=false;if(SETTINGS.premiumTrialEndDate===undefined)SETTINGS.premiumTrialEndDate=null;// eski localStorage premium key'ini temizle
+localStorage.removeItem('easytv_premium');}catch(e){SETTINGS={autolock:true,faceid:true,qrrotate:true};}}
 let EXCHANGE_RATES={};let RATES_TIMESTAMP=0;
 try{const rc=localStorage.getItem('easytv_rates');const rt=localStorage.getItem('easytv_rates_ts');if(rc)EXCHANGE_RATES=JSON.parse(rc);if(rt)RATES_TIMESTAMP=parseInt(rt);}catch(e){}
 setTimeout(()=>{fetchExchangeRates(false);},2500);
@@ -2042,15 +2025,12 @@ requestAnimationFrame(function(){var t=content.querySelector('.onboard-title');v
 let obPinStep=0;
 function obKp(k){if(k==='face'||obNewPin.length>=4)return;if(k==='del'){obNewPin=obNewPin.slice(0,-1);}else{obNewPin+=k;}for(let i=0;i<4;i++)document.getElementById('op'+i).classList.toggle('f',i<obNewPin.length);if(obNewPin.length===4){if(obPinStep===0){obPinStep=1;tempPin=obNewPin;obNewPin='';for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('f');const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'PIN\'ini bir kez daha gir.':'Enter your PIN one more time.';}else{if(obNewPin===tempPin){savePin(obNewPin).then(()=>{ setTimeout(()=>onboardNext(),200); });}else{obNewPin='';obPinStep=0;tempPin='';for(let i=0;i<4;i++){const d=document.getElementById('op'+i);d.classList.remove('f');d.classList.add('err');}setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('op'+i).classList.remove('err');},600);const s=document.getElementById('obPinSub');if(s)s.textContent=LANG==='tr'?'Eşleşmedi. Tekrar dene.':'PINs do not match. Try again.';}}}}
 function _obSlideNext(cb){const c=document.getElementById('obContent');c.style.animation='obSlideOut .25s cubic-bezier(.55,.06,.68,.19) both';c.addEventListener('animationend',function h(){c.removeEventListener('animationend',h);cb();},{once:true});}
-function onboardNext(){if(obStep===0){SVC=[];obSelectedServices.forEach(id=>{const svc=POPULAR_SVCS.find(s=>s.id===id);if(svc){const reg=SETTINGS.region||'tr';const pr=svc.prices?.[reg]||{amount:0,plan:''};const renewDate=new Date();renewDate.setMonth(renewDate.getMonth()+1);SVC.push({...svc,email:'',pwd:'',price:pr.amount,plan:pr.plan,renew:renewDate.toISOString().split('T')[0]});}});saveData();_obSlideNext(()=>{obStep++;renderOnboardStep();});return;}if(obStep===1){if(SETTINGS.usePin===false){_obSlideNext(()=>finishOnboard());}else{_obSlideNext(()=>{obStep++;renderOnboardStep();});}return;}if(obStep===2){_obSlideNext(()=>finishOnboard());return;}_obSlideNext(()=>{obStep++;renderOnboardStep();});}
+function onboardNext(){if(obStep===0){SVC=[];obSelectedServices.forEach(id=>{const svc=POPULAR_SVCS.find(s=>s.id===id);if(svc){SVC.push({...svc,email:'',pwd:'',price:0,plan:'',renew:''});}});saveData();_obSlideNext(()=>{obStep++;renderOnboardStep();});return;}if(obStep===1){if(SETTINGS.usePin===false){_obSlideNext(()=>finishOnboard());}else{_obSlideNext(()=>{obStep++;renderOnboardStep();});}return;}if(obStep===2){_obSlideNext(()=>finishOnboard());return;}_obSlideNext(()=>{obStep++;renderOnboardStep();});}
 function finishOnboard(){
   localStorage.setItem('easytv_setup_done','1');
   if(SETTINGS.usePin!==false && !SETTINGS.pin && !SETTINGS.pinHash){
-    // Güvenli rastgele PIN oluştur
-    const rPin = String(Math.floor(100000 + Math.random()*900000)).slice(0,4);
-    savePin(rPin).then(()=>{
-      showToast('Geçici PIN: ' + rPin + ' — Lütfen değiştirin!');
-    });
+    SETTINGS.usePin = false;
+    saveData();
   }
   const onboardScreen=document.getElementById('onboardScreen');
   const pinScreen=document.getElementById('pinScreen');
@@ -2300,6 +2280,29 @@ function buildGrid() {
     frag.appendChild(tile);
   });
   gridEl.appendChild(frag);
+}
+
+// ── Tap performans: statik element cache + renk önbelleği ──
+const _tapElCache = {};
+function _getCached(id) {
+  if (!_tapElCache[id]) _tapElCache[id] = document.getElementById(id);
+  return _tapElCache[id];
+}
+const _svcBeamCache = {};
+function _getBeamColors(s) {
+  const key = s.id || s.color || '_';
+  if (_svcBeamCache[key]) return _svcBeamCache[key];
+  const tileGrad = TILE_GRADIENTS[s.id];
+  let raw = s.color;
+  if (!raw && tileGrad) { const m = tileGrad.match(/#[0-9a-fA-F]{6}/); raw = m ? m[0] : '#8250FF'; }
+  raw = raw || '#8250FF';
+  let beam = raw, glow = 'rgba(120,60,255,.5)';
+  if (raw.startsWith('#') && raw.length === 7) {
+    let r = parseInt(raw.slice(1,3),16), g = parseInt(raw.slice(3,5),16), b = parseInt(raw.slice(5,7),16);
+    r = Math.min(255, Math.round(r*1.8+40)); g = Math.min(255, Math.round(g*1.8+20)); b = Math.min(255, Math.round(b*1.8+40));
+    beam = `rgb(${r},${g},${b})`; glow = `rgba(${r},${g},${b},.5)`;
+  }
+  return (_svcBeamCache[key] = { beam, glow });
 }
 
 // ── Drag-to-Reorder — iPhone-style jiggle mode ──
@@ -2629,51 +2632,11 @@ function tap(i) {
 
 function applyServiceThemeEffects(s){
   if(!s) return;
-  if (typeof updateThemeColor !== 'undefined') {
-    var tg = TILE_GRADIENTS[s.id];
-    var rc = s.color || '#8250FF';
-    if (!rc && tg) { var mm = tg.match(/#[0-9a-fA-F]{6}/); rc = mm ? mm[0] : '#8250FF'; }
-    if (rc.startsWith('#') && rc.length === 7) {
-      var r2 = parseInt(rc.slice(1,3),16);
-      var g2 = parseInt(rc.slice(3,5),16);
-      var b2 = parseInt(rc.slice(5,7),16);
-      updateThemeColor('rgba('+r2+','+g2+','+b2+',.35)');
-    } else {
-      updateThemeColor(rc);
-    }
-  }
-  const beam=document.getElementById('ambientBeam');
-  if(beam&&(s.color||TILE_GRADIENTS[s.id])){
-    var tileGrad = TILE_GRADIENTS[s.id];
-    var rawCol = s.color;
-    if (!rawCol && tileGrad) {
-      var m = tileGrad.match(/#[0-9a-fA-F]{6}/);
-      rawCol = m ? m[0] : '#8250FF';
-    }
-    rawCol = rawCol || '#8250FF';
-    var beamCol = rawCol;
-    if(rawCol.startsWith('#') && rawCol.length === 7) {
-      var rr = parseInt(rawCol.slice(1,3),16);
-      var gg = parseInt(rawCol.slice(3,5),16);
-      var bb = parseInt(rawCol.slice(5,7),16);
-      rr = Math.min(255, Math.round(rr * 1.8 + 40));
-      gg = Math.min(255, Math.round(gg * 1.8 + 20));
-      bb = Math.min(255, Math.round(bb * 1.8 + 40));
-      beamCol = 'rgb('+rr+','+gg+','+bb+')';
-    }
-    beam.style.background=beamCol;
-    beam.classList.add('active');
-    const navGlow=document.getElementById('navGlow');
-    if(navGlow){
-      var nr=parseInt(rawCol.replace('#','').substring(0,2),16)||130;
-      var ng=parseInt(rawCol.replace('#','').substring(2,4),16)||60;
-      var nb=parseInt(rawCol.replace('#','').substring(4,6),16)||255;
-      nr=Math.min(255,Math.round(nr*1.8+40));
-      ng=Math.min(255,Math.round(ng*1.8+20));
-      nb=Math.min(255,Math.round(nb*1.8+40));
-      navGlow.style.background='radial-gradient(circle,rgba('+nr+','+ng+','+nb+',.5) 0%,transparent 70%)';
-    }
-  }
+  const colors = _getBeamColors(s);
+  const beam = _getCached('ambientBeam');
+  if(beam) { beam.style.background = colors.beam; beam.classList.add('active'); }
+  const navGlow = _getCached('navGlow');
+  if(navGlow) navGlow.style.background = `radial-gradient(circle,${colors.glow} 0%,transparent 70%)`;
 }
 function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.add('active');
   el.style.backgroundImage='none';el.style.backgroundColor=TILE_GRADIENTS[s.id]?'':s.color;if(TILE_GRADIENTS[s.id])el.style.background=TILE_GRADIENTS[s.id];el.style.backdropFilter='none';el.style.webkitBackdropFilter='none';el.style.transform='scale(1.04) translateZ(0)';if(s.textDark||L.textDark){el.classList.add('dark-text');el.querySelector('.tile-logo').innerHTML=L.htmlDark||L.html;el.style.boxShadow=`0 8px 28px rgba(${s.rgb},.3)`;}else{el.style.boxShadow=`0 0 0 2px rgba(255,255,255,.12),0 8px 30px rgba(${s.rgb},.45)`;}}
@@ -2687,9 +2650,9 @@ function deactivate(i){
   }
   const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;
   el.classList.remove('active','dark-text');
-  const beam=document.getElementById('ambientBeam');
+  const beam=_getCached('ambientBeam');
   if(beam) { beam.classList.remove('active'); beam.style.opacity = '0'; }
-  const navGlow=document.getElementById('navGlow');
+  const navGlow=_getCached('navGlow');
   if(navGlow) navGlow.style.background='radial-gradient(circle,rgba(120,60,255,.35) 0%,transparent 70%)';
   // Fiyat overlay temizle
   const priceEl=el.querySelector('.tile-price');
@@ -2714,10 +2677,10 @@ function openSheet(i) {
   const L = LOGO[s.id] || { w: 28, h: 28, html: null };
   const tileGrad = TILE_GRADIENTS[s.id] || s.color;
 
-  // DOM elementlerini topluca alalım
+  // DOM elementlerini cache'ten al
   const ids = ['sColor', 'sLogoWrap', 'sIco', 'sName', 'emailV', 'pwdV', 'eyeU', 'qrBtn', 'appOpenBtn', 'dimmer', 'sheet'];
   const els = {};
-  ids.forEach(id => els[id] = document.getElementById(id));
+  ids.forEach(id => els[id] = _getCached(id));
 
   // Kritik elementler yoksa çık
   if (!els.sheet || !els.dimmer) return;
