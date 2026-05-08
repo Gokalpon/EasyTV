@@ -137,3 +137,10 @@
 | 12:39 | Edited index.html | 3→4 lines | ~90 |
 | 12:40 | Edited index.html | expanded (+7 lines) | ~454 |
 | 12:41 | Session end: 5 writes across 2 files (app.js, index.html) | 2 reads | ~64790 tok |
+| 12:41 | Session end: 5 writes across 2 files (app.js, index.html) | 2 reads | ~64790 tok |
+| 12:46 | Edited app.js | "sb_publishable_Q6MOIZo_i2" → "eyJhbGciOiJIUzI1NiIsInR5c" | ~67 |
+| 12:46 | Edited app.js | "Kullanıcı" → ",email:" | ~15 |
+| 12:46 | Edited app.js | inline fix | ~24 |
+| 12:47 | Edited app.js | inline fix | ~30 |
+| 12:47 | Edited app.js | removed 20 lines | ~18 |
+| 12:47 | Session end: 10 writes across 2 files (app.js, index.html) | 2 reads | ~80739 tok |

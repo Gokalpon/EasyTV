@@ -6,7 +6,10 @@
       "Bash(start index.html)",
       "Bash(cp \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/style.css\" \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/www/style.css\")",
       "Bash(cp \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/app.js\" \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/www/app.js\")",
-      "Bash(cp \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/index.html\" \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/www/index.html\")"
+      "Bash(cp \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/index.html\" \"c:/Users/user/Desktop/Apps/EasyTV/EasyTV/www/index.html\")",
+      "mcp__676a19e5-2fd4-47eb-a81b-849345c68ff6__list_projects",
+      "mcp__676a19e5-2fd4-47eb-a81b-849345c68ff6__restore_project",
+      "mcp__676a19e5-2fd4-47eb-a81b-849345c68ff6__get_publishable_keys"
     ]
   }
 }

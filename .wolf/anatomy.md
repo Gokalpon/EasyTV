@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-08T12:40:03.567Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-08T12:47:20.417Z
 > Files: 51 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -8,7 +8,7 @@
 - `.gitignore` — Git ignore rules (~10 tok)
 - `akira-font.css` — Styles: 1 rules (~42 tok)
 - `animated-h3.js` — Per-letter animation for .animated-h3 (~170 tok)
-- `app.js` — ══════════════════════════════════════════════════ (~63959 tok)
+- `app.js` — ══════════════════════════════════════════════════ (~63743 tok)
 - `APPSTORE_ROADMAP.md` — 🚀 EasyTV — App Store Yol Haritası & İyileştirme Raporu (~7368 tok)
 - `capacitor.config.json` (~24 tok)
 - `CLAUDE.md` — OpenWolf (~852 tok)

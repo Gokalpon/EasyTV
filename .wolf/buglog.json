@@ -163,7 +163,12 @@
       "file": "app.js",
       "root_cause": "toggleCountryDropdown getElementById('countryDropdown') her zaman null döner; null check olmadan .style.display erişimi TypeError crash üretir",
       "fix": "if(!d) return; null guard eklendi (satır 1572)",
-      "tags": ["null-guard", "crash", "dom", "country-dropdown"],
+      "tags": [
+        "null-guard",
+        "crash",
+        "dom",
+        "country-dropdown"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-08T00:00:00.000Z"
@@ -175,8 +180,15 @@
       "file": "app.js",
       "root_cause": "selectLoginCountry içinde iki DOM erişimi null kontrolsüz; her ikisi de HTML'de yok",
       "fix": "lbl ve dd değişkenlerine atanıp null guard ile korundu (satır 1575)",
-      "tags": ["null-guard", "crash", "dom", "country-dropdown"],
-      "related_bugs": ["bug-035"],
+      "tags": [
+        "null-guard",
+        "crash",
+        "dom",
+        "country-dropdown"
+      ],
+      "related_bugs": [
+        "bug-035"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-08T00:00:00.000Z"
     },
@@ -187,10 +199,47 @@
       "file": "index.html",
       "root_cause": "JS kodu bu ID'lere yazıyor ama HTML'de karşılıkları hiç eklenmemişti; selamlama, yenileme tarihi ve intro özellik listesi hiç gösterilmiyordu",
       "fix": "homeGreeting home header'a, nextRenew subs-summary'ye, introFeat1/2/3 intro screen'e eklendi",
-      "tags": ["silent-bug", "dom", "missing-element", "ui"],
+      "tags": [
+        "silent-bug",
+        "dom",
+        "missing-element",
+        "ui"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-08T00:00:00.000Z"
+    },
+    {
+      "id": "bug-013",
+      "timestamp": "2026-05-08T12:46:32.627Z",
+      "error_message": "Incorrect value in code",
+      "file": "app.js",
+      "root_cause": "Had 'sb_publishable_Q6MOIZo_i2SBrkBVKos8_g_8NMKQiew'",
+      "fix": "Changed to 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJz",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-08T12:46:43.405Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-05-08T12:47:20.426Z",
+      "error_message": "Significant refactor of ",
+      "file": "app.js",
+      "root_cause": "16 lines replaced/restructured",
+      "fix": "Rewrote 20→3 lines (16 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-08T12:47:20.426Z"
     }
   ]
 }
