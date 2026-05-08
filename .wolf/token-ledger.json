@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-04-10T23:45:19.921Z",
   "lifetime": {
-    "total_tokens_estimated": 472002,
-    "total_reads": 13,
-    "total_writes": 45,
-    "total_sessions": 20,
-    "anatomy_hits": 13,
-    "anatomy_misses": 0,
-    "repeated_reads_blocked": 149,
-    "estimated_savings_vs_bare_cli": 7316184
+    "total_tokens_estimated": 638388,
+    "total_reads": 20,
+    "total_writes": 66,
+    "total_sessions": 22,
+    "anatomy_hits": 19,
+    "anatomy_misses": 1,
+    "repeated_reads_blocked": 188,
+    "estimated_savings_vs_bare_cli": 9405450
   },
   "sessions": [
     {
@@ -429,6 +429,187 @@
         "reads_count": 3,
         "writes_count": 15,
         "repeated_reads_blocked": 39,
+        "anatomy_lookups": 3
+      }
+    },
+    {
+      "id": "session-2026-05-08-1229",
+      "started": "2026-05-08T12:29:58.512Z",
+      "ended": "2026-05-08T12:59:33.492Z",
+      "reads": [
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 63743,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/user/EasyTV/index.html",
+          "tokens_estimated": 15803,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/user/EasyTV/dynamic-theme.js",
+          "tokens_estimated": 1412,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 88,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 94,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/index.html",
+          "tokens_estimated": 59,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/index.html",
+          "tokens_estimated": 96,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/index.html",
+          "tokens_estimated": 486,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 67,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 15,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 24,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/dynamic-theme.js",
+          "tokens_estimated": 1151,
+          "action": "create"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 365,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 103,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 64,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 106,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 80958,
+        "output_tokens_estimated": 2766,
+        "reads_count": 3,
+        "writes_count": 15,
+        "repeated_reads_blocked": 39,
+        "anatomy_lookups": 3
+      }
+    },
+    {
+      "id": "session-2026-05-08-1338",
+      "started": "2026-05-08T13:38:26.396Z",
+      "ended": "2026-05-08T13:40:53.695Z",
+      "reads": [
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 63468,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/user/EasyTV/ios/App/App/PrivacyInfo.xcprivacy",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/user/EasyTV/package.json",
+          "tokens_estimated": 397,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/user/EasyTV/index.html",
+          "tokens_estimated": 15803,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 92,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/app.js",
+          "tokens_estimated": 67,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/ios/App/App/PrivacyInfo.xcprivacy",
+          "tokens_estimated": 100,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/package.json",
+          "tokens_estimated": 7,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/index.html",
+          "tokens_estimated": 333,
+          "action": "edit"
+        },
+        {
+          "file": "/home/user/EasyTV/terms.html",
+          "tokens_estimated": 2395,
+          "action": "create"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 79668,
+        "output_tokens_estimated": 2994,
+        "reads_count": 4,
+        "writes_count": 6,
+        "repeated_reads_blocked": 0,
         "anatomy_lookups": 3
       }
     }
