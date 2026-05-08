@@ -240,6 +240,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-08T12:47:20.426Z"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-05-08T12:58:26.194Z",
+      "error_message": "Missing guard clause",
+      "file": "app.js",
+      "root_cause": "No early return/throw for edge case: !_tapElCache[id]",
+      "fix": "Added guard clause: if (!_tapElCache[id])",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-08T12:58:26.194Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-05-08T12:58:39.512Z",
+      "error_message": "Significant refactor of ",
+      "file": "app.js",
+      "root_cause": "39 lines replaced/restructured",
+      "fix": "Rewrote 48→8 lines (39 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-08T12:58:39.512Z"
     }
   ]
 }
