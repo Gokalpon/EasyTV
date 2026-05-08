@@ -3128,7 +3128,7 @@ async function deleteAccount(){
         if(!_supabase){
           _clearLocalAccountData();
           SVC=[];
-          PROFILE={name:'Kullanıcı',email:'',avatar:'',bio:''};
+          PROFILE={name:'',email:'',avatar:'',bio:''};
           SETTINGS=DEFAULT_SETTINGS();
           saveData();
           showToast(LANG==='tr'?'Hesap verileri temizlendi':'Account data cleared');
@@ -3162,7 +3162,7 @@ async function deleteAccount(){
         try{ await _supabase.auth.signOut(); }catch(e){ console.warn('Signout hatası:', e); }
         _clearLocalAccountData();
         SVC=[];
-        PROFILE={name:'Kullanıcı',email:'',avatar:'',bio:''};
+        PROFILE={name:'',email:'',avatar:'',bio:''};
         SETTINGS=DEFAULT_SETTINGS();
         saveData();
         showToast(LANG==='tr'?'Hesap kalıcı olarak silindi':'Account permanently deleted');

@@ -1,14 +1,14 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-08T12:58:59.657Z
-> Files: 51 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-08T13:40:20.734Z
+> Files: 53 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~10 tok)
 - `akira-font.css` — Styles: 1 rules (~42 tok)
 - `animated-h3.js` — Per-letter animation for .animated-h3 (~170 tok)
-- `app.js` — ══════════════════════════════════════════════════ (~63574 tok)
+- `app.js` — ══════════════════════════════════════════════════ (~63463 tok)
 - `APPSTORE_ROADMAP.md` — 🚀 EasyTV — App Store Yol Haritası & İyileştirme Raporu (~7368 tok)
 - `capacitor.config.json` (~24 tok)
 - `CLAUDE.md` — OpenWolf (~852 tok)
@@ -19,12 +19,12 @@
 - `H3Heading.jsx` — H3Heading component (~250 tok)
 - `h3heading.tailwind.css` — Styles: 4 rules, 1 animations, 1 layers (~128 tok)
 - `IMPROVEMENTS.md` — 🚀 EasyTV İyileştirmeler - v1.1 (~1234 tok)
-- `index.html` — EasyTV (~15803 tok)
+- `index.html` — EasyTV (~15962 tok)
 - `IOS_STABILIZATION_AUDIT.md` — iOS functional/broken matrix, SWOT, sprint backlog ve release checklist raporu (~2200 tok)
 - `manifest.webmanifest` (~151 tok)
 - `netlify.toml` (~37 tok)
 - `optimize-images.md` — Image Optimization Planı (~253 tok)
-- `package.json` — Node.js package manifest (~397 tok)
+- `package.json` — Node.js package manifest (~892 tok)
 - `premium-system.js` — ══════════════════════════════════════════════════ (~552 tok)
 - `privacy.html` — Gizlilik Politikası — EasyTV (~1032 tok)
 - `raleway-font.css` — Styles: 1 rules (~25 tok)
@@ -33,6 +33,7 @@
 - `style.css` — Styles: 57 rules, 6 vars (~32609 tok)
 - `supabase_setup.sql` — EasyTV Supabase Kurulum SQL'i (~453 tok)
 - `temp_svcs.txt` (~1901 tok)
+- `terms.html` — Kullanım Koşulları — EasyTV Hub (~2235 tok)
 - `ubuntu-font.css` — Styles: 1 rules (~25 tok)
 - `vercel.json` (~69 tok)
 
@@ -82,7 +83,8 @@
 ## ios/App/App/
 
 - `AppDelegate.swift` — AppDelegate: application, applicationWillResignActive, applicationDidEnterBackground, applicationWillEnterForeground + 4 more (~809 tok)
-- `Info.plist` (~449 tok)
+- `Info.plist` (~519 tok)
+- `PrivacyInfo.xcprivacy` (~707 tok)
 
 ## ios/App/App/Assets.xcassets/
 

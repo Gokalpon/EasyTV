@@ -46,20 +46,18 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>EasyTV Hub, hızlı ve güvenli giriş için Face ID kullanır.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>EasyTV Hub kamera erişimi kullanmaz.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>
