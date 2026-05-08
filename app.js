@@ -2285,6 +2285,29 @@ function buildGrid() {
   gridEl.appendChild(frag);
 }
 
+// ── Tap performans: statik element cache + renk önbelleği ──
+const _tapElCache = {};
+function _getCached(id) {
+  if (!_tapElCache[id]) _tapElCache[id] = document.getElementById(id);
+  return _tapElCache[id];
+}
+const _svcBeamCache = {};
+function _getBeamColors(s) {
+  const key = s.id || s.color || '_';
+  if (_svcBeamCache[key]) return _svcBeamCache[key];
+  const tileGrad = TILE_GRADIENTS[s.id];
+  let raw = s.color;
+  if (!raw && tileGrad) { const m = tileGrad.match(/#[0-9a-fA-F]{6}/); raw = m ? m[0] : '#8250FF'; }
+  raw = raw || '#8250FF';
+  let beam = raw, glow = 'rgba(120,60,255,.5)';
+  if (raw.startsWith('#') && raw.length === 7) {
+    let r = parseInt(raw.slice(1,3),16), g = parseInt(raw.slice(3,5),16), b = parseInt(raw.slice(5,7),16);
+    r = Math.min(255, Math.round(r*1.8+40)); g = Math.min(255, Math.round(g*1.8+20)); b = Math.min(255, Math.round(b*1.8+40));
+    beam = `rgb(${r},${g},${b})`; glow = `rgba(${r},${g},${b},.5)`;
+  }
+  return (_svcBeamCache[key] = { beam, glow });
+}
+
 // ── Drag-to-Reorder — iPhone-style jiggle mode ──
 let _dragTile = null, _dragIdx = -1, _dragStartX = 0, _dragStartY = 0, _dragMoved = false;
 let _dragLongPress = null, _dragActive = false, _dragPid = -1;
@@ -2612,51 +2635,11 @@ function tap(i) {
 
 function applyServiceThemeEffects(s){
   if(!s) return;
-  if (typeof updateThemeColor !== 'undefined') {
-    var tg = TILE_GRADIENTS[s.id];
-    var rc = s.color || '#8250FF';
-    if (!rc && tg) { var mm = tg.match(/#[0-9a-fA-F]{6}/); rc = mm ? mm[0] : '#8250FF'; }
-    if (rc.startsWith('#') && rc.length === 7) {
-      var r2 = parseInt(rc.slice(1,3),16);
-      var g2 = parseInt(rc.slice(3,5),16);
-      var b2 = parseInt(rc.slice(5,7),16);
-      updateThemeColor('rgba('+r2+','+g2+','+b2+',.35)');
-    } else {
-      updateThemeColor(rc);
-    }
-  }
-  const beam=document.getElementById('ambientBeam');
-  if(beam&&(s.color||TILE_GRADIENTS[s.id])){
-    var tileGrad = TILE_GRADIENTS[s.id];
-    var rawCol = s.color;
-    if (!rawCol && tileGrad) {
-      var m = tileGrad.match(/#[0-9a-fA-F]{6}/);
-      rawCol = m ? m[0] : '#8250FF';
-    }
-    rawCol = rawCol || '#8250FF';
-    var beamCol = rawCol;
-    if(rawCol.startsWith('#') && rawCol.length === 7) {
-      var rr = parseInt(rawCol.slice(1,3),16);
-      var gg = parseInt(rawCol.slice(3,5),16);
-      var bb = parseInt(rawCol.slice(5,7),16);
-      rr = Math.min(255, Math.round(rr * 1.8 + 40));
-      gg = Math.min(255, Math.round(gg * 1.8 + 20));
-      bb = Math.min(255, Math.round(bb * 1.8 + 40));
-      beamCol = 'rgb('+rr+','+gg+','+bb+')';
-    }
-    beam.style.background=beamCol;
-    beam.classList.add('active');
-    const navGlow=document.getElementById('navGlow');
-    if(navGlow){
-      var nr=parseInt(rawCol.replace('#','').substring(0,2),16)||130;
-      var ng=parseInt(rawCol.replace('#','').substring(2,4),16)||60;
-      var nb=parseInt(rawCol.replace('#','').substring(4,6),16)||255;
-      nr=Math.min(255,Math.round(nr*1.8+40));
-      ng=Math.min(255,Math.round(ng*1.8+20));
-      nb=Math.min(255,Math.round(nb*1.8+40));
-      navGlow.style.background='radial-gradient(circle,rgba('+nr+','+ng+','+nb+',.5) 0%,transparent 70%)';
-    }
-  }
+  const colors = _getBeamColors(s);
+  const beam = _getCached('ambientBeam');
+  if(beam) { beam.style.background = colors.beam; beam.classList.add('active'); }
+  const navGlow = _getCached('navGlow');
+  if(navGlow) navGlow.style.background = `radial-gradient(circle,${colors.glow} 0%,transparent 70%)`;
 }
 function activate(i){const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;el.classList.add('active');
   el.style.backgroundImage='none';el.style.backgroundColor=TILE_GRADIENTS[s.id]?'':s.color;if(TILE_GRADIENTS[s.id])el.style.background=TILE_GRADIENTS[s.id];el.style.backdropFilter='none';el.style.webkitBackdropFilter='none';el.style.transform='scale(1.04) translateZ(0)';if(s.textDark||L.textDark){el.classList.add('dark-text');el.querySelector('.tile-logo').innerHTML=L.htmlDark||L.html;el.style.boxShadow=`0 8px 28px rgba(${s.rgb},.3)`;}else{el.style.boxShadow=`0 0 0 2px rgba(255,255,255,.12),0 8px 30px rgba(${s.rgb},.45)`;}}
@@ -2670,9 +2653,9 @@ function deactivate(i){
   }
   const s=SVC[i],el=gridEl.children[i],L=LOGO[s.id]||LOGO._custom;
   el.classList.remove('active','dark-text');
-  const beam=document.getElementById('ambientBeam');
+  const beam=_getCached('ambientBeam');
   if(beam) { beam.classList.remove('active'); beam.style.opacity = '0'; }
-  const navGlow=document.getElementById('navGlow');
+  const navGlow=_getCached('navGlow');
   if(navGlow) navGlow.style.background='radial-gradient(circle,rgba(120,60,255,.35) 0%,transparent 70%)';
   // Fiyat overlay temizle
   const priceEl=el.querySelector('.tile-price');
@@ -2697,10 +2680,10 @@ function openSheet(i) {
   const L = LOGO[s.id] || { w: 28, h: 28, html: null };
   const tileGrad = TILE_GRADIENTS[s.id] || s.color;
 
-  // DOM elementlerini topluca alalım
+  // DOM elementlerini cache'ten al
   const ids = ['sColor', 'sLogoWrap', 'sIco', 'sName', 'emailV', 'pwdV', 'eyeU', 'qrBtn', 'appOpenBtn', 'dimmer', 'sheet'];
   const els = {};
-  ids.forEach(id => els[id] = document.getElementById(id));
+  ids.forEach(id => els[id] = _getCached(id));
 
   // Kritik elementler yoksa çık
   if (!els.sheet || !els.dimmer) return;
