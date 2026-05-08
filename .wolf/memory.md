@@ -130,3 +130,9 @@
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
+| 2026-05-08 | Kapsamlı hata denetimi: DOM tutarsızlıkları, null-guard eksiklikleri, onclick fonksiyon kontrolü, root/www drift analizi | app.js, index.html, www/ | 7 kritik bulgu tespit edildi | ~12000 |
+| 12:39 | Edited app.js | inline fix | ~88 |
+| 12:39 | Edited app.js | inline fix | ~94 |
+| 12:39 | Edited index.html | 1→2 lines | ~55 |
+| 12:39 | Edited index.html | 3→4 lines | ~90 |
+| 12:40 | Edited index.html | expanded (+7 lines) | ~454 |
