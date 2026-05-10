@@ -1,40 +1,12 @@
 {
-  "session_id": "session-2026-05-10-2155",
-  "started": "2026-05-10T21:55:20.032Z",
-  "files_read": {
-    "/home/user/EasyTV/ios/App/App.xcodeproj/project.pbxproj": {
-      "count": 4,
-      "tokens": 4256,
-      "first_read": "2026-05-10T21:55:45.809Z"
-    }
-  },
-  "files_written": [
-    {
-      "file": "/home/user/EasyTV/ios/App/App/App.entitlements",
-      "action": "create",
-      "tokens": 80,
-      "at": "2026-05-10T21:55:53.550Z"
-    },
-    {
-      "file": "/home/user/EasyTV/ios/App/App.xcodeproj/project.pbxproj",
-      "action": "edit",
-      "tokens": 126,
-      "at": "2026-05-10T21:56:17.446Z"
-    },
-    {
-      "file": "/home/user/EasyTV/ios/App/App.xcodeproj/project.pbxproj",
-      "action": "edit",
-      "tokens": 144,
-      "at": "2026-05-10T21:56:25.374Z"
-    }
-  ],
-  "edit_counts": {
-    "ios/App/App/App.entitlements": 1,
-    "ios/App/App.xcodeproj/project.pbxproj": 2
-  },
-  "anatomy_hits": 1,
+  "session_id": "session-2026-05-10-2251",
+  "started": "2026-05-10T22:51:07.669Z",
+  "files_read": {},
+  "files_written": [],
+  "edit_counts": {},
+  "anatomy_hits": 0,
   "anatomy_misses": 0,
-  "repeated_reads_warned": 3,
+  "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 13
+  "stop_count": 1
 }
