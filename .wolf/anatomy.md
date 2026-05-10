@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-08T13:40:20.734Z
-> Files: 53 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-10T21:56:25.364Z
+> Files: 54 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -74,7 +74,7 @@
 
 ## ios/App/App.xcodeproj/
 
-- `project.pbxproj` — !$*UTF8*$! (~3863 tok)
+- `project.pbxproj` — !$*UTF8*$! (~4270 tok)
 
 ## ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/
 
@@ -82,6 +82,7 @@
 
 ## ios/App/App/
 
+- `App.entitlements` (~75 tok)
 - `AppDelegate.swift` — AppDelegate: application, applicationWillResignActive, applicationDidEnterBackground, applicationWillEnterForeground + 4 more (~809 tok)
 - `Info.plist` (~519 tok)
 - `PrivacyInfo.xcprivacy` (~707 tok)
