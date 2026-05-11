@@ -2,16 +2,39 @@
   "version": 1,
   "created_at": "2026-04-10T23:45:19.921Z",
   "lifetime": {
-    "total_tokens_estimated": 0,
-    "total_reads": 0,
+    "total_tokens_estimated": 2200,
+    "total_reads": 1,
     "total_writes": 0,
     "total_sessions": 20,
-    "anatomy_hits": 0,
+    "anatomy_hits": 1,
     "anatomy_misses": 0,
     "repeated_reads_blocked": 0,
-    "estimated_savings_vs_bare_cli": 0
+    "estimated_savings_vs_bare_cli": 200
   },
-  "sessions": [],
+  "sessions": [
+    {
+      "id": "session-2026-05-11-2107",
+      "started": "2026-05-11T21:07:03.101Z",
+      "ended": "2026-05-11T21:10:24.387Z",
+      "reads": [
+        {
+          "file": "/home/user/EasyTV/IOS_STABILIZATION_AUDIT.md",
+          "tokens_estimated": 2200,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [],
+      "totals": {
+        "input_tokens_estimated": 2200,
+        "output_tokens_estimated": 0,
+        "reads_count": 1,
+        "writes_count": 0,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 1
+      }
+    }
+  ],
   "daemon_usage": [],
   "waste_flags": [],
   "optimization_report": {
