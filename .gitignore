@@ -46,3 +46,6 @@ credentials.json
 
 # Production secrets (exclude during sync)
 # supabase_setup.sql is SAFE to commit (DDL only, no secrets)
+.wolf/hooks/_session.json
+.wolf/memory.md
+.wolf/token-ledger.json
