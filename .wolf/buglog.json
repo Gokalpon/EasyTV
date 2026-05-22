@@ -137,6 +137,25 @@
                                       ],
                      "occurrences":  1,
                      "last_seen":  "2026-05-23T02:12:05.1593005+03:00"
+                 },
+                 {
+                     "id":  "bug-036",
+                     "timestamp":  "2026-05-23T02:21:02.0786139+03:00",
+                     "error_message":  "Supabase Edge Function endpoint health check bu Windows ortamýnda DNS çözemedi: susshevhyrylxrxesngc.supabase.co",
+                     "file":  "supabase/functions/delete-account/index.ts, supabase/functions/verify-ios-subscription/index.ts",
+                     "root_cause":  "Yerel Windows ortamý Supabase host DNS adýný çözemedi; endpoint deploy/canlý durumunu bu makineden doðrulamak mümkün olmadý.",
+                     "fix":  "Kod tarafýnda static release guard eklendi; canlý endpoint kontrolü Mac veya Supabase CLI ortamýnda tekrar yapýlmalý.",
+                     "tags":  [
+                                  "supabase",
+                                  "edge-functions",
+                                  "dns",
+                                  "release-verification"
+                              ],
+                     "related_bugs":  [
+                                          "bug-035"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-05-23T02:21:02.0786139+03:00"
                  }
              ]
 }

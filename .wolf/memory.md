@@ -132,3 +132,4 @@
 | 02:12 | Mock/demo release blockerlarý düzeltildi, onboarding default seçimleri korundu | app.js, payment-service.js, supabase_setup.sql, www/app.js | smoke ve release preflight geçti | ~tokens |
 
 
+| 02:21 | Release preflight mock/cloud schema guardlarý eklendi, endpoint DNS kontrolü denendi | scripts/release-preflight.js, .wolf/buglog.json | preflight 10 pass, smoke pass; DNS yerelde doðrulanamadý | ~tokens |

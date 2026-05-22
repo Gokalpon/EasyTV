@@ -177,6 +177,58 @@ function runPrivacyCheck() {
   }
 }
 
+function readText(relPath) {
+  return fs.readFileSync(path.resolve(ROOT, relPath), 'utf8');
+}
+
+function includesAny(text, patterns) {
+  return patterns.filter((pattern) => text.includes(pattern));
+}
+
+function runReleaseBlockerChecks() {
+  const app = readText('app.js');
+  const payment = readText('payment-service.js');
+  const sql = readText('supabase_setup.sql');
+
+  const forbiddenAppPatterns = includesAny(app, [
+    "demo@easytv.app",
+    "demo-user",
+    "Entering demo mode",
+    "Demo moduna geçiliyor",
+    "select('payload')",
+    '.select("payload")',
+    "payload, updated_at",
+    "Premium aktif! Sınırsız servis ekleyebilirsiniz.",
+  ]);
+
+  if (forbiddenAppPatterns.length) {
+    fail('Release blocker patterns', `app.js contains ${forbiddenAppPatterns.join(', ')}`);
+  } else {
+    pass('Release blocker patterns', 'demo account, payload sync and legacy premium activation absent');
+  }
+
+  if (!payment.includes('function canUseMockPurchases()')) {
+    fail('Payment mock guard', 'canUseMockPurchases guard missing');
+  } else if (!payment.includes("host === 'localhost'") || !payment.includes("host === '127.0.0.1'")) {
+    fail('Payment mock guard', 'mock purchases must be localhost-only');
+  } else {
+    pass('Payment mock guard', 'mock premium restricted to local preview');
+  }
+
+  const requiredSql = [
+    'services JSONB',
+    'settings JSONB',
+    'profile JSONB',
+    'easytv_user_data_user_id_unique',
+  ];
+  const missingSql = requiredSql.filter((needle) => !sql.includes(needle));
+  if (missingSql.length) {
+    fail('Supabase schema guard', `missing ${missingSql.join(', ')}`);
+  } else {
+    pass('Supabase schema guard', 'cloud sync columns and unique user row detected');
+  }
+}
+
 function run() {
   console.log('EasyTV iOS Release Preflight');
   console.log('================================');
@@ -187,6 +239,7 @@ function run() {
   runPbxprojChecks();
   runInfoPlistCheck();
   runPrivacyCheck();
+  runReleaseBlockerChecks();
 
   console.log('================================');
   console.log(`Summary: ${state.passes} pass, ${state.warns} warn, ${state.fails} fail`);
