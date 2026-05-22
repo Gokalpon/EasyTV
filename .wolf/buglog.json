@@ -115,6 +115,28 @@
                                       ],
                      "occurrences":  1,
                      "last_seen":  "2026-05-07T02:55:50.5663118+03:00"
+                 },
+                 {
+                     "id":  "bug-035",
+                     "timestamp":  "2026-05-23T02:08:57.1099094+03:00",
+                     "error_message":  "Kullanýcý iPhone testinde uygulamada hâlâ mockup veri iþlediðini bildirdi.",
+                     "file":  "app.js, payment-service.js, supabase_setup.sql",
+                     "root_cause":  "Onboarding varsayýlan olarak 6 popüler servisi seçili baþlatýyor; demo login fallback mock user oluþturabiliyor; PaymentService web/native-unconfigured durumda mock premium localStorage okuyabiliyor; cloud sync kodu payload kolonu beklerken SQL services/settings/profile þemasý tanýmlýyor.",
+                     "fix":  "Onboarding default seçimleri korundu; demo login fallback kapatýldý; legacy premium ücretsiz aktivasyon kapatýldý; mock premium sadece localhost web preview ile sýnýrlandý; cloud sync payload yerine services/settings/profile þemasýna taþýndý; Supabase user_id unique migration eklendi.",
+                     "tags":  [
+                                  "release-blocker",
+                                  "mock-data",
+                                  "onboarding",
+                                  "premium",
+                                  "cloud-sync",
+                                  "ios"
+                              ],
+                     "related_bugs":  [
+                                          "bug-033",
+                                          "bug-034"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-05-23T02:12:05.1593005+03:00"
                  }
              ]
 }

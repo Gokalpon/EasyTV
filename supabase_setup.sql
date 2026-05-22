@@ -36,6 +36,21 @@ CREATE POLICY "Users can delete own data"
 CREATE INDEX IF NOT EXISTS easytv_user_data_user_id_idx 
   ON easytv_user_data(user_id);
 
+-- Cloud sync her kullanıcı için tek aktif satır bekler.
+WITH ranked_user_data AS (
+  SELECT id, ROW_NUMBER() OVER (
+    PARTITION BY user_id
+    ORDER BY updated_at DESC, created_at DESC, id DESC
+  ) AS rn
+  FROM easytv_user_data
+)
+DELETE FROM easytv_user_data d
+USING ranked_user_data r
+WHERE d.id = r.id AND r.rn > 1;
+
+CREATE UNIQUE INDEX IF NOT EXISTS easytv_user_data_user_id_unique
+  ON easytv_user_data(user_id);
+
 -- 5. Updated_at trigger (otomatik güncelleme)
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

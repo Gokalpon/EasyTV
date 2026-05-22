@@ -744,24 +744,8 @@ async function submitEmailAuth() {
 }
 
 async function loginWithDemo() {
-  if (authLoading) authLoading.style.display = 'flex';
-  try {
-    // Demo hesabı ile hızlı giriş (Varsa giriş yapar yoksa hata verir ama demo için bypass eklenebilir)
-    const demoEmail = 'demo@easytv.app';
-    const demoPass = 'Demo123!';
-    const { data, error } = await _supabase.auth.signInWithPassword({ email: demoEmail, password: demoPass });
-    if (error) {
-      // Eğer demo hesabı yoksa veya giriş başarısızsa, sanki kayıtlıymış gibi devam et (Mock data local mod)
-      showToast(LANG==='tr'?'Demo moduna geçiliyor...':'Entering demo mode...');
-      onAuthSuccess({ id: 'demo-user', email: 'demo@easytv.app' });
-    } else {
-      onAuthSuccess(data.user);
-    }
-  } catch(e) {
-    onAuthSuccess({ id: 'demo-user', email: 'demo@easytv.app' });
-  } finally {
-    if (authLoading) authLoading.style.display = 'none';
-  }
+  showToast(LANG==='tr'?'Demo giriş release sürümünde kapalı':'Demo login is disabled in release builds');
+  openEmailAuth('signin');
 }
 
 async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
@@ -897,19 +881,21 @@ async function syncFromCloud(userId) {
   try {
     const { data, error } = await _supabase
       .from('easytv_user_data')
-      .select('payload')
+      .select('services,settings,profile,updated_at')
       .eq('user_id', userId)
-      .single();
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
     if (error && error.code !== 'PGRST116') throw error; // PGRST116 = not found
-    if (data && data.payload) {
-      const cloud = JSON.parse(data.payload);
+    if (data) {
       const localTs = parseInt(localStorage.getItem('easytv_data_ts') || '0');
-      const cloudTs = cloud.ts || 0;
+      const cloudTs = data.updated_at ? new Date(data.updated_at).getTime() : 0;
       if (cloudTs > localTs) {
         // Cloud daha yeni — cloud'u kullan
-        if (cloud.svc) SVC = cloud.svc;
-        if (cloud.settings) SETTINGS = {...SETTINGS, ...cloud.settings};
-        if (cloud.profile) PROFILE = cloud.profile;
+        if (Array.isArray(data.services)) SVC = data.services;
+        if (data.settings) SETTINGS = {...SETTINGS, ...data.settings};
+        if (data.profile) PROFILE = data.profile;
+        localStorage.setItem('easytv_data_ts', String(cloudTs));
         showToast('☁️ Veriler buluttan yüklendi');
       } else if (localTs > cloudTs && SVC.length > 0) {
         // Local daha yeni — cloud'a yaz
@@ -930,13 +916,23 @@ async function pushToCloud(userId) {
   if (!userId && !_cloudUserId) return;
   const uid = userId || _cloudUserId;
   const ts = Date.now();
+  const updatedAt = new Date(ts).toISOString();
   localStorage.setItem('easytv_data_ts', String(ts));
-  const payload = JSON.stringify({ svc: SVC, settings: SETTINGS, profile: PROFILE, ts });
   try {
-    await _supabase.from('easytv_user_data').upsert(
-      { user_id: uid, payload, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id' }
-    );
+    const { data: existing, error: findError } = await _supabase
+      .from('easytv_user_data')
+      .select('id')
+      .eq('user_id', uid)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (findError && findError.code !== 'PGRST116') throw findError;
+    const row = { user_id: uid, services: SVC, settings: SETTINGS, profile: PROFILE, updated_at: updatedAt };
+    if (existing && existing.id) {
+      await _supabase.from('easytv_user_data').update(row).eq('id', existing.id);
+    } else {
+      await _supabase.from('easytv_user_data').insert(row);
+    }
   } catch(e) { console.warn('Cloud push hatası:', e); }
 }
 
@@ -1235,21 +1231,7 @@ function closePremiumSheet() {
 }
 
 function activatePremiumLegacy() {
-  // İlk kez premium'a geçiyorsa 7 gün ücretsiz trial ver
-  if (!SETTINGS.premiumTrialUsed) {
-    SETTINGS.premiumTrialUsed = true;
-    SETTINGS.premiumTrialActive = true;
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 7);
-    SETTINGS.premiumTrialEndDate = endDate.toISOString();
-    showErrorToast('🎉 7 gün ücretsiz deneme başladı!', 'success', 5000);
-  }
-  
-  SETTINGS.premium = true;
-  saveData();
-  closePremiumSheet();
-  showToast('✦ Premium aktif! Sınırsız servis ekleyebilirsiniz.');
-  updatePremiumBadge();
+  showToast(LANG==='tr'?'Premium ödeme sistemi henüz hazır değil':'Premium payment system is not ready yet');
 }
 
 function _getIapVerifyEndpoint() {
@@ -1340,7 +1322,7 @@ async function syncPremiumFromPayments() {
 
 async function activatePremium(productId) {
   if (!window.PaymentService || typeof window.PaymentService.purchase !== 'function') {
-    activatePremiumLegacy();
+    showToast(LANG==='tr'?'Ödeme sistemi hazır değil':'Payment system is not ready');
     return;
   }
   const chosenProductId = productId || PREMIUM_UI_STATE.selectedProductId || (window.PaymentService.defaultProductId ? window.PaymentService.defaultProductId() : null);

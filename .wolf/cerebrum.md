@@ -59,3 +59,5 @@
 - [2026-05-06] Kullanıcı fiziksel cihaz/Mac tarafında da yapılabilecek tüm hazırlıkların ajan tarafından yapılmasını bekliyor; sadece komut listesi vermek yetersiz.
 
 - [2026-05-07] Performans optimizasyonlarında iki-tık logo UX'i korunmalı; render iyileştirmeleri grid/list DOM fragmentleri, rAF scroll throttle ve cache-safe service worker seviyesinde yapılabilir.
+
+- [2026-05-23] Kullanıcı onboarding'deki varsayılan seçili servisleri ürün öğretimi için özellikle korumak istiyor; mock veri temizliği bu default seçimleri kaldırmamalı.

@@ -57,6 +57,15 @@
     } catch (_) {}
   }
 
+  function canUseMockPurchases() {
+    const host = (window.location && window.location.hostname) || '';
+    return state.provider === 'web-preview' && (
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === ''
+    );
+  }
+
   async function init() {
     if (state.initialized) return state;
     state.initialized = true;
@@ -142,6 +151,9 @@
       }
     }
     if (state.provider === 'web-preview') {
+      if (!canUseMockPurchases()) {
+        return fail('web_preview', 'Purchases are available only in the iOS app.');
+      }
       const mock = readMockStatus();
       if (mock && mock.active) return ok({ source: 'mock' });
       return fail('no_purchase', 'No purchases to restore in preview.');
@@ -168,6 +180,16 @@
         return { active: false, source: 'iap' };
       }
     }
+    if (!canUseMockPurchases()) {
+      return {
+        active: false,
+        source: state.provider,
+        productId: null,
+        expiresAt: null,
+        transactionId: null,
+        originalTransactionId: null
+      };
+    }
     const mock = readMockStatus();
     return {
       active: !!(mock && mock.active),
@@ -190,6 +212,7 @@
     getSubscriptionStatus,
     // Dev helper: enables mock premium status on web preview.
     setMockStatus: function (active, productId) {
+      if (!canUseMockPurchases()) return;
       writeMockStatus({
         active: !!active,
         productId: productId || defaultProductId(),
