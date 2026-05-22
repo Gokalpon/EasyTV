@@ -648,6 +648,10 @@ function toggleEmailAuthMode() {
   setEmailAuthMode(_emailAuthMode === 'signup' ? 'signin' : 'signup');
 }
 
+function isValidEmailAddress(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+
 async function submitEmailAuth() {
   const email = (document.getElementById('emailAuthEmail')?.value || '').trim().toLowerCase();
   const password = document.getElementById('emailAuthPassword')?.value || '';
@@ -655,6 +659,11 @@ async function submitEmailAuth() {
 
   if (!email || !password) {
     showToast(t('email_auth_required'));
+    return;
+  }
+
+  if (!isValidEmailAddress(email)) {
+    showToast(LANG === 'tr' ? 'Geçerli bir e-posta adresi yazın' : 'Enter a valid email address');
     return;
   }
 
@@ -671,16 +680,16 @@ async function submitEmailAuth() {
       );
       return;
     }
+    if (!confirmPassword) {
+       showToast(LANG==='tr' ? 'Lütfen şifrenizi onaylayın' : 'Please confirm your password');
+       return;
+    }
     if (password !== confirmPassword) {
       showAlert('🔑', LANG==='tr' ? 'Şifre Hatası' : 'Password Error', 
         LANG==='tr' ? 'Şifreler birbiriyle eşleşmiyor.' : 'Passwords do not match.',
         [{ label: LANG==='tr' ? 'Tamam' : 'OK', action: closeAlert }]
       );
       return;
-    }
-    if (!confirmPassword && _emailAuthMode === 'signup') {
-       showToast(LANG==='tr' ? 'Lütfen şifrenizi onaylayın' : 'Please confirm your password');
-       return;
     }
   }
 
@@ -697,6 +706,7 @@ async function submitEmailAuth() {
     if (_emailAuthMode === 'signin') {
       const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      closeEmailAuth();
       onAuthSuccess(data.user);
     } else {
       const { data, error } = await _supabase.auth.signUp({ 
@@ -756,9 +766,20 @@ async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
   }
 
   _showAuthScreens();
-  if (!_supabase) { showToast('Cloud bağlantısı yok'); return; }
+  if (!_supabase) {
+    showToast(LANG === 'tr' ? 'Cloud bağlantısı yok. Mail ile deneyin.' : 'Cloud connection is unavailable. Try email login.');
+    openEmailAuth('signin');
+    return;
+  }
 
   const loginBtn = document.getElementById(buttonId);
+  const restoreOAuthButton = () => {
+    if (!loginBtn) return;
+    loginBtn.style.opacity = '1';
+    loginBtn.disabled = false;
+  };
+  let isRedirecting = false;
+
   if (loginBtn) {
     loginBtn.style.opacity = '0.6';
     loginBtn.disabled = true;
@@ -773,27 +794,23 @@ async function loginWithOAuthProvider(provider, buttonId, providerTitle) {
     });
 
     if (error) {
-      showToast(providerTitle + ' girişi başarısız: ' + error.message);
-      if (loginBtn) {
-        loginBtn.style.opacity = '1';
-        loginBtn.disabled = false;
-      }
+      throw error;
     }
     // Bazı istemci sürümlerinde otomatik yönlendirme yapılmadığı için URL'i manuel aç.
     if (data && data.url) {
+      isRedirecting = true;
       window.location.assign(data.url);
       return;
     }
-    showToast(providerTitle + ' yönlendirmesi alınamadı');
-    if (loginBtn) {
-      loginBtn.style.opacity = '1';
-      loginBtn.disabled = false;
-    }
+    throw new Error(LANG === 'tr' ? 'Yönlendirme adresi alınamadı' : 'Redirect URL was not returned');
   } catch (e) {
-    showToast(providerTitle + ' girişi başarısız');
-    if (loginBtn) {
-      loginBtn.style.opacity = '1';
-      loginBtn.disabled = false;
+    console.error('OAuth login failed:', e);
+    const detail = e && e.message ? `: ${e.message}` : '';
+    showToast(providerTitle + (LANG === 'tr' ? ' girişi başarısız' : ' login failed') + detail);
+    openEmailAuth('signin');
+  } finally {
+    if (!isRedirecting) {
+      restoreOAuthButton();
     }
   }
 }

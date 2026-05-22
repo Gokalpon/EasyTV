@@ -61,3 +61,7 @@
 - [2026-05-07] Performans optimizasyonlarında iki-tık logo UX'i korunmalı; render iyileştirmeleri grid/list DOM fragmentleri, rAF scroll throttle ve cache-safe service worker seviyesinde yapılabilir.
 
 - [2026-05-23] Kullanıcı onboarding'deki varsayılan seçili servisleri ürün öğretimi için özellikle korumak istiyor; mock veri temizliği bu default seçimleri kaldırmamalı.
+
+- [2026-05-23] Auth release güvenliği için email formatı client-side yakalanmalı; OAuth başarısız veya Supabase config yoksa buton restore edilip kullanıcı email girişine döndürülmeli; preflight bu guardları kontrol etmeli.
+
+- [2026-05-23] Bu Windows PowerShell ortamında && komut ayırıcı olarak çalışmayabilir; git/npx zincirlerinde newline + LASTEXITCODE kontrolü kullanılmalı.

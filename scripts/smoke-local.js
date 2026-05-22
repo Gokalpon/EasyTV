@@ -73,8 +73,33 @@ async function run() {
       await page.waitForSelector('#introScreen', { state: 'visible', timeout: 10000 });
     });
 
-    await check('Skip auth onboarding path reaches main app', async () => {
+    await check('Login auth controls are usable', async () => {
       await page.click('#introCta');
+      await page.waitForSelector('#loginScreen', { state: 'visible', timeout: 10000 });
+      await page.waitForSelector('#appleLoginBtn', { state: 'visible', timeout: 5000 });
+      await page.waitForSelector('#googleLoginBtn', { state: 'visible', timeout: 5000 });
+      await page.waitForSelector('#loginSkipText', { state: 'visible', timeout: 5000 });
+
+      await page.locator('button[onclick="loginWith(\'email\')"]').click();
+      await page.waitForSelector('#emailAuthSheet', { state: 'visible', timeout: 5000 });
+      await page.click('#emailAuthSwitchBtn');
+      await page.waitForFunction(() => {
+        const confirmWrap = document.querySelector('#emailAuthConfirmWrap');
+        return confirmWrap && getComputedStyle(confirmWrap).display !== 'none';
+      });
+      await page.click('#emailAuthSwitchBtn');
+      await page.waitForFunction(() => {
+        const confirmWrap = document.querySelector('#emailAuthConfirmWrap');
+        return confirmWrap && getComputedStyle(confirmWrap).display === 'none';
+      });
+      await page.click('#emailAuthSheet .email-auth-close');
+      await page.waitForFunction(() => {
+        const sheet = document.querySelector('#emailAuthSheet');
+        return sheet && getComputedStyle(sheet).display === 'none';
+      });
+    });
+
+    await check('Skip auth onboarding path reaches main app', async () => {
       await page.waitForSelector('#loginScreen', { state: 'visible', timeout: 10000 });
       await page.click('#loginSkipText');
       await page.waitForSelector('#onboardScreen', { state: 'visible', timeout: 10000 });

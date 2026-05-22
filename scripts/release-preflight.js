@@ -229,6 +229,35 @@ function runReleaseBlockerChecks() {
   }
 }
 
+function runAuthGuardChecks() {
+  const app = readText('app.js');
+  const html = readText('index.html');
+
+  const requiredHtml = [
+    'id="appleLoginBtn"',
+    'id="googleLoginBtn"',
+    'id="loginSkipText"',
+    'id="emailAuthEmail"',
+    'id="emailAuthPassword"',
+    'id="emailAuthConfirmPassword"',
+  ];
+  const missingHtml = requiredHtml.filter((needle) => !html.includes(needle));
+
+  const requiredApp = [
+    "NATIVE_OAUTH_CALLBACK_URL = 'easytvhub://auth/callback'",
+    'function _bindNativeOAuthOpenListener()',
+    'function isValidEmailAddress(email)',
+    "openEmailAuth('signin')",
+  ];
+  const missingApp = requiredApp.filter((needle) => !app.includes(needle));
+
+  if (missingHtml.length || missingApp.length) {
+    fail('Auth flow guard', `missing ${[...missingHtml, ...missingApp].join(', ')}`);
+  } else {
+    pass('Auth flow guard', 'OAuth deeplink, email form and fallback controls detected');
+  }
+}
+
 function run() {
   console.log('EasyTV iOS Release Preflight');
   console.log('================================');
@@ -240,6 +269,7 @@ function run() {
   runInfoPlistCheck();
   runPrivacyCheck();
   runReleaseBlockerChecks();
+  runAuthGuardChecks();
 
   console.log('================================');
   console.log(`Summary: ${state.passes} pass, ${state.warns} warn, ${state.fails} fail`);

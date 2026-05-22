@@ -133,3 +133,5 @@
 
 
 | 02:21 | Release preflight mock/cloud schema guardlarý eklendi, endpoint DNS kontrolü denendi | scripts/release-preflight.js, .wolf/buglog.json | preflight 10 pass, smoke pass; DNS yerelde doðrulanamadý | ~tokens |
+| 02:53 | Hardened login/auth fallbacks and synced bundle | app.js, scripts/smoke-local.js, scripts/release-preflight.js, www/app.js | smoke PASS, preflight PASS after sync | ~2k |
+| 02:55 | Noted PowerShell git chaining gotcha during push workflow | .wolf/buglog.json, .wolf/memory.md | use newline/LASTEXITCODE instead of && | ~200 |

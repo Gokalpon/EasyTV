@@ -156,6 +156,46 @@
                                       ],
                      "occurrences":  1,
                      "last_seen":  "2026-05-23T02:21:02.0786139+03:00"
+                 },
+                 {
+                     "id":  "bug-037",
+                     "timestamp":  "2026-05-22T23:54:20.415Z",
+                     "error_message":  "Login release hardening requested; first release preflight found root -> www app.js sync hash-mismatch.",
+                     "file":  "app.js, scripts/smoke-local.js, scripts/release-preflight.js, www/app.js",
+                     "root_cause":  "Email auth allowed invalid email format to reach Supabase; OAuth failure/missing-config did not consistently return the user to email login; root app.js changed before www sync.",
+                     "fix":  "Added client-side email format guard; OAuth error/fallback now restores the button and opens email auth; smoke test covers login controls; release preflight checks auth guards; build sync updated www.",
+                     "tags":  [
+                                  "auth",
+                                  "login",
+                                  "oauth",
+                                  "email-validation",
+                                  "release-preflight",
+                                  "sync"
+                              ],
+                     "related_bugs":  [
+                                          "bug-034",
+                                          "bug-035"
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-05-22T23:54:20.415Z"
+                 },
+                 {
+                     "id":  "bug-038",
+                     "timestamp":  "2026-05-22T23:55:04.316Z",
+                     "error_message":  "PowerShell command failed because this environment does not support && as a statement separator.",
+                     "file":  "terminal workflow",
+                     "root_cause":  "Windows PowerShell version in this environment rejects && syntax; git add command was partially staged but returned parser/add errors around command chaining and ignored www path advice.",
+                     "fix":  "Use newline-separated PowerShell commands with LASTEXITCODE checks instead of &&; verify staged state with git diff --cached before committing.",
+                     "tags":  [
+                                  "powershell",
+                                  "git",
+                                  "workflow"
+                              ],
+                     "related_bugs":  [
+
+                                      ],
+                     "occurrences":  1,
+                     "last_seen":  "2026-05-22T23:55:04.316Z"
                  }
              ]
 }
